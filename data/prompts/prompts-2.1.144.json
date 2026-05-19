@@ -1859,9 +1859,9 @@
         0
       ],
       "identifierMap": {
-        "0": ""
+        "0": "AT_A_GLANCE"
       },
-      "version": "2.1.141"
+      "version": "2.1.144"
     },
     {
       "name": "Skill: update-config (7-step verification flow)",
@@ -5300,10 +5300,10 @@
         1
       ],
       "identifierMap": {
-        "0": "",
-        "1": ""
+        "0": "PARENT_CWD",
+        "1": "WORKTREE_ROOT"
       },
-      "version": "2.1.141"
+      "version": "2.1.144"
     },
     {
       "name": "System Reminder: Team plan submitted",
