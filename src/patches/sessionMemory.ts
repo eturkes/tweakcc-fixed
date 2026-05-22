@@ -77,6 +77,17 @@ const patchExtraction = (file: string): string | null => {
  *   if(fn("tengu_coral_fern",!1)){...}
  */
 const patchPastSessions = (file: string): string | null => {
+  // CC ≥ 2.1.148 removed past-session search entirely — the
+  // "tengu_coral_fern" flag literal no longer appears in cli.js. Treat
+  // the patch as a no-op; fail loud only when the flag still exists but
+  // the surrounding shape is new.
+  if (!file.includes('"tengu_coral_fern"')) {
+    debug(
+      'patch: sessionMemory: past-sessions gate already removed in this CC build — no-op'
+    );
+    return file;
+  }
+
   // Try new pattern first (CC ≥2.1.38): positive conditional block
   const newPattern = /if\([$\w]+\("tengu_coral_fern",!1\)\)\{/;
   const newMatch = file.match(newPattern);

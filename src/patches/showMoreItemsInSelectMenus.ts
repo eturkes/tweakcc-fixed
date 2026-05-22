@@ -25,19 +25,35 @@ const getShowMoreItemsInSelectMenusLocation = (
 };
 
 /**
- * Patch the help/command menu to use full terminal height instead of half.
+ * Patch the select/help menu to use (near-)full terminal height instead of half.
  *
- * In CC source (HelpV2.tsx):
- *   const maxHeight = Math.floor(rows / 2);
+ * CC ≤ 2.1.147 — direct assignment in minified code:
+ *   {rows:VAR,columns:VAR}=FN(),VAR=Math.floor(VAR/2)
  *
- * In minified code this appears as:
- *   {rows:VAR,columns:VAR}=_7(),VAR=Math.floor(VAR/2)
+ * CC ≥ 2.1.148 — the maxHeight got folded into a ternary + Math.min clamp
+ * inside the suggestions-menu component:
+ *   {rows:Y,columns:w}=FN(),j=O?J95:Math.max(1,Math.min(Math.max(6,Math.floor(Y/2)),Y-3))
  *
- * We replace `Math.floor(VAR/2)` with just `VAR` so the menu uses full height.
+ * In both shapes we drop the `/2` by replacing `Math.floor(ROWS/2)` with the
+ * rows var, so the height resolves to (near-)full terminal height.
  */
 const patchHelpMenuHeight = (file: string): string | null => {
-  // Match: {rows:VAR,columns:VAR}=FUNC(),VAR=Math.floor(VAR/2)
-  // The rows var and the var assigned to Math.floor should reference the same var
+  // Method 1 (CC ≥ 2.1.148): ternary + Math.min(Math.max(6,...),ROWS-3) clamp.
+  // Replacing Math.floor(ROWS/2) with ROWS makes the clamp resolve to ROWS-3.
+  const m1 =
+    /\{rows:([\w$]+),columns:[\w$]+\}=[\w$]+\(\),[\w$]+=[\w$]+\?[\w$]+:Math\.max\(1,Math\.min\(Math\.max\(6,Math\.floor\(\1\/2\)\),\1-3\)\)/;
+  const match1 = file.match(m1);
+  if (match1 && match1.index !== undefined) {
+    const rowsVar = match1[1];
+    const floorStr = `Math.floor(${rowsVar}/2)`;
+    const floorStart = match1.index + match1[0].indexOf(floorStr);
+    const floorEnd = floorStart + floorStr.length;
+    const newFile = file.slice(0, floorStart) + rowsVar + file.slice(floorEnd);
+    showDiff(file, newFile, rowsVar, floorStart, floorEnd);
+    return newFile;
+  }
+
+  // Method 2 (CC ≤ 2.1.147): direct assignment VAR=Math.floor(ROWS/2).
   const pattern =
     /\{rows:([\w$]+),columns:[\w$]+\}=[\w$]+\(\),([\w$]+)=Math\.floor\(\1\/2\)/;
   const match = file.match(pattern);
