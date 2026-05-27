@@ -162,6 +162,73 @@ const NEW_PROMPT_ASSIGNMENTS = [
     id: 'skill-code-review-posting-to-github',
     description: 'Appended to the code-review prompt when --comment is passed; instructs posting each finding as an inline PR comment',
   },
+  // 2.1.151+ shape: effort-tier prompts gained 5 per-angle fragment slots
+  // (g4q/Q4q/d4q/c4q/l4q = Reuse/Simplification/Efficiency/Altitude/Cleanup-note
+  // plus zD4 or HEO for the verify phase). The header line gained a "+N angles"
+  // suffix that uniquely identifies the new shape: medium/high → "3+4 angles",
+  // max/xhigh → "5+4 angles". These 2.1.151+ entries land first so they win
+  // over the 2.1.148-shape fallbacks below.
+  {
+    matcher: t =>
+      t.includes('5+4 angles') && t.includes('"maximum":"extra-high"'),
+    name: 'Skill: Code Review (max / xhigh effort)',
+    id: 'skill-code-review-effort-max',
+    description: 'Effort-tier prompt for max and xhigh code review — 5+4 angles, up to 8 candidates, recall-biased, sweep + 3-state verify, up to 15 findings',
+    identifierMap: {
+      0: 'EFFORT_LEVEL',
+      1: 'PHASE_0_GATHER_DIFF',
+      2: 'AGENT_TOOL_NAME',
+      3: 'HIGH_EFFORT_ANGLES_INTRO',
+      4: 'ANGLE_REUSE',
+      5: 'ANGLE_SIMPLIFICATION',
+      6: 'ANGLE_EFFICIENCY',
+      7: 'ANGLE_ALTITUDE',
+      8: 'CLEANUP_CANDIDATES_NOTE',
+      9: 'PHASE_2_VERIFY_3_STATE',
+      10: 'PHASE_3_SWEEP',
+      11: 'OUTPUT_FORMAT_FN',
+    },
+  },
+  {
+    matcher: t =>
+      t.includes('3+4 angles') && t.includes('catch every real bug a careful'),
+    name: 'Skill: Code Review (high effort)',
+    id: 'skill-code-review-effort-high',
+    description: 'Effort-tier prompt for high code review — 3+4 angles, up to 6 candidates, recall-biased verify, up to 10 findings',
+    identifierMap: {
+      0: 'PHASE_0_GATHER_DIFF',
+      1: 'AGENT_TOOL_NAME',
+      2: 'ANGLES_LINE_BY_LINE',
+      3: 'ANGLE_REUSE',
+      4: 'ANGLE_SIMPLIFICATION',
+      5: 'ANGLE_EFFICIENCY',
+      6: 'ANGLE_ALTITUDE',
+      7: 'CLEANUP_CANDIDATES_NOTE',
+      8: 'PHASE_2_VERIFY_RECALL_BIASED',
+      9: 'OUTPUT_FORMAT_FN',
+    },
+  },
+  {
+    matcher: t =>
+      t.includes('3+4 angles') && t.includes('at medium effort: every finding you surface'),
+    name: 'Skill: Code Review (medium effort)',
+    id: 'skill-code-review-effort-medium',
+    description: 'Effort-tier prompt for medium code review — 3+4 angles, up to 6 candidates, precision-biased 3-state verify, up to 8 findings',
+    identifierMap: {
+      0: 'PHASE_0_GATHER_DIFF',
+      1: 'AGENT_TOOL_NAME',
+      2: 'ANGLES_LINE_BY_LINE',
+      3: 'ANGLE_REUSE',
+      4: 'ANGLE_SIMPLIFICATION',
+      5: 'ANGLE_EFFICIENCY',
+      6: 'ANGLE_ALTITUDE',
+      7: 'CLEANUP_CANDIDATES_NOTE',
+      8: 'PHASE_2_VERIFY_3_STATE',
+      9: 'OUTPUT_FORMAT_FN',
+    },
+  },
+
+  // 2.1.148 shape (pre-restructure): kept as fallbacks for older binaries.
   {
     matcher: t => t.includes('"maximum":"extra-high"} effort: catch'),
     name: 'Skill: Code Review (max / xhigh effort)',

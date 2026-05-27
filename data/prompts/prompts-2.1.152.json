@@ -630,7 +630,7 @@
     {
       "name": "Skill: Code Review (max / xhigh effort)",
       "id": "skill-code-review-effort-max",
-      "description": "Effort-tier prompt for max and xhigh code review — 5 angles, up to 8 candidates, recall-biased, up to 15 findings",
+      "description": "Effort-tier prompt for max and xhigh code review — 5+4 angles, up to 8 candidates, recall-biased, sweep + 3-state verify, up to 15 findings",
       "pieces": [
         "\\`${",
         "} effort → 5+4 angles × 8 candidates → 1-vote verify → sweep → ≤15 findings\\`\n\nYou are reviewing for **recall** at ${",
@@ -666,22 +666,22 @@
         "0": "EFFORT_LEVEL",
         "1": "PHASE_0_GATHER_DIFF",
         "2": "AGENT_TOOL_NAME",
-        "3": "HIGH_EFFORT_ANGLES",
-        "4": "PHASE_2_VERIFY_3_STATE",
-        "5": "PHASE_3_SWEEP",
-        "6": "OUTPUT_FORMAT_FN",
-        "7": "",
-        "8": "",
-        "9": "",
-        "10": "",
-        "11": ""
+        "3": "HIGH_EFFORT_ANGLES_INTRO",
+        "4": "ANGLE_REUSE",
+        "5": "ANGLE_SIMPLIFICATION",
+        "6": "ANGLE_EFFICIENCY",
+        "7": "ANGLE_ALTITUDE",
+        "8": "CLEANUP_CANDIDATES_NOTE",
+        "9": "PHASE_2_VERIFY_3_STATE",
+        "10": "PHASE_3_SWEEP",
+        "11": "OUTPUT_FORMAT_FN"
       },
       "version": "2.1.152"
     },
     {
       "name": "Skill: Code Review (high effort)",
       "id": "skill-code-review-effort-high",
-      "description": "Effort-tier prompt for high code review — 3 angles, up to 6 candidates, recall-biased, up to 10 findings",
+      "description": "Effort-tier prompt for high code review — 3+4 angles, up to 6 candidates, recall-biased verify, up to 10 findings",
       "pieces": [
         "\\`high effort → 3+4 angles × 6 candidates → 1-vote verify (recall-biased) → ≤10 findings\\`\n\nYou are reviewing for **recall** at high effort: catch every real bug a careful\nreviewer would catch in one sitting. At this level, catching real bugs matters\nmore than avoiding false positives. Err on the side of surfacing.\n\n${",
         "}\n## Phase 1 — Find candidates (3 correctness angles + 3 cleanup angles + 1 altitude angle, up to 6 each)\n\nRun **7 independent finder angles** via the ${",
@@ -711,13 +711,13 @@
         "0": "PHASE_0_GATHER_DIFF",
         "1": "AGENT_TOOL_NAME",
         "2": "ANGLES_LINE_BY_LINE",
-        "3": "PHASE_2_VERIFY_RECALL_BIASED",
-        "4": "OUTPUT_FORMAT_FN",
-        "5": "",
-        "6": "",
-        "7": "",
-        "8": "",
-        "9": ""
+        "3": "ANGLE_REUSE",
+        "4": "ANGLE_SIMPLIFICATION",
+        "5": "ANGLE_EFFICIENCY",
+        "6": "ANGLE_ALTITUDE",
+        "7": "CLEANUP_CANDIDATES_NOTE",
+        "8": "PHASE_2_VERIFY_RECALL_BIASED",
+        "9": "OUTPUT_FORMAT_FN"
       },
       "version": "2.1.152"
     },
@@ -735,7 +735,7 @@
     {
       "name": "Skill: Code Review (medium effort)",
       "id": "skill-code-review-effort-medium",
-      "description": "Effort-tier prompt for medium code review — 3 angles, up to 6 candidates, precision-biased, up to 8 findings",
+      "description": "Effort-tier prompt for medium code review — 3+4 angles, up to 6 candidates, precision-biased 3-state verify, up to 8 findings",
       "pieces": [
         "\\`medium effort → 3+4 angles × 6 candidates → 1-vote verify → ≤8 findings\\`\n\nYou are reviewing for **precision** at medium effort: every finding you surface\nshould be one a maintainer would act on.\n\n${",
         "}\n## Phase 1 — Find candidates (3 correctness angles + 3 cleanup angles + 1 altitude angle, up to 6 each)\n\nRun **7 independent finder angles** via the ${",
@@ -765,13 +765,13 @@
         "0": "PHASE_0_GATHER_DIFF",
         "1": "AGENT_TOOL_NAME",
         "2": "ANGLES_LINE_BY_LINE",
-        "3": "PHASE_2_VERIFY_3_STATE",
-        "4": "OUTPUT_FORMAT_FN",
-        "5": "",
-        "6": "",
-        "7": "",
-        "8": "",
-        "9": ""
+        "3": "ANGLE_REUSE",
+        "4": "ANGLE_SIMPLIFICATION",
+        "5": "ANGLE_EFFICIENCY",
+        "6": "ANGLE_ALTITUDE",
+        "7": "CLEANUP_CANDIDATES_NOTE",
+        "8": "PHASE_2_VERIFY_3_STATE",
+        "9": "OUTPUT_FORMAT_FN"
       },
       "version": "2.1.152"
     },
