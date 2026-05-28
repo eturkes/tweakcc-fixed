@@ -886,9 +886,10 @@ export function extractClaudeJsFromNativeInstallation(
 
     if (result) {
       const head = result.subarray(0, 30).toString('utf8');
-      if (head.startsWith(BUN_BYTECODE_PREFIX)) {
+      const hasBytecodeMarker = head.startsWith(BUN_BYTECODE_PREFIX);
+      if (hasBytecodeMarker) {
         debug(
-          'extractClaudeJsFromNativeInstallation: Extracted content is Bun bytecode — falling back to npm source'
+          'extractClaudeJsFromNativeInstallation: Extracted content has bytecode marker — trying npm source first'
         );
 
         if (version) {
@@ -900,16 +901,16 @@ export function extractClaudeJsFromNativeInstallation(
             return { data: npmSource, clearBytecode: true };
           }
           debug(
-            'extractClaudeJsFromNativeInstallation: npm source fetch failed, returning bytecode content as-is'
+            'extractClaudeJsFromNativeInstallation: npm source fetch failed, using extracted source with bytecode cleared'
           );
         } else {
           debug(
-            'extractClaudeJsFromNativeInstallation: No version provided, cannot fetch npm source'
+            'extractClaudeJsFromNativeInstallation: No version provided, using extracted source with bytecode cleared'
           );
         }
       }
 
-      return { data: result, clearBytecode: false };
+      return { data: result, clearBytecode: hasBytecodeMarker };
     }
 
     debug(

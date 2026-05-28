@@ -3,72 +3,38 @@
 import { showDiff } from './index';
 
 /**
- * Find the location of the line number formatting function.
+ * Neutralize the formatter that prepends line numbers to Read output.
  *
- * The minified code looks like:
- *   if(J.length>=${NUM})return`${J}→${G}`;return`${J.padStart(${NUM}," ")}→${G}`
+ * The formatter has been refactored multiple times:
+ *   pre-2.1.86      inline `.split().map()`, `→`-prefixed with padStart
+ *   2.1.86..2.1.107 `let X=H.split(...)` + feature-flag picks tab vs arrow
+ *   2.1.108..2.1.130 `indexOf('\n')`+while loop, helper still has arrow branch
+ *   2.1.131+        helper trimmed down to tab-only
  *
- * This function formats line numbers with the arrow (→) character.
- * We want to find and replace this to just return the content without line numbers.
+ * Stable across all of these is the preamble:
+ *   `{content:VAR,startLine:VAR2}){if(!VAR)return"";`
+ * We anchor on that, then splice in `return VAR` and erase the rest of the
+ * function body up to its closing brace.
  */
 export const writeSuppressLineNumbers = (oldFile: string): string | null => {
-  // The line number formatter function signature is unique:
-  //   {content:VAR,startLine:VAR2}){if(!VAR)return"";let LINES=VAR.split(/\r?\n/);...}
-  //
-  // We replace the function body after the empty guard to just return content as-is.
-  // Instead of brace-counting (which breaks on template literals), we match and
-  // replace the specific mapping expressions.
-
-  // CC >=2.1.88: has compact branch + arrow branch
-  // if(FLAG())return LINES.map(...)...;return LINES.map(...)...
-  // CC <2.1.88: arrow branch only
-  // if(VAR.length>=N)return`...→...`;return`...→...`
-
-  // Find the function by its unique signature
-  const funcSig =
-    /\{content:([$\w]+),startLine:[$\w]+\}\)\{if\(!\1\)return"";let ([$\w]+)=\1\.split\([^)]+\);/;
-  const sigMatch = oldFile.match(funcSig);
+  const preamble =
+    /\{content:([$\w]+),startLine:[$\w]+\}\)\{if\(!\1\)return"";/;
+  const sigMatch = oldFile.match(preamble);
 
   if (sigMatch && sigMatch.index !== undefined) {
     const contentVar = sigMatch[1];
-    const replaceStart = sigMatch.index + sigMatch[0].length;
-
-    // Find the next `}function ` or `}var ` or similar — the end of this function
-    // Use a simple approach: find `}` that's followed by a top-level keyword
-    const afterSplit = oldFile.slice(replaceStart);
+    const bodyStart = sigMatch.index + sigMatch[0].length;
     const endPattern = /\}(?=function |var |let |const |[$\w]+=[$\w]+\()/;
-    const endMatch = afterSplit.match(endPattern);
+    const endMatch = oldFile.slice(bodyStart).match(endPattern);
 
     if (endMatch && endMatch.index !== undefined) {
-      const replaceEnd = replaceStart + endMatch.index;
+      const bodyEnd = bodyStart + endMatch.index;
       const newCode = `return ${contentVar}`;
       const newFile =
-        oldFile.slice(0, replaceStart) + newCode + oldFile.slice(replaceEnd);
-      showDiff(oldFile, newFile, newCode, replaceStart, replaceEnd);
+        oldFile.slice(0, bodyStart) + newCode + oldFile.slice(bodyEnd);
+      showDiff(oldFile, newFile, newCode, bodyStart, bodyEnd);
       return newFile;
     }
-  }
-
-  // Fallback: old pattern (CC <2.1.88, arrow only)
-  const arrowPattern =
-    /if\(([$\w]+)\.length>=\d+\)return`\$\{\1\}(?:→|\\u2192)\$\{([$\w]+)\}`;return`\$\{\1\.padStart\(\d+," "\)\}(?:→|\\u2192)\$\{\2\}`/;
-  const arrowMatch = oldFile.match(arrowPattern);
-
-  if (arrowMatch && arrowMatch.index !== undefined) {
-    const contentVar = arrowMatch[2];
-    const newCode = `return ${contentVar}`;
-    const newFile =
-      oldFile.slice(0, arrowMatch.index) +
-      newCode +
-      oldFile.slice(arrowMatch.index + arrowMatch[0].length);
-    showDiff(
-      oldFile,
-      newFile,
-      newCode,
-      arrowMatch.index,
-      arrowMatch.index + arrowMatch[0].length
-    );
-    return newFile;
   }
 
   console.error(
