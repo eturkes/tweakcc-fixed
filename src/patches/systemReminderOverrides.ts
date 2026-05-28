@@ -6,6 +6,7 @@ import {
   loadReminderOverride,
   substitutePlaceholders,
 } from '../systemReminderSync';
+import { debug } from '../utils';
 import { showDiff } from './index';
 
 export interface ReminderApplyResult {
@@ -343,9 +344,13 @@ const OUTPUT_STYLE_INJECTION: ReminderInjection = {
   },
   defaultBody: `{{style_name}} output style is active. {{turn_reminder}}`,
   apply(content, body, isSuppressed) {
-    const pattern =
+    // CC 2.1.132+: H.turnReminder lookup was dropped; only the literal fallback remains.
+    const newPattern =
+      /output_style:\(([$\w]+)\)=>\{let ([$\w]+)=([$\w]+)\[\1\.style\];if\(!\2\)return\[\];return ([$\w]+)\(\[([$\w]+)\(\{content:`\$\{\2\.name\} output style is active\. Remember to follow the specific guidelines for this style\.`,isMeta:!0\}\)\]\)\}/;
+    // Older CC: H.turnReminder?? fallback still present.
+    const oldPattern =
       /output_style:\(([$\w]+)\)=>\{let ([$\w]+)=([$\w]+)\[\1\.style\];if\(!\2\)return\[\];return ([$\w]+)\(\[([$\w]+)\(\{content:`\$\{\2\.name\} output style is active\. \$\{\1\.turnReminder\?\?"Remember to follow the specific guidelines for this style\."\}`,isMeta:!0\}\)\]\)\}/;
-    const match = content.match(pattern);
+    const match = content.match(newPattern) ?? content.match(oldPattern);
     if (!match || match.index === undefined) {
       if (/output_style:\([$\w]+\)=>\{return \[\]/.test(content)) {
         return content;
@@ -1210,6 +1215,12 @@ const STOP_HOOK_GOAL_INJECTION: ReminderInjection = {
   defaultBody:
     'A session-scoped Stop hook is now active with condition: "{{condition}}". Briefly acknowledge the goal, then immediately start (or continue) working toward it — treat the condition itself as your directive and do not pause to ask the user what to do. The hook will block stopping until the condition holds. It auto-clears once the condition is met — do not tell the user to run `/goal clear` after success; that\'s only for clearing a goal early.',
   apply(content, body, isSuppressed) {
+    if (!content.includes('A session-scoped Stop hook is now active')) {
+      debug(
+        'patch: reminder stop-hook-session-goal: anchor not present in this CC build — no-op'
+      );
+      return content;
+    }
     return findAndReplace(
       content,
       /([$\w]+)=\(([$\w]+)\)=>`A session-scoped Stop hook is now active with condition: "\$\{\2\}"\. Briefly acknowledge the goal, then immediately start \(or continue\) working toward it[\s\S]*?after success; that's only for clearing a goal early\.`/,
