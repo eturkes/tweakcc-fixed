@@ -1,29 +1,28 @@
 // Please see the note about writing patches in ./index
 //
-// This patch makes Opus 4.7 default to "max" reasoning effort. Two sites:
+// This patch makes Opus default to "max" reasoning effort. It rewrites the
+// per-model default resolver only:
 //
-// 1) Per-model default function. CC 2.1.128 shipped:
+//     function hn_(H){if(JK(H)==="claude-opus-4-7")return"xhigh";return"high"}
 //
-//        function hn_(H){if(JK(H)==="claude-opus-4-7")return"xhigh";return"high"}
+// The function name churns across versions (hn_, xo_, YK6, …) but the shape is
+// stable — swap the Opus return values to "max". CC 2.1.156 added an Opus 4.8
+// branch (stock returns "high"); we cover both.
 //
-//    Function name has churned across versions (hn_, then xo_ in 2.1.138)
-//    but the shape is stable. Swap "xhigh" → "max".
+// We deliberately leave CC's launch-effort gate (the
+// `unpinOpus47LaunchEffort` / `unpinOpus48LaunchEffort` check) UNTOUCHED. That
+// gate is exactly what lets `/effort` override the per-model default: the first
+// time the user sets effort, CC flips the unpin flag, the gate closes, and the
+// persisted effortLevel wins from then on. So "max" is the DEFAULT, not a lock
+// — a session can drop to xhigh/high via `/effort` (or CLAUDE_CODE_EFFORT_LEVEL)
+// and it takes effect.
 //
-// 2) Opus-4.7 launch-effort gate. CC 2.1.138 introduced:
+// (A previous revision also forced that gate permanently open to pin "max"
+// across sessions. That defeated `/effort` entirely — effort snapped back to
+// max every time it was recomputed — so it was removed. Don't re-add it.)
 //
-//        function bo_(H){return I7(H).includes("opus-4-7")&&!S_().unpinOpus47LaunchEffort}
-//
-//    The resolver only consults the per-model default for Opus 4.7 when this
-//    gate returns true. The `unpinOpus47LaunchEffort` flag flips to true
-//    permanently the first time the user runs `/effort` or sets effort via
-//    CLI, at which point the gate returns false and the persisted `effortLevel`
-//    wins instead — defeating site (1). Drop the flag clause so the gate stays
-//    open for Opus 4.7 regardless of unpin state. Effect: max stays the
-//    default; `/effort xhigh` still works session-by-session via env/CLI, it
-//    just doesn't pin across sessions.
-//
-// CC has a guard `if(T==="max"&&!V3_(H))return"high"` that downgrades "max"
-// for models that don't support it, so site (1) is safe across model switches.
+// CC has a guard `if(T==="max"&&!V3_(H))return"high"` that downgrades "max" for
+// models that don't support it, so the swap is safe across model switches.
 
 import { debug } from '../utils';
 import { showDiff } from './index';
@@ -31,7 +30,7 @@ import { showDiff } from './index';
 export const writeMaxEffortDefault = (oldFile: string): string | null => {
   let workingFile = oldFile;
 
-  // --- Site 1: per-model default ("xhigh" → "max") ---
+  // Per-model default ("xhigh" → "max"):
   // function NAME(ARG){if(FUNC(ARG)==="claude-opus-4-7")return"xhigh";return"high"}
   const defaultPattern =
     /function\s+([$\w]+)\s*\(\s*([$\w]+)\s*\)\s*\{\s*if\s*\(\s*([$\w]+)\s*\(\s*\2\s*\)\s*===\s*"claude-opus-4-7"\s*\)\s*return\s*"xhigh"\s*;\s*return\s*"high"\s*\}/;
@@ -65,64 +64,11 @@ export const writeMaxEffortDefault = (oldFile: string): string | null => {
     )
   ) {
     debug(
-      'patch: maxEffortDefault: site 1 (per-model default) already "max" — skipping'
+      'patch: maxEffortDefault: per-model default already "max" — skipping'
     );
   } else {
     console.error(
-      'patch: maxEffortDefault: failed to find Opus 4.7 per-model default resolver (site 1)'
-    );
-    return null;
-  }
-
-  // --- Site 2: drop unpinOpus47LaunchEffort gate clause ---
-  // function NAME(ARG){return INNER(ARG).includes("opus-4-7")&&!STATE().unpinOpus47LaunchEffort}
-  const gatePattern =
-    /function\s+([$\w]+)\s*\(\s*([$\w]+)\s*\)\s*\{\s*return\s+([$\w]+)\s*\(\s*\2\s*\)\s*\.\s*includes\s*\(\s*"opus-4-7"\s*\)\s*&&\s*!\s*[$\w]+\s*\(\s*\)\s*\.\s*unpinOpus47LaunchEffort\s*\}/;
-  // CC 2.1.156 shape — per-model gate with an added Opus-4.8 branch:
-  // function NAME(ARG){let M=INNER(ARG);if(M.includes("opus-4-7"))return!STATE().unpinOpus47LaunchEffort;if(M.includes("opus-4-8"))return!STATE().unpinOpus48LaunchEffort;return!1}
-  const gate156Pattern =
-    /function\s+([$\w]+)\s*\(\s*([$\w]+)\s*\)\s*\{\s*let\s+([$\w]+)\s*=\s*([$\w]+)\s*\(\s*\2\s*\)\s*;\s*if\s*\(\s*\3\s*\.\s*includes\s*\(\s*"opus-4-7"\s*\)\s*\)\s*return\s*!\s*([$\w]+)\s*\(\s*\)\s*\.\s*unpinOpus47LaunchEffort\s*;\s*if\s*\(\s*\3\s*\.\s*includes\s*\(\s*"opus-4-8"\s*\)\s*\)\s*return\s*!\s*\5\s*\(\s*\)\s*\.\s*unpinOpus48LaunchEffort\s*;\s*return\s*!\s*1\s*\}/;
-  const g156 = workingFile.match(gate156Pattern);
-  const gateMatch = g156 || workingFile.match(gatePattern);
-  if (gateMatch && gateMatch.index !== undefined) {
-    const fullMatch = gateMatch[0];
-    let replacement: string;
-    if (g156) {
-      const [, fnName, argName, modelVar, innerFnName] = gateMatch;
-      // Force the Opus per-model default (max) to stand regardless of unpin.
-      replacement = `function ${fnName}(${argName}){let ${modelVar}=${innerFnName}(${argName});if(${modelVar}.includes("opus-4-7"))return!0;if(${modelVar}.includes("opus-4-8"))return!0;return!1}`;
-    } else {
-      const [, fnName, argName, innerFnName] = gateMatch;
-      replacement = `function ${fnName}(${argName}){return ${innerFnName}(${argName}).includes("opus-4-7")}`;
-    }
-    const newFile =
-      workingFile.slice(0, gateMatch.index) +
-      replacement +
-      workingFile.slice(gateMatch.index + fullMatch.length);
-    showDiff(
-      workingFile,
-      newFile,
-      replacement,
-      gateMatch.index,
-      gateMatch.index + fullMatch.length
-    );
-    workingFile = newFile;
-  } else if (
-    /includes\s*\(\s*"opus-4-8"\s*\)\s*\)\s*return\s*!\s*0/.test(workingFile) ||
-    /function\s+[$\w]+\s*\(\s*[$\w]+\s*\)\s*\{\s*return\s+[$\w]+\s*\(\s*[$\w]+\s*\)\s*\.\s*includes\s*\(\s*"opus-4-7"\s*\)\s*\}/.test(
-      workingFile
-    )
-  ) {
-    debug(
-      'patch: maxEffortDefault: site 2 (launch-effort gate) already free of unpin clause — skipping'
-    );
-  } else if (!workingFile.includes('unpinOpus47LaunchEffort')) {
-    debug(
-      'patch: maxEffortDefault: site 2 not present in this CC build — no-op'
-    );
-  } else {
-    console.error(
-      'patch: maxEffortDefault: failed to find Opus 4.7 launch-effort gate (site 2)'
+      'patch: maxEffortDefault: failed to find Opus per-model effort default'
     );
     return null;
   }
