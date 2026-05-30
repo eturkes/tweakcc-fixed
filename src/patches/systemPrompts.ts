@@ -7,6 +7,7 @@ import {
   escapeDepthZeroBackticks,
 } from '../systemPromptSync';
 import { setAppliedHashes, computeMD5Hash } from '../systemPromptHashIndex';
+import { findAllMatchesWithStackFallback } from '../safeRegexMatch';
 
 /**
  * Result of applying system prompts
@@ -133,13 +134,11 @@ export const applySystemPrompts = async (
     // inlined one; the standalone variable lives later. Pick the match that
     // looks like a complete string-literal value (surrounded by matching
     // " ' or ` delimiters) when more than one occurrence exists.
-    const globalPattern = new RegExp(regex, 'sig');
-    const allMatches: RegExpExecArray[] = [];
-    let mm: RegExpExecArray | null;
-    while ((mm = globalPattern.exec(content)) !== null) {
-      allMatches.push(mm);
-      if (mm[0].length === 0) globalPattern.lastIndex++;
-    }
+    const allMatches = await findAllMatchesWithStackFallback(
+      regex,
+      'sig',
+      content
+    );
     let match: RegExpMatchArray | RegExpExecArray | null = null;
     if (allMatches.length === 1) {
       match = allMatches[0];
