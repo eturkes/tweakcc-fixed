@@ -707,6 +707,40 @@ function validateInput(text, minLength = 500) {
   if (!text || typeof text !== 'string') return false;
 
   // ////////////////
+  // What to exclude.
+  // ////////////////
+
+  // Two general-purpose-agent fragments the current extractor surfaces that
+  // have no working override target, so cataloging either only produces a
+  // "Could not find" at apply. Drop both — the live agent-prompt-general-purpose
+  // and agent-prompt-general-purpose-short already cover the text.
+  //
+  // 1. The strengths/guidelines half: general-purpose is authored as
+  //    `intro + ${`strengths`}`, so this inline template literal is kept by the
+  //    ${-interpolation exception in the subset filter. Its only occurrence is
+  //    inside general-purpose's span (which fully inlines it), so an override
+  //    can never match independently.
+  if (
+    text.startsWith(
+      'Your strengths:\n- Searching for code, configurations, and patterns across large codebases'
+    )
+  )
+    return false;
+
+  // 2. The fallback agent prompt (bzK), used in the agent runner's catch path.
+  //    It is the intro + concise-report directive without the strengths block.
+  //    agent-prompt-general-purpose-short's text is a prefix of it and occurs at
+  //    both sites, so the short-variant override (applied with a global pattern)
+  //    clobbers this fragment's opening first — no override of it can ever match.
+  if (
+    text.startsWith('You are an agent for Claude Code, Anthropic') &&
+    text.includes('When you complete the task, respond with a concise report') &&
+    !text.includes('Your strengths') &&
+    text.trimEnd().endsWith('so it only needs the essentials.')
+  )
+    return false;
+
+  // ////////////////
   // What to include.
   // ////////////////
 
@@ -1488,6 +1522,28 @@ if (require.main === module) {
     existingData,
     version
   );
+
+  // Normalize empty identifierMap names to stable synthetic names. An empty
+  // name forces applyIdentifierMapping's `UNKNOWN_<slot>` fallback, which ships
+  // a latent ReferenceError risk and unreadable overrides; it happens for
+  // prompts whose interpolations are complex expressions (ternaries, `??`,
+  // method/function calls) the curated NEW_PROMPT_ASSIGNMENTS table doesn't
+  // name. Synthetic name = <ID_SLUG>_VAR_<slot>: unique per prompt+slot and
+  // stable across re-extraction, so overrides referencing it keep binding.
+  // Curated/real names always win (this only fills blanks).
+  for (const p of mergedResult.prompts) {
+    if (!p.identifierMap) continue;
+    const slug =
+      String(p.id || 'prompt')
+        .replace(/[^A-Za-z0-9]+/g, '_')
+        .replace(/^_+|_+$/g, '')
+        .toUpperCase() || 'PROMPT';
+    for (const k of Object.keys(p.identifierMap)) {
+      if (!p.identifierMap[k]) {
+        p.identifierMap[k] = `${slug}_VAR_${k}`;
+      }
+    }
+  }
 
   // Sort prompts by lexicographic order of pieces joined together (without interpolated vars)
   mergedResult.prompts.sort((a, b) => {
