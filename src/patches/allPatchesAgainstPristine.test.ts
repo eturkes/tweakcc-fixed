@@ -57,6 +57,7 @@ import { writeThinkingVisibility } from './thinkingVisibility';
 import { writeHideStartupBanner } from './hideStartupBanner';
 import { writeHideCtrlGToEdit } from './hideCtrlGToEdit';
 import { writeHideStartupClawd } from './hideStartupClawd';
+import { writeHideTitleSpinner } from './hideTitleSpinner';
 import { writeIncreaseFileReadLimit } from './increaseFileReadLimit';
 import { writeSuppressLineNumbers } from './suppressLineNumbers';
 import { writeSuppressRateLimitOptions } from './suppressRateLimitOptions';
@@ -360,6 +361,7 @@ const INVOCATIONS: Record<PatchId, (src: string) => string | null> = {
   'hide-startup-banner': c => writeHideStartupBanner(c),
   'hide-ctrl-g-to-edit': c => writeHideCtrlGToEdit(c),
   'hide-startup-clawd': c => writeHideStartupClawd(c),
+  'hide-title-spinner': c => writeHideTitleSpinner(c),
   'increase-file-read-limit': c => writeIncreaseFileReadLimit(c),
   'suppress-line-numbers': c => writeSuppressLineNumbers(c),
   'suppress-rate-limit-options': c => writeSuppressRateLimitOptions(c),

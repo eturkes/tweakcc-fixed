@@ -73,6 +73,7 @@ import { writeConversationTitle } from './conversationTitle';
 import { writeHideStartupBanner } from './hideStartupBanner';
 import { writeHideCtrlGToEdit } from './hideCtrlGToEdit';
 import { writeHideStartupClawd } from './hideStartupClawd';
+import { writeHideTitleSpinner } from './hideTitleSpinner';
 import { writeIncreaseFileReadLimit } from './increaseFileReadLimit';
 import { writeSuppressLineNumbers } from './suppressLineNumbers';
 import { writeSuppressRateLimitOptions } from './suppressRateLimitOptions';
@@ -378,6 +379,13 @@ const PATCH_DEFINITIONS = [
     group: PatchGroup.MISC_CONFIGURABLE,
     description:
       'The "Clawd" icon on startup will be hidden for a cleaner look',
+  },
+  {
+    id: 'hide-title-spinner',
+    name: 'Hide terminal title spinner',
+    group: PatchGroup.MISC_CONFIGURABLE,
+    description:
+      'Terminal title drops the ◐/◑ spinner while busy; ✳ still marks idle/waiting',
   },
   {
     id: 'increase-file-read-limit',
@@ -1215,6 +1223,10 @@ export const applyCustomization = async (
     'hide-startup-clawd': {
       fn: c => writeHideStartupClawd(c),
       condition: !!config.settings.misc?.hideStartupClawd,
+    },
+    'hide-title-spinner': {
+      fn: c => writeHideTitleSpinner(c),
+      condition: !!config.settings.misc?.hideTitleSpinner,
     },
     'increase-file-read-limit': {
       fn: c => writeIncreaseFileReadLimit(c),

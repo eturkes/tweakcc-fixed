@@ -62,6 +62,7 @@ export function MiscView({ onSubmit }: MiscViewProps) {
     hideStartupBanner: false,
     hideCtrlGToEdit: false,
     hideStartupClawd: false,
+    hideTitleSpinner: false,
     increaseFileReadLimit: false,
     suppressLineNumbers: false,
     suppressRateLimitOptions: false,
@@ -320,6 +321,19 @@ export function MiscView({ onSubmit }: MiscViewProps) {
           updateSettings(settings => {
             ensureMisc();
             settings.misc!.hideStartupClawd = !settings.misc!.hideStartupClawd;
+          });
+        },
+      },
+      {
+        id: 'hideTitleSpinner',
+        title: 'Hide terminal title spinner',
+        description:
+          'Shows the bare title while Claude works and "✳ title" when idle or waiting.',
+        getValue: () => settings.misc?.hideTitleSpinner ?? false,
+        toggle: () => {
+          updateSettings(settings => {
+            ensureMisc();
+            settings.misc!.hideTitleSpinner = !settings.misc!.hideTitleSpinner;
           });
         },
       },

@@ -132,6 +132,7 @@ export interface MiscConfig {
   hideStartupBanner: boolean;
   hideCtrlGToEdit: boolean;
   hideStartupClawd: boolean;
+  hideTitleSpinner: boolean;
   increaseFileReadLimit: boolean;
   suppressLineNumbers: boolean;
   suppressRateLimitOptions: boolean;
