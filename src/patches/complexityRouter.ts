@@ -323,7 +323,7 @@ const wrapEffortResolver = (
   helpers: Pick<ClassifierHelpers, 'gB' | 'km'>,
   sidFn: string | null
 ): string | null => {
-  // Five resolver shapes, tried newest-first. The two in-line shapes expose the
+  // Resolver shapes, tried newest-first. The two in-line shapes expose the
   // same capture groups: 1=prefix (through `=ENV();`), 2=MODEL, 3=FALLBACK,
   // 4=ENV result, 5=combined effort var, 6=maxGuard, 7=xhighGuard. Both split
   // shapes carry their guards in a separate normalizer function, resolved below.
@@ -411,7 +411,22 @@ const wrapEffortResolver = (
   //     if(typeof S==="number"&&NUM)S=CONVERT(S);return NORM(S,MODEL)}
   const patternNoLaunchPin =
     /(function [$\w]+\(([$\w]+),([$\w]+),\{turnEffort:([$\w]+),hookEffortValue:[$\w]+\}=\{\}\)\{if\(![$\w]+\(\2\)\)return;let [$\w]+=[$\w]+\(\2\)!==null;if\([$\w]+!==void 0\)\{let [$\w]+=typeof [$\w]+==="number"&&[$\w]+\?[$\w]+\([$\w]+\):[$\w]+;return [$\w]+\([$\w]+,\2\)\}let ([$\w]+)=[$\w]+\(\);)if\(\5===null&&![$\w]+\)return;let [$\w]+=[$\w]+\(\2\),([$\w]+)=\5\?\?\(\5===null\?[$\w]+:void 0\)\?\?\4\?\?\3\?\?[$\w]+;if\(typeof \6==="number"&&[$\w]+\)\6=[$\w]+\(\6\);return ([$\w]+)\(\6,\2\)\}/;
+  //
+  // CC 2.1.288: the options arg gained `carriedEffort:CARRY=CARRIED(MODEL)`,
+  // threaded into the per-model DEFAULT lookup as its second arg (it ranks
+  // below the feature-flag defaults, above the model's static default). The
+  // chain order is unchanged and the wrap still rides right after `=ENV();`,
+  // so only the anchor moves. Same capture groups as patternTurnEffort.
+  //   function NAME(MODEL,FALLBACK,{turnEffort:TURN,hookEffortValue:HOOK,carriedEffort:CARRY=k(MODEL)}={}){
+  //     if(!SUPPORT(MODEL))return;let NUM=NUMERIC(MODEL)!==null;
+  //     if(HOOK!==void 0){let V=typeof HOOK==="number"&&NUM?CONVERT(HOOK):HOOK;return NORM(V,MODEL)}
+  //     let ENV=ENVFN();if(ENV===null&&!NUM)return;
+  //     let DEF=DEFAULT(MODEL,CARRY),S=ENV??(ENV===null?DEF:void 0)??TURN??FALLBACK??DEF;
+  //     if(typeof S==="number"&&NUM)S=CONVERT(S);return NORM(S,MODEL)}
+  const patternCarriedEffort =
+    /(function [$\w]+\(([$\w]+),([$\w]+),\{turnEffort:([$\w]+),hookEffortValue:[$\w]+,carriedEffort:[$\w]+=[$\w]+\(\2\)\}=\{\}\)\{if\(![$\w]+\(\2\)\)return;let [$\w]+=[$\w]+\(\2\)!==null;if\([$\w]+!==void 0\)\{let [$\w]+=typeof [$\w]+==="number"&&[$\w]+\?[$\w]+\([$\w]+\):[$\w]+;return [$\w]+\([$\w]+,\2\)\}let ([$\w]+)=[$\w]+\(\);)if\(\5===null&&![$\w]+\)return;let [$\w]+=[$\w]+\(\2,[$\w]+\),([$\w]+)=\5\?\?\(\5===null\?[$\w]+:void 0\)\?\?\4\?\?\3\?\?[$\w]+;if\(typeof \6==="number"&&[$\w]+\)\6=[$\w]+\(\6\);return ([$\w]+)\(\6,\2\)\}/;
   const turnMatch =
+    file.match(patternCarriedEffort) ||
     file.match(patternNoLaunchPin) ||
     file.match(patternHookEffort) ||
     file.match(patternTurnEffort);

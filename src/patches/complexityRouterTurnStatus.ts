@@ -29,8 +29,11 @@ export const writeComplexityRouterTurnStatus = (
   const factory = oldFile.match(
     /function ([$\w]+)\(([$\w]+),([$\w]+),([$\w]+),([$\w]+),([$\w]+)\)\{return\{type:"system",subtype:"turn_duration",durationMs:\2,/
   );
+  // 2.1.288+: the request-site call also passes `carriedEffort:CARRY`, and a
+  // second counterfactual call passes `carriedEffort:null` for telemetry. Only
+  // the real call (a bound carried-effort var) is the request site.
   const request = oldFile.match(
-    /([$\w]+)\(\(\)=>(([$\w]+)\(([$\w]+),([$\w]+)\.effortValue,\{turnEffort:\5\.turnEffort,hookEffortValue:\5\.hookEffortValue\}\))\)/
+    /([$\w]+)\(\(\)=>(([$\w]+)\(([$\w]+),([$\w]+)\.effortValue,\{turnEffort:\5\.turnEffort,hookEffortValue:\5\.hookEffortValue(?:,carriedEffort:(?!null\})[$\w]+)?\}\))\)/
   );
   const renderer = oldFile.match(
     /children:`\$\{([$\w]+)\} for \$\{([$\w]+)\}\$\{([$\w]+)\?` \\xB7 done \$\{\3\}`:""\}`/
@@ -42,11 +45,14 @@ export const writeComplexityRouterTurnStatus = (
     return null;
   }
   const requestPrefix = oldFile.slice(0, request.index);
+  // 2.1.288+: the options param is destructured as `{modelFacts:F,...REST}`;
+  // REST is the options object the alias spreads.
   const query = [
     ...requestPrefix.matchAll(
-      /function\*[$\w]+\(([$\w]+),[$\w]+,[$\w]+,[$\w]+,[$\w]+,([$\w]+)\)\{/g
+      /function\*[$\w]+\(([$\w]+),[$\w]+,[$\w]+,[$\w]+,[$\w]+,(?:([$\w]+)|\{(?:[$\w]+:[$\w]+,)*\.\.\.([$\w]+)\})\)\{/g
     ),
   ].at(-1);
+  const queryOptions = query ? (query[2] ?? query[3]) : undefined;
   const renderPrefix = oldFile.slice(
     Math.max(0, renderer.index! - 7000),
     renderer.index
@@ -62,9 +68,10 @@ export const writeComplexityRouterTurnStatus = (
   // reads that alias. The alias is the options object for the record call.
   const optionsAlias =
     !!query &&
-    (query[2] === request[5] ||
+    !!queryOptions &&
+    (queryOptions === request[5] ||
       new RegExp(
-        `[,{]${escapeId(request[5])}=[$\\w]+===${escapeId(query[2])}\\.fallbackModel\\?${escapeId(query[2])}:\\{\\.\\.\\.${escapeId(query[2])},`
+        `[,{]${escapeId(request[5])}=[$\\w]+===${escapeId(queryOptions)}\\.fallbackModel\\?${escapeId(queryOptions)}:\\{\\.\\.\\.${escapeId(queryOptions)},`
       ).test(oldFile.slice(query.index, request.index)));
   if (!query || !optionsAlias || !message) {
     console.error('patch: complexityRouter: failed to find turn status scopes');
