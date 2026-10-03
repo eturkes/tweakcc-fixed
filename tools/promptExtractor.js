@@ -267,7 +267,184 @@ const CURATED_IDENTIFIER_MAPS = {
       },
     },
   ],
+  // CC 2.1.288 added a --max-findings option: every literal "≤N findings" cap
+  // in the code-review effort tiers became `${B(n)}` (B = the "≤N findings" /
+  // "all findings" label fn, n = the cap parameter), inserting two slots at
+  // the FRONT of each template and sliding every carried label. The carried
+  // names were also already wrong before the shift (the 2.1.286 maps named the
+  // Phase-2 verify block ANGLE_EFFICIENCY and the output fn ANGLE_ALTITUDE).
+  // Derived from each builder's template, distinct vars in first-seen order;
+  // vocabulary follows upstream's honest maps for the same builders under
+  // their agent-prompt-code-review-part-* ids, keeping our names where ours
+  // were already right (PHASE_0_GATHER_DIFF = K, AGENT_TOOL_NAME = ht).
+  'skill-code-review-effort-medium': [
+    {
+      // Uo(e,o,n=8): B, n, K, ht, vt (Agent-unavailable fallback), je (the
+      // eight finder angles), ue (cleanup/altitude candidate shape note),
+      // Oo (Phase 2 1-vote 3-state verify), e (output fn), n.
+      identifiers: [0, 1, 2, 3, 4, 5, 6, 7, 8, 1],
+      identifierMap: {
+        0: 'FORMAT_FINDINGS_LIMIT_LABEL_FN',
+        1: 'MAX_FINDINGS',
+        2: 'PHASE_0_GATHER_DIFF',
+        3: 'AGENT_TOOL_NAME',
+        4: 'AGENT_UNAVAILABLE_INSTRUCTIONS',
+        5: 'BASE_FINDER_ANGLES_BLOCK',
+        6: 'CLEANUP_AND_ALTITUDE_CANDIDATES_NOTE',
+        7: 'THREE_STATE_VERIFY_PHASE',
+        8: 'OUTPUT_FORMAT_FN',
+      },
+    },
+  ],
+  'skill-code-review-effort-high': [
+    {
+      // jo(e,o,n=10): as medium, but slot 7 is sa (Phase 2 recall-biased verify).
+      identifiers: [0, 1, 2, 3, 4, 5, 6, 7, 8, 1],
+      identifierMap: {
+        0: 'FORMAT_FINDINGS_LIMIT_LABEL_FN',
+        1: 'MAX_FINDINGS',
+        2: 'PHASE_0_GATHER_DIFF',
+        3: 'AGENT_TOOL_NAME',
+        4: 'AGENT_UNAVAILABLE_INSTRUCTIONS',
+        5: 'BASE_FINDER_ANGLES_BLOCK',
+        6: 'CLEANUP_AND_ALTITUDE_CANDIDATES_NOTE',
+        7: 'RECALL_BIASED_VERIFY_PHASE',
+        8: 'OUTPUT_FORMAT_FN',
+      },
+    },
+  ],
+  'skill-code-review-effort-max-3': [
+    {
+      // Ho(e)(o,n,s=15), the xhigh/max fan-out tier: e (effort level), B, s,
+      // K, ht, vt, Ao (the ten finder angles), ue, Oo, aa (Phase 3 sweep), o.
+      identifiers: [0, 1, 2, 0, 3, 4, 5, 6, 7, 8, 9, 10, 2],
+      identifierMap: {
+        0: 'EFFORT_LEVEL',
+        1: 'FORMAT_FINDINGS_LIMIT_LABEL_FN',
+        2: 'MAX_FINDINGS',
+        3: 'PHASE_0_GATHER_DIFF',
+        4: 'AGENT_TOOL_NAME',
+        5: 'AGENT_UNAVAILABLE_INSTRUCTIONS',
+        6: 'EXTENDED_FINDER_ANGLES_BLOCK',
+        7: 'CLEANUP_AND_ALTITUDE_CANDIDATES_NOTE',
+        8: 'THREE_STATE_VERIFY_PHASE',
+        9: 'GAP_SWEEP_PHASE',
+        10: 'OUTPUT_FORMAT_FN',
+      },
+    },
+  ],
+  'skill-code-review-effort-max': [
+    {
+      // da(e,o=15), the xhigh inline tier: B, o, K, Vo (correctness angles
+      // A-C), Wo (reuse), z, Q, Z, we, ue, Ko (output-with-minimum wrapper),
+      // e (output fn), o. No effort-level slot: "xhigh" is literal here.
+      identifiers: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 1],
+      identifierMap: {
+        0: 'FORMAT_FINDINGS_LIMIT_LABEL_FN',
+        1: 'MAX_FINDINGS',
+        2: 'PHASE_0_GATHER_DIFF',
+        3: 'CORRECTNESS_ANGLES',
+        4: 'ANGLE_REUSE',
+        5: 'ANGLE_SIMPLIFICATION',
+        6: 'ANGLE_EFFICIENCY',
+        7: 'ANGLE_ALTITUDE',
+        8: 'ANGLE_CONVENTIONS',
+        9: 'CLEANUP_AND_ALTITUDE_CANDIDATES_NOTE',
+        10: 'FORMAT_REVIEW_OUTPUT_WITH_MINIMUM_FINDINGS_FN',
+        11: 'OUTPUT_FORMAT_FN',
+      },
+    },
+  ],
+  'skill-code-review-effort-low-2': [
+    {
+      // Fo(e,o=4): B, o, e (ReportFindings-tool branch flag), xe (the "at
+      // most **N findings**" phrase fn), ZP ("ReportFindings").
+      identifiers: [0, 1, 2, 3, 1, 4, 3, 1, 4],
+      identifierMap: {
+        0: 'FORMAT_FINDINGS_LIMIT_LABEL_FN',
+        1: 'MAX_FINDINGS',
+        2: 'HAS_REPORT_FINDINGS_TOOL',
+        3: 'FORMAT_FINDINGS_LIMIT_PHRASE_FN',
+        4: 'REPORT_FINDINGS_TOOL_NAME',
+      },
+    },
+  ],
+  'skill-code-review-effort-low-3': [
+    {
+      // qo(e,o=8): as low-2, plus n = min(4, cap), the findings floor.
+      identifiers: [0, 1, 2, 3, 1, 4, 5, 5, 3, 1, 5, 5],
+      identifierMap: {
+        0: 'FORMAT_FINDINGS_LIMIT_LABEL_FN',
+        1: 'MAX_FINDINGS',
+        2: 'HAS_REPORT_FINDINGS_TOOL',
+        3: 'FORMAT_FINDINGS_LIMIT_PHRASE_FN',
+        4: 'REPORT_FINDINGS_TOOL_NAME',
+        5: 'MIN_FINDINGS_TARGET',
+      },
+    },
+  ],
+  'skill-code-review-output-format': [
+    {
+      // Mo(e): e (the cap, or "all"), I (pluralize), ZP ("ReportFindings").
+      identifiers: [0, 0, 1, 0, 0, 0, 0, 2],
+      identifierMap: {
+        0: 'MAX_FINDINGS',
+        1: 'PLURALIZE_FN',
+        2: 'REPORT_FINDINGS_TOOL_NAME',
+      },
+    },
+  ],
+  'skill-code-review-output-report-findings': [
+    {
+      // Do(e): ZP ("ReportFindings"), e (the cap, or "all"), I (pluralize).
+      identifiers: [0, 1, 1, 2, 1, 1, 1, 1],
+      identifierMap: {
+        0: 'REPORT_FINDINGS_TOOL_NAME',
+        1: 'MAX_FINDINGS',
+        2: 'PLURALIZE_FN',
+      },
+    },
+  ],
+  'skill-code-review-output-findings-target': [
+    {
+      // Ko's injected floor: s = max(1, floor(min(cap, default) / 2)), I.
+      identifiers: [0, 1, 0],
+      identifierMap: {
+        0: 'MIN_FINDINGS_TARGET',
+        1: 'PLURALIZE_FN',
+      },
+    },
+  ],
   'system-prompt-coordinator-mode': [
+    {
+      // CC 2.1.288 hoisted both comms-mode ternaries into locals —
+      // k = t?S:"Every message you send is to the user." and
+      // v = t?A:"briefly tell the user what you launched" — so the flag and
+      // the comms note are gone as slots and slot 0 is the resolved routing
+      // sentence. It also added Z2o(), the note on which server's copy of the
+      // PR-activity tools to call when both are listed, after the
+      // subscribe_pr_activity bullet. The carried map then sat one off at
+      // every slot (Agent was COMMS_TOOL_CHANNEL_NOTE). Distinct vars in
+      // first-seen order: k, ht, no, Ic, p, c, Z2o, s, l, v, oIe, u.
+      identifiers: [
+        0, 1, 2, 3, 4, 5, 6, 7, 1, 8, 2, 9, 1, 10, 2, 1, 11, 2, 3, 1, 2, 1, 3,
+        2, 1, 1, 1, 2, 1, 2, 2, 2, 1, 1, 10, 2,
+      ],
+      identifierMap: {
+        0: 'USER_MESSAGE_ROUTING_INSTRUCTION',
+        1: 'AGENT_TOOL_NAME',
+        2: 'SENDMESSAGE_TOOL_NAME',
+        3: 'TASKSTOP_TOOL_NAME',
+        4: 'WORKFLOW_CONDITIONAL_TOOL_NOTE',
+        5: 'SKILL_TOOL_CONDITIONAL_NOTE',
+        6: 'PREFERRED_PR_ACTIVITY_TOOL_COPY_NOTE_FN',
+        7: 'CROSS_SESSION_PEERS_NOTE',
+        8: 'WORKER_MODEL_PARAMETER_NOTE',
+        9: 'POST_LAUNCH_COMMS_INSTRUCTION',
+        10: 'SYSTEM_REMINDER_OPENING_TEXT',
+        11: 'WORKER_TOOLS_INTRO_TEXT',
+      },
+    },
     {
       // CC 2.1.269 appended three distinct vars after the 2.1.257 twelve, so
       // slots 0-11 keep their names: S (the `Commit${S}` suffix naming the
