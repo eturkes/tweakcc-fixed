@@ -478,6 +478,26 @@ describe('writeRefusalFallbackModel: the return', () => {
     );
   });
 
+  it('finds the restore and message constructor in their 2.1.288 shapes', () => {
+    // 2.1.288 passes the unlatch a reason and gives the constructor an optional
+    // highlight; both copied verbatim from that bundle.
+    const restore =
+      'function vn(){let e=n(),t=e.modelSelection.refusalFallbackModelLatch();if(e.modelSelection.unlatchRefusalFallbackModel("session_transition"),!t||e.modelSelection.mainLoopModelOverride()!==t.fallbackModel)return;return e.modelSelection.overrideMainLoopModel(t.previousOverride),{appStateModel:t.previousAppStateModel,forSessionValue:t.previousModelForSession,overrideValue:t.previousOverride,restoredToExplicitOverride:t.previousOverride!==void 0,fallbackModel:t.fallbackModel}}';
+    const message =
+      'function dk(e,n,r){return{type:"system",subtype:"informational",content:e,isMeta:!1,timestamp:new Date().toISOString(),uuid:wCn(),level:n,...r&&{highlight:r}}}';
+    const out = writeRefusalFallbackModel(
+      BUNDLE.replace(RESTORE, restore).replace(MESSAGE, message),
+      ROUTES
+    );
+    expect(out).not.toBeNull();
+    expect(moduleText(out as string, 15)).toMatch(
+      /let __tweakccT=vn\(\);[^]*\(globalThis\.__tweakccRefusalFallbackHub\?\?=new Mt\(\(\)=>Fe\(\)\)\)\.of\(__tweakccS\)\.emit\(__tweakccT\);[^]*\};function vn\(\)/
+    );
+    expect(moduleText(out as string, 355)).toContain(
+      `globalThis.__tweakccRefusalFallbackMessage=dk;${message}`
+    );
+  });
+
   it('is idempotent', () => {
     const once = patched(ROUTES);
     expect(writeRefusalFallbackModel(once, ROUTES)).toBe(once);

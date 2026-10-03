@@ -92,16 +92,6 @@
     "text": "\nTranscript dir: ",
     "verdict": "glue"
   },
-  "123fa3b5a697b086": {
-    "verdict": "catalogue",
-    "desc": "Reason a served-call PreToolUse hook refused the call: a non-blocking error that was required by contract, so it could not render a verdict.",
-    "id": "tool-result-pretooluse-hook-could-not-render-verdict",
-    "label": "TOOL_RESULT_PRETOOLUSE_HOOK_SERVED_CALL_GATE_REFUSED_VAR_1",
-    "name": "Tool Result: PreToolUse hook could not render a verdict",
-    "promptId": "tool-result-pretooluse-hook-served-call-gate-refused",
-    "reason": "states why the hook gate refused rather than skipped",
-    "text": "could not render a verdict"
-  },
   "1477827d48e13d8c": {
     "desc": "The reason clause explaining why a peer could not be verified before sending: the account session list could not be checked.",
     "id": "tool-result-send-message-account-list-unchecked-reason",
@@ -1976,5 +1966,206 @@
     "reason": "labels who confirmed; joins the interpolated people list",
     "verdict": "glue",
     "text": " the person confirmed on the card"
+  },
+  "92b1139302b9e8dc": {
+    "promptId": "system-reminder-auto-mode-classifier-too-long-calls-not-reviewed",
+    "label": "SYSTEM_REMINDER_AUTO_MODE_CLASSIFIER_TOO_LONG_CALLS_NOT_REVIEWED_VAR_0",
+    "text": "an earlier tool call (",
+    "verdict": "glue",
+    "reason": "singular count noun phrase wrapping the joined tool-name list in QHt() @9946036; labels a value"
+  },
+  "b2f69a58b2b980b9": {
+    "promptId": "system-reminder-auto-mode-classifier-too-long-calls-not-reviewed",
+    "label": "SYSTEM_REMINDER_AUTO_MODE_CLASSIFIER_TOO_LONG_CALLS_NOT_REVIEWED_VAR_0",
+    "text": " earlier tool calls (",
+    "verdict": "glue",
+    "reason": "plural count noun phrase wrapping the joined tool-name list in QHt() @9946081; labels a value"
+  },
+  "47a8ce6999163bdc": {
+    "promptId": "slash-command-plugin-marketplace-add-different-source",
+    "label": "SLASH_COMMAND_PLUGIN_MARKETPLACE_ADD_DIFFERENT_SOURCE_VAR_1",
+    "text": "user settings, --settings and managed settings",
+    "verdict": "not-a-slot",
+    "reason": "oFt @11570634 renders into the Xj(...,\"debug\") marketplace autoUpdate log @11570899 (Xj -> t(n,{level}) debug log), a different template that only shares the leading quasi \"Marketplace \" with this prompt; also used in a TUI line and a [reconcile] debug log, never model-facing"
+  },
+  "2a0ad0bec58db903": {
+    "promptId": "slash-command-plugin-marketplace-add-different-source",
+    "label": "SLASH_COMMAND_PLUGIN_MARKETPLACE_ADD_DIFFERENT_SOURCE_VAR_2",
+    "text": "do not set it, so the default (on) applies",
+    "verdict": "not-a-slot",
+    "reason": "inline branch of the same Xj(...,\"debug\") autoUpdate debug log @11570899, matched to this prompt by its \"Marketplace \" lead quasi only; not model-facing"
+  },
+  "68e33015bbb526a4": {
+    "promptId": "slash-command-plugin-marketplace-add-different-source",
+    "label": "SLASH_COMMAND_PLUGIN_MARKETPLACE_ADD_DIFFERENT_SOURCE_VAR_3",
+    "text": "an entry in project or local settings that has no autoUpdate and would otherwise replace the entry that sets it",
+    "verdict": "not-a-slot",
+    "reason": "inline branch of the same Xj(...,\"debug\") autoUpdate debug log @11570899, matched to this prompt by its \"Marketplace \" lead quasi only; not model-facing"
+  },
+  "e9b46f5a9831f848": {
+    "promptId": "slash-command-plugin-marketplace-add-different-source",
+    "label": "SLASH_COMMAND_PLUGIN_MARKETPLACE_ADD_DIFFERENT_SOURCE_VAR_3",
+    "text": " in project, local or --add-dir settings",
+    "verdict": "not-a-slot",
+    "reason": "quasi of an inline branch of the same Xj(...,\"debug\") autoUpdate debug log @11570899, matched to this prompt by its \"Marketplace \" lead quasi only; not model-facing"
+  },
+  "43f67f6abe18d0f5": {
+    "promptId": "slash-command-plugin-marketplace-refresh-manifest-missing-in-repository",
+    "label": "SLASH_COMMAND_PLUGIN_MARKETPLACE_REFRESH_MANIFEST_MISSING_IN_REPOSITORY_VAR_0",
+    "text": "We've deprecated \"claude-code-plugins\" in favor of \"claude-plugins-official\".",
+    "verdict": "catalogue",
+    "id": "slash-command-plugin-marketplace-refresh-claude-code-plugins-deprecated",
+    "name": "Slash Command: /plugin marketplace refresh — claude-code-plugins deprecated",
+    "desc": "Line in the marketplace-manifest-missing refresh error for the old \"claude-code-plugins\" marketplace, saying it is deprecated in favor of \"claude-plugins-official\".",
+    "reason": "names the replacement marketplace the model should move to (ke branch in the refresh catch @11643126)"
+  },
+  "00aa4ed16bd20a72": {
+    "promptId": "slash-command-plugin-marketplace-refresh-manifest-missing-in-repository",
+    "label": "SLASH_COMMAND_PLUGIN_MARKETPLACE_REFRESH_MANIFEST_MISSING_IN_REPOSITORY_VAR_0",
+    "text": "This marketplace may have been deprecated or moved to a new location.",
+    "verdict": "catalogue",
+    "id": "slash-command-plugin-marketplace-refresh-may-have-moved",
+    "name": "Slash Command: /plugin marketplace refresh — marketplace may have moved",
+    "desc": "Line in the marketplace-manifest-missing refresh error for any other marketplace, saying it may have been deprecated or moved to a new location.",
+    "reason": "states the likely cause the model reports and acts on (ke else-branch @11643205)"
+  },
+  "4d43c7cf56a78e64": {
+    "promptId": "tool-result-artifact-db-bytes-per-database-limit-reached",
+    "label": "TOOL_RESULT_ARTIFACT_DB_BYTES_PER_DATABASE_LIMIT_REACHED_VAR_0",
+    "text": "document limit",
+    "verdict": "glue",
+    "reason": "value of r in se() @16601227, the limit noun interpolated into the database-limit reasons; labels a value"
+  },
+  "e5b11923bd2a6875": {
+    "promptId": "tool-result-artifact-db-bytes-per-database-limit-reached",
+    "label": "TOOL_RESULT_ARTIFACT_DB_BYTES_PER_DATABASE_LIMIT_REACHED_VAR_0",
+    "text": "storage limit of ",
+    "verdict": "glue",
+    "reason": "leading quasi of c's template `storage limit of ${KEt(t)}` in se() @16601300; labels the size value"
+  },
+  "7343dc11763bbeeb": {
+    "promptId": "slash-command-plugin-install-switch-hint-install-replace",
+    "label": "SLASH_COMMAND_PLUGIN_INSTALL_SWITCH_HINT_INSTALL_REPLACE_VAR_2",
+    "text": "--replace --scope ",
+    "verdict": "glue",
+    "reason": "flag fragment `--replace --scope ${n}` (Ae) completed by the scope value; the parent template already carries the instruction"
+  },
+  "2ccbfceffc58926a": {
+    "promptId": "slash-command-plugin-uninstall-leftover-list-unreadable",
+    "label": "SLASH_COMMAND_PLUGIN_UNINSTALL_LEFTOVER_LIST_UNREADABLE_VAR_1",
+    "text": "\" again from the command line",
+    "verdict": "catalogue",
+    "id": "slash-command-plugin-uninstall-leftover-uninstall-again-from-command-line",
+    "name": "Slash Command: /plugin uninstall leftover — uninstall again from the command line",
+    "desc": "Fallback remedy in the uninstall-leftover notes when no runnable command can be shown: uninstall the plugin again from the command line, with --scope project when it is still on in the project file.",
+    "reason": "the remedy instruction ng() falls back to (fallback template @17983035), rendered into the still-switched-on and list-unreadable notes"
+  },
+  "906c981c2a298fc7": {
+    "promptId": "tool-result-bash-builtin-gh-release-download-no-form",
+    "label": "TOOL_RESULT_BASH_BUILTIN_GH_RELEASE_DOWNLOAD_NO_FORM_VAR_0",
+    "text": "which are served from another host that this gh does not follow a redirect to",
+    "verdict": "catalogue",
+    "id": "tool-result-bash-builtin-gh-no-form-other-host-reason",
+    "name": "Tool Result: built-in gh — files served from another host",
+    "desc": "Shared reason clause in the built-in gh no-form answers for run and release downloads: the files are served from another host that this gh does not follow a redirect to.",
+    "reason": "states the constraint behind the no-form answer (ce @19271441, used by run download and release download)"
+  },
+  "06a734b892ae4639": {
+    "promptId": "tool-result-bash-builtin-gh-search-code-clone-instead",
+    "label": "TOOL_RESULT_BASH_BUILTIN_GH_SEARCH_CODE_CLONE_INSTEAD_VAR_0",
+    "text": "where this session's GitHub proxy refuses search/",
+    "verdict": "catalogue",
+    "id": "tool-result-bash-builtin-gh-proxy-refuses-search-clause",
+    "name": "Tool Result: built-in gh — proxy refuses search",
+    "desc": "Shared clause in the built-in gh search answers saying this session's GitHub proxy refuses search/ endpoints, so filter a list or search a clone instead.",
+    "reason": "states the constraint behind the search fallbacks (Q @19271718, used by search issues, search prs and search code)"
+  },
+  "ca2043798ab05fe2": {
+    "promptId": "tool-result-bash-builtin-gh-only-api-command-refusal",
+    "label": "TOOL_RESULT_BASH_BUILTIN_GH_ONLY_API_COMMAND_REFUSAL_VAR_2",
+    "text": "no GitHub CLI was found on this machine when this session started",
+    "verdict": "catalogue",
+    "id": "data-built-in-gh-no-github-cli-found-reason",
+    "name": "Data: built-in gh — no GitHub CLI found",
+    "desc": "Shared reason in the built-in gh help and refusal saying no GitHub CLI was found on this machine when the session started, which is why only gh api works.",
+    "reason": "explains to the model why only `gh api` exists (ge @19277711, used by the help text and the only-api refusal)"
+  },
+  "5560450ad216c26d": {
+    "promptId": "tool-result-artifact-unknown-capability",
+    "label": "TOOL_RESULT_ARTIFACT_UNKNOWN_CAPABILITY_VAR_0",
+    "text": "shorthand flag",
+    "verdict": "glue",
+    "reason": "branch of `unknown ${A?\"flag\":\"shorthand flag\"}: …` in the built-in gh parser @19281955 (matched to this prompt only by the \"unknown \" lead quasi); labels the flag kind"
+  },
+  "e3eed748f4a30856": {
+    "promptId": "tool-result-bash-builtin-gh-redirect-refused",
+    "label": "TOOL_RESULT_BASH_BUILTIN_GH_REDIRECT_REFUSED_VAR_1",
+    "text": " with a username or password in its URL",
+    "verdict": "glue",
+    "reason": "qualifier on the refused redirect target in Gt() @19298380; describes the interpolated host"
+  },
+  "d4508633413b8b58": {
+    "promptId": "tool-result-remote-host-approval-outside-honoured-window",
+    "label": "TOOL_RESULT_REMOTE_HOST_APPROVAL_OUTSIDE_HONOURED_WINDOW_VAR_1",
+    "text": " after the request was raised — longer than an answer",
+    "verdict": "catalogue",
+    "id": "tool-result-remote-host-approval-dated-channel-expired",
+    "name": "Tool Result: Remote host approval — dated answer arrived too late",
+    "desc": "Dated-channel branch of the approval-outside-honoured-window result: the approval arrived the given time after the request was raised, longer than an answer is honoured for.",
+    "reason": "sibling of the catalogued undated branch (tool-result-remote-host-approval-undated-channel-expired); r ternary in Ego() @24580200"
+  },
+  "225bf557d983b627": {
+    "promptId": "tool-result-remote-served-background-command-status",
+    "label": "TOOL_RESULT_REMOTE_SERVED_BACKGROUND_COMMAND_STATUS_VAR_2",
+    "text": " Its output could not be read.",
+    "verdict": "catalogue",
+    "id": "tool-result-remote-tool-background-command-output-unreadable",
+    "name": "Tool Result: Remote background command — output unreadable",
+    "desc": "Tail of the remote-served background command status saying its output could not be read.",
+    "reason": "outcome the model acts on (B branch in we() @28028436); siblings running-status / ended-status are catalogued"
+  },
+  "0157b67414e56295": {
+    "promptId": "tool-result-remote-served-background-command-status",
+    "label": "TOOL_RESULT_REMOTE_SERVED_BACKGROUND_COMMAND_STATUS_VAR_2",
+    "text": " It has written no output.",
+    "verdict": "catalogue",
+    "id": "tool-result-remote-tool-background-command-no-output",
+    "name": "Tool Result: Remote background command — no output",
+    "desc": "Tail of the remote-served background command status saying the command has written no output.",
+    "reason": "outcome the model acts on (B branch in we() @28028483)"
+  },
+  "ced49e4254561e5e": {
+    "promptId": "tool-result-remote-served-background-command-status",
+    "label": "TOOL_RESULT_REMOTE_SERVED_BACKGROUND_COMMAND_STATUS_VAR_2",
+    "text": "\nIts output ends:\n",
+    "verdict": "glue",
+    "reason": "label before the interpolated output tail (`\\nIts output ends:\\n${g}`) in we() @28028513"
+  },
+  "1de9ba95dd8c6000": {
+    "promptId": "slash-command-plugin-validate-plugin-name-reads-as-anthropic-warning",
+    "label": "SLASH_COMMAND_PLUGIN_VALIDATE_PLUGIN_NAME_READS_AS_ANTHROPIC_WARNING_VAR_0",
+    "text": "\" (read as \"",
+    "verdict": "glue",
+    "reason": "quote/paren join `\"${e}\" (read as \"${r}\")` in UAt() @28191173; labels the normalised name"
+  },
+  "70ea32d2c7506378": {
+    "promptId": "tool-result-artifact-db-write-upload-with-publish-asset-clause",
+    "label": "TOOL_RESULT_ARTIFACT_DB_WRITE_UPLOAD_WITH_PUBLISH_ASSET_CLAUSE_VAR_1",
+    "text": "`file_paths` takes up to ",
+    "verdict": "catalogue",
+    "id": "tool-result-artifact-db-write-upload-file-paths-limit-clause",
+    "name": "Tool Result: Artifact DB write — file_paths upload limit",
+    "desc": "Clause in the embedded-file upload guidance saying `file_paths` takes up to N files in one call.",
+    "reason": "states a call-shape limit the model acts on (h template in ot() @31591560)"
+  },
+  "0bbc2fc7493f19e9": {
+    "promptId": "tool-result-pretooluse-hook-served-call-gate-refused",
+    "label": "TOOL_RESULT_PRETOOLUSE_HOOK_SERVED_CALL_GATE_REFUSED_VAR_1",
+    "text": "gave no verdict",
+    "verdict": "catalogue",
+    "id": "tool-result-pretooluse-hook-could-not-render-verdict",
+    "name": "Tool Result: PreToolUse hook gave no verdict",
+    "desc": "Reason a served-call PreToolUse hook refused the call: it ended in a non-blocking error without having run by contract, so it gave no verdict.",
+    "reason": "2.1.288 rewording of \"could not render a verdict\" (r in Kzo() @10359203); same role, so the id is kept"
   }
 }

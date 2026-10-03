@@ -2966,5 +2966,50 @@
     "verdict": "archived",
     "version": "2.1.286",
     "why": "removed in 2.1.286: distinctive text absent from bundle and catalogue"
+  },
+  "agent-prompt-you-should-know-first-person-lead": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "why": "removed in 2.1.288: the you-should-know agent prompt dropped its first-person framing (examples now read 'The main agent chose…'); 'describe decisions the main agent' and 'in the first person' absent from bundle and catalogue"
+  },
+  "agent-prompt-you-should-know-offer-write-as-main-agent-first-person": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "why": "removed in 2.1.288: same first-person framing removal; 'write as the main agent, in the first person' absent from bundle and catalogue"
+  },
+  "slash-command-plugin-types-description": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "why": "removed in 2.1.288: the /plugin-types command left the binary; every distinctive window absent from bundle and catalogue"
+  },
+  "slash-command-plugin-types-empty": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "why": "removed in 2.1.288 with the /plugin-types command; distinctive text absent from bundle and catalogue"
+  },
+  "slash-command-plugin-types-no-plugin-contracts": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "why": "removed in 2.1.288 with the /plugin-types command; distinctive text absent from bundle and catalogue"
+  },
+  "slash-command-plugin-types-plugins-not-loaded": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "why": "removed in 2.1.288 with the /plugin-types command; distinctive text absent from bundle and catalogue"
+  },
+  "slash-command-plugin-types-tsconfig-include": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "why": "removed in 2.1.288 with the /plugin-types command; the one 25-char hit ('claude plugin validate <d') is boilerplate in the doctor skill"
+  },
+  "slash-command-plugin-types-wrote-plugin-api": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "why": "removed in 2.1.288 with the /plugin-types command; distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-remote-tool-approval-answers-different-request": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "why": "merged in 2.1.288 into one template with tool-result-remote-host-approval-no-longer-pending, which keeps the id (its 'gone' branch comes first)"
   }
 }

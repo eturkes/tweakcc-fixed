@@ -131,6 +131,20 @@ const LB_SHAPE =
 
 const FILE_LB = FILE_YT.replace(YT_SHAPE, LB_SHAPE);
 
+// CC 2.1.288: the options arg gained `carriedEffort:CARRY=CARRIED(MODEL)`,
+// threaded into the per-model DEFAULT lookup as its second arg. Excerpt from
+// the pristine darwin 2.1.288 resolver + its tail-called normalizer.
+const OW_SHAPE =
+  'function ow(e,n,{turnEffort:r,hookEffortValue:s,carriedEffort:d=k(e)}={}){if(!rw(e))return;' +
+  'let l=X(e)!==null;if(s!==void 0){let S=typeof s==="number"&&l?IF(s):s;return F(S,e)}' +
+  'let p=rK();' +
+  'if(p===null&&!l)return;let E=vbn(e,d),g=p??(p===null?E:void 0)??r??n??E;' +
+  'if(typeof g==="number"&&l)g=IF(g);return F(g,e)}' +
+  'function F(e,n){let r=e;if(typeof r==="string"&&Yv(r))r=nK(r,n);' +
+  'if(r==="max"&&!JQ(n))r="high";if(r==="xhigh"&&!nJe(n))r="high";return r}';
+
+const FILE_OW = FILE_YT.replace(YT_SHAPE, OW_SHAPE);
+
 const cfg = (
   over: Partial<ComplexityRouterConfig> = {}
 ): ComplexityRouterConfig => ({
@@ -453,6 +467,26 @@ describe('writeComplexityRouter', () => {
     // The original tail survives byte-for-byte after the injection.
     expect(r).toContain(
       'if(d===null&&!f)return;let u=T(e),m=d??(d===null?u:void 0)??r??n??u;if(typeof m==="number"&&f)m=BO(m);return D(m,e)}'
+    );
+    expect(r).toContain(
+      'await __tweakccRouterClassify(E,t,r.options.mainLoopModel);'
+    );
+  });
+
+  it('wraps the CC 2.1.288 resolver with the carriedEffort option', () => {
+    const out = writeComplexityRouter(FILE_OW, cfg());
+    expect(out).not.toBeNull();
+    const r = out as string;
+    expect(r).toContain(
+      'if(s!==void 0){let S=typeof s==="number"&&l?IF(s):s;return F(S,e)}let p=rK();var __request=arguments[3];'
+    );
+    expect(r).toContain(
+      'if(__twkRE&&p==null&&r==null&&(n==null||n===__st.baseline))'
+    );
+    expect(r).toContain('if(__twkRE==="max"&&!JQ(e))__twkRE="high";');
+    expect(r).toContain('if(__twkRE==="xhigh"&&!nJe(e))__twkRE="high";');
+    expect(r).toContain(
+      'if(p===null&&!l)return;let E=vbn(e,d),g=p??(p===null?E:void 0)??r??n??E;if(typeof g==="number"&&l)g=IF(g);return F(g,e)}'
     );
     expect(r).toContain(
       'await __tweakccRouterClassify(E,t,r.options.mainLoopModel);'

@@ -409,7 +409,7 @@ const patchPublishReturn = (
     return file;
   }
   const restore = file.match(
-    /function ([$\w]+)\(\)\{let ([$\w]+)=([$\w]+)\(\),([$\w]+)=\2\.modelSelection\.refusalFallbackModelLatch\(\);if\(\2\.modelSelection\.unlatchRefusalFallbackModel\(\),!\4\|\|\2\.modelSelection\.mainLoopModelOverride\(\)!==\4\.fallbackModel\)return;return \2\.modelSelection\.overrideMainLoopModel\(\4\.previousOverride\)/
+    /function ([$\w]+)\(\)\{let ([$\w]+)=([$\w]+)\(\),([$\w]+)=\2\.modelSelection\.refusalFallbackModelLatch\(\);if\(\2\.modelSelection\.unlatchRefusalFallbackModel\((?:"[^"]*")?\),!\4\|\|\2\.modelSelection\.mainLoopModelOverride\(\)!==\4\.fallbackModel\)return;return \2\.modelSelection\.overrideMainLoopModel\(\4\.previousOverride\)/
   );
   if (!restore || restore.index === undefined) {
     console.error(
@@ -563,7 +563,7 @@ const patchPublishMessage = (file: string): string | null => {
     return file;
   }
   const message = file.match(
-    /function ([$\w]+)\(([$\w]+),([$\w]+)\)\{return\{type:"system",subtype:"informational",content:\2,isMeta:!1,timestamp:new Date\(\)\.toISOString\(\),uuid:[$\w]+\(\),level:\3\}\}/
+    /function ([$\w]+)\(([$\w]+),([$\w]+)(?:,([$\w]+))?\)\{return\{type:"system",subtype:"informational",content:\2,isMeta:!1,timestamp:new Date\(\)\.toISOString\(\),uuid:[$\w]+\(\),level:\3(?:,\.\.\.\4&&\{[$\w]+:\4\})?\}\}/
   );
   if (!message || message.index === undefined) {
     console.error(

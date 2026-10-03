@@ -32,9 +32,17 @@ const ROOT_KEYS = [
 const ROOT_QUORUM = 8;
 const WRAPPER_MAX = 400;
 
-// CC's own test (`sm` in the bundle): a property whose description matches is
-// deleted from the schema before it is sent, together with its subtree.
+// CC's own test. Before sending, CC walks the generated JSON schema and, at
+// every level, deletes each `properties` entry and each `anyOf`/`oneOf` option
+// whose own description matches, together with its subtree. Nothing else is
+// filtered: an @internal description on an array item, record value or the
+// root is sent as written.
 const INTERNAL_RE = /^@internal(?:\b|$)/;
+
+// A zod union factory (`union`, `discriminatedUnion`, `xor`) builds its node
+// with this literal; its options are what JSON-schema generation emits as
+// `anyOf`/`oneOf`.
+const UNION_FACTORY_RE = /\btype:\s*["']union["']/;
 
 const isFunctionNode = n =>
   n &&
@@ -347,8 +355,7 @@ function createFinder(code) {
               });
             } else if (p.type === 'ObjectProperty') {
               const k = propKeyName(p);
-              const d = propertyDescription(p.value);
-              if (d && INTERNAL_RE.test(d.joined)) continue;
+              if (isInternal(p.value, ctx)) continue;
               walk(p.value, {
                 ...ctx,
                 keyPath: k ? [...ctx.keyPath, k] : ctx.keyPath,
@@ -410,9 +417,27 @@ function createFinder(code) {
                   bind: bound,
                 });
               }
-              walk(node.arguments, ctx);
+              if (isUnionFactory(r)) {
+                for (const a of node.arguments) {
+                  if (a.type !== 'ArrayExpression') walk(a, ctx);
+                  else walkOptions(a.elements, ctx);
+                }
+              } else {
+                walk(node.arguments, ctx);
+              }
               return;
             }
+          }
+          // `a.or(b)` is `union([a, b])`.
+          if (
+            c.type === 'MemberExpression' &&
+            !c.computed &&
+            c.property.type === 'Identifier' &&
+            c.property.name === 'or' &&
+            node.arguments.length === 1
+          ) {
+            walkOptions([c.object, node.arguments[0]], ctx);
+            return;
           }
           walk(c, ctx);
           walk(node.arguments, ctx);
@@ -488,6 +513,15 @@ function createFinder(code) {
       }
     };
 
+    // CC drops a union option described @internal, with its subtree.
+    const walkOptions = (options, ctx) => {
+      for (const opt of options) {
+        if (!opt) continue;
+        if (opt.type === 'SpreadElement') walk(opt.argument, ctx);
+        else if (!isInternal(opt, ctx)) walk(opt, ctx);
+      }
+    };
+
     walk(root.node, {
       keyPath: [],
       mod: root.mod,
@@ -502,25 +536,85 @@ function createFinder(code) {
     };
   }
 
-  // The description a property value carries at its outermost `.describe()`
-  // (what JSON-schema generation puts on that property).
-  function propertyDescription(value) {
+  const unionFactories = new Map();
+  function isUnionFactory(r) {
+    const key = `${r.mod.seg.name}:${r.node.start}`;
+    if (!unionFactories.has(key)) {
+      const len = r.node.end - r.node.start;
+      const src = r.mod.seg.source.slice(
+        r.node.start - r.mod.seg.start,
+        r.node.end - r.mod.seg.start
+      );
+      unionFactories.set(key, len <= WRAPPER_MAX && UNION_FACTORY_RE.test(src));
+    }
+    return unionFactories.get(key);
+  }
+
+  // The description a schema expression carries at its outermost
+  // `.describe()` (what JSON-schema generation puts on that node). Field
+  // thunks, bindings, lazy wrappers (`f(()=>x)`) and zero-argument getters
+  // are followed, since CC tests the generated node, not the source spelling.
+  function ownDescription(value, ctx, depth = 0) {
     let n = thunkResult(value);
-    while (
-      n &&
-      n.type === 'CallExpression' &&
-      n.callee.type === 'MemberExpression'
-    ) {
-      const prop = n.callee.property;
-      if (prop.type === 'Identifier' && prop.name === 'describe') {
-        const frags =
-          n.arguments.length === 1 && literalFragments(n.arguments[0]);
-        return frags ? { joined: frags.map(f => f.value).join('') } : null;
+    while (n && depth < 8) {
+      if (n.type === 'Identifier') {
+        const r = resolve(n.name, ctx.mod, ctx.scopes);
+        if (!r) return null;
+        ctx = { ...ctx, mod: r.mod, scopes: r.scopes };
+        n = thunkResult(r.node);
+        depth++;
+        continue;
       }
-      n = n.callee.object;
+      if (n.type === 'FunctionDeclaration' && n.params.length === 0) {
+        const [only, ...rest] = n.body.body;
+        if (!only || rest.length || only.type !== 'ReturnStatement') {
+          return null;
+        }
+        n = only.argument;
+        depth++;
+        continue;
+      }
+      if (n.type !== 'CallExpression') return null;
+      const c = n.callee;
+      if (c.type === 'MemberExpression') {
+        if (
+          !c.computed &&
+          c.property.type === 'Identifier' &&
+          c.property.name === 'describe'
+        ) {
+          const frags =
+            n.arguments.length === 1 &&
+            literalFragments(n.arguments[0], name => {
+              const r = resolve(name, ctx.mod, ctx.scopes);
+              return r ? r.node : null;
+            });
+          return frags ? { joined: frags.map(f => f.value).join('') } : null;
+        }
+        n = c.object;
+        continue;
+      }
+      if (c.type !== 'Identifier') return null;
+      const [arg, ...more] = n.arguments;
+      if (!arg) {
+        n = c;
+        continue;
+      }
+      // `f(()=>schema)`: a memoized lazy wrapper around the real schema.
+      const inner = !more.length && thunkResult(arg);
+      if (inner && inner !== arg && !isFunctionNode(inner)) {
+        n = inner;
+        depth++;
+        continue;
+      }
+      return null;
     }
     return null;
   }
+
+  const isInternal = (value, ctx) => {
+    const d = ownDescription(value, ctx);
+    return !!d && INTERNAL_RE.test(d.joined);
+  };
 
   return { run };
 }

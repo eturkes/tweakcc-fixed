@@ -1015,5 +1015,17 @@
     "verdict": "internal",
     "shape": "concat",
     "excerpt": "Host-asserted context shown to the auto-mode permission classifier alongside this tool call's result. In the live session the classifier may"
+  },
+  "4ac83759a6b28e2d": {
+    "verdict": "internal",
+    "note": "PostToolUse classifierContext .describe() in the hook-output zod schema (2.1.288 rewording of a34d88e8a275822d); validates hook JSON, never sent to the model; sibling describes cached internal",
+    "shape": "concat",
+    "excerpt": "Host-asserted context shown to the auto-mode permission classifier alongside this tool call's result. In the live session the classifier may"
+  },
+  "f167d18231d357bc": {
+    "verdict": "internal",
+    "note": "Set of exact 403 response bodies matched by Ne() to recognise an artifact-storage network-policy denial; a matcher, never rendered to the model",
+    "shape": "array",
+    "excerpt": "organization network policy denies artifact storage writes for this session organization network policy could not be determined for this ses"
   }
 }

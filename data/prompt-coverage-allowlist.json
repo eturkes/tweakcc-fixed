@@ -283,5 +283,35 @@
     "verdict": "not-model-facing",
     "version": "2.1.286",
     "why": "sdk_mcp_manifests_parked .describe() on the SDK initialize control-response schema: host-facing control-protocol documentation, never in a model request."
+  },
+  "data-interrupt-send-now-parameter": {
+    "verdict": "not-model-facing",
+    "version": "2.1.288",
+    "why": "@internal send_now .describe() on the SDK interrupt control-request schema: host-facing control-protocol documentation, never in a model request."
+  },
+  "data-interrupt-send-now-message-uuid-parameter": {
+    "verdict": "not-model-facing",
+    "version": "2.1.288",
+    "why": "@internal message_uuid .describe() beside send_now on the SDK interrupt control-request schema: control-protocol documentation for hosts."
+  },
+  "data-turn-handoff-file-names-field": {
+    "verdict": "not-model-facing",
+    "version": "2.1.288",
+    "why": "@internal file_names .describe() on the SDK turn_handoff user-message member schema: host-facing wire contract, not a prompt or tool schema."
+  },
+  "data-sdk-thinking-duration-ms-field": {
+    "verdict": "not-model-facing",
+    "version": "2.1.288",
+    "why": "@internal thinking_duration_ms .describe() on the SDK stream-frame wrapper schema; the text itself says it is not replayed to the model."
+  },
+  "data-get-task-output-control-request": {
+    "verdict": "not-model-facing",
+    "version": "2.1.288",
+    "why": "get_task_output control-request .describe() in the SDK control-protocol union (next to background_tasks): documentation for SDK hosts, not sent to the model."
+  },
+  "data-plugin-manifest-types-field": {
+    "verdict": "not-model-facing",
+    "version": "2.1.288",
+    "why": "types .describe() on the plugin manifest (plugin.json) zod schema: validates plugin files; the manifest schema is not part of the settings schema sent by /update-config and never enters a model request."
   }
 }
