@@ -188,3 +188,55 @@ function build(e){return{${thunkRoot}
     }
   });
 });
+
+describe('findSettingsDescriptions — @internal union options', () => {
+  // CC 2.1.288 puts an @internal sentinel on a discriminated-union option
+  // (`qo("source",[u({source:R("pluginDirectory")}).describe("@internal …"),
+  // ...e.options])`). CC's stripper drops such an option from `anyOf`/`oneOf`
+  // with its subtree, but leaves an @internal array item or tuple member in.
+  const mod = `var o=()=>({describe(){return this},optional(){return this},or(){return this}}),u=(x)=>x,R=(x)=>x,f=(g)=>g;
+function qo(e,t,r){return new Bi({type:"union",options:t,discriminator:e,...Ba(r)})}
+function un(e,t){return new Bi({type:"union",options:e,...Ba(t)})}
+function tu(e,t){return new Tu({type:"tuple",items:e,rest:t})}
+function ar(e){return new Ar({type:"array",element:e})}
+var src=f(()=>un([u({source:R("github"),repo:o().describe("GitHub repo")}),u({source:R("url"),url:o().describe("Marketplace URL")})]));
+var hidden=f(()=>u({x:o().describe("Bound child")}).describe("@internal Bound option"));
+function build(){return u({${ROOT_KEYS}
+  blocked:ar(f(()=>{let e=src();return qo("source",[u({source:R("pluginDirectory"),dir:o().describe("Sentinel child")}).describe("@internal Policy-list sentinel"),...e.options])})()),
+  plain:un([o().describe("Kept option"),hidden,o().optional().describe("@internal Chained option")]),
+  either:o().describe("Left option").or(o().describe("@internal Right option")),
+  items:ar(o().describe("@internal Array item")),
+  pair:tu([o().describe("@internal Tuple member"),o().describe("Second member")])})}`;
+  const { descriptions } = findSettingsDescriptions(bundle([mod]));
+  const texts = descriptions.map(d => d.joined);
+
+  it('drops an @internal union option together with its subtree', () => {
+    for (const t of [
+      '@internal Policy-list sentinel',
+      'Sentinel child',
+      '@internal Bound option',
+      'Bound child',
+      '@internal Chained option',
+      '@internal Right option',
+    ]) {
+      expect(texts).not.toContain(t);
+    }
+  });
+
+  it('keeps the sibling options', () => {
+    for (const t of [
+      'GitHub repo',
+      'Marketplace URL',
+      'Kept option',
+      'Left option',
+    ]) {
+      expect(texts).toContain(t);
+    }
+  });
+
+  it('keeps an @internal array item or tuple member, as CC does', () => {
+    expect(texts).toContain('@internal Array item');
+    expect(texts).toContain('@internal Tuple member');
+    expect(texts).toContain('Second member');
+  });
+});
