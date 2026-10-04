@@ -7832,34 +7832,6 @@
       "version": "2.1.246"
     },
     {
-      "name": "Slash Command: Plugin Install Directory Unchecked Installed From Note",
-      "id": "slash-command-plugin-install-directory-unchecked-installed-from-note",
-      "description": "Note appended to an install result that the Anthropic Directory could not be checked (with the reason) and that the plugin was installed from another marketplace.",
-      "pieces": [
-        " (The ${",
-        "} could not be checked: ${",
-        "}; installed from ${",
-        "(",
-        "(",
-        ".marketplace),{head:60,tail:20})||\"another marketplace\"}.)"
-      ],
-      "identifiers": [
-        0,
-        1,
-        2,
-        3,
-        4
-      ],
-      "identifierMap": {
-        "0": "SLASH_COMMAND_PLUGIN_INSTALL_DIRECTORY_UNCHECKED_INSTALLED_FROM_NOTE_VAR_0",
-        "1": "SLASH_COMMAND_PLUGIN_INSTALL_DIRECTORY_UNCHECKED_INSTALLED_FROM_NOTE_VAR_1",
-        "2": "SLASH_COMMAND_PLUGIN_INSTALL_DIRECTORY_UNCHECKED_INSTALLED_FROM_NOTE_VAR_2",
-        "3": "SLASH_COMMAND_PLUGIN_INSTALL_DIRECTORY_UNCHECKED_INSTALLED_FROM_NOTE_VAR_3",
-        "4": "SLASH_COMMAND_PLUGIN_INSTALL_DIRECTORY_UNCHECKED_INSTALLED_FROM_NOTE_VAR_4"
-      },
-      "version": "2.1.288"
-    },
-    {
       "name": "Tool Result: Auto Mode Classifier Artifact Changed While Reviewed",
       "id": "tool-result-auto-mode-classifier-artifact-changed-while-reviewed",
       "description": "Parenthetical reason interpolated into auto-mode no-verdict tool results when the classifier's review context went stale because the artifact changed.",
@@ -13242,40 +13214,6 @@
       "version": "2.1.206"
     },
     {
-      "name": "Slash Command: Plugin Install — Already Installed, Turned Off By Override",
-      "id": "slash-command-plugin-install-already-installed-turned-off-by-override",
-      "description": "Sentence saying the plugin is turned off by managed settings or the --settings flag and the command changed nothing.",
-      "pieces": [
-        " The plugin is turned off by ${",
-        ".override.source===\"policySettings\"?\"your organization's managed settings\":\"this session's --settings flag\"}, and this command changed nothing."
-      ],
-      "identifiers": [
-        0
-      ],
-      "identifierMap": {
-        "0": "SLASH_COMMAND_PLUGIN_INSTALL_ALREADY_INSTALLED_TURNED_OFF_BY_OVERRIDE_VAR_0"
-      },
-      "version": "2.1.288"
-    },
-    {
-      "name": "Slash Command: /plugin install — Already Installed, Turned Off In Project",
-      "id": "slash-command-plugin-install-already-installed-turned-off-in-project",
-      "description": "Suffix on the 'already installed, nothing to install' result when the plugin is turned off in this project and the command did not turn it on, with the command or /plugin route to turn it on.",
-      "pieces": [
-        " The plugin is turned off in this project, and this command did not turn it on. To turn it on${",
-        "===null?\", open it in /plugin\":` for yourself in this project: ${",
-        "}`}"
-      ],
-      "identifiers": [
-        0,
-        0
-      ],
-      "identifierMap": {
-        "0": "SLASH_COMMAND_PLUGIN_INSTALL_ALREADY_INSTALLED_TURNED_OFF_IN_PROJECT_VAR_0"
-      },
-      "version": "2.1.288"
-    },
-    {
       "name": "Slash Command: /plugin Install Note — Previous Copy Could Not Be Moved Back",
       "id": "slash-command-plugin-install-previous-copy-stranded-note",
       "description": "Sentence appended to the failed plugin-version install error when the previously installed copy could not be moved back into place.",
@@ -14039,49 +13977,6 @@
         "0": "TOOL_RESULT_ACCOUNT_SKILLS_USE_SAVE_TOOL_VAR_0"
       },
       "version": "2.1.276"
-    },
-    {
-      "name": "Slash Command: Plugin Install — Switch Hint, Install With Replace",
-      "id": "slash-command-plugin-install-switch-hint-install-replace",
-      "description": "Hint appended to an already-installed-from-another-marketplace install result naming the install flag (--replace) that switches the plugin.",
-      "pieces": [
-        " To switch it to ${",
-        "}, install ${",
-        "(",
-        ")} with ${",
-        "}."
-      ],
-      "identifiers": [
-        0,
-        1,
-        2,
-        3
-      ],
-      "identifierMap": {
-        "0": "SLASH_COMMAND_PLUGIN_INSTALL_SWITCH_HINT_INSTALL_REPLACE_VAR_0",
-        "1": "SLASH_COMMAND_PLUGIN_INSTALL_SWITCH_HINT_INSTALL_REPLACE_VAR_1",
-        "2": "SLASH_COMMAND_PLUGIN_INSTALL_SWITCH_HINT_INSTALL_REPLACE_VAR_2",
-        "3": "SLASH_COMMAND_PLUGIN_INSTALL_SWITCH_HINT_INSTALL_REPLACE_VAR_3"
-      },
-      "version": "2.1.288"
-    },
-    {
-      "name": "Slash Command: Plugin Install — Switch Hint, Open Plugin Menu",
-      "id": "slash-command-plugin-install-switch-hint-open-plugin-menu",
-      "description": "Hint appended to an already-installed-from-another-marketplace install result telling the reader to open the plugin in /plugin, go to Installed and choose Switch.",
-      "pieces": [
-        " To switch it to ${",
-        "}, open it in /plugin → Installed and choose \"Switch to ${",
-        "}\""
-      ],
-      "identifiers": [
-        0,
-        0
-      ],
-      "identifierMap": {
-        "0": "SLASH_COMMAND_PLUGIN_INSTALL_SWITCH_HINT_OPEN_PLUGIN_MENU_VAR_0"
-      },
-      "version": "2.1.288"
     },
     {
       "name": "Marketplace source changed — simple undo hint",
@@ -17737,38 +17632,6 @@
       "version": "2.1.257"
     },
     {
-      "name": "Slash Command: Plugin Uninstall — Settings Change Failed Suffix",
-      "id": "slash-command-plugin-uninstall-settings-change-failed-suffix",
-      "description": "Suffix appended to the plugin-not-uninstalled refusals when the settings write also failed, carrying the error message.",
-      "pieces": [
-        ", and the settings change failed (${",
-        ".message})"
-      ],
-      "identifiers": [
-        0
-      ],
-      "identifierMap": {
-        "0": "SLASH_COMMAND_PLUGIN_UNINSTALL_SETTINGS_CHANGE_FAILED_SUFFIX_VAR_0"
-      },
-      "version": "2.1.282"
-    },
-    {
-      "name": "Slash Command: Plugin Uninstall — Settings Change Failed Suffix",
-      "id": "slash-command-plugin-uninstall-settings-change-failed-suffix",
-      "description": "Suffix appended to the plugin-not-uninstalled refusals when the settings write also failed, carrying the error message.",
-      "pieces": [
-        ", and the settings change failed (${",
-        ".message})"
-      ],
-      "identifiers": [
-        0
-      ],
-      "identifierMap": {
-        "0": "SLASH_COMMAND_PLUGIN_UNINSTALL_SETTINGS_CHANGE_FAILED_SUFFIX_VAR_0"
-      },
-      "version": "2.1.282"
-    },
-    {
       "name": "Artifact Watch Ask Comment-Wake Clause",
       "id": "tool-result-artifact-watch-ask-comment-wake-clause",
       "description": "checkPermissions decisionReason clause that a cloud session is also woken when a comment on any watched artifact is sent to Claude.",
@@ -17852,17 +17715,6 @@
         "6": "TOOL_RESULT_ARTIFACT_READ_FILE_SERVED_RUNTIME_BLOCK_VAR_6"
       },
       "version": "2.1.265"
-    },
-    {
-      "name": "Tool Result: Git Lazy Fetch Transport Mismatch InsteadOf Note",
-      "id": "tool-result-git-lazy-fetch-transport-mismatch-insteadof-note",
-      "description": "Conditional tail of the nothing-fetched git stderr note explaining that a url.<base>.insteadOf rule or a second promisor URL accounts for the transport mismatch.",
-      "pieces": [
-        ", not the transport that URL spells — a url.<base>.insteadOf rule in your git configuration, or a second promisor URL in the repository's, would account for that"
-      ],
-      "identifiers": [],
-      "identifierMap": {},
-      "version": "2.1.288"
     },
     {
       "name": "Overlong-lines differ-from-sent count clause",
@@ -18897,79 +18749,6 @@
       "identifiers": [],
       "identifierMap": {},
       "version": "2.1.178"
-    },
-    {
-      "name": "Slash Command: Plugin Install — Not Found, Directory Could Not Be Checked Note",
-      "id": "slash-command-plugin-install-not-found-directory-unchecked-note",
-      "description": "Parenthetical appended to the plugin-not-found install refusal saying the plugin directory could not be checked and why.",
-      "pieces": [
-        ". (The ${",
-        "} could not be checked: ${",
-        "})"
-      ],
-      "identifiers": [
-        0,
-        1
-      ],
-      "identifierMap": {
-        "0": "SLASH_COMMAND_PLUGIN_INSTALL_NOT_FOUND_DIRECTORY_UNCHECKED_NOTE_VAR_0",
-        "1": "SLASH_COMMAND_PLUGIN_INSTALL_NOT_FOUND_DIRECTORY_UNCHECKED_NOTE_VAR_1"
-      },
-      "version": "2.1.288"
-    },
-    {
-      "name": "Slash Command: /plugin install — Not Found, Directory Blocked By Organization",
-      "id": "slash-command-plugin-install-not-found-directory-blocked-by-organization",
-      "description": "Parenthetical on the plugin-not-found install failure saying the plugin directory is blocked by the user's organization, with the reason from the policy helper.",
-      "pieces": [
-        ". (The ${",
-        "} is blocked by your organization. ${",
-        "()})"
-      ],
-      "identifiers": [
-        0,
-        1
-      ],
-      "identifierMap": {
-        "0": "SLASH_COMMAND_PLUGIN_INSTALL_NOT_FOUND_DIRECTORY_BLOCKED_BY_ORGANIZATION_VAR_0",
-        "1": "SLASH_COMMAND_PLUGIN_INSTALL_NOT_FOUND_DIRECTORY_BLOCKED_BY_ORGANIZATION_VAR_1"
-      },
-      "version": "2.1.288"
-    },
-    {
-      "name": "Slash Command: /plugin install — Not Found, Listing Blocked By Policy",
-      "id": "slash-command-plugin-install-not-found-directory-listing-blocked-by-policy",
-      "description": "Parenthetical on the plugin-not-found install failure saying the directory lists the plugin but it is blocked by the organization's policy.",
-      "pieces": [
-        ". (The ${",
-        "} lists it, but it is blocked by your organization's policy.)"
-      ],
-      "identifiers": [
-        0
-      ],
-      "identifierMap": {
-        "0": "SLASH_COMMAND_PLUGIN_INSTALL_NOT_FOUND_DIRECTORY_LISTING_BLOCKED_BY_POLICY_VAR_0"
-      },
-      "version": "2.1.288"
-    },
-    {
-      "name": "Slash Command: Plugin Install Directory Turned Off Note",
-      "id": "slash-command-plugin-install-directory-turned-off-note",
-      "description": "Note appended to a plugin-not-found install failure saying the Anthropic Directory was not searched because it is turned off, with the claude plugin marketplace add command to turn it back on.",
-      "pieces": [
-        ". (The ${",
-        "} was not searched: it is turned off. Turn it back on: claude plugin marketplace add ${",
-        "})"
-      ],
-      "identifiers": [
-        0,
-        1
-      ],
-      "identifierMap": {
-        "0": "SLASH_COMMAND_PLUGIN_INSTALL_DIRECTORY_TURNED_OFF_NOTE_VAR_0",
-        "1": "SLASH_COMMAND_PLUGIN_INSTALL_DIRECTORY_TURNED_OFF_NOTE_VAR_1"
-      },
-      "version": "2.1.288"
     },
     {
       "name": "Tool Unavailable - Use Artifact Tool For claude.ai URL",
@@ -20812,28 +20591,6 @@
       "version": "2.1.288"
     },
     {
-      "name": "Plugin Install: Already Installed, Directory Bindings Unreadable",
-      "id": "slash-command-plugin-install-already-installed-directory-bindings-unreadable",
-      "description": "Install refusal when the plugin is already installed but plugin-directory-bindings.json could not be used to check its directory listing against the installed repository; returned as {success:false,message} with failureCode directory_binding_unreadable.",
-      "pieces": [
-        "\"${",
-        "(",
-        ".name,120)}\" is already installed, but plugin-directory-bindings.json in the plugins folder could not be used (unreadable, a symbolic link or not a file, over 1 MB, damaged, or written by a newer Claude Code), so its ${",
-        "} listing could not be checked against the repository it was installed from. Nothing was changed. Try again; if this repeats, check the file for those causes."
-      ],
-      "identifiers": [
-        0,
-        1,
-        2
-      ],
-      "identifierMap": {
-        "0": "SLASH_COMMAND_PLUGIN_INSTALL_ALREADY_INSTALLED_DIRECTORY_BINDINGS_UNREADABLE_VAR_0",
-        "1": "SLASH_COMMAND_PLUGIN_INSTALL_ALREADY_INSTALLED_DIRECTORY_BINDINGS_UNREADABLE_VAR_1",
-        "2": "SLASH_COMMAND_PLUGIN_INSTALL_ALREADY_INSTALLED_DIRECTORY_BINDINGS_UNREADABLE_VAR_2"
-      },
-      "version": "2.1.288"
-    },
-    {
       "name": "Plugin Install: Records Unreadable, Bound To Other Repository",
       "id": "slash-command-plugin-install-directory-records-unreadable-bound-elsewhere",
       "description": "Install refusal when installed_plugins.json cannot be read and plugin-directory-bindings.json records the plugin as installed from a different repository than the directory now lists.",
@@ -21642,72 +21399,6 @@
         "3": "SLASH_COMMAND_PLUGIN_INSTALL_ALREADY_INSTALLED_FROM_OTHER_MARKETPLACE_REENABLED_VAR_3",
         "4": "SLASH_COMMAND_PLUGIN_INSTALL_ALREADY_INSTALLED_FROM_OTHER_MARKETPLACE_REENABLED_VAR_4",
         "5": "SLASH_COMMAND_PLUGIN_INSTALL_ALREADY_INSTALLED_FROM_OTHER_MARKETPLACE_REENABLED_VAR_5"
-      },
-      "version": "2.1.288"
-    },
-    {
-      "name": "Slash Command: Plugin Install — Already Installed From Other Marketplace, Nothing To Install",
-      "id": "slash-command-plugin-install-already-installed-from-other-marketplace-nothing-to-install",
-      "description": "Success result saying the plugin is already installed from another marketplace's copy, so there is nothing to install, with optional switch or turn-on hints.",
-      "pieces": [
-        "\"${",
-        "}\" is already installed from ${",
-        "}${",
-        "}${",
-        "}. Nothing to install.${",
-        "===\"\"?",
-        ":",
-        "}${",
-        "}"
-      ],
-      "identifiers": [
-        0,
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        4
-      ],
-      "identifierMap": {
-        "0": "SLASH_COMMAND_PLUGIN_INSTALL_ALREADY_INSTALLED_FROM_OTHER_MARKETPLACE_NOTHING_TO_INSTALL_VAR_0",
-        "1": "SLASH_COMMAND_PLUGIN_INSTALL_ALREADY_INSTALLED_FROM_OTHER_MARKETPLACE_NOTHING_TO_INSTALL_VAR_1",
-        "2": "SLASH_COMMAND_PLUGIN_INSTALL_ALREADY_INSTALLED_FROM_OTHER_MARKETPLACE_NOTHING_TO_INSTALL_VAR_2",
-        "3": "SLASH_COMMAND_PLUGIN_INSTALL_ALREADY_INSTALLED_FROM_OTHER_MARKETPLACE_NOTHING_TO_INSTALL_VAR_3",
-        "4": "SLASH_COMMAND_PLUGIN_INSTALL_ALREADY_INSTALLED_FROM_OTHER_MARKETPLACE_NOTHING_TO_INSTALL_VAR_4",
-        "5": "SLASH_COMMAND_PLUGIN_INSTALL_ALREADY_INSTALLED_FROM_OTHER_MARKETPLACE_NOTHING_TO_INSTALL_VAR_5",
-        "6": "SLASH_COMMAND_PLUGIN_INSTALL_ALREADY_INSTALLED_FROM_OTHER_MARKETPLACE_NOTHING_TO_INSTALL_VAR_6"
-      },
-      "version": "2.1.288"
-    },
-    {
-      "name": "Plugin Install: Installed From Other Marketplace, Cache Files Missing",
-      "id": "slash-command-plugin-install-installed-from-other-marketplace-cache-missing",
-      "description": "Install refusal when the plugin is already installed from another marketplace but its files are missing from the plugin cache; tells the reader to install it again from /plugin or gives the install command.",
-      "pieces": [
-        "\"${",
-        "}\" is installed from ${",
-        "}${",
-        "}${",
-        "}, but its files are missing from the plugin cache. Nothing was changed. To restore them${",
-        "===null?\", install it again from /plugin\":`: ${",
-        "}`}"
-      ],
-      "identifiers": [
-        0,
-        1,
-        2,
-        3,
-        4,
-        4
-      ],
-      "identifierMap": {
-        "0": "SLASH_COMMAND_PLUGIN_INSTALL_INSTALLED_FROM_OTHER_MARKETPLACE_CACHE_MISSING_VAR_0",
-        "1": "SLASH_COMMAND_PLUGIN_INSTALL_INSTALLED_FROM_OTHER_MARKETPLACE_CACHE_MISSING_VAR_1",
-        "2": "SLASH_COMMAND_PLUGIN_INSTALL_INSTALLED_FROM_OTHER_MARKETPLACE_CACHE_MISSING_VAR_2",
-        "3": "SLASH_COMMAND_PLUGIN_INSTALL_INSTALLED_FROM_OTHER_MARKETPLACE_CACHE_MISSING_VAR_3",
-        "4": "SLASH_COMMAND_PLUGIN_INSTALL_INSTALLED_FROM_OTHER_MARKETPLACE_CACHE_MISSING_VAR_4"
       },
       "version": "2.1.288"
     },
@@ -37565,78 +37256,6 @@
       "version": "2.1.257"
     },
     {
-      "name": "Slash Command: Plugin Install — Already Installed, Duplicate Copies Note",
-      "id": "slash-command-plugin-install-already-installed-duplicate-copies-note",
-      "description": "Composite clause of the already-installed result describing other installed copies of the plugin and other plugins listed at the same repository and folder, with what to uninstall to keep only one.",
-      "pieces": [
-        "${",
-        ".length===0?\"\":`${",
-        "===\"\"?\" — also installed from \":`${",
-        "}${",
-        "(",
-        ")} is also installed from `}${",
-        "(",
-        ")}${",
-        "!==null?`; to keep only this one: ${",
-        "}`:\"\"}`}${",
-        ".length===0?\"\":`${",
-        ".length===0?",
-        ":\". \"}${",
-        "(",
-        ".length,\"A plugin\",\"Plugins\")} installed here from ${",
-        "(",
-        ")} ${",
-        "(",
-        ".length,\"is\",\"are\")} listed there at the same repository and folder as this one. ${",
-        ".length===0?`If they are the same plugin, it loads ${",
-        ".length===1?\"twice\":\"more than once\"}`:`If ${",
-        "(",
-        ".length,\"that one is\",\"those are\")} the same plugin too, it loads ${",
-        ".length+1} times`}: to keep only one, uninstall the ${",
-        "}`}"
-      ],
-      "identifiers": [
-        0,
-        1,
-        2,
-        3,
-        4,
-        5,
-        0,
-        6,
-        6,
-        7,
-        0,
-        2,
-        8,
-        7,
-        5,
-        7,
-        8,
-        7,
-        0,
-        9,
-        8,
-        7,
-        9,
-        10
-      ],
-      "identifierMap": {
-        "0": "SLASH_COMMAND_PLUGIN_INSTALL_ALREADY_INSTALLED_DUPLICATE_COPIES_NOTE_VAR_0",
-        "1": "SLASH_COMMAND_PLUGIN_INSTALL_ALREADY_INSTALLED_DUPLICATE_COPIES_NOTE_VAR_1",
-        "2": "SLASH_COMMAND_PLUGIN_INSTALL_ALREADY_INSTALLED_DUPLICATE_COPIES_NOTE_VAR_2",
-        "3": "SLASH_COMMAND_PLUGIN_INSTALL_ALREADY_INSTALLED_DUPLICATE_COPIES_NOTE_VAR_3",
-        "4": "SLASH_COMMAND_PLUGIN_INSTALL_ALREADY_INSTALLED_DUPLICATE_COPIES_NOTE_VAR_4",
-        "5": "SLASH_COMMAND_PLUGIN_INSTALL_ALREADY_INSTALLED_DUPLICATE_COPIES_NOTE_VAR_5",
-        "6": "SLASH_COMMAND_PLUGIN_INSTALL_ALREADY_INSTALLED_DUPLICATE_COPIES_NOTE_VAR_6",
-        "7": "SLASH_COMMAND_PLUGIN_INSTALL_ALREADY_INSTALLED_DUPLICATE_COPIES_NOTE_VAR_7",
-        "8": "SLASH_COMMAND_PLUGIN_INSTALL_ALREADY_INSTALLED_DUPLICATE_COPIES_NOTE_VAR_8",
-        "9": "SLASH_COMMAND_PLUGIN_INSTALL_ALREADY_INSTALLED_DUPLICATE_COPIES_NOTE_VAR_9",
-        "10": "SLASH_COMMAND_PLUGIN_INSTALL_ALREADY_INSTALLED_DUPLICATE_COPIES_NOTE_VAR_10"
-      },
-      "version": "2.1.288"
-    },
-    {
       "name": "Artifact Preview Report Summary Line",
       "id": "tool-result-artifact-preview-report-summary",
       "description": "Opening summary line of the preview tool_result stating what was previewed, capture counts, and issues found.",
@@ -43136,38 +42755,6 @@
       "version": "2.1.277"
     },
     {
-      "name": "Slash Command: Plugin Uninstall — Settings File Not Read (Untrusted Workspace)",
-      "id": "slash-command-plugin-uninstall-source-not-read-untrusted-workspace",
-      "description": "Yao() settings-source clause for a file not read because the workspace is not yet trusted; interpolated into the /plugin uninstall \"was not uninstalled\" result the model reads.",
-      "pieces": [
-        "${",
-        "} (not read: this workspace is not yet trusted)"
-      ],
-      "identifiers": [
-        0
-      ],
-      "identifierMap": {
-        "0": "SLASH_COMMAND_PLUGIN_UNINSTALL_SOURCE_NOT_READ_UNTRUSTED_WORKSPACE_VAR_0"
-      },
-      "version": "2.1.282"
-    },
-    {
-      "name": "Slash Command: Plugin Uninstall — Settings Source Is an Added Directory",
-      "id": "slash-command-plugin-uninstall-source-add-dir-settings",
-      "description": "Yao() clause naming a settings file from an --add-dir directory, which uninstall does not edit; part of the plugin uninstall refusal the model reads.",
-      "pieces": [
-        "${",
-        "} (of a directory added to this session, for example with --add-dir: no uninstall edits it)"
-      ],
-      "identifiers": [
-        0
-      ],
-      "identifierMap": {
-        "0": "SLASH_COMMAND_PLUGIN_UNINSTALL_SOURCE_ADD_DIR_SETTINGS_VAR_0"
-      },
-      "version": "2.1.282"
-    },
-    {
       "name": "System reminder: file unchanged, reuse context",
       "id": "system-reminder-file-unchanged-use-context",
       "description": "System reminder injected into model context telling it a previously-read file is unchanged and to reuse cached content.",
@@ -43185,38 +42772,6 @@
         "1": "SYSTEM_REMINDER_FILE_UNCHANGED_USE_CONTEXT_VAR_1"
       },
       "version": "2.1.206"
-    },
-    {
-      "name": "Slash Command: Plugin Uninstall — Settings Source Is the --settings File",
-      "id": "slash-command-plugin-uninstall-source-flag-settings-file",
-      "description": "Yao() clause for a --settings file that is on disk now and that later sessions would read, telling the user to switch the plugin off there; part of the uninstall refusal.",
-      "pieces": [
-        "${",
-        "} (the --settings file as it is now, which a later session started with it would read: switch it off there)"
-      ],
-      "identifiers": [
-        0
-      ],
-      "identifierMap": {
-        "0": "SLASH_COMMAND_PLUGIN_UNINSTALL_SOURCE_FLAG_SETTINGS_FILE_VAR_0"
-      },
-      "version": "2.1.282"
-    },
-    {
-      "name": "Slash Command: Plugin Uninstall — Settings Source Is Another Folder",
-      "id": "slash-command-plugin-uninstall-source-other-folder-settings",
-      "description": "Yao() clause naming another folder's settings file, which uninstalling from here does not edit; part of the plugin uninstall refusal the model reads.",
-      "pieces": [
-        "${",
-        "} (the settings of another folder: uninstalling from here does not edit it)"
-      ],
-      "identifiers": [
-        0
-      ],
-      "identifierMap": {
-        "0": "SLASH_COMMAND_PLUGIN_UNINSTALL_SOURCE_OTHER_FOLDER_SETTINGS_VAR_0"
-      },
-      "version": "2.1.282"
     },
     {
       "name": "Tool Result: Project Command Check Blocked Command (Recorded Check Note)",
@@ -45422,25 +44977,6 @@
       "version": "2.1.288"
     },
     {
-      "name": "Slash Command: Plugin Directory Marketplace Refresh Served Stale",
-      "id": "slash-command-plugin-marketplace-directory-refresh-stale-failed",
-      "description": "Error that the Anthropic Directory marketplace could not be refreshed, with the staleness reason. It appears as a marketplace-not-refreshed note or a could-not-check failure in plugin update and install results.",
-      "pieces": [
-        "${",
-        "} could not be refreshed: ${",
-        ".staleReason}"
-      ],
-      "identifiers": [
-        0,
-        1
-      ],
-      "identifierMap": {
-        "0": "SLASH_COMMAND_PLUGIN_MARKETPLACE_DIRECTORY_REFRESH_STALE_FAILED_VAR_0",
-        "1": "SLASH_COMMAND_PLUGIN_MARKETPLACE_DIRECTORY_REFRESH_STALE_FAILED_VAR_1"
-      },
-      "version": "2.1.288"
-    },
-    {
       "name": "Tool Result: Remote Tool Host Settings Unreadable",
       "id": "tool-result-remote-tool-host-settings-unreadable-refusal",
       "description": "Refusal returned to a cloud session when the serving computer could not read its settings to decide whether calls must be sandboxed; nothing ran",
@@ -46969,25 +46505,6 @@
       "identifierMap": {
         "0": "SLASH_COMMAND_PLUGIN_MARKETPLACE_ADD_DIRECTORY_BLOCKED_BY_ORGANIZATION_VAR_0",
         "1": "SLASH_COMMAND_PLUGIN_MARKETPLACE_ADD_DIRECTORY_BLOCKED_BY_ORGANIZATION_VAR_1"
-      },
-      "version": "2.1.288"
-    },
-    {
-      "name": "Slash Command: Plugin Directory Marketplace Blocked By Organization",
-      "id": "slash-command-plugin-marketplace-directory-blocked-by-organization",
-      "description": "Error that the Anthropic Directory marketplace is blocked by the organization, followed by the policy reason.",
-      "pieces": [
-        "${",
-        "} is blocked by your organization. ${",
-        "}"
-      ],
-      "identifiers": [
-        0,
-        1
-      ],
-      "identifierMap": {
-        "0": "SLASH_COMMAND_PLUGIN_MARKETPLACE_DIRECTORY_BLOCKED_BY_ORGANIZATION_VAR_0",
-        "1": "SLASH_COMMAND_PLUGIN_MARKETPLACE_DIRECTORY_BLOCKED_BY_ORGANIZATION_VAR_1"
       },
       "version": "2.1.288"
     },
@@ -51873,56 +51390,6 @@
       "version": "2.1.235"
     },
     {
-      "name": "Slash Command: Plugin Install Other Marketplace Switch Copy Command",
-      "id": "slash-command-plugin-install-other-marketplace-switch-copy-command",
-      "description": "Tail of the already-installed-from-another-marketplace refusal telling the reader to run the switch command to switch and keep the settings of the one other-marketplace copy.",
-      "pieces": [
-        "${",
-        "}, to switch and keep the settings of the ${",
-        "(",
-        ")} copy: ${",
-        "}"
-      ],
-      "identifiers": [
-        0,
-        1,
-        2,
-        3
-      ],
-      "identifierMap": {
-        "0": "SLASH_COMMAND_PLUGIN_INSTALL_OTHER_MARKETPLACE_SWITCH_COPY_COMMAND_VAR_0",
-        "1": "SLASH_COMMAND_PLUGIN_INSTALL_OTHER_MARKETPLACE_SWITCH_COPY_COMMAND_VAR_1",
-        "2": "SLASH_COMMAND_PLUGIN_INSTALL_OTHER_MARKETPLACE_SWITCH_COPY_COMMAND_VAR_2",
-        "3": "SLASH_COMMAND_PLUGIN_INSTALL_OTHER_MARKETPLACE_SWITCH_COPY_COMMAND_VAR_3"
-      },
-      "version": "2.1.288"
-    },
-    {
-      "name": "Slash Command: Plugin Install Other Marketplace Switch Copies Command",
-      "id": "slash-command-plugin-install-other-marketplace-switch-copies-command",
-      "description": "Tail of the already-installed-from-another-marketplace refusal giving the command that switches several other-marketplace copies while keeping one set of plugin settings.",
-      "pieces": [
-        "${",
-        "}, to switch the ${",
-        "(",
-        ")} copies (keeps one set of plugin settings): ${",
-        "}"
-      ],
-      "identifiers": [
-        0,
-        1,
-        2,
-        3
-      ],
-      "identifierMap": {
-        "0": "SLASH_COMMAND_PLUGIN_INSTALL_OTHER_MARKETPLACE_SWITCH_COPIES_COMMAND_VAR_0",
-        "1": "SLASH_COMMAND_PLUGIN_INSTALL_OTHER_MARKETPLACE_SWITCH_COPIES_COMMAND_VAR_1",
-        "2": "SLASH_COMMAND_PLUGIN_INSTALL_OTHER_MARKETPLACE_SWITCH_COPIES_COMMAND_VAR_2",
-        "3": "SLASH_COMMAND_PLUGIN_INSTALL_OTHER_MARKETPLACE_SWITCH_COPIES_COMMAND_VAR_3"
-      },
-      "version": "2.1.288"
-    },
-    {
       "name": "Data: Settings sandbox true from project settings ignored note",
       "id": "data-settings-sandbox-true-from-project-settings-ignored-note",
       "description": "Settings-schema describe fragment (nn): under the po lock condition, a true value from project settings is ignored while false there still applies.",
@@ -54601,31 +54068,6 @@
       "version": "2.1.274"
     },
     {
-      "name": "Slash Command: Plugin Install Other Marketplace Switch All Command",
-      "id": "slash-command-plugin-install-other-marketplace-switch-all-command",
-      "description": "Refusal tail telling the reader to run the switch command to switch both or all other-marketplace copies to the new one, keeping one set of plugin settings.",
-      "pieces": [
-        "${",
-        "}. To switch ${",
-        "} to ${",
-        "} (keeps one set of plugin settings): ${",
-        "}"
-      ],
-      "identifiers": [
-        0,
-        1,
-        2,
-        3
-      ],
-      "identifierMap": {
-        "0": "SLASH_COMMAND_PLUGIN_INSTALL_OTHER_MARKETPLACE_SWITCH_ALL_COMMAND_VAR_0",
-        "1": "SLASH_COMMAND_PLUGIN_INSTALL_OTHER_MARKETPLACE_SWITCH_ALL_COMMAND_VAR_1",
-        "2": "SLASH_COMMAND_PLUGIN_INSTALL_OTHER_MARKETPLACE_SWITCH_ALL_COMMAND_VAR_2",
-        "3": "SLASH_COMMAND_PLUGIN_INSTALL_OTHER_MARKETPLACE_SWITCH_ALL_COMMAND_VAR_3"
-      },
-      "version": "2.1.288"
-    },
-    {
       "name": "Slash Command: Plugin Install Other Marketplace Switch All Open Plugin Menu",
       "id": "slash-command-plugin-install-other-marketplace-switch-all-open-plugin-menu",
       "description": "Refusal tail telling the reader to open one copy in /plugin → Installed and choose Switch when no CLI command is offered.",
@@ -54644,28 +54086,6 @@
         "0": "SLASH_COMMAND_PLUGIN_INSTALL_OTHER_MARKETPLACE_SWITCH_ALL_OPEN_PLUGIN_MENU_VAR_0",
         "1": "SLASH_COMMAND_PLUGIN_INSTALL_OTHER_MARKETPLACE_SWITCH_ALL_OPEN_PLUGIN_MENU_VAR_1",
         "2": "SLASH_COMMAND_PLUGIN_INSTALL_OTHER_MARKETPLACE_SWITCH_ALL_OPEN_PLUGIN_MENU_VAR_2"
-      },
-      "version": "2.1.288"
-    },
-    {
-      "name": "Slash Command: /plugin Install — Already Installed, Switch Command",
-      "id": "slash-command-plugin-install-already-installed-switch-command",
-      "description": "Hint appended to the 'already installed from another marketplace' refusal giving the command that switches to the requested marketplace copy and keeps the plugin settings",
-      "pieces": [
-        "${",
-        "}. To switch to ${",
-        "} (keeps your plugin settings): ${",
-        "}"
-      ],
-      "identifiers": [
-        0,
-        1,
-        2
-      ],
-      "identifierMap": {
-        "0": "SLASH_COMMAND_PLUGIN_INSTALL_ALREADY_INSTALLED_SWITCH_COMMAND_VAR_0",
-        "1": "SLASH_COMMAND_PLUGIN_INSTALL_ALREADY_INSTALLED_SWITCH_COMMAND_VAR_1",
-        "2": "SLASH_COMMAND_PLUGIN_INSTALL_ALREADY_INSTALLED_SWITCH_COMMAND_VAR_2"
       },
       "version": "2.1.288"
     },
@@ -55136,42 +54556,6 @@
         "4": "TOOL_RESULT_ARTIFACT_HTML_SAVED_READ_BEFORE_REPUBLISHING_CLAUSE_VAR_4"
       },
       "version": "2.1.284"
-    },
-    {
-      "name": "Slash Command: Plugin Install — Already Installed, Other Marketplace Lists Same Folder",
-      "id": "slash-command-plugin-install-already-installed-listed-at-same-folder-by-other-marketplace",
-      "description": "Clause in the already-installed result saying this marketplace lists the plugin at the same repository and folder as plugins installed from another marketplace, so it may load more than once.",
-      "pieces": [
-        "${",
-        "}${",
-        "(",
-        "??\"\")||\"“”\"} lists it at the same repository and folder as ${",
-        "(",
-        ".length,\"a plugin\",\"plugins\")} installed here from ${",
-        "}. If they are the same plugin, it loads ${",
-        ".length===1?\"twice\":\"more than once\"}: to keep only one, uninstall the ${",
-        "}"
-      ],
-      "identifiers": [
-        0,
-        1,
-        2,
-        3,
-        4,
-        5,
-        4,
-        6
-      ],
-      "identifierMap": {
-        "0": "SLASH_COMMAND_PLUGIN_INSTALL_ALREADY_INSTALLED_LISTED_AT_SAME_FOLDER_BY_OTHER_MARKETPLACE_VAR_0",
-        "1": "SLASH_COMMAND_PLUGIN_INSTALL_ALREADY_INSTALLED_LISTED_AT_SAME_FOLDER_BY_OTHER_MARKETPLACE_VAR_1",
-        "2": "SLASH_COMMAND_PLUGIN_INSTALL_ALREADY_INSTALLED_LISTED_AT_SAME_FOLDER_BY_OTHER_MARKETPLACE_VAR_2",
-        "3": "SLASH_COMMAND_PLUGIN_INSTALL_ALREADY_INSTALLED_LISTED_AT_SAME_FOLDER_BY_OTHER_MARKETPLACE_VAR_3",
-        "4": "SLASH_COMMAND_PLUGIN_INSTALL_ALREADY_INSTALLED_LISTED_AT_SAME_FOLDER_BY_OTHER_MARKETPLACE_VAR_4",
-        "5": "SLASH_COMMAND_PLUGIN_INSTALL_ALREADY_INSTALLED_LISTED_AT_SAME_FOLDER_BY_OTHER_MARKETPLACE_VAR_5",
-        "6": "SLASH_COMMAND_PLUGIN_INSTALL_ALREADY_INSTALLED_LISTED_AT_SAME_FOLDER_BY_OTHER_MARKETPLACE_VAR_6"
-      },
-      "version": "2.1.288"
     },
     {
       "name": "System reminder: neutralized control tags marker",
@@ -56800,33 +56184,6 @@
         "0": "TOOL_RESULT_BASH_BUILTIN_GH_INPUT_TOO_LARGE_VAR_0",
         "1": "TOOL_RESULT_BASH_BUILTIN_GH_INPUT_TOO_LARGE_VAR_1",
         "2": "TOOL_RESULT_BASH_BUILTIN_GH_INPUT_TOO_LARGE_VAR_2"
-      },
-      "version": "2.1.288"
-    },
-    {
-      "name": "Slash Command: Plugin Install — Not Found, May Be Listed As",
-      "id": "slash-command-plugin-install-not-found-may-be-listed-as",
-      "description": "Clause appended to the plugin-not-found install refusal suggesting up to three listed plugin names whose display name matches what was typed.",
-      "pieces": [
-        "${",
-        "===\"\"?\".\":\"\"} It may be listed as: ${",
-        ".map((",
-        ")=>",
-        "(",
-        ",80)).join(\", \")}"
-      ],
-      "identifiers": [
-        0,
-        1,
-        2,
-        3,
-        2
-      ],
-      "identifierMap": {
-        "0": "SLASH_COMMAND_PLUGIN_INSTALL_NOT_FOUND_MAY_BE_LISTED_AS_VAR_0",
-        "1": "SLASH_COMMAND_PLUGIN_INSTALL_NOT_FOUND_MAY_BE_LISTED_AS_VAR_1",
-        "2": "SLASH_COMMAND_PLUGIN_INSTALL_NOT_FOUND_MAY_BE_LISTED_AS_VAR_2",
-        "3": "SLASH_COMMAND_PLUGIN_INSTALL_NOT_FOUND_MAY_BE_LISTED_AS_VAR_3"
       },
       "version": "2.1.288"
     },
@@ -75721,31 +75078,6 @@
         "2": "TOOL_RESULT_GIT_BUNDLE_REFS_UNREADABLE_VAR_2"
       },
       "version": "2.1.280"
-    },
-    {
-      "name": "Slash Command: Plugin Install — Directory Turned Off",
-      "id": "slash-command-plugin-install-directory-off",
-      "description": "Install refusal returned when the plugin directory marketplace is off, giving the command that turns it back on.",
-      "pieces": [
-        "Could not look up \"${",
-        "(",
-        ")}\": the ${",
-        "} is off. Turn it on: claude plugin marketplace add ${",
-        "}"
-      ],
-      "identifiers": [
-        0,
-        1,
-        2,
-        3
-      ],
-      "identifierMap": {
-        "0": "SLASH_COMMAND_PLUGIN_INSTALL_DIRECTORY_OFF_VAR_0",
-        "1": "SLASH_COMMAND_PLUGIN_INSTALL_DIRECTORY_OFF_VAR_1",
-        "2": "SLASH_COMMAND_PLUGIN_INSTALL_DIRECTORY_OFF_VAR_2",
-        "3": "SLASH_COMMAND_PLUGIN_INSTALL_DIRECTORY_OFF_VAR_3"
-      },
-      "version": "2.1.288"
     },
     {
       "name": "Slash Command: /plugin Install Failed To Move New Copy Into Version Folder",
@@ -98619,6 +97951,34 @@
       "version": "2.1.276"
     },
     {
+      "name": "Slash Command: Plugin Marketplace Directory Refused Recorded Location",
+      "id": "slash-command-plugin-marketplace-directory-refused-recorded-location",
+      "description": "Plugin load error used when a marketplace directory is refused because its recorded location is on a network drive, has dot segments, or could not be checked; reaches the model through the managed-plugin hook check reported by /model.",
+      "pieces": [
+        "Marketplace directory refused: its recorded location ${",
+        "(",
+        ")} ${",
+        "}. ${",
+        "(",
+        "[\"network-location\"])}."
+      ],
+      "identifiers": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "identifierMap": {
+        "0": "SLASH_COMMAND_PLUGIN_MARKETPLACE_DIRECTORY_REFUSED_RECORDED_LOCATION_VAR_0",
+        "1": "SLASH_COMMAND_PLUGIN_MARKETPLACE_DIRECTORY_REFUSED_RECORDED_LOCATION_VAR_1",
+        "2": "SLASH_COMMAND_PLUGIN_MARKETPLACE_DIRECTORY_REFUSED_RECORDED_LOCATION_VAR_2",
+        "3": "SLASH_COMMAND_PLUGIN_MARKETPLACE_DIRECTORY_REFUSED_RECORDED_LOCATION_VAR_3",
+        "4": "SLASH_COMMAND_PLUGIN_MARKETPLACE_DIRECTORY_REFUSED_RECORDED_LOCATION_VAR_4"
+      },
+      "version": "2.1.288"
+    },
+    {
       "name": "Data: Settings validation marketplace name looks official",
       "id": "data-settings-validation-marketplace-name-looks-official",
       "description": "Settings load warning when an extraKnownMarketplaces entry was ignored because its name reads like an official Anthropic or Claude marketplace",
@@ -98688,25 +98048,6 @@
       "identifiers": [],
       "identifierMap": {},
       "version": "2.1.238"
-    },
-    {
-      "name": "Slash Command: Plugin Marketplace Refresh Source Blocked By Enterprise Policy",
-      "id": "slash-command-plugin-marketplace-refresh-source-blocked-by-policy",
-      "description": "Error that a marketplace's registered source is blocked by enterprise policy when refreshing it, naming the source.",
-      "pieces": [
-        "Marketplace source '${",
-        "(",
-        ".source)}' is blocked by enterprise policy."
-      ],
-      "identifiers": [
-        0,
-        1
-      ],
-      "identifierMap": {
-        "0": "SLASH_COMMAND_PLUGIN_MARKETPLACE_REFRESH_SOURCE_BLOCKED_BY_POLICY_VAR_0",
-        "1": "SLASH_COMMAND_PLUGIN_MARKETPLACE_REFRESH_SOURCE_BLOCKED_BY_POLICY_VAR_1"
-      },
-      "version": "2.1.288"
     },
     {
       "name": "Slash Command: Plugin Marketplace Add Source Blocked By Enterprise Policy",
@@ -103263,22 +102604,6 @@
       "version": "2.1.265"
     },
     {
-      "name": "Tool Result: Git Promisor Lazy Fetch Forgone",
-      "id": "tool-result-git-promisor-lazy-fetch-forgone",
-      "description": "Appended to git stderr when a partial clone is not retried with a constrained lazy fetch, including the forgone reason.",
-      "pieces": [
-        "No lazy fetch from the promisor remote was attempted: ${",
-        ".forgone}."
-      ],
-      "identifiers": [
-        0
-      ],
-      "identifierMap": {
-        "0": "TOOL_RESULT_GIT_PROMISOR_LAZY_FETCH_FORGONE_VAR_0"
-      },
-      "version": "2.1.274"
-    },
-    {
       "name": "Artifact List-By-Type Unavailable",
       "id": "tool-result-artifact-list-by-type-unavailable",
       "description": "Empty list-by-type tool_result when the type is not in the account catalog or listing is not enabled.",
@@ -107165,38 +106490,6 @@
         "1": "TOOL_RESULT_ARTIFACT_PERMISSION_ASK_UNANSWERED_DENY_VAR_1"
       },
       "version": "2.1.281"
-    },
-    {
-      "name": "Tool Result: Git Lazy Fetch Transport Mismatch Nothing Fetched",
-      "id": "tool-result-git-lazy-fetch-transport-mismatch-nothing-fetched",
-      "description": "Appended to git command stderr (model-visible tool output) when a partial clone's constrained lazy fetch was refused because the promisor remote is reached over a transport the lazy fetch does not run over.",
-      "pieces": [
-        "Nothing was fetched: a partial clone's lazy fetch runs over ${",
-        "} only, and the promisor remote the repository's own config names, ${",
-        "??\"one it does not spell out\"}, is reached over ${",
-        "}${",
-        ".promisorUrl!==void 0&&",
-        ".transports.includes(",
-        "(",
-        ".promisorUrl))?\", not the transport that URL spells — a url.<base>.insteadOf rule in your git configuration, or a second promisor URL in the repository's, would account for that\":\"\"}."
-      ],
-      "identifiers": [
-        0,
-        1,
-        2,
-        3,
-        3,
-        4,
-        3
-      ],
-      "identifierMap": {
-        "0": "TOOL_RESULT_GIT_LAZY_FETCH_TRANSPORT_MISMATCH_NOTHING_FETCHED_VAR_0",
-        "1": "TOOL_RESULT_GIT_LAZY_FETCH_TRANSPORT_MISMATCH_NOTHING_FETCHED_VAR_1",
-        "2": "TOOL_RESULT_GIT_LAZY_FETCH_TRANSPORT_MISMATCH_NOTHING_FETCHED_VAR_2",
-        "3": "TOOL_RESULT_GIT_LAZY_FETCH_TRANSPORT_MISMATCH_NOTHING_FETCHED_VAR_3",
-        "4": "TOOL_RESULT_GIT_LAZY_FETCH_TRANSPORT_MISMATCH_NOTHING_FETCHED_VAR_4"
-      },
-      "version": "2.1.288"
     },
     {
       "name": "Tool Result: Artifact Publish Contract Rollout Retry",
@@ -112562,77 +111855,6 @@
       "version": "2.1.284"
     },
     {
-      "name": "Slash Command: /plugin Refusal — Plugin Marketplace Blocked By Organization",
-      "id": "slash-command-plugin-blocked-by-organization-marketplace",
-      "description": "Refusal saying a plugin comes from a marketplace source blocked by the organization, followed by the policy hint.",
-      "pieces": [
-        "Plugin \"${",
-        "(",
-        ")}\" is from the ${",
-        "}, which is blocked by your organization. ${",
-        "()}"
-      ],
-      "identifiers": [
-        0,
-        1,
-        2,
-        3
-      ],
-      "identifierMap": {
-        "0": "SLASH_COMMAND_PLUGIN_BLOCKED_BY_ORGANIZATION_MARKETPLACE_VAR_0",
-        "1": "SLASH_COMMAND_PLUGIN_BLOCKED_BY_ORGANIZATION_MARKETPLACE_VAR_1",
-        "2": "SLASH_COMMAND_PLUGIN_BLOCKED_BY_ORGANIZATION_MARKETPLACE_VAR_2",
-        "3": "SLASH_COMMAND_PLUGIN_BLOCKED_BY_ORGANIZATION_MARKETPLACE_VAR_3"
-      },
-      "version": "2.1.288"
-    },
-    {
-      "name": "Slash Command: Plugin Install — Not Found, Marketplace Not Used",
-      "id": "slash-command-plugin-install-not-found-marketplace-not-used",
-      "description": "Install refusal saying the plugin was not found because the named marketplace is not one Claude Code uses, pointing at the warning shown above.",
-      "pieces": [
-        "Plugin \"${",
-        "(",
-        ")}\" not found: \"${",
-        "(",
-        ")}\" is not a marketplace Claude Code uses (see the warning above)"
-      ],
-      "identifiers": [
-        0,
-        1,
-        0,
-        2
-      ],
-      "identifierMap": {
-        "0": "SLASH_COMMAND_PLUGIN_INSTALL_NOT_FOUND_MARKETPLACE_NOT_USED_VAR_0",
-        "1": "SLASH_COMMAND_PLUGIN_INSTALL_NOT_FOUND_MARKETPLACE_NOT_USED_VAR_1",
-        "2": "SLASH_COMMAND_PLUGIN_INSTALL_NOT_FOUND_MARKETPLACE_NOT_USED_VAR_2"
-      },
-      "version": "2.1.288"
-    },
-    {
-      "name": "Slash Command: Plugin Install — Directory Not In Session",
-      "id": "slash-command-plugin-install-directory-not-in-session",
-      "description": "Install refusal returned when the plugin directory marketplace is not available in this session, so the named plugin cannot be found.",
-      "pieces": [
-        "Plugin \"${",
-        "(",
-        ")}\" not found: the ${",
-        "} isn't available in this session"
-      ],
-      "identifiers": [
-        0,
-        1,
-        2
-      ],
-      "identifierMap": {
-        "0": "SLASH_COMMAND_PLUGIN_INSTALL_DIRECTORY_NOT_IN_SESSION_VAR_0",
-        "1": "SLASH_COMMAND_PLUGIN_INSTALL_DIRECTORY_NOT_IN_SESSION_VAR_1",
-        "2": "SLASH_COMMAND_PLUGIN_INSTALL_DIRECTORY_NOT_IN_SESSION_VAR_2"
-      },
-      "version": "2.1.288"
-    },
-    {
       "name": "Slash Command: Plugin Install — Not Switched, Needs Fresh Listing",
       "id": "slash-command-plugin-install-not-switched-needs-fresh-listing",
       "description": "Install refusal from the core install flow when switching a plugin to another marketplace copy needs a fresh listing; /plugin install hands it to the model.",
@@ -112656,31 +111878,6 @@
         "3": "SLASH_COMMAND_PLUGIN_INSTALL_NOT_SWITCHED_NEEDS_FRESH_LISTING_VAR_3"
       },
       "version": "2.1.282"
-    },
-    {
-      "name": "Plugin uninstall: install records unreadable",
-      "id": "slash-command-plugin-uninstall-records-unreadable",
-      "description": "Result message returned by the plugin uninstall implementation when the installed-plugin records file could not be read, reported with failureCode 'install_records_unreadable'.",
-      "pieces": [
-        "Plugin \"${",
-        "(",
-        ")}\" was not uninstalled: ${",
-        "(",
-        ")}"
-      ],
-      "identifiers": [
-        0,
-        1,
-        2,
-        3
-      ],
-      "identifierMap": {
-        "0": "SLASH_COMMAND_PLUGIN_UNINSTALL_RECORDS_UNREADABLE_VAR_0",
-        "1": "SLASH_COMMAND_PLUGIN_UNINSTALL_RECORDS_UNREADABLE_VAR_1",
-        "2": "SLASH_COMMAND_PLUGIN_UNINSTALL_RECORDS_UNREADABLE_VAR_2",
-        "3": "SLASH_COMMAND_PLUGIN_UNINSTALL_RECORDS_UNREADABLE_VAR_3"
-      },
-      "version": "2.1.284"
     },
     {
       "name": "Plugin install — invalid plugin id",
@@ -135644,22 +134841,6 @@
       "version": "2.1.251"
     },
     {
-      "name": "Tool Result: Git Lazy Fetch Unscoped ExtraHeader",
-      "id": "tool-result-git-lazy-fetch-unscoped-extra-header",
-      "description": "Appended to git command stderr (model-visible tool output) when a lazy fetch skipped an unscoped http.extraHeader.",
-      "pieces": [
-        "The lazy fetch did not send your unscoped http.extraHeader: it would go to whichever host the repository's own config names as its promisor remote, here ${",
-        "??\"one it does not spell out\"}. Only if you recognize and trust that host, scope the header to it (http.<that url>.extraHeader); otherwise leave it as it is."
-      ],
-      "identifiers": [
-        0
-      ],
-      "identifierMap": {
-        "0": "TOOL_RESULT_GIT_LAZY_FETCH_UNSCOPED_EXTRA_HEADER_VAR_0"
-      },
-      "version": "2.1.288"
-    },
-    {
       "name": "LSP description line param fragment",
       "id": "tool-description-lsp-line-number-param",
       "description": "Fragment of the LSP tool description prose explaining the 1-based line number required by all operations; part of the tool description serialized to the model, model-facing.",
@@ -140006,17 +139187,6 @@
         "1": "SYSTEM_REMINDER_WORKING_DIRECTORY_CHANGED_VAR_1"
       },
       "version": "2.1.281"
-    },
-    {
-      "name": "Slash Command: Plugin Uninstall — Settings Given at Start-Up",
-      "id": "slash-command-plugin-uninstall-source-flag-settings-given",
-      "description": "Yao() clause for settings passed with --settings or by the launching application, which uninstall cannot change; tells the user to switch it off where they are given or restart without them.",
-      "pieces": [
-        "the settings given to this session with --settings or by the application that started it (uninstalling cannot change them: switch it off where they are given and, if they were given at start-up, start Claude Code again; or start it without them)"
-      ],
-      "identifiers": [],
-      "identifierMap": {},
-      "version": "2.1.282"
     },
     {
       "name": "Memory store full reason",
@@ -144668,17 +143838,6 @@
       "identifiers": [],
       "identifierMap": {},
       "version": "2.1.273"
-    },
-    {
-      "name": "Slash Command: Plugin Uninstall — Settings Source Is Managed Settings",
-      "id": "slash-command-plugin-uninstall-source-managed-settings",
-      "description": "Yao() clause saying the computer's managed settings enable the plugin and only an administrator can change them; part of the plugin uninstall refusal the model reads.",
-      "pieces": [
-        "this computer's managed settings (uninstalling cannot change them: only whoever manages them can, usually an administrator)"
-      ],
-      "identifiers": [],
-      "identifierMap": {},
-      "version": "2.1.282"
     },
     {
       "name": "Remote Tool Ask Reason: Safety Check Gave No Verdict",
@@ -151145,27 +150304,6 @@
         "0": "TOOL_RESULT_ARTIFACT_ASSET_CONTENT_UNEXPECTED_STATUS_VAR_0"
       },
       "version": "2.1.234"
-    },
-    {
-      "name": "Slash Command: /plugin uninstall leftover — uninstall again from the command line",
-      "id": "slash-command-plugin-uninstall-leftover-uninstall-again-from-command-line",
-      "description": "Fallback remedy in the uninstall-leftover notes when no runnable command can be shown: uninstall the plugin again from the command line, with --scope project when it is still on in the project file.",
-      "pieces": [
-        "uninstall \"${",
-        "(",
-        ".pluginId,200)}\" again from the command line${",
-        ".stillOnProjectFile?\" with --scope project\":\"\"}"
-      ],
-      "identifiers": [
-        0,
-        1,
-        1
-      ],
-      "identifierMap": {
-        "0": "SLASH_COMMAND_PLUGIN_UNINSTALL_LEFTOVER_UNINSTALL_AGAIN_FROM_COMMAND_LINE_VAR_0",
-        "1": "SLASH_COMMAND_PLUGIN_UNINSTALL_LEFTOVER_UNINSTALL_AGAIN_FROM_COMMAND_LINE_VAR_1"
-      },
-      "version": "2.1.288"
     },
     {
       "name": "Skill: claude-code-guide — `claude plugin uninstall <plugin>` description",

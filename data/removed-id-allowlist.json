@@ -3945,5 +3945,306 @@
     "verdict": "archived",
     "version": "2.1.288",
     "why": "split-rule correction: the outer template takes back tool-result-remote-host-approval-undated-channel-expired; the inner clause is tool-result-remote-host-approval-undated-channel-age-clause"
+  },
+  "tool-result-git-lazy-fetch-transport-mismatch-nothing-fetched": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "b6fb7b42dba312f4a4d662451ece037255273c4e",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the note is appended to git stderr only on plugin clone paths, whose model route truncates the error before it"
+  },
+  "tool-result-git-lazy-fetch-transport-mismatch-insteadof-note": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "e087531ee749de3e03da8b7befae8ae8b7323491",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the note is appended to git stderr only on plugin clone paths, whose model route truncates the error before it"
+  },
+  "slash-command-plugin-marketplace-directory-refresh-stale-failed": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "d056efd6d1f79d8ee7c9d78484eb06b9c4d325b2",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-marketplace-directory-blocked-by-organization": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "6efb71e3efecbc4e9bf8bb5403cbf30d63510901",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-marketplace-refresh-source-blocked-by-policy": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "46a9644ccbced9a115559e095f2d952dd5608052",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-already-installed-switch-command": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "4a7c047bb8abf59a8bb11dbf303ab8cb75527fa5",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-other-marketplace-switch-copy-command": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "4cb7a77087f2ff18da588f74957cf96e7958725c",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-other-marketplace-switch-copies-command": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "6748cf801abc7eaa6dbd899a80d4d71e763daa66",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-other-marketplace-switch-all-command": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "0feb1eb448fe62695d503703ca518c2aa762a7fc",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-already-installed-turned-off-in-project": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "669e5081d7c8e631fdb3f961d817c592b6c7338d",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-not-found-directory-blocked-by-organization": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "9ef0fd56b51cd1b04eaca50685c6eb6b930188be",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-not-found-directory-listing-blocked-by-policy": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "6dc4a60cfcc4e78ce8c23d9cc98277f96a0c08e7",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-already-installed-directory-bindings-unreadable": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "04c0311c30dd13b1b6b4e088379c9d6da2b68540",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-installed-from-other-marketplace-cache-missing": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "6f2398a5e0a1dd50b4d3cf4ec1f0b183b47e7e37",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-directory-unchecked-installed-from-note": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "c491274475d3a44fb4f6a87ec49b2280b12d55b4",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-directory-turned-off-note": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "6421cbfbf2df0dbda971f0efe06ae244477f6d9b",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-directory-not-in-session": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "cb12a95ed1e2f839de1bcc526bcf160a5db0ee8d",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-directory-off": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "bbd8fa53f82014115fe44cca69841aa02c4472af",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-not-found-marketplace-not-used": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "89530692a7aba96329956b001b5d771aa31db251",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-not-found-directory-unchecked-note": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "23aa26c5ac58fb209f42ff5e94a61f7133dd3fab",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-not-found-may-be-listed-as": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "81b7d951ee9db04106d74e18c8b66890c9f18be1",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-already-installed-listed-at-same-folder-by-other-marketplace": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "4d4cc0e84f99b8017220ae29b1df3a4a90d3fbd9",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-already-installed-duplicate-copies-note": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "87fede9b0e6f4e6f2af72698fba5930fabe5a2f9",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-also-installed-from-note": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "b301b218311c0310a91289726c352312e38864b6",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-other-plugins-listed-at-same-folder-note": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "256e5ffbddcadf6cbc03ffb3361e54e106a3b5fe",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-loads-twice-if-same-plugin": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "e1ee44d29a782fdc34bef728e809fd7597e61e51",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-loads-n-times-if-same-plugin": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "ee11558794f19d849628ef79c2c047a22354e687",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-switch-hint-open-plugin-menu": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "651464d89116a47a34ae2cb31211197df472a68a",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-switch-hint-install-replace": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "0bcc79f0a7658f718b75433a5e1b3887a885a309",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-already-installed-turned-off-by-override": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "63d538d964eac34197438e0b18382959fd70d8b1",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-already-installed-from-other-marketplace-nothing-to-install": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "b37407c9a063a13cad021efd09f20de2c41443f6",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-blocked-by-organization-marketplace": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "93dd8aff2c4f61c3b5f83cff5f20ab296391c63e",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-records-unreadable": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "05e5ca3baa8559e83b40eb740144d7b7fc0b5e57",
+    "why": "ruled ui in a 2.1.288 catalogue correction: uninstall results reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-settings-change-failed-suffix": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "5460ae97e450d5443e14b15560abac215f2a449e",
+    "why": "ruled ui in a 2.1.288 catalogue correction: uninstall results reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-source-not-read-untrusted-workspace": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "87c2110f9960f4cb89f716fbe5dd0320b13f37c4",
+    "why": "ruled ui in a 2.1.288 catalogue correction: uninstall results reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-source-add-dir-settings": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "ff7ffa4fa858fcaab5179cb047d1f56436a48b93",
+    "why": "ruled ui in a 2.1.288 catalogue correction: uninstall results reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-source-flag-settings-file": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "6f486c122db16ce905ba63a72517f336a35ab0d1",
+    "why": "ruled ui in a 2.1.288 catalogue correction: uninstall results reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-source-other-folder-settings": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "b97d465ba73707cb92da84671ddb1db53f80fd1c",
+    "why": "ruled ui in a 2.1.288 catalogue correction: uninstall results reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-source-flag-settings-given": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "1727a8ea3cb9a1ef7cb3bcd534a6765149be3659",
+    "why": "ruled ui in a 2.1.288 catalogue correction: uninstall results reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-source-managed-settings": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "10be72231cfc6c57984dcc1975e5d599ce28d20f",
+    "why": "ruled ui in a 2.1.288 catalogue correction: uninstall results reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-leftover-uninstall-again-from-command-line": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "8929c8df053d11c3a9eeb7dcf38a44f56dbc5c64",
+    "why": "ruled ui in a 2.1.288 catalogue correction: uninstall results reach only local view state, the CLI and logs"
+  },
+  "tool-result-git-promisor-lazy-fetch-forgone": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "0893f4a7adb0c922f998bc01af05ce783c6b7c7e",
+    "why": "ruled ui in a 2.1.288 catalogue correction: same git-stderr note path as the transport-mismatch notes, truncated before any model route"
+  },
+  "tool-result-git-lazy-fetch-unscoped-extra-header": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "7236880bc646ab865efe5570461ef7668540ceb4",
+    "why": "ruled ui in a 2.1.288 catalogue correction: same git-stderr note path as the transport-mismatch notes, truncated before any model route"
   }
 }

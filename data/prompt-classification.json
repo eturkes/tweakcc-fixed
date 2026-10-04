@@ -72429,12 +72429,7 @@
   "fc15bad36c37a0fa7c7913c7855f896962dc73bc": { "facing": "internal" },
   "60d3a7878a8350c2e3a0afaa9b97bc9e67875a99": { "facing": "internal" },
   "984d1236f20ad97de2249f51e9b8b7604d74f3fc": { "facing": "ui" },
-  "0893f4a7adb0c922f998bc01af05ce783c6b7c7e": {
-    "facing": "model",
-    "id": "tool-result-git-promisor-lazy-fetch-forgone",
-    "name": "Tool Result: Git Promisor Lazy Fetch Forgone",
-    "desc": "Appended to git stderr when a partial clone is not retried with a constrained lazy fetch, including the forgone reason."
-  },
+  "0893f4a7adb0c922f998bc01af05ce783c6b7c7e": { "facing": "ui" },
   "18fb0930b8a2aebede8ad6627073818fc95628c0": { "facing": "internal" },
   "051431747f3f459a3515dc878d1771da29d6abf9": {
     "facing": "model",
@@ -81521,42 +81516,12 @@
   "baf3a52b12a2642c5dfa29b58307a14ca71a5689": { "facing": "ui" },
   "009d0ac47f7cc7c9e5c9b3ea4e748cedc09ac915": { "facing": "ui" },
   "65ce1585a965adc6f9657bc6b87d1054862f47eb": { "facing": "ui" },
-  "87c2110f9960f4cb89f716fbe5dd0320b13f37c4": {
-    "facing": "model",
-    "id": "slash-command-plugin-uninstall-source-not-read-untrusted-workspace",
-    "name": "Slash Command: Plugin Uninstall — Settings File Not Read (Untrusted Workspace)",
-    "desc": "Yao() settings-source clause for a file not read because the workspace is not yet trusted; interpolated into the /plugin uninstall \"was not uninstalled\" result the model reads."
-  },
-  "ff7ffa4fa858fcaab5179cb047d1f56436a48b93": {
-    "facing": "model",
-    "id": "slash-command-plugin-uninstall-source-add-dir-settings",
-    "name": "Slash Command: Plugin Uninstall — Settings Source Is an Added Directory",
-    "desc": "Yao() clause naming a settings file from an --add-dir directory, which uninstall does not edit; part of the plugin uninstall refusal the model reads."
-  },
-  "b97d465ba73707cb92da84671ddb1db53f80fd1c": {
-    "facing": "model",
-    "id": "slash-command-plugin-uninstall-source-other-folder-settings",
-    "name": "Slash Command: Plugin Uninstall — Settings Source Is Another Folder",
-    "desc": "Yao() clause naming another folder's settings file, which uninstalling from here does not edit; part of the plugin uninstall refusal the model reads."
-  },
-  "10be72231cfc6c57984dcc1975e5d599ce28d20f": {
-    "facing": "model",
-    "id": "slash-command-plugin-uninstall-source-managed-settings",
-    "name": "Slash Command: Plugin Uninstall — Settings Source Is Managed Settings",
-    "desc": "Yao() clause saying the computer's managed settings enable the plugin and only an administrator can change them; part of the plugin uninstall refusal the model reads."
-  },
-  "6f486c122db16ce905ba63a72517f336a35ab0d1": {
-    "facing": "model",
-    "id": "slash-command-plugin-uninstall-source-flag-settings-file",
-    "name": "Slash Command: Plugin Uninstall — Settings Source Is the --settings File",
-    "desc": "Yao() clause for a --settings file that is on disk now and that later sessions would read, telling the user to switch the plugin off there; part of the uninstall refusal."
-  },
-  "1727a8ea3cb9a1ef7cb3bcd534a6765149be3659": {
-    "facing": "model",
-    "id": "slash-command-plugin-uninstall-source-flag-settings-given",
-    "name": "Slash Command: Plugin Uninstall — Settings Given at Start-Up",
-    "desc": "Yao() clause for settings passed with --settings or by the launching application, which uninstall cannot change; tells the user to switch it off where they are given or restart without them."
-  },
+  "87c2110f9960f4cb89f716fbe5dd0320b13f37c4": { "facing": "ui" },
+  "ff7ffa4fa858fcaab5179cb047d1f56436a48b93": { "facing": "ui" },
+  "b97d465ba73707cb92da84671ddb1db53f80fd1c": { "facing": "ui" },
+  "10be72231cfc6c57984dcc1975e5d599ce28d20f": { "facing": "ui" },
+  "6f486c122db16ce905ba63a72517f336a35ab0d1": { "facing": "ui" },
+  "1727a8ea3cb9a1ef7cb3bcd534a6765149be3659": { "facing": "ui" },
   "40ce16a492f058ceb07193d56a860840421ec1a0": {
     "facing": "model",
     "id": "slash-command-plugin-install-invalid-id-npm-first-half",
@@ -81707,12 +81672,7 @@
     "name": "Slash Command: Plugin Install — Already Installed",
     "desc": "Success message from /plugin install when the plugin is already installed at the requested scope, with optional manually-installed marker and version/refresh suffixes."
   },
-  "5460ae97e450d5443e14b15560abac215f2a449e": {
-    "facing": "model",
-    "id": "slash-command-plugin-uninstall-settings-change-failed-suffix",
-    "name": "Slash Command: Plugin Uninstall — Settings Change Failed Suffix",
-    "desc": "Suffix appended to the plugin-not-uninstalled refusals when the settings write also failed, carrying the error message."
-  },
+  "5460ae97e450d5443e14b15560abac215f2a449e": { "facing": "ui" },
   "328b9633cedd0ccc3127726705e0c5894084f9d1": { "facing": "internal" },
   "616a244e3911ac6601776622a34f3cf4f9108e5b": { "facing": "internal" },
   "2c530c5c0c10da53d11c84555ae408a3bef3b43d": {
@@ -85372,12 +85332,7 @@
   "5529f27bcbb287e9dd3f2baa7f235be044a4c085": { "facing": "ui" },
   "5c644f73816057fa7fb745a773d237a338dc05eb": { "facing": "ui" },
   "46520d63f422dd65b34b00acba2e94b2a31596e0": { "facing": "internal" },
-  "05e5ca3baa8559e83b40eb740144d7b7fc0b5e57": {
-    "facing": "model",
-    "id": "slash-command-plugin-uninstall-records-unreadable",
-    "name": "Plugin uninstall: install records unreadable",
-    "desc": "Result message returned by the plugin uninstall implementation when the installed-plugin records file could not be read, reported with failureCode 'install_records_unreadable'."
-  },
+  "05e5ca3baa8559e83b40eb740144d7b7fc0b5e57": { "facing": "ui" },
   "588ade632bbfbcafa510c10d05a36e3a2a4b2215": { "facing": "ui" },
   "3f04c21f56057bc115d8c30015c0d4cbf14d10c5": {
     "facing": "model",
@@ -89979,12 +89934,7 @@
     "desc": "Tail of the environment-block note about the built-in GitHub client: `gh api --help`, the note holds even if an earlier instruction says there is no gh or GitHub API access, GitHub MCP tools stay preferred, and a 403 from the proxy is not fixed by retrying."
   },
   "6fcca70981b48485fe13c0ed7f29ff5738ca4460": { "facing": "internal" },
-  "669e5081d7c8e631fdb3f961d817c592b6c7338d": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-already-installed-turned-off-in-project",
-    "name": "Slash Command: /plugin install — Already Installed, Turned Off In Project",
-    "desc": "Suffix on the 'already installed, nothing to install' result when the plugin is turned off in this project and the command did not turn it on, with the command or /plugin route to turn it on."
-  },
+  "669e5081d7c8e631fdb3f961d817c592b6c7338d": { "facing": "ui" },
   "5421d590e60705a1c2a36c6b375513bc47a208f0": {
     "facing": "model",
     "id": "tool-result-mcp-output-json-single-line-note",
@@ -89997,18 +89947,8 @@
     "name": "Tool Result: Read Long-Lines Char-Range Guidance",
     "desc": "Note in the saved-large-output tool result that the file's lines are too long for the Read tool's offset/limit chunking, and to slice by character range (python read()[A:B], dd, cut -c) if a shell tool is available."
   },
-  "9ef0fd56b51cd1b04eaca50685c6eb6b930188be": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-not-found-directory-blocked-by-organization",
-    "name": "Slash Command: /plugin install — Not Found, Directory Blocked By Organization",
-    "desc": "Parenthetical on the plugin-not-found install failure saying the plugin directory is blocked by the user's organization, with the reason from the policy helper."
-  },
-  "6dc4a60cfcc4e78ce8c23d9cc98277f96a0c08e7": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-not-found-directory-listing-blocked-by-policy",
-    "name": "Slash Command: /plugin install — Not Found, Listing Blocked By Policy",
-    "desc": "Parenthetical on the plugin-not-found install failure saying the directory lists the plugin but it is blocked by the organization's policy."
-  },
+  "9ef0fd56b51cd1b04eaca50685c6eb6b930188be": { "facing": "ui" },
+  "6dc4a60cfcc4e78ce8c23d9cc98277f96a0c08e7": { "facing": "ui" },
   "cdcfd61163e0287024abd98543e43565b45a71c2": { "facing": "ui" },
   "49e17e63f51eb09e38d810b76755f7774396adf2": { "facing": "ui" },
   "e8c80747c567a0104cd400b5e810d83370a1f34f": {
@@ -90029,12 +89969,7 @@
     "name": "Slash Command: /plugin install — Already Installed From Different Repository",
     "desc": "Refusal saying the named plugin is already installed from a different repository than the one the directory now lists under that name, and to uninstall it first and then install again."
   },
-  "04c0311c30dd13b1b6b4e088379c9d6da2b68540": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-already-installed-directory-bindings-unreadable",
-    "name": "Plugin Install: Already Installed, Directory Bindings Unreadable",
-    "desc": "Install refusal when the plugin is already installed but plugin-directory-bindings.json could not be used to check its directory listing against the installed repository; returned as {success:false,message} with failureCode directory_binding_unreadable."
-  },
+  "04c0311c30dd13b1b6b4e088379c9d6da2b68540": { "facing": "ui" },
   "530b5505f6c32642c84ae51c9c5170ca6c79661f": {
     "facing": "model",
     "id": "slash-command-plugin-install-directory-records-unreadable-bound-elsewhere",
@@ -90064,12 +89999,7 @@
   "890dac664826ef7801b6f6843efffd4bc74eb3a2": { "facing": "ui" },
   "3f5a07e0aad7ecedf02a04d070c3308e2298f740": { "facing": "ui" },
   "65917e63c23e70c2cb1e9db2ad89efd149754302": { "facing": "ui" },
-  "6f2398a5e0a1dd50b4d3cf4ec1f0b183b47e7e37": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-installed-from-other-marketplace-cache-missing",
-    "name": "Plugin Install: Installed From Other Marketplace, Cache Files Missing",
-    "desc": "Install refusal when the plugin is already installed from another marketplace but its files are missing from the plugin cache; tells the reader to install it again from /plugin or gives the install command."
-  },
+  "6f2398a5e0a1dd50b4d3cf4ec1f0b183b47e7e37": { "facing": "ui" },
   "a48adc9606a11b9f9682401b7b2f0c9bbc36c1c1": { "facing": "ui" },
   "e19bb34f02ad9f1ee834938b0aaf074150e617c6": { "facing": "ui" },
   "63e1b1f0cb377d99794aebe104e01eb113eeff2f": {
@@ -90250,12 +90180,7 @@
     "name": "Tool Description: Agent Available Types",
     "desc": "Agent tool description block saying each agent type has its own capabilities, that the available types are listed in system-reminders, and how to pass subagent_type including fork"
   },
-  "4a7c047bb8abf59a8bb11dbf303ab8cb75527fa5": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-already-installed-switch-command",
-    "name": "Slash Command: /plugin Install — Already Installed, Switch Command",
-    "desc": "Hint appended to the 'already installed from another marketplace' refusal giving the command that switches to the requested marketplace copy and keeps the plugin settings"
-  },
+  "4a7c047bb8abf59a8bb11dbf303ab8cb75527fa5": { "facing": "ui" },
   "0fb08cd5733a40121a5a9ed7e4e5d6b98042584d": { "facing": "ui" },
   "e1dba7c4a405f7f8a8aa41526b4481d94fba205f": { "facing": "ui" },
   "fe0bea25bfcca7a04eb847d428ad2af87f0feca6": { "facing": "ui" },
@@ -90832,18 +90757,8 @@
   "f14d74e67bc19747bd088b58abc54f20e0818bc5": { "facing": "internal" },
   "65024755de134e5eef2c59e872ff1f1745240c92": { "facing": "internal" },
   "d8b3e216c1b1b3df846a80af5408b8d2d6aa64db": { "facing": "internal" },
-  "b6fb7b42dba312f4a4d662451ece037255273c4e": {
-    "facing": "model",
-    "id": "tool-result-git-lazy-fetch-transport-mismatch-nothing-fetched",
-    "name": "Tool Result: Git Lazy Fetch Transport Mismatch Nothing Fetched",
-    "desc": "Appended to git command stderr (model-visible tool output) when a partial clone's constrained lazy fetch was refused because the promisor remote is reached over a transport the lazy fetch does not run over."
-  },
-  "e087531ee749de3e03da8b7befae8ae8b7323491": {
-    "facing": "model",
-    "id": "tool-result-git-lazy-fetch-transport-mismatch-insteadof-note",
-    "name": "Tool Result: Git Lazy Fetch Transport Mismatch InsteadOf Note",
-    "desc": "Conditional tail of the nothing-fetched git stderr note explaining that a url.<base>.insteadOf rule or a second promisor URL accounts for the transport mismatch."
-  },
+  "b6fb7b42dba312f4a4d662451ece037255273c4e": { "facing": "ui" },
+  "e087531ee749de3e03da8b7befae8ae8b7323491": { "facing": "ui" },
   "058e2efa4fdeac15b6a727af32a8a86e4c4b7e0b": { "facing": "internal" },
   "df90f20667ebca83ef49722c0df90e4aecb98b70": { "facing": "internal" },
   "7e393969512f635babcb97ca39bd76e2394d655b": { "facing": "internal" },
@@ -91296,27 +91211,12 @@
   "e74d39faa50493a5e84ca4bc0ddb3f100d20f6dc": { "facing": "internal" },
   "ef3d540ffe9e85b0b14b1a6b66a1e41ebe5fe2ed": { "facing": "internal" },
   "95f39e1c54d6448e41f28956a9832880411c548b": { "facing": "internal" },
-  "d056efd6d1f79d8ee7c9d78484eb06b9c4d325b2": {
-    "facing": "model",
-    "id": "slash-command-plugin-marketplace-directory-refresh-stale-failed",
-    "name": "Slash Command: Plugin Directory Marketplace Refresh Served Stale",
-    "desc": "Error that the Anthropic Directory marketplace could not be refreshed, with the staleness reason. It appears as a marketplace-not-refreshed note or a could-not-check failure in plugin update and install results."
-  },
-  "6efb71e3efecbc4e9bf8bb5403cbf30d63510901": {
-    "facing": "model",
-    "id": "slash-command-plugin-marketplace-directory-blocked-by-organization",
-    "name": "Slash Command: Plugin Directory Marketplace Blocked By Organization",
-    "desc": "Error that the Anthropic Directory marketplace is blocked by the organization, followed by the policy reason."
-  },
+  "d056efd6d1f79d8ee7c9d78484eb06b9c4d325b2": { "facing": "ui" },
+  "6efb71e3efecbc4e9bf8bb5403cbf30d63510901": { "facing": "ui" },
   "9cbfc4ec91c623d9d2ca2a8e9f272fce9d3f125d": { "facing": "internal" },
   "60391d12f5978391c95131e864cd4fb50198a6f0": { "facing": "ui" },
   "eaee67f24875636eba713b607248da97e417c1c8": { "facing": "internal" },
-  "46a9644ccbced9a115559e095f2d952dd5608052": {
-    "facing": "model",
-    "id": "slash-command-plugin-marketplace-refresh-source-blocked-by-policy",
-    "name": "Slash Command: Plugin Marketplace Refresh Source Blocked By Enterprise Policy",
-    "desc": "Error that a marketplace's registered source is blocked by enterprise policy when refreshing it, naming the source."
-  },
+  "46a9644ccbced9a115559e095f2d952dd5608052": { "facing": "ui" },
   "22da2a333a1f038ee8d0d203c34e722dec75bebb": { "facing": "internal" },
   "09a941fe67ea038cd3727c1f0610eb518398378b": {
     "facing": "model",
@@ -91400,30 +91300,15 @@
     "name": "Slash Command: Plugin Install — Project-Scope Copies Tail",
     "desc": "Tail clause of the uninstall instruction that also names the copies installed at project scope."
   },
-  "4cb7a77087f2ff18da588f74957cf96e7958725c": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-other-marketplace-switch-copy-command",
-    "name": "Slash Command: Plugin Install Other Marketplace Switch Copy Command",
-    "desc": "Tail of the already-installed-from-another-marketplace refusal telling the reader to run the switch command to switch and keep the settings of the one other-marketplace copy."
-  },
-  "6748cf801abc7eaa6dbd899a80d4d71e763daa66": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-other-marketplace-switch-copies-command",
-    "name": "Slash Command: Plugin Install Other Marketplace Switch Copies Command",
-    "desc": "Tail of the already-installed-from-another-marketplace refusal giving the command that switches several other-marketplace copies while keeping one set of plugin settings."
-  },
+  "4cb7a77087f2ff18da588f74957cf96e7958725c": { "facing": "ui" },
+  "6748cf801abc7eaa6dbd899a80d4d71e763daa66": { "facing": "ui" },
   "c96ba55f02f1f86a561b2119d258872616442ab4": {
     "facing": "model",
     "id": "slash-command-plugin-install-other-marketplace-not-all-switchable",
     "name": "Slash Command: Plugin Install Other Marketplace Not All Switchable",
     "desc": "Refusal when several other-marketplace copies are installed and not all can be switched, followed by each copy's own instruction."
   },
-  "0feb1eb448fe62695d503703ca518c2aa762a7fc": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-other-marketplace-switch-all-command",
-    "name": "Slash Command: Plugin Install Other Marketplace Switch All Command",
-    "desc": "Refusal tail telling the reader to run the switch command to switch both or all other-marketplace copies to the new one, keeping one set of plugin settings."
-  },
+  "0feb1eb448fe62695d503703ca518c2aa762a7fc": { "facing": "ui" },
   "d17d986b792c1488cd4ed523803e99d815f74e80": {
     "facing": "model",
     "id": "slash-command-plugin-install-other-marketplace-switch-all-open-plugin-menu",
@@ -91838,114 +91723,29 @@
   "bf93be682790d6a0670c1f0deb0cb90f8a036352": { "facing": "ui" },
   "1953ec46b7337e008ccefcd146ccfd438fb5eb05": { "facing": "ui" },
   "c6c375c3b002f2f02319f80cf250577121d97073": { "facing": "ui" },
-  "c491274475d3a44fb4f6a87ec49b2280b12d55b4": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-directory-unchecked-installed-from-note",
-    "name": "Slash Command: Plugin Install Directory Unchecked Installed From Note",
-    "desc": "Note appended to an install result that the Anthropic Directory could not be checked (with the reason) and that the plugin was installed from another marketplace."
-  },
-  "6421cbfbf2df0dbda971f0efe06ae244477f6d9b": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-directory-turned-off-note",
-    "name": "Slash Command: Plugin Install Directory Turned Off Note",
-    "desc": "Note appended to a plugin-not-found install failure saying the Anthropic Directory was not searched because it is turned off, with the claude plugin marketplace add command to turn it back on."
-  },
-  "cb12a95ed1e2f839de1bcc526bcf160a5db0ee8d": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-directory-not-in-session",
-    "name": "Slash Command: Plugin Install — Directory Not In Session",
-    "desc": "Install refusal returned when the plugin directory marketplace is not available in this session, so the named plugin cannot be found."
-  },
-  "bbd8fa53f82014115fe44cca69841aa02c4472af": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-directory-off",
-    "name": "Slash Command: Plugin Install — Directory Turned Off",
-    "desc": "Install refusal returned when the plugin directory marketplace is off, giving the command that turns it back on."
-  },
-  "89530692a7aba96329956b001b5d771aa31db251": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-not-found-marketplace-not-used",
-    "name": "Slash Command: Plugin Install — Not Found, Marketplace Not Used",
-    "desc": "Install refusal saying the plugin was not found because the named marketplace is not one Claude Code uses, pointing at the warning shown above."
-  },
-  "23aa26c5ac58fb209f42ff5e94a61f7133dd3fab": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-not-found-directory-unchecked-note",
-    "name": "Slash Command: Plugin Install — Not Found, Directory Could Not Be Checked Note",
-    "desc": "Parenthetical appended to the plugin-not-found install refusal saying the plugin directory could not be checked and why."
-  },
-  "81b7d951ee9db04106d74e18c8b66890c9f18be1": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-not-found-may-be-listed-as",
-    "name": "Slash Command: Plugin Install — Not Found, May Be Listed As",
-    "desc": "Clause appended to the plugin-not-found install refusal suggesting up to three listed plugin names whose display name matches what was typed."
-  },
+  "c491274475d3a44fb4f6a87ec49b2280b12d55b4": { "facing": "ui" },
+  "6421cbfbf2df0dbda971f0efe06ae244477f6d9b": { "facing": "ui" },
+  "cb12a95ed1e2f839de1bcc526bcf160a5db0ee8d": { "facing": "ui" },
+  "bbd8fa53f82014115fe44cca69841aa02c4472af": { "facing": "ui" },
+  "89530692a7aba96329956b001b5d771aa31db251": { "facing": "ui" },
+  "23aa26c5ac58fb209f42ff5e94a61f7133dd3fab": { "facing": "ui" },
+  "81b7d951ee9db04106d74e18c8b66890c9f18be1": { "facing": "ui" },
   "f80202df08b84035f97321e29c8fa687540083f9": { "facing": "ui" },
   "ca96ebc1e820c130c86d46cda6ba9e1a60617835": { "facing": "ui" },
   "723dbd5d0100a058d5dc54c4d688c0f81b648184": { "facing": "ui" },
   "7c7e670d995fbd43d4a16c5f96f1f4f66e526609": { "facing": "ui" },
   "6cb0af1f4f66e7ad13180f7a3ea2aecd854f716a": { "facing": "ui" },
-  "4d4cc0e84f99b8017220ae29b1df3a4a90d3fbd9": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-already-installed-listed-at-same-folder-by-other-marketplace",
-    "name": "Slash Command: Plugin Install — Already Installed, Other Marketplace Lists Same Folder",
-    "desc": "Clause in the already-installed result saying this marketplace lists the plugin at the same repository and folder as plugins installed from another marketplace, so it may load more than once."
-  },
-  "87fede9b0e6f4e6f2af72698fba5930fabe5a2f9": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-already-installed-duplicate-copies-note",
-    "name": "Slash Command: Plugin Install — Already Installed, Duplicate Copies Note",
-    "desc": "Composite clause of the already-installed result describing other installed copies of the plugin and other plugins listed at the same repository and folder, with what to uninstall to keep only one."
-  },
-  "b301b218311c0310a91289726c352312e38864b6": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-also-installed-from-note",
-    "name": "Slash Command: Plugin Install — Also Installed From Note",
-    "desc": "Clause saying the plugin is also installed from another marketplace, optionally naming the command that keeps only this copy."
-  },
-  "256e5ffbddcadf6cbc03ffb3361e54e106a3b5fe": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-other-plugins-listed-at-same-folder-note",
-    "name": "Slash Command: Plugin Install — Other Plugins Listed At Same Folder Note",
-    "desc": "Clause saying plugins installed from another marketplace are listed at the same repository and folder as this one, so they may be the same plugin and load more than once."
-  },
-  "e1ee44d29a782fdc34bef728e809fd7597e61e51": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-loads-twice-if-same-plugin",
-    "name": "Slash Command: Plugin Install — Loads Twice If Same Plugin",
-    "desc": "Sentence saying that if the listed copies are the same plugin it loads twice, or more than once."
-  },
-  "ee11558794f19d849628ef79c2c047a22354e687": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-loads-n-times-if-same-plugin",
-    "name": "Slash Command: Plugin Install — Loads N Times If Same Plugin",
-    "desc": "Sentence saying that if the other listed copies are also the same plugin, the plugin loads that many times."
-  },
+  "4d4cc0e84f99b8017220ae29b1df3a4a90d3fbd9": { "facing": "ui" },
+  "87fede9b0e6f4e6f2af72698fba5930fabe5a2f9": { "facing": "ui" },
+  "b301b218311c0310a91289726c352312e38864b6": { "facing": "ui" },
+  "256e5ffbddcadf6cbc03ffb3361e54e106a3b5fe": { "facing": "ui" },
+  "e1ee44d29a782fdc34bef728e809fd7597e61e51": { "facing": "ui" },
+  "ee11558794f19d849628ef79c2c047a22354e687": { "facing": "ui" },
   "6d9f134cf0351d58f36012141b599cc26b8147c7": { "facing": "ui" },
-  "651464d89116a47a34ae2cb31211197df472a68a": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-switch-hint-open-plugin-menu",
-    "name": "Slash Command: Plugin Install — Switch Hint, Open Plugin Menu",
-    "desc": "Hint appended to an already-installed-from-another-marketplace install result telling the reader to open the plugin in /plugin, go to Installed and choose Switch."
-  },
-  "0bcc79f0a7658f718b75433a5e1b3887a885a309": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-switch-hint-install-replace",
-    "name": "Slash Command: Plugin Install — Switch Hint, Install With Replace",
-    "desc": "Hint appended to an already-installed-from-another-marketplace install result naming the install flag (--replace) that switches the plugin."
-  },
-  "63d538d964eac34197438e0b18382959fd70d8b1": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-already-installed-turned-off-by-override",
-    "name": "Slash Command: Plugin Install — Already Installed, Turned Off By Override",
-    "desc": "Sentence saying the plugin is turned off by managed settings or the --settings flag and the command changed nothing."
-  },
-  "b37407c9a063a13cad021efd09f20de2c41443f6": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-already-installed-from-other-marketplace-nothing-to-install",
-    "name": "Slash Command: Plugin Install — Already Installed From Other Marketplace, Nothing To Install",
-    "desc": "Success result saying the plugin is already installed from another marketplace's copy, so there is nothing to install, with optional switch or turn-on hints."
-  },
+  "651464d89116a47a34ae2cb31211197df472a68a": { "facing": "ui" },
+  "0bcc79f0a7658f718b75433a5e1b3887a885a309": { "facing": "ui" },
+  "63d538d964eac34197438e0b18382959fd70d8b1": { "facing": "ui" },
+  "b37407c9a063a13cad021efd09f20de2c41443f6": { "facing": "ui" },
   "3cba95e36eb432bc156f817bd65b5099b25cdd92": {
     "facing": "model",
     "id": "slash-command-plugin-install-already-installed-from-other-marketplace-reenabled",
@@ -92033,12 +91833,7 @@
   "915c02d2bf41883d7509a2294e840ccf33ec055e": { "facing": "ui" },
   "84f5f7a9a0eaf2c50a3cf660a8eae07d7848546c": { "facing": "internal" },
   "c094b3cfc76f311ad8e5ab539daa09c9cfbf5059": { "facing": "ui" },
-  "93dd8aff2c4f61c3b5f83cff5f20ab296391c63e": {
-    "facing": "model",
-    "id": "slash-command-plugin-blocked-by-organization-marketplace",
-    "name": "Slash Command: /plugin Refusal — Plugin Marketplace Blocked By Organization",
-    "desc": "Refusal saying a plugin comes from a marketplace source blocked by the organization, followed by the policy hint."
-  },
+  "93dd8aff2c4f61c3b5f83cff5f20ab296391c63e": { "facing": "ui" },
   "9b1ba93f25101e32b3d34f0558e920093c966c60": {
     "facing": "model",
     "id": "slash-command-plugin-marketplace-unreachable-stale-warning",
@@ -93112,5 +92907,14 @@
   "1bb7a5c892c346a4574bc862dfd928a771218044": { "facing": "ui" },
   "19c7b531bca2d3778d8aca46addbc57f8865f494": { "facing": "ui" },
   "b5abce188e556b2f0bb55b46b51cdedb4403ff7e": { "facing": "ui" },
-  "15e3a98b3e2299e56fa356cba44378187a3580a6": { "facing": "ui" }
+  "15e3a98b3e2299e56fa356cba44378187a3580a6": { "facing": "ui" },
+  "7236880bc646ab865efe5570461ef7668540ceb4": { "facing": "ui" },
+  "757bc9ed8c87d9c3d2d9b65d28b259c05645b58b": {
+    "facing": "model",
+    "id": "slash-command-plugin-marketplace-directory-refused-recorded-location",
+    "name": "Slash Command: Plugin Marketplace Directory Refused Recorded Location",
+    "desc": "Plugin load error used when a marketplace directory is refused because its recorded location is on a network drive, has dot segments, or could not be checked; reaches the model through the managed-plugin hook check reported by /model."
+  },
+  "8929c8df053d11c3a9eeb7dcf38a44f56dbc5c64": { "facing": "ui" },
+  "0e1a952a25eceda4959abd5186bfa6baafcd021b": { "facing": "ui" }
 }
