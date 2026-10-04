@@ -223,7 +223,7 @@ describe.skipIf(!hasDriver)('driver classify-args / audit-args read the builders
   });
   afterAll(() => fs.rmSync(T, { recursive: true, force: true }));
 
-  it('classify-args prints the seven-key path-only args and refuses the old flow', () => {
+  it('classify-args prints the path-only args with part counts and refuses the old flow', () => {
     const flags = ['--model', 'sonnet', '--verify-model', 'opus', '--classify-effort', 'high', '--verify-effort', 'medium'];
     write('tmp/classify-evidence-9.9.8/classify-evidence-00.json', {});
     const old = driver('classify-args', '9.9.8', ...flags);
@@ -231,16 +231,28 @@ describe.skipIf(!hasDriver)('driver classify-args / audit-args read the builders
     expect(old.out).toContain('OLD classify-evidence-NN.json packets');
 
     const dir = path.join(T, 'tmp/classify-evidence-9.9.9');
+    // A manifest from before the Read-sized parts is refused, not guessed at.
     write('tmp/classify-evidence-9.9.9/manifest.json', { version: '9.9.9', chunkCount: 2, chunks: [{ chunk: '00', file: 'chunk-00.json' }, { chunk: '01', file: 'chunk-01.json' }] });
     write('tmp/classify-evidence-9.9.9/chunk-00.json', {});
     write('tmp/classify-evidence-9.9.9/chunk-01.json', {});
+    const noParts = driver('classify-args', '9.9.9', ...flags);
+    expect(noParts.code).toBe(1);
+    expect(noParts.out).toContain('lists no mdParts');
+    write('tmp/classify-evidence-9.9.9/manifest.json', {
+      version: '9.9.9', chunkCount: 2,
+      chunks: [{ chunk: '00', file: 'chunk-00.json', mdParts: ['chunk-00.md'] }, { chunk: '01', file: 'chunk-01.json', mdParts: ['chunk-01.part1.md', 'chunk-01.part2.md'] }],
+    });
+    write('tmp/classify-evidence-9.9.9/chunk-00.md', {});
+    write('tmp/classify-evidence-9.9.9/chunk-01.part1.md', {});
+    expect(driver('classify-args', '9.9.9', ...flags).out).toContain('packet part(s) missing');
+    write('tmp/classify-evidence-9.9.9/chunk-01.part2.md', {});
     const r = driver('classify-args', '9.9.9', ...flags);
     expect(r.code).toBe(0);
     expect(r.lines).toHaveLength(1);
     expect(JSON.parse(r.lines[0])).toEqual({
-      version: '9.9.9', evidenceDir: dir, chunkCount: 2, model: 'sonnet', verifyModel: 'opus', classifyEffort: 'high', verifyEffort: 'medium', repoDir: REPO,
+      version: '9.9.9', evidenceDir: dir, chunkCount: 2, mdParts: [1, 2], model: 'sonnet', verifyModel: 'opus', classifyEffort: 'high', verifyEffort: 'medium', repoDir: REPO,
     });
-    expect(Object.keys(JSON.parse(r.lines[0]))).toEqual(['version', 'evidenceDir', 'chunkCount', 'model', 'verifyModel', 'classifyEffort', 'verifyEffort', 'repoDir']);
+    expect(Object.keys(JSON.parse(r.lines[0]))).toEqual(['version', 'evidenceDir', 'chunkCount', 'mdParts', 'model', 'verifyModel', 'classifyEffort', 'verifyEffort', 'repoDir']);
     const noDefaults = driver('classify-args', '9.9.9', '--model', 'sonnet');
     expect(noDefaults.code).toBe(1);
     expect(noDefaults.out).toContain('missing --verify-model, --classify-effort, --verify-effort');
@@ -254,9 +266,10 @@ describe.skipIf(!hasDriver)('driver classify-args / audit-args read the builders
     fs.symlinkSync(setA, path.join(T, 'tc/system-prompts'));
     const dir = path.join(T, 'tmp/audit-packets-9.9.9');
     const packet = write('tmp/audit-packets-9.9.9/audit-packet-00.json', {});
+    const md = write('tmp/audit-packets-9.9.9/audit-packet-00.md', {});
     write('tmp/audit-packets-9.9.9/audit-manifest.json', {
       format: 2, version: '9.9.9', corpus: { activeSet: setA }, groupCount: 1,
-      groups: [{ name: 'g00', packet, verdicts: path.join(dir, 'verdicts-00.json'), ids: ['a'] }],
+      groups: [{ name: 'g00', packet, md, mdParts: [md], verdicts: path.join(dir, 'verdicts-00.json'), ids: ['a'] }],
     });
     const focus = write('focus.txt', 'audit against the new card\n');
     const r = driver('audit-args', '9.9.9', '--model', 'opus', '--effort', 'medium', '--focus-file', focus);
@@ -264,9 +277,9 @@ describe.skipIf(!hasDriver)('driver classify-args / audit-args read the builders
     expect(r.lines).toHaveLength(1);
     const parsed = JSON.parse(r.lines[0]);
     const rem = fs.realpathSync(path.join(T, 'tc/lcc/system-reminders'));
-    expect(Object.keys(parsed)).toEqual(['version', 'packetDir', 'groupCount', 'activeSet', 'repoDir', 'remindersDir', 'model', 'effort', 'focus']);
-    expect(parsed).toEqual({ version: '9.9.9', packetDir: dir, groupCount: 1, activeSet: setA, repoDir: REPO, remindersDir: rem, model: 'opus', effort: 'medium', focus: 'audit against the new card' });
-    expect(Object.keys(JSON.parse(driver('audit-args', '9.9.9', '--model', 'opus', '--effort', 'medium').lines[0]))).toEqual(['version', 'packetDir', 'groupCount', 'activeSet', 'repoDir', 'remindersDir', 'model', 'effort']);
+    expect(Object.keys(parsed)).toEqual(['version', 'packetDir', 'groupCount', 'mdParts', 'activeSet', 'repoDir', 'remindersDir', 'model', 'effort', 'focus']);
+    expect(parsed).toEqual({ version: '9.9.9', packetDir: dir, groupCount: 1, mdParts: [1], activeSet: setA, repoDir: REPO, remindersDir: rem, model: 'opus', effort: 'medium', focus: 'audit against the new card' });
+    expect(Object.keys(JSON.parse(driver('audit-args', '9.9.9', '--model', 'opus', '--effort', 'medium').lines[0]))).toEqual(['version', 'packetDir', 'groupCount', 'mdParts', 'activeSet', 'repoDir', 'remindersDir', 'model', 'effort']);
     const noModel = driver('audit-args', '9.9.9');
     expect(noModel.code).toBe(1);
     expect(noModel.out).toContain('missing --model, --effort');

@@ -532,7 +532,7 @@ describe('builder → checker → harvest', () => {
         inputs.catalogue,
         idsFile,
         out,
-        '2',
+        '--ids-per-agent=2',
       ],
       { env, encoding: 'utf8' }
     );
@@ -663,7 +663,7 @@ describe('builder deployed label', () => {
           inputs.catalogue,
           idsFile,
           path.join(dir, out),
-          '5',
+          '--ids-per-agent=5',
         ],
         {
           env: { ...process.env, TWEAKCC_CONFIG_DIR: path.join(dir, 'cfg') },
@@ -688,7 +688,7 @@ describe('builder deployed label', () => {
 });
 
 describe('markdown packet', () => {
-  const build = (ids, out, budget) => {
+  const build = (ids, out, perAgent = 100, extraEnv = {}) => {
     const idsFile = path.join(dir, `${out}.txt`);
     fs.writeFileSync(idsFile, ids.join('\n') + '\n');
     const log = execFileSync(
@@ -698,13 +698,14 @@ describe('markdown packet', () => {
         inputs.catalogue,
         idsFile,
         path.join(dir, out),
+        `--ids-per-agent=${perAgent}`,
       ],
       {
         env: {
           ...process.env,
           TWEAKCC_CONFIG_DIR: path.join(dir, 'cfg'),
           TWEAKCC_CLI: inputs.bundle,
-          TWEAKCC_AUDIT_MD_BUDGET: String(budget),
+          ...extraEnv,
         },
         encoding: 'utf8',
       }
@@ -731,7 +732,7 @@ describe('markdown packet', () => {
   ];
 
   it('carries the rules, every id and full body, and each carrier once', () => {
-    const { md, json } = build(IDS, 'md-one', 200000);
+    const { md, json } = build(IDS, 'md-one');
     expect(md).toHaveLength(1);
     const text = md[0];
     expect(text).toContain('RULE-BODY-ONE');
@@ -754,7 +755,7 @@ describe('markdown packet', () => {
   });
 
   it('lists concatenated fragments and the tool a result belongs to', () => {
-    const { md, json } = build(IDS, 'md-concat', 200000);
+    const { md, json } = build(IDS, 'md-concat');
     const a = json[0].prompts.find(p => p.id === 't-frag-a');
     expect(a.concatNeighbours).toEqual([
       expect.objectContaining({
@@ -778,17 +779,81 @@ describe('markdown packet', () => {
     ).toBe('same-tool');
   });
 
-  it('sizes packets by the rendered markdown', () => {
-    const one = build(IDS, 'md-size-1', 200000);
-    const budget = Math.floor(Buffer.byteLength(one.md[0]) * 0.75);
-    const { md, manifest, log } = build(IDS, 'md-size-2', budget);
-    expect(md.length).toBeGreaterThan(1);
-    manifest.groups.forEach((g, i) => {
-      if (g.ids.length > 1)
-        expect(Buffer.byteLength(md[i])).toBeLessThanOrEqual(budget);
-    });
+  it('cuts ceil(ids / ids-per-agent) groups in input order', () => {
+    const { md, manifest, log } = build(IDS, 'md-size-2', 2);
+    expect(manifest.groups).toHaveLength(3);
+    expect(md).toHaveLength(3);
     expect(manifest.groups.flatMap(g => g.ids)).toEqual(IDS);
+    expect(manifest.packing).toMatchObject({ idsPerAgent: 2, agents: 3 });
     expect(log).toMatch(/md sizes min \d+/);
+    expect(log).toMatch(/"mdParts":\[1,1,1\]/);
+  });
+
+  it('splits a packet larger than one Read into parts and lists them', () => {
+    // A 1,000-token Read cap makes every packet here span several parts.
+    const { md, manifest, json } = build(IDS, 'md-parts', 100, {
+      CLAUDE_CODE_FILE_READ_MAX_OUTPUT_TOKENS: '1000',
+    });
+    const g = manifest.groups[0];
+    expect(g.mdParts.length).toBeGreaterThan(1);
+    expect(json[0].mdParts).toEqual(g.mdParts);
+    const parts = g.mdParts.map(f => fs.readFileSync(f, 'utf8'));
+    for (const p of parts) expect(Buffer.byteLength(p)).toBeLessThanOrEqual(1650);
+    const body = parts.map(p => p.split('\n').slice(1).join('\n')).join('\n');
+    for (const p of json[0].prompts) expect(body).toContain(`\`${p.id}\``);
+    expect(md[0].length).toBeGreaterThan(0);
+  });
+
+  it('hunts every stage-1 keep in ceil(keeps / ids-per-agent) groups, leads as evidence', () => {
+    build(IDS, 'hunt-src');
+    const src = path.join(dir, 'hunt-src');
+    const verdicts = IDS.map((id, i) => ({
+      id,
+      verdict: i === 0 ? 'trim' : 'pristine-keep',
+      slopCheck: 's',
+      duplicateCheck: 'd',
+      why: 'w',
+      coveredBy: [],
+      trimPlan: i === 0 ? 'cut' : null,
+    }));
+    fs.writeFileSync(
+      path.join(src, 'stage1-result.json'),
+      JSON.stringify({ complete: true, verdicts })
+    );
+    const huntDir = path.join(dir, 'hunt');
+    const log = execFileSync(
+      'node',
+      [path.join(TOOLS, 'selectCutHunt.mjs'), src, huntDir, '--ids-per-agent', '2'],
+      { env: { ...process.env, TWEAKCC_CONFIG_DIR: path.join(dir, 'cfg') }, encoding: 'utf8' }
+    );
+    const hm = JSON.parse(
+      fs.readFileSync(path.join(huntDir, 'hunt-manifest.json'), 'utf8')
+    );
+    expect(hm.groups.flatMap(g => g.ids)).toEqual(IDS.slice(1));
+    expect(hm.groupCount).toBe(3);
+    expect(hm.selected).toBe(IDS.length - 1);
+    const args = JSON.parse(log.trim().split('\n').pop().replace(/^workflow args: /, ''));
+    expect(args).toMatchObject({ groupCount: 3, mdParts: [1, 1, 1] });
+    for (const g of hm.groups) expect(fs.readFileSync(g.md, 'utf8')).toContain('**Cut leads:**');
+    const r = spawnSync(
+      'node',
+      [path.join(TOOLS, 'selectCutHunt.mjs'), src, huntDir, '--share', '0.25'],
+      { encoding: 'utf8' }
+    );
+    expect(r.status).toBe(2);
+    expect(r.stderr).toMatch(/every stage-1 keep is hunted/);
+  });
+
+  it('refuses the retired size knobs', () => {
+    const idsFile = path.join(dir, 'retired.txt');
+    fs.writeFileSync(idsFile, 't-jq\n');
+    const r = spawnSync(
+      'node',
+      [path.join(TOOLS, 'buildAuditPacket.mjs'), inputs.catalogue, idsFile, path.join(dir, 'retired'), '14'],
+      { env: { ...process.env, TWEAKCC_CONFIG_DIR: path.join(dir, 'cfg'), TWEAKCC_CLI: inputs.bundle }, encoding: 'utf8' }
+    );
+    expect(r.status).toBe(2);
+    expect(r.stderr).toMatch(/--ids-per-agent/);
   });
 
   it('fails loudly when the LCC decision-rule headings are missing', () => {

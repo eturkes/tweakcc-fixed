@@ -8,6 +8,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import { writeMarkdownParts } from './packetParts.mjs';
 
 export const FACINGS = new Set(['model', 'ui', 'internal']);
 export const RESERVED_PREFIXES = ['inline-', 'workflow-script-'];
@@ -282,12 +283,15 @@ export async function writeScopeArtifacts(dir, m, nn, r) {
     `- write + check, one step: \`${cmd.writeVerify} <<'V'\` then a JSON array with one entry per in-scope key, \`[{"k":"k03","facing":"model","id":"…","name":"…","desc":"…","evidence":"…"}, …]\`, then \`V\` (the draft when it holds, your correction when it does not; merges with what is on disk).`,
     `- bundle lookups, MANY per call: \`${cmd.query} <<'Q'\` then a JSON array of queries then \`Q\` (kinds: slice, fn, callers, refs, prop, guards, text, regex, trace, siblings, aliases, catalogue).`,
   ].join('\n');
-  fs.writeFileSync(verifyMdFile(dir, nn), renderVerifyMd({ header, families, items }));
-  return verifyMdFile(dir, nn);
+  // Larger than one Read: part files beside verify-NN.md, read in one message.
+  return writeMarkdownParts(verifyMdFile(dir, nn), renderVerifyMd({ header, families, items }));
 }
 
 // Print the checker's verdict (first line PASS/FAIL) and, on a classify PASS,
-// write the verify scope and verify-NN.md. Returns the exit code.
+// write the verify scope and verify-NN.md (and its parts). The PASS line names
+// the verify packet's part count: the classify agent relays it in its receipt
+// and the workflow hands the verifier exactly those files. Returns the exit
+// code.
 export async function report(dir, m, nn, stage, r) {
   const { cands } = loadChunk(dir, m, nn);
   if (r.problems.length) {
@@ -299,7 +303,7 @@ export async function report(dir, m, nn, stage, r) {
   }
   if (stage === 'classify') {
     const md = await writeScopeArtifacts(dir, m, nn, r);
-    console.log(`PASS chunk ${nn} (classify): ${r.candidates} verdict(s); verify scope ${r.scope.length} -> ${path.basename(scopeFile(dir, nn))}, ${path.basename(md)}`);
+    console.log(`PASS chunk ${nn} (classify): ${r.candidates} verdict(s); verify scope ${r.scope.length}; verify parts ${md.length} -> ${path.basename(scopeFile(dir, nn))}, ${md.map(f => path.basename(f)).join(', ')}`);
   } else {
     console.log(`PASS chunk ${nn} (verify): ${r.scope.length} in-scope verdict(s) audited of ${r.candidates}`);
   }

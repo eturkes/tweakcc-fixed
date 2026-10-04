@@ -70,6 +70,7 @@ describe.skipIf(!has)('stage-1 retry resumes from the verdicts file', () => {
     name: 'g03',
     verdicts: '/p/verdicts-03.json',
     md: '/p/audit-packet-03.md',
+    read: '/p/audit-packet-03.md in full',
   };
   const pass = {
     group: 'g03',
@@ -98,8 +99,8 @@ describe.skipIf(!has)('stage-1 retry resumes from the verdicts file', () => {
     expect(h.prompts[1]).toContain('RESUME');
     expect(h.prompts[1]).toContain('/p/verdicts-03.json');
     expect(h.prompts[1]).toContain('FAIL g03: 2 error(s)');
-    // It re-reads the markdown packet once and merges fixes into the file.
-    expect(h.prompts[1]).toContain('Read /p/audit-packet-03.md (one Read)');
+    // It re-reads the markdown packet and merges fixes into the file.
+    expect(h.prompts[1]).toContain('Read the markdown packet, /p/audit-packet-03.md in full, and that file');
     expect(h.prompts[1]).toContain('--merge');
   });
 

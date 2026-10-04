@@ -17,13 +17,23 @@
 // a reviewer can classify the edit as model-agnostic (MIRROR the active file)
 // or model-sensitive (JUDGE against the target model's card).
 //
-//   node tools/parallelSetPackets.mjs <prompts.json> --active=<abs dir> --target=<abs dir> --out=<dir> [--batch=25]
+//   node tools/parallelSetPackets.mjs <prompts.json> --active=<abs dir> --target=<abs dir> --out=<dir> [--ids-per-agent=N]
 //
-// Writes <out>/missing-ids.txt, <out>/batch-NNN.md and <out>/args.json
-// ({ batches: [{ file, ids }] }) for the classify workflow.
+// Writes <out>/missing-ids.txt, <out>/batch-NNN.md (split into
+// batch-NNN.partK.md when larger than one Read call; tools/lib/packetParts.mjs)
+// and <out>/args.json ({ batches: [{ file, parts, ids }] }) for the review
+// fan-out. The ids are cut in order into ceil(ids / N) batches of near-equal
+// size.
 import { createRequire } from 'node:module';
 import fs from 'node:fs';
 import path from 'node:path';
+import { agentsFor } from './lib/packByWeight.mjs';
+import { writeMarkdownParts, PART_FILE } from './lib/packetParts.mjs';
+
+// Ids one reviewer classifies. Not measured: four times the old batch of 25,
+// the load the 2.1.288 batching replay tests for the classify, audit and hunt
+// stages (see memory showtime-token-cost); set it from that replay's result.
+export const IDS_PER_AGENT = 100;
 
 const require = createRequire(import.meta.url);
 const { parseOverrideArgs } = require('./lib/overrideSets.cjs');
@@ -35,9 +45,13 @@ const opt = k => (argv.find(a => a.startsWith(`--${k}=`)) || '').slice(k.length 
 const active = opt('active');
 const target = opt('target');
 const out = opt('out');
-const batch = Number(opt('batch') || 25);
-if (!jsonPath || !active || !target || !out) {
-  console.error('usage: parallelSetPackets.mjs <prompts.json> --active=<dir> --target=<dir> --out=<dir> [--batch=N]');
+if (argv.some(a => a.startsWith('--batch'))) {
+  console.error(`parallelSetPackets: --batch is gone — size the fan-out with --ids-per-agent=N (default ${IDS_PER_AGENT}); a packet larger than one Read is split into part files`);
+  process.exit(2);
+}
+const perAgent = Number(opt('ids-per-agent') || IDS_PER_AGENT);
+if (!jsonPath || !active || !target || !out || !(Number.isInteger(perAgent) && perAgent > 0)) {
+  console.error('usage: parallelSetPackets.mjs <prompts.json> --active=<dir> --target=<dir> --out=<dir> [--ids-per-agent=N]');
   process.exit(2);
 }
 
@@ -76,9 +90,11 @@ for (const f of fs.readdirSync(active).sort()) {
 
 fs.mkdirSync(out, { recursive: true });
 fs.writeFileSync(path.join(out, 'missing-ids.txt'), missing.join('\n') + '\n');
+for (const f of fs.readdirSync(out)) if (/^batch-\d+\.md$/.test(f) || (f.startsWith('batch-') && PART_FILE.test(f))) fs.unlinkSync(path.join(out, f));
 const batches = [];
-for (let i = 0; i < missing.length; i += batch) {
-  const ids = missing.slice(i, i + batch);
+const count = missing.length ? agentsFor(missing.length, perAgent) : 0;
+for (let b = 0; b < count; b++) {
+  const ids = missing.slice(Math.floor((b * missing.length) / count), Math.floor(((b + 1) * missing.length) / count));
   const n = String(batches.length).padStart(3, '0');
   const lines = [`# Parallel-set classification packet ${n} — ${ids.length} ids\n`];
   for (const id of ids) {
@@ -90,8 +106,8 @@ for (let i = 0; i < missing.length; i += batch) {
     });
   }
   const file = path.join(out, `batch-${n}.md`);
-  fs.writeFileSync(file, lines.join('\n'));
-  batches.push({ file, ids });
+  const parts = writeMarkdownParts(file, lines.join('\n'));
+  batches.push({ file, parts, ids });
 }
 fs.writeFileSync(path.join(out, 'args.json'), JSON.stringify({ batches }, null, 1));
-console.log(`parallelSetPackets: ${missing.length} id(s) edited in ${path.basename(active)} with no file in ${path.basename(target)} → ${batches.length} packet(s) of ≤${batch} in ${out}`);
+console.log(`parallelSetPackets: ${missing.length} id(s) edited in ${path.basename(active)} with no file in ${path.basename(target)} → ${batches.length} packet(s) at ${perAgent} per agent, ${batches.reduce((a, x) => a + x.parts.length, 0)} part file(s) in ${out}`);

@@ -8,8 +8,8 @@
 // tool_result, a local-command result, a local-jsx onDone, an Ink child, a
 // debug log…) and the branches the tracer could not follow. Candidates are
 // grouped by the function that emits them so one agent rules a family
-// consistently, and packed so no chunk carries more than ~14 KB of body plus
-// route evidence.
+// consistently, and the families are cut into ceil(candidates /
+// --candidates-per-agent) chunks of near-equal rendered size.
 //
 //   node tools/buildClassifyEvidence.mjs --cli /tmp/cli-X.Y.Z.js \
 //     --prompts data/prompts/prompts-X.Y.Z.json --prev data/prompts/prompts-P.json \
@@ -17,20 +17,23 @@
 //     [--candidates <file.json>] [--cache-dir /tmp/tweakcc-route-cache] \
 //     [--classification data/prompt-classification.json] \
 //     [--settings-oracle data/settings-descriptions/oracle-X.Y.Z.json] \\
-//     [--md-bytes 28000] [--chunk-count 40]
+//     [--candidates-per-agent N]
 //
 // Candidates default to /tmp/classify-chunk-NN.json (driver classify-candidates).
 // Writes <out>/manifest.json, chunk-NN.json (the machine record the checker
-// reads), chunk-NN.md (what the agent reads, with ONE Read call),
-// existing-ids.json and catalogue-index.json, and clears any packet or verdict
-// files a previous build left. Chunks are packed by rendered markdown size so
-// every chunk-NN.md stays near --md-bytes plus its ~1.5 KB header.
+// reads), chunk-NN.md (the whole markdown packet) and, when it is larger than
+// one Read call, its parts chunk-NN.partK.md (what the agent reads, every part
+// in one message; tools/lib/packetParts.mjs), existing-ids.json and
+// catalogue-index.json, and clears any packet or verdict files a previous
+// build left.
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { routesForCandidates, compactRoute, sha1 } from './lib/classifyRoutes.mjs';
 import { BundleIndex } from './lib/bundleQuery.mjs';
+import { partitionContiguous, agentsFor } from './lib/packByWeight.mjs';
+import { writeMarkdownParts, partByteCap } from './lib/packetParts.mjs';
 import { attachContinuity } from './lib/continuity.mjs';
 import { rewriteTablePairs } from './checkScannedLiterals.mjs';
 import {
@@ -81,37 +84,42 @@ export function loadCandidates(file) {
   return out;
 }
 
-// Pack families in order: a family stays in one chunk when it fits; a family
-// larger than a chunk is split across consecutive chunks and says so; a single
-// candidate over budget gets a chunk of its own.
-export function packFamilies(families, { budget = 14000, maxCount = 60 } = {}) {
-  const chunks = [];
-  let cur = null;
-  const open = () => (cur = { items: [], weight: 0, families: [] });
-  const close = () => { if (cur && cur.items.length) chunks.push(cur); cur = null; };
+// Candidates one classify agent rules. Set from the 2.1.288 batching replay
+// (see memory showtime-token-cost): per-agent cost there was dominated by the
+// fixed context every agent pays, not by the candidates it ruled.
+export const CANDIDATES_PER_AGENT = 67;
+
+// Cut the families, in bundle order, into `agents` chunks of near-equal
+// weight. A family stays in one chunk unless it is heavier than an even share
+// (total / agents); then it is split into consecutive parts and each part says
+// so. Order is never changed, so neighbouring families of one module share a
+// chunk.
+export function packFamilies(families, { agents = 1 } = {}) {
+  const total = families.reduce((a, f) => a + f.items.reduce((b, x) => b + x.weight, 0), 0);
+  const share = total / Math.max(1, agents);
+  const units = [];
   for (const fam of families) {
     const w = fam.items.reduce((a, x) => a + x.weight, 0);
-    if (w <= budget && fam.items.length <= maxCount) {
-      if (!cur || cur.weight + w > budget || cur.items.length + fam.items.length > maxCount) { close(); open(); }
-      cur.items.push(...fam.items);
-      cur.weight += w;
-      cur.families.push({ key: fam.key, head: fam.head, hashes: fam.items.map(x => x.hash) });
-      continue;
-    }
-    close();
-    const parts = [];
-    let part = null;
-    for (const it of fam.items) {
-      if (!part || (part.items.length && (part.weight + it.weight > budget || part.items.length >= maxCount))) {
-        part = { items: [], weight: 0 };
-        parts.push(part);
-      }
-      part.items.push(it);
-      part.weight += it.weight;
-    }
-    parts.forEach((p, i) => chunks.push({ items: p.items, weight: p.weight, families: [{ key: fam.key, head: fam.head, hashes: p.items.map(x => x.hash), split: { part: i + 1, of: parts.length } }] }));
+    const pieces = w > share && fam.items.length > 1 ? partitionContiguous(fam.items, Math.ceil(w / share), x => x.weight) : [fam.items];
+    for (const items of pieces) units.push({ key: fam.key, head: fam.head, items, weight: items.reduce((a, x) => a + x.weight, 0) });
   }
-  close();
+  const runs = partitionContiguous(units, agents, u => u.weight);
+  const chunks = runs.map(run => {
+    const fams = [];
+    for (const u of run) {
+      const last = fams[fams.length - 1];
+      if (last && last.key === u.key) last.hashes.push(...u.items.map(x => x.hash));
+      else fams.push({ key: u.key, head: u.head, hashes: u.items.map(x => x.hash) });
+    }
+    return { items: run.flatMap(u => u.items), weight: run.reduce((a, u) => a + u.weight, 0), families: fams };
+  });
+  // A family spread over several chunks is labelled part i of n in each.
+  const spread = new Map();
+  chunks.forEach((c, ci) => c.families.forEach(f => spread.set(f.key, [...(spread.get(f.key) || []), ci])));
+  chunks.forEach((c, ci) => c.families.forEach(f => {
+    const at = spread.get(f.key);
+    if (at.length > 1) f.split = { part: at.indexOf(ci) + 1, of: at.length };
+  }));
   return chunks;
 }
 
@@ -127,8 +135,18 @@ async function main() {
       process.exit(2);
     }
   }
-  const budget = Number(opt['md-bytes'] || 28000);
-  const maxCount = Number(opt['chunk-count'] || 40);
+  for (const gone of ['md-bytes', 'chunk-count', 'chunk-bytes']) {
+    if (opt[gone] !== undefined) {
+      console.error(`buildClassifyEvidence: --${gone} is gone — chunks are no longer capped by bytes or count (a packet larger than one Read is split into part files); size the fan-out with --candidates-per-agent (default ${CANDIDATES_PER_AGENT}).`);
+      process.exit(2);
+    }
+  }
+  const perAgent = Number(opt['candidates-per-agent'] || CANDIDATES_PER_AGENT);
+  if (!(Number.isInteger(perAgent) && perAgent > 0)) {
+    console.error('buildClassifyEvidence: --candidates-per-agent must be a positive integer');
+    process.exit(2);
+  }
+  const partBytes = partByteCap();
   const classificationPath = path.resolve(opt.classification || path.join(HERE, '..', 'data', 'prompt-classification.json'));
   const outDir = path.resolve(opt.out);
   const promptsJson = path.resolve(opt.prompts);
@@ -464,7 +482,8 @@ async function main() {
       e.weight = renderCandidateMd(e, { snip, propSets, src: code }).length + 2 + (i === 0 ? famMd.length + 2 : 0);
     });
   }
-  const packed = packFamilies(families, { budget, maxCount });
+  const agents = agentsFor(entries.length, perAgent);
+  const packed = packFamilies(families, { agents });
   const width = Math.max(2, String(packed.length - 1).length);
 
   // Clear everything a previous build wrote: a leftover packet or verdict
@@ -472,7 +491,7 @@ async function main() {
   // run's output.
   fs.mkdirSync(outDir, { recursive: true });
   for (const f of fs.readdirSync(outDir)) {
-    if (/^(chunk|verdicts|verify|verify-scope|classify-evidence)-\d+\.(json|md)$|^(manifest|verdicts-merged|existing-ids|catalogue-index)\.json$/.test(f)) fs.unlinkSync(path.join(outDir, f));
+    if (/^(chunk|verdicts|verify|verify-scope|classify-evidence)-\d+\.(json|md)$|^(chunk|verify)-\d+\.part\d+\.md$|^(manifest|verdicts-merged|existing-ids|catalogue-index)\.json$/.test(f)) fs.unlinkSync(path.join(outDir, f));
   }
   const corpusDigest = crypto.createHash('sha256').update(fs.readFileSync(promptsJson)).digest('hex').slice(0, 16);
   fs.writeFileSync(path.join(outDir, 'existing-ids.json'), JSON.stringify(Object.keys(catalogue).sort()));
@@ -502,6 +521,7 @@ async function main() {
   });
   const manifestChunks = [];
   const mdSizes = [];
+  const partCounts = [];
   const where = new Map();
   packed.forEach((ch, i) => {
     const nn = String(i).padStart(width, '0');
@@ -539,14 +559,15 @@ async function main() {
       bundlePath: h.bundle.path, bundleSha, promptsJson, existingIdsPath: h.existingIdsPath, previousJson: h.previousJson,
     });
     const md = [head, ...parts].join('\n\n') + '\n';
-    fs.writeFileSync(path.join(outDir, `chunk-${nn}.md`), md);
-    mdSizes.push(md.length);
+    const mdParts = writeMarkdownParts(path.join(outDir, `chunk-${nn}.md`), md, { maxBytes: partBytes });
+    mdSizes.push(Buffer.byteLength(md));
+    partCounts.push(mdParts.length);
     const candidates = ch.items.map(({ weight, famHead, famOrder, familyFn, inner, guards, near, modelPath, sinkEntry, calleeAliases, outboundControl, ...rest }) => rest);
     const families = ch.families.map(f => ({ ...f, md: famMd[f.key] }));
-    const packet = { ...h, mdPath: path.join(outDir, `chunk-${nn}.md`), families, candidates };
+    const packet = { ...h, mdPath: path.join(outDir, `chunk-${nn}.md`), mdParts, families, candidates };
     fs.writeFileSync(path.join(outDir, `chunk-${nn}.json`), JSON.stringify(packet, null, 1));
     const bodyBytes = ch.items.reduce((a, x) => a + x.body.length, 0);
-    manifestChunks.push({ chunk: nn, file: `chunk-${nn}.json`, md: `chunk-${nn}.md`, mdBytes: md.length, hashes: candidates.map(c => c.hash), keys: candidates.map(c => c.key), weight: ch.weight, bodyBytes, families: ch.families.length });
+    manifestChunks.push({ chunk: nn, file: `chunk-${nn}.json`, md: `chunk-${nn}.md`, mdParts: mdParts.map(f => path.basename(f)), mdBytes: Buffer.byteLength(md), hashes: candidates.map(c => c.hash), keys: candidates.map(c => c.key), weight: ch.weight, bodyBytes, families: ch.families.length });
   });
 
   const routes = entries.map(e => e.route);
@@ -570,6 +591,8 @@ async function main() {
     splitFamilies: packed.filter(c => c.families.some(f => f.split)).length,
     heaviestChunk: Math.max(...packed.map(c => c.weight)),
     mdBytes: { max: Math.max(...mdSizes), mean: Math.round(mdSizes.reduce((a, b) => a + b, 0) / mdSizes.length), min: Math.min(...mdSizes) },
+    candidatesPerChunk: { min: Math.min(...packed.map(c => c.items.length)), max: Math.max(...packed.map(c => c.items.length)) },
+    mdParts: { total: partCounts.reduce((a, b) => a + b, 0), max: Math.max(...partCounts) },
     seconds: Math.round((Date.now() - t0) / 1000),
   };
   const manifest = {
@@ -582,19 +605,19 @@ async function main() {
     piebaldJson: opt.piebald ? path.resolve(opt.piebald) : null,
     routeCache: cachePath,
     catalogueIndex: 'catalogue-index.json',
-    chunkBudget: { mdBytes: budget, count: maxCount },
+    packing: { candidatesPerAgent: perAgent, agents, partBytes },
     classification: classificationPath,
     chunkCount: packed.length,
     chunks: manifestChunks,
     stats,
   };
   fs.writeFileSync(path.join(outDir, 'manifest.json'), JSON.stringify(manifest, null, 1));
-  console.log(`classify evidence ${version}: ${stats.candidates} candidate(s) in ${packed.length} chunk(s) (${families.length} families; chunk-NN.md ${(stats.mdBytes.min / 1000).toFixed(1)}–${(stats.mdBytes.max / 1000).toFixed(1)} KB, mean ${(stats.mdBytes.mean / 1000).toFixed(1)} KB) -> ${outDir}`);
+  console.log(`classify evidence ${version}: ${stats.candidates} candidate(s) in ${packed.length} chunk(s) at ${perAgent} per agent (${stats.candidatesPerChunk.min}–${stats.candidatesPerChunk.max} per chunk; ${families.length} families; chunk-NN.md ${(stats.mdBytes.min / 1000).toFixed(1)}–${(stats.mdBytes.max / 1000).toFixed(1)} KB, mean ${(stats.mdBytes.mean / 1000).toFixed(1)} KB, ${stats.mdParts.total} part file(s) of ≤${partBytes} B) -> ${outDir}`);
   if (filled) console.log(`  continuity: ${filled} candidate(s) arrived without hints and got them from the builder`);
   console.log(`  settings oracle: ${oracle ? `${oracle.length} description(s) from ${oraclePath}; ${entries.filter(e => e.settingsOracle).length} candidate(s) match` : `none at ${oraclePath} (capture it first: node tools/captureSettingsOracle.mjs)`}`);
   console.log(`  sites: located ${stats.located}/${stats.candidates} (${stats.multiSite} at several sites) ${JSON.stringify(stats.siteMethods)}`);
   console.log(`  routes: ${stats.routes.withVerdict}/${stats.candidates} with a route verdict ${JSON.stringify(stats.routes.verdicts)}; fully resolved ${stats.routes.resolved}`);
-  console.log(`  workflow args: {"version":"${version}","evidenceDir":"${outDir}","chunkCount":${packed.length},"model":…,"verifyModel":…,"classifyEffort":…,"verifyEffort":…}`);
+  console.log(`  workflow args: {"version":"${version}","evidenceDir":"${outDir}","chunkCount":${packed.length},"mdParts":${JSON.stringify(partCounts)},"model":…,"verifyModel":…,"classifyEffort":…,"verifyEffort":…,"repoDir":"${path.dirname(HERE)}"}`);
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

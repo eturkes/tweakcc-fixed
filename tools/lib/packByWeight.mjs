@@ -45,3 +45,44 @@ export const packingFloor = (items, binCount, weightOf) => {
   const total = ws.reduce((a, b) => a + b, 0);
   return Math.max(Math.max(...ws), total / Math.max(1, binCount));
 };
+
+// Cut an ORDERED list into at most `binCount` contiguous runs whose heaviest
+// run is as light as possible. Unlike packByWeight it never reorders: callers
+// rely on neighbours (one emitting function's strings, ids that share
+// carriers) landing in the same run. Binary search on the run capacity with a
+// greedy fill, which is exact for contiguous partitions. An item heavier than
+// total / binCount gets a run of its own; the caller splits such an item
+// beforehand when it must not.
+export const partitionContiguous = (items, binCount, weightOf) => {
+  const n = Math.max(1, Math.floor(binCount) || 1);
+  const ws = items.map(it => Math.max(0, Number(weightOf(it)) || 0));
+  if (!items.length) return [];
+  const runsAt = cap => {
+    const runs = [];
+    let cur = [];
+    let w = 0;
+    items.forEach((it, i) => {
+      if (cur.length && w + ws[i] > cap) {
+        runs.push(cur);
+        cur = [];
+        w = 0;
+      }
+      cur.push(it);
+      w += ws[i];
+    });
+    if (cur.length) runs.push(cur);
+    return runs;
+  };
+  let lo = Math.max(...ws);
+  let hi = ws.reduce((a, b) => a + b, 0);
+  while (hi - lo > 1) {
+    const mid = Math.floor((lo + hi) / 2);
+    if (runsAt(mid).length <= n) hi = mid;
+    else lo = mid;
+  }
+  return runsAt(runsAt(lo).length <= n ? lo : hi);
+};
+
+// How many agents a stage needs for `count` items at `perAgent` items each.
+export const agentsFor = (count, perAgent) =>
+  Math.max(1, Math.ceil(count / Math.max(1, Math.floor(perAgent) || 1)));

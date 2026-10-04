@@ -72,20 +72,22 @@ describe('routes across sites', () => {
 describe('packFamilies', () => {
   const fam = (key, ws) => ({ key, items: ws.map((w, i) => ({ hash: `${key}${i}`, weight: w })) });
 
-  it('keeps a family in one chunk and fills chunks in order', () => {
-    const chunks = packFamilies([fam('a', [4000, 4000]), fam('b', [5000]), fam('c', [3000])], { budget: 14000 });
-    expect(chunks.map(c => c.items.map(x => x.hash))).toEqual([['a0', 'a1', 'b0'], ['c0']]);
+  it('cuts families in order into the asked number of chunks, each family whole', () => {
+    const chunks = packFamilies([fam('a', [4000, 4000]), fam('b', [5000]), fam('c', [3000]), fam('d', [2000, 2000])], { agents: 2 });
+    expect(chunks.map(c => c.items.map(x => x.hash))).toEqual([['a0', 'a1'], ['b0', 'c0', 'd0', 'd1']]);
+    expect(chunks.flatMap(c => c.families.map(f => f.split))).toEqual([undefined, undefined, undefined, undefined]);
   });
 
-  it('splits an oversized family across consecutive chunks and labels the parts', () => {
-    const chunks = packFamilies([fam('a', [1000]), fam('big', [9000, 9000, 9000])], { budget: 14000 });
-    expect(chunks.map(c => c.items.map(x => x.hash))).toEqual([['a0'], ['big0'], ['big1'], ['big2']]);
-    expect(chunks[2].families[0].split).toEqual({ part: 2, of: 3 });
+  it('splits a family heavier than an even share across consecutive chunks and labels the parts', () => {
+    const chunks = packFamilies([fam('a', [1000]), fam('big', [9000, 9000, 9000]), fam('z', [1000])], { agents: 3 });
+    expect(chunks.map(c => c.items.map(x => x.hash))).toEqual([['a0', 'big0'], ['big1'], ['big2', 'z0']]);
+    expect(chunks[1].families).toEqual([{ key: 'big', head: undefined, hashes: ['big1'], split: { part: 2, of: 3 } }]);
   });
 
-  it('gives a single over-budget candidate a chunk of its own and honours the count cap', () => {
-    const chunks = packFamilies([fam('x', [20000]), fam('y', [1, 1, 1])], { budget: 14000, maxCount: 2 });
-    expect(chunks.map(c => c.items.length)).toEqual([1, 2, 1]);
+  it('merges a split family back when its parts land in one chunk', () => {
+    const chunks = packFamilies([fam('big', [10, 10, 10, 10])], { agents: 1 });
+    expect(chunks).toHaveLength(1);
+    expect(chunks[0].families).toEqual([{ key: 'big', head: undefined, hashes: ['big0', 'big1', 'big2', 'big3'] }]);
   });
 });
 
