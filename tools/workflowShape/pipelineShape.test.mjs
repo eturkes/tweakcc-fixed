@@ -9,6 +9,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
+import { runWorkflow, passLine } from './harness.mjs';
 
 const WF = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -71,26 +72,51 @@ const runShaped = async (file, ctxExtra, slow) => {
 };
 
 describe.skipIf(!has('classify-and-name-prompts.workflow.js'))(
-  'classify-and-name-prompts is a per-item pipeline',
+  'classify-and-name-prompts is a per-item pipeline over file handoffs',
   () => {
-    it('verifies one group while another is still classifying', async () => {
-      const groups = [['c0'], ['c1'], ['c2'], ['c3']];
-      const shared = {
-        version: '9.9.9',
-        groups,
-        validateResults: false,
-        expectedHashes: {
-          c0: ['0'.repeat(40)],
-          c1: ['1'.repeat(40)],
-          c2: ['2'.repeat(40)],
-          c3: ['3'.repeat(40)],
-        },
-        evidencePaths: { c0: '/tmp/e0.json', c1: '/tmp/e1.json', c2: '/tmp/e2.json', c3: '/tmp/e3.json' },
+    const base = {
+      version: '9.9.9',
+      evidenceDir: '/tmp/classify-evidence-9.9.9',
+      chunkCount: 4,
+      model: 'sonnet',
+      verifyModel: 'opus',
+      classifyEffort: 'high',
+      verifyEffort: 'medium',
+      repoDir: '/work/tweakcc-fixed',
+    };
+    const src = () =>
+      fs
+        .readFileSync(path.join(WF, 'classify-and-name-prompts.workflow.js'), 'utf8')
+        .replace(/^export const meta/m, 'const meta');
+    // Real agentWithRetry, scripted agent receipts.
+    const runWith = async (input, reply) => {
+      const prompts = [];
+      const logs = [];
+      const ctx = {
+        args: input,
+        agent: async (prompt, o) => { prompts.push({ prompt, label: o.label }); return reply(o.label, prompt); },
+        pipeline: async (items, ...stages) =>
+          Promise.all(items.map(async it => {
+            let v = it;
+            for (const s of stages) {
+              try { v = await s(v); } catch { return null; }
+            }
+            return v;
+          })),
+        parallel: async () => [],
+        phase: () => {},
+        log: m => logs.push(String(m)),
+        JSON, Math, Number, Array, Object, String, Error, Set, Map, Promise, RegExp,
       };
+      const out = await vm.runInNewContext(`(async () => { ${src()} })()`, ctx, { timeout: 5000 });
+      return { out, prompts, logs };
+    };
+
+    it('verifies one chunk while another is still classifying', async () => {
       const { timeline, at } = await runShaped(
         'classify-and-name-prompts.workflow.js',
-        { input: shared, args: shared },
-        'classify:c0'
+        { input: base, args: base },
+        'classify:00'
       );
       const firstVerify = timeline.findIndex(e => e.startsWith('verify:start'));
       const lastClassifyEnd = timeline.reduce(
@@ -98,37 +124,124 @@ describe.skipIf(!has('classify-and-name-prompts.workflow.js'))(
         -1
       );
       expect(firstVerify).toBeGreaterThan(-1);
-      // Under the old stage-major shape this was impossible by construction.
       expect(firstVerify).toBeLessThan(lastClassifyEnd);
-      expect(at('verify:end:c1')).toBeLessThan(at('classify:end:c0'));
+      expect(at('verify:end:01')).toBeLessThan(at('classify:end:00'));
     });
 
-    it('refuses expectedHashes given as counts before any agent runs', async () => {
-      // A count silently disabled hash repair and reconciliation, which let two
-      // corrupted hashes through as extra verdicts on CC 2.1.281.
-      const src = fs
-        .readFileSync(path.join(WF, 'classify-and-name-prompts.workflow.js'), 'utf8')
-        .replace(/^export const meta/m, 'const meta');
-      const input = {
-        version: '9.9.9',
-        groups: [['c0']],
-        expectedHashes: { c0: 60 },
-        evidencePaths: { c0: '/tmp/e0.json' },
-      };
-      let spawned = 0;
-      const ctx = {
-        args: input,
-        agent: async () => { spawned += 1; return null; },
-        pipeline: async () => [],
-        parallel: async () => [],
-        phase: () => {},
-        log: () => {},
-        JSON, Math, Number, Array, Object, String, Error, Set, Map, Promise, RegExp,
-      };
+    it('takes paths and counts only, and refuses anything less before any agent runs', async () => {
+      for (const drop of ['evidenceDir', 'chunkCount', 'model', 'verifyModel', 'classifyEffort', 'verifyEffort', 'repoDir']) {
+        const input = { ...base };
+        delete input[drop];
+        let spawned = 0;
+        await expect(
+          runWith(input, () => { spawned += 1; return null; })
+        ).rejects.toThrow(new RegExp(drop));
+        expect(spawned).toBe(0);
+      }
+      // The old inline-hash contract is not silently accepted.
       await expect(
-        vm.runInNewContext(`(async () => { ${src} })()`, ctx, { timeout: 5000 })
-      ).rejects.toThrow(/full list of 40-hex candidate hashes.*c0/s);
-      expect(spawned).toBe(0);
+        runWith({ version: '9.9.9', chunks: ['/tmp/c0.json'], expectedHashes: { '/tmp/c0.json': ['0'.repeat(40)] } }, () => null)
+      ).rejects.toThrow(/evidenceDir/);
+    });
+
+    it('names zero-based padded chunks and points every agent at files, never inline hashes', async () => {
+      const { out, prompts } = await runWith({ ...base, chunkCount: 2 }, (label) => {
+        const nn = label.split(':')[1];
+        return label.startsWith('classify')
+          ? { chunk: nn, pass: true, verdicts: 3, scope: 2, note: '' }
+          : { chunk: nn, pass: true, audited: 2, changed: 0, note: '' };
+      });
+      expect(prompts.map(p => p.label).sort()).toEqual(['classify:00', 'classify:01', 'verify:00', 'verify:01']);
+      const c0 = prompts.find(p => p.label === 'classify:00').prompt;
+      expect(c0).toContain('/tmp/classify-evidence-9.9.9/chunk-00.json');
+      expect(c0).toContain('/tmp/classify-evidence-9.9.9/verdicts-00.json');
+      expect(c0).toContain('checkClassifyVerdicts.mjs /tmp/classify-evidence-9.9.9 00');
+      const v1 = prompts.find(p => p.label === 'verify:01').prompt;
+      expect(v1).toContain('/tmp/classify-evidence-9.9.9/verify-scope-01.json');
+      expect(v1).toContain('--stage verify');
+      // Turn economy: one Read of a markdown packet, batched bundle queries,
+      // write+check in one step, no skill loads.
+      expect(c0).toContain('/tmp/classify-evidence-9.9.9/chunk-00.md');
+      expect(c0).toContain('with ONE Read call');
+      expect(c0).toContain('writeClassifyVerdicts.mjs /tmp/classify-evidence-9.9.9 00');
+      expect(c0).toContain('Do not load any skill');
+      expect(c0).toContain('bundleQuery');
+      expect(c0).toContain('confirm the branch that yields this string is reachable from the model-bound caller');
+      expect(c0).toContain('"roleChange"');
+      expect(c0).toContain('Ids belong on FRAGMENTS');
+      expect(c0).toContain('settings-oracle');
+      expect(c0).toContain('"the model can run it" is not a route');
+      expect(c0).toContain("never extend a family ruling to a member without checking THAT member's own sink");
+      expect(c0).toContain('Confirm which local is which before ruling');
+      expect(c0).toContain('A gate on the CALLER side closes a route');
+      expect(c0).toContain('Setter wiring can be crosswise at the CALLER');
+      expect(c0).toContain('Never rule ui or internal while a branch of the route is still open');
+      expect(c0).toContain('check whether ANY reachable caller sets the option');
+      expect(c0).toContain('sent OUTBOUND as a control_response');
+      expect(v1).toContain('/tmp/classify-evidence-9.9.9/verify-01.md');
+      expect(v1).toContain('writeClassifyVerdicts.mjs /tmp/classify-evidence-9.9.9 01 --stage verify');
+      expect(out).toMatchObject({ classified: 2, verified: 2, chunkCount: 2 });
+      expect(out.next).toContain('harvestClassify.mjs /tmp/classify-evidence-9.9.9');
+    });
+
+    it('keeps every facing rule and adds the local-command and metaMessages rules', async () => {
+      const { prompts } = await runWith({ ...base, chunkCount: 1 }, (label) =>
+        label.startsWith('classify')
+          ? { chunk: '00', pass: true, verdicts: 1, scope: 1, note: '' }
+          : { chunk: '00', pass: true, audited: 1, changed: 0, note: '' });
+      for (const p of prompts) {
+        expect(p.prompt).toContain('{behavior:"ask", message}');
+        expect(p.prompt).toContain('[runner:warn]');
+        expect(p.prompt).toContain('check the SECOND argument of the onDone call');
+        expect(p.prompt).toContain('starts with \`@internal\`'.replace(/\\/g, ''));
+        expect(p.prompt).toContain('{type:"text", value}');
+        expect(p.prompt).toContain('metaMessages to the model on every branch except');
+        expect(p.prompt).toContain('Never mint an inline- id');
+        expect(p.prompt).toContain('workflow-script-');
+        expect(p.prompt).toContain('possibleSuccessorOf');
+      }
+    });
+
+    it('re-asks a chunk whose checker did not pass, and skips verify on an empty scope', async () => {
+      let tries = 0;
+      const { out, prompts, logs } = await runWith({ ...base, chunkCount: 1 }, (label) => {
+        if (label.startsWith('verify')) return { chunk: '00', pass: true, audited: 0, changed: 0, note: '' };
+        tries += 1;
+        return tries === 1
+          ? { chunk: '00', pass: false, verdicts: 5, scope: 0, note: 'missing 2 hashes' }
+          : { chunk: '00', pass: true, verdicts: 7, scope: 0, note: '' };
+      });
+      expect(tries).toBe(2);
+      expect(prompts[1].prompt).toContain('YOUR PREVIOUS ATTEMPT WAS REJECTED');
+      expect(prompts[1].prompt).toContain('missing 2 hashes');
+      expect(prompts.some(p => p.label.startsWith('verify'))).toBe(false);
+      expect(logs.join(' ')).toContain('empty scope');
+      expect(out).toMatchObject({ classified: 1, verified: 1 });
+    });
+
+    it('reruns only the chunks it is told to', async () => {
+      const { out, prompts } = await runWith({ ...base, only: ['2', 'chunk-03'] }, (label) => {
+        const nn = label.split(':')[1];
+        return label.startsWith('classify')
+          ? { chunk: nn, pass: true, verdicts: 1, scope: 0, note: '' }
+          : null;
+      });
+      expect(prompts.map(p => p.label)).toEqual(['classify:02', 'classify:03']);
+      expect(out.ran).toBe(2);
+      await expect(runWith({ ...base, only: ['09'] }, () => null)).rejects.toThrow(/outside 0..3/);
+    });
+
+    it('reports a chunk that never passes instead of throwing the run away', async () => {
+      const { out } = await runWith({ ...base, chunkCount: 2 }, (label) => {
+        const nn = label.split(':')[1];
+        if (label === 'classify:01') return { chunk: '01', pass: false, verdicts: 0, scope: 0, note: 'bad' };
+        return label.startsWith('classify')
+          ? { chunk: nn, pass: true, verdicts: 1, scope: 1, note: '' }
+          : { chunk: nn, pass: true, audited: 1, changed: 1, note: '' };
+      });
+      expect(out.notClassified).toEqual(['01']);
+      expect(out.classified).toBe(1);
+      expect(out.changedByVerifier).toBe(1);
     });
   }
 );
@@ -136,35 +249,80 @@ describe.skipIf(!has('classify-and-name-prompts.workflow.js'))(
 describe.skipIf(!has('audit-trim-and-verify.workflow.js'))(
   'audit-trim-and-verify keeps the barrier only where citations require it',
   () => {
-    // a cites b, so BOTH are coupled: b's verifier is the one that would read
-    // a's half-written body. x/y/z cite nothing in this batch.
-    const tasks = [
-      { id: 'a', packet: '/tmp/a.json', verdict: { coveredBy: [{ carrierId: 'b' }] } },
-      { id: 'b', packet: '/tmp/b.json', verdict: { coveredBy: [] } },
-      { id: 'x', packet: '/tmp/x.json', verdict: { coveredBy: [{ carrierId: 'not-in-batch' }] } },
-      { id: 'y', packet: '/tmp/y.json', verdict: { coveredBy: [] } },
-      { id: 'z', packet: '/tmp/z.json', verdict: {} },
-    ];
-    const run = () =>
-      runShaped('audit-trim-and-verify.workflow.js', { args: { version: '9.9.9', tasks } }, 'trim:x');
+    // The script cannot read the tasks file, so `driver tasks-args trim-verify`
+    // computes the citation graph and passes `coupled`: tasks 00 and 01 cite
+    // each other's ids (in either direction); 02..04 cite nothing in the batch.
+    const args = {
+      version: '9.9.9',
+      tasksPath: '/tmp/tv-test/trim-verify-tasks.json',
+      count: 5,
+      tasksDigest: '0123456789abcdef',
+      model: 'sonnet',
+      trimEffort: 'medium',
+      verifyEffort: 'xhigh',
+      coupled: ['00', '1'],
+      repoDir: '/work/tweakcc-fixed',
+      remindersDir: '/work/lcc/system-reminders',
+      capturesDir: '/tmp/turnprobe-9.9.9-1',
+    };
+    const reply = label => {
+      const [stage, nn] = label.split(':');
+      return { task: nn, checker: passLine('trim-verify', nn, stage) };
+    };
+    const run = (input = args, r = reply) =>
+      runWorkflow('audit-trim-and-verify.workflow.js', input, r, {
+        delay: label => (label === 'trim:02' ? 220 : 25),
+      });
 
-    it('partitions on the in-batch citation graph, both directions', async () => {
+    it('partitions on the coupled list the driver computed', async () => {
       const { logs } = await run();
-      expect(logs[0]).toContain('3 independent');
-      expect(logs[0]).toContain('2 coupled');
+      expect(logs[0]).toContain('3 independent task(s) pipeline trim->verify');
+      expect(logs[0]).toContain('2 coupled by in-batch citations and hold the barrier');
     });
 
     it('pipelines an independent item past a slow sibling', async () => {
       const { at } = await run();
-      expect(at('verify:start:y')).toBeGreaterThan(-1);
-      expect(at('verify:start:y')).toBeLessThan(at('trim:end:x'));
+      expect(at('verify:03:start')).toBeGreaterThan(-1);
+      expect(at('verify:03:start')).toBeLessThan(at('trim:02:end'));
     });
 
     it('holds coupled verifies until every coupled trim has landed', async () => {
       const { at } = await run();
-      const firstCoupledVerify = Math.min(at('verify:start:a'), at('verify:start:b'));
-      const lastCoupledTrim = Math.max(at('trim:end:a'), at('trim:end:b'));
+      const firstCoupledVerify = Math.min(at('verify:00:start'), at('verify:01:start'));
+      const lastCoupledTrim = Math.max(at('trim:00:end'), at('trim:01:end'));
       expect(firstCoupledVerify).toBeGreaterThan(lastCoupledTrim);
+    });
+
+    it('never verifies a trim that did not pass, and reports it by stage', async () => {
+      const { out, prompts } = await run(args, label => {
+        const [stage, nn] = label.split(':');
+        if (label === 'trim:03') return { task: nn, checker: 'FAIL trim-verify 03 trim: 1 problem(s)' };
+        if (label === 'verify:04') return { task: nn, checker: 'FAIL trim-verify 04 verify: 1 problem(s)' };
+        return { task: nn, checker: passLine('trim-verify', nn, stage) };
+      });
+      expect(prompts.some(p => p.label === 'verify:03')).toBe(false);
+      expect(out.passed).toEqual(['00', '01', '02']);
+      expect(out.failed).toEqual([
+        { task: '03', stage: 'trim', checker: 'FAIL trim-verify 03 trim: 1 problem(s)' },
+        { task: '04', stage: 'verify', checker: 'FAIL trim-verify 04 verify: 1 problem(s)' },
+      ]);
+    });
+
+    it('takes a trim PASS line only for the trim stage', async () => {
+      // A verify-stage PASS line returned by the trim agent is not a trim pass.
+      let n = 0;
+      const { prompts } = await run({ ...args, count: 1, coupled: [] }, label => {
+        const [stage, nn] = label.split(':');
+        if (label === 'trim:00' && n++ === 0) return { task: nn, checker: passLine('trim-verify', nn, 'verify') };
+        return { task: nn, checker: passLine('trim-verify', nn, stage) };
+      });
+      expect(prompts.filter(p => p.label === 'trim:00')).toHaveLength(2);
+    });
+
+    it('requires `coupled`, and refuses one outside the task range', async () => {
+      const { coupled: _drop, ...noCoupled } = args;
+      await expect(run(noCoupled)).rejects.toThrow(/coupled/);
+      await expect(run({ ...args, coupled: ['09'] })).rejects.toThrow(/outside 00..04/);
     });
   }
 );
