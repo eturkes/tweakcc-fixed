@@ -1,6 +1,6 @@
-// The markdown form of a classify evidence chunk: what an agent reads with ONE
-// Read call instead of parsing chunk-NN.json in many python snippets and then
-// probing the bundle for what the JSON leaves out.
+// The markdown form of a classify evidence chunk: what an agent reads (every
+// part in one message of Read calls) instead of parsing chunk-NN.json in many
+// python snippets and then probing the bundle for what the JSON leaves out.
 //
 // Per family (the function that emits the strings): its head, the call sites
 // that reach it three levels up WITH the branch condition each call sits

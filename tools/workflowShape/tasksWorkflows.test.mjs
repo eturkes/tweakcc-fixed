@@ -56,6 +56,10 @@ const WORKFLOWS = [
       'preserve all existing code comments verbatim and do not refactor executable code',
       'grep the bundle /tmp/cli-9.9.9.js for the literal AND for the const it is built from',
       'check the sentence reads correctly against EVERY branch the slot can resolve to',
+      "the override set is the directory holding the entry's paths; system reminders are in /work/lcc/system-reminders",
+      'the relevant current pristine entry in /work/tweakcc-fixed/data/prompts/prompts-9.9.9.json',
+      "A MODEL_DEFAULT coverage claim holds only when BOTH served models' system-card digests",
+      'Match the escaping the file already uses',
     ],
   },
   {
@@ -71,6 +75,7 @@ const WORKFLOWS = [
       "Write the resulting override to EVERY exact path in the packet's `setFiles`.",
       'An EMPTY body is a deliberate SUPPRESSION: leave it empty.',
       'Never reword a restored limit, field name, enum, endpoint, parameter, or ordering rule.',
+      'Match the escaping the file already uses',
     ],
   },
   {
@@ -84,7 +89,7 @@ const WORKFLOWS = [
       'Refute by default.',
       'An alternative arm — the other branch of a ternary',
       'A wipe of a rewrite-table REPLACEMENT (externalRefs.rewriteReplacement',
-      'For MODEL_DEFAULT, use the referenced system-card digest rather than looking for a file.',
+      "For MODEL_DEFAULT, read both served models' system-card digests rather than looking for a file — ~/dev/anthropic-reference/Opus-5.5-Card-Digest.md and ~/dev/anthropic-reference/Fable-5.1-Card-Digest.md — and refute the claim unless BOTH state that default",
       'Do not trust the stage-1 rationale, writer summary, or claimed pristine quote.',
       'The mechanics tripwire is verbatim-or-delete',
       'Return exactly one finding per assigned id.',
@@ -111,6 +116,10 @@ const WORKFLOWS = [
       'so its absence from the capture is NOT a refutation',
       'treat it as REFUTED',
       'grep the bundle /tmp/cli-9.9.9.js for the literal AND for the const it is built from',
+      "the override set is the directory holding the entry's paths",
+      "A MODEL_DEFAULT coverage claim holds only when BOTH served models' system-card digests",
+      "For MODEL_DEFAULT, read both served models' system-card digests",
+      'Match the escaping the file already uses',
     ],
   },
 ];
@@ -189,6 +198,7 @@ for (const w of WORKFLOWS) {
         expect(p.prompt).not.toMatch(/\/Users\/|<repoDir>/);
         if (w.reminders) expect(p.prompt).toContain(`${REMINDERS_DIR}/<name>.md`);
         expect(p.opts.model).toBe('sonnet');
+        expect(p.opts.agentType).toBe('showtime-worker');
         expect(p.opts.schema.required).toEqual(['task', 'checker']);
       }
       expect(out).toEqual({

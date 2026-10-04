@@ -1,6 +1,6 @@
 // The stage-1 audit workflow's path-only contract and its prompt rules.
 //
-// The script takes {version, packetDir, groupCount, activeSet}, derives every
+// The script takes {version, packetDir, groupCount, mdParts, activeSet}, derives every
 // path itself, and must carry the audit rules verbatim: a rule that silently
 // drops out of the agent prompt still produces well-formed verdicts, so only a
 // test that reads the prompt sees it. Skips when .claude/workflows is absent.
@@ -64,6 +64,7 @@ const ARGS = {
   version: '2.1.288',
   packetDir: '/p/',
   groupCount: 3,
+  mdParts: [1, 1, 2],
   activeSet: '/sets/system-prompts-lcc',
   repoDir: '/work/tweakcc-fixed',
   remindersDir: '/work/lcc/system-reminders',
@@ -90,6 +91,7 @@ describe.skipIf(!has)('audit-new-prompts-stage1 contract', () => {
       'version',
       'packetDir',
       'groupCount',
+      'mdParts',
       'activeSet',
       'repoDir',
       'remindersDir',
@@ -101,6 +103,13 @@ describe.skipIf(!has)('audit-new-prompts-stage1 contract', () => {
       const r = run(a);
       await expect(r).rejects.toThrow(new RegExp(k));
     }
+    await expect(run({ ...ARGS, mdParts: [1, 1] })).rejects.toThrow(/mdParts/);
+  });
+
+  it('runs every agent as the lean showtime-worker type', async () => {
+    const { prompts } = await run(ARGS);
+    expect(prompts.map(p => p.opts.agentType)).toEqual(['showtime-worker', 'showtime-worker', 'showtime-worker']);
+    expect(prompts[0].prompt).not.toMatch(/load any skill|showtime rules/);
   });
 
   it('reruns only the named groups', async () => {
@@ -157,13 +166,14 @@ describe.skipIf(!has)('audit-new-prompts-stage1 contract', () => {
     );
   });
 
-  it('points the agent at the one-Read markdown packet and the batched tools', async () => {
+  it('points the agent at every part of the markdown packet and the batched tools', async () => {
     const { prompts } = await run(ARGS);
+    expect(prompts[0].prompt).toContain('Read the markdown packet, /p/audit-packet-00.md in full; do not read the JSON packet.');
     const p = prompts[2].prompt;
     for (const rule of [
-      'Audit every assigned Claude Code 2.1.288 prompt in /p/audit-packet-02.md',
-      'Do not load any skill (in particular not the audit-new-prompts-stage1 skill)',
-      'Read /p/audit-packet-02.md with ONE Read call, the whole file; do not read the JSON packet.',
+      'Audit every assigned Claude Code 2.1.288 prompt in your markdown packet (its JSON twin /p/audit-packet-02.json is for the tools)',
+      'Everything you need is in that markdown packet and this prompt.',
+      'Read the markdown packet, all 2 parts of it in full — /p/audit-packet-02.part1.md, /p/audit-packet-02.part2.md — with every Read call in ONE message; do not read the JSON packet.',
       "IS that tool's output for every claim sentence",
       'node /work/tweakcc-fixed/tools/bundleQuery.mjs --cli /tmp/cli-2.1.288.js --catalogue /work/tweakcc-fixed/data/prompts/prompts-2.1.288.json',
       'send them in ONE bundleQuery call (two at most)',
@@ -185,7 +195,7 @@ describe.skipIf(!has)('audit-new-prompts-stage1 contract', () => {
 
   it('resumes from the verdicts file through the merge write', async () => {
     let n = 0;
-    const { prompts } = await run({ ...ARGS, groupCount: 1 }, g =>
+    const { prompts } = await run({ ...ARGS, groupCount: 1, mdParts: [1] }, g =>
       n++ === 0
         ? { group: g, verdictsFile: 'x', checker: 'FAIL g00: 1 error(s)' }
         : {
@@ -197,7 +207,7 @@ describe.skipIf(!has)('audit-new-prompts-stage1 contract', () => {
     expect(prompts).toHaveLength(2);
     expect(prompts[1].prompt).toContain('RESUME');
     expect(prompts[1].prompt).toContain(
-      'Read /p/audit-packet-00.md (one Read)'
+      'Read the markdown packet, /p/audit-packet-00.md in full, and that file'
     );
     expect(prompts[1].prompt).toContain('with --merge');
   });

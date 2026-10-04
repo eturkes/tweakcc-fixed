@@ -5,12 +5,14 @@
 // siblings might already carry the claim — so the packet assembles all of it
 // once, and the fan-out spends its budget on judgment instead of lookup.
 //
-//   node tools/buildAuditPacket.mjs <prompts.json> <ids-file> <outDir> [groupSize]
+//   node tools/buildAuditPacket.mjs <prompts.json> <ids-file> <outDir> [--ids-per-agent N]
 //
 // <ids-file> is one prompt id per line. Writes <outDir>/audit-packet-NN.md —
-// what the stage-1 agent reads, in one Read call (tools/lib/auditPacketMd.mjs:
+// the whole markdown packet the stage-1 agent reads (tools/lib/auditPacketMd.mjs:
 // the LCC decision rule, every body, the bundle code around each site, the
-// precomputed corpus search and every carrier's deployed text) — beside
+// precomputed corpus search and every carrier's deployed text); when it is
+// larger than one Read call, its parts audit-packet-NN.partK.md beside it,
+// which the agent reads in one message (tools/lib/packetParts.mjs) — beside
 // <outDir>/audit-packet-NN.json (what the search, checker and harvest read),
 // <outDir>/audit-meta.json (every override's frontmatter and the catalogue
 // name, moved out of the packets), <outDir>/audit-manifest.json (inputs, their
@@ -19,11 +21,9 @@
 // tools/auditCorpusSearch.mjs and tools/checkAuditVerdicts.mjs open. Prints
 // the path-only workflow args on its last line.
 //
-// Packets are sized by the rendered markdown (TWEAKCC_AUDIT_MD_BUDGET bytes,
-// default 48000: ~21k tokens at the ~2.3 chars/token measured on stage-1
-// transcripts, under the Read tool's 25k-token cap);
-// groupSize is only a cap on ids per packet. The LCC CLAUDE.md beside the
-// reminders folder must carry the decision-rule headings.
+// The ids are cut, in input order, into ceil(ids / --ids-per-agent) groups of
+// near-equal rendered size (IDS_PER_AGENT by default). The LCC CLAUDE.md
+// beside the reminders folder must carry the decision-rule headings.
 //
 // Packets are lean but complete: every pristine body in full (labelled, the
 // canonical reconstruction), deduplicated across sites; a deployed body only
@@ -71,14 +71,48 @@ import {
   siteOwnerFrom,
 } from './lib/concatNeighbours.mjs';
 import { fileURLToPath } from 'node:url';
+import { partitionContiguous, agentsFor } from './lib/packByWeight.mjs';
+import { writeMarkdownParts, partByteCap } from './lib/packetParts.mjs';
+
+// Ids one stage-1 agent audits. Set from the 2.1.288 batching replay (see
+// memory showtime-token-cost): per-agent cost there was dominated by the fixed
+// context every agent pays, not by the ids it ruled.
+export const IDS_PER_AGENT = 29;
 
 const parsed = parseOverrideArgs(process.argv.slice(2));
 const resolved = resolveOverrideSets(parsed, { fallback: 'applied' });
-const [jsonPath, idsPath, outDirArg, groupSizeArg] = parsed.rest;
+const flagArgs = [];
+const posArgs = [];
+for (let i = 0; i < parsed.rest.length; i++) {
+  const a = parsed.rest[i];
+  if (a === '--ids-per-agent') flagArgs.push(['ids-per-agent', parsed.rest[++i]]);
+  else if (a.startsWith('--ids-per-agent=')) flagArgs.push(['ids-per-agent', a.slice(16)]);
+  else posArgs.push(a);
+}
+const [jsonPath, idsPath, outDirArg, staleGroupSize] = posArgs;
 if (!jsonPath || !idsPath) {
   console.error(
-    'usage: buildAuditPacket.mjs <prompts.json> <ids-file> [outDir] [groupSize]'
+    'usage: buildAuditPacket.mjs <prompts.json> <ids-file> [outDir] [--ids-per-agent N]'
   );
+  process.exit(2);
+}
+if (staleGroupSize !== undefined) {
+  console.error(
+    `buildAuditPacket: the groupSize argument (${staleGroupSize}) is gone — size the fan-out with --ids-per-agent N (default ${IDS_PER_AGENT}); a packet larger than one Read is split into part files`
+  );
+  process.exit(2);
+}
+if (process.env.TWEAKCC_AUDIT_MD_BUDGET) {
+  console.error(
+    'buildAuditPacket: TWEAKCC_AUDIT_MD_BUDGET is gone — packets are no longer capped by size; size the fan-out with --ids-per-agent N'
+  );
+  process.exit(2);
+}
+const idsPerAgent = Number(
+  (flagArgs.find(([k]) => k === 'ids-per-agent') || [])[1] ?? IDS_PER_AGENT
+);
+if (!(Number.isInteger(idsPerAgent) && idsPerAgent > 0)) {
+  console.error('buildAuditPacket: --ids-per-agent must be a positive integer');
   process.exit(2);
 }
 const outDir = outDirArg || '/tmp';
@@ -86,9 +120,6 @@ const outDir = outDirArg || '/tmp';
 // from being harvested as this one's result, so the tool has to be able to
 // create the directory it was pointed at rather than failing at the first write.
 fs.mkdirSync(outDir, { recursive: true });
-// A cap on ids per packet; the rendered markdown size decides the grouping
-// (see "Group by what the agent READS" below).
-const groupSize = Math.max(1, Number(groupSizeArg || 30));
 
 // The active set moves; resolve it, never hardcode it.
 let active = null;
@@ -322,14 +353,12 @@ const packetFor = id => {
 
 // Group by what the agent READS: the rendered markdown packet.
 //
-// The agent reads audit-packet-NN.md in one Read call, so its size is the
-// unit of work and of context. Ids stay in input order (families sort
+// ceil(ids / idsPerAgent) groups. Ids stay in input order (families sort
 // together, so a family lands in one packet, is judged consistently, and its
-// shared carriers are rendered once), and a packet closes when the next id
-// would push the rendered file past the budget or the group past groupSize.
-// The fill target is then lowered to the smallest value that still needs no
-// more packets, which evens the sizes out. An id bigger than the budget on its
-// own gets a packet to itself and is reported.
+// shared carriers are rendered once), and the cut points even out the
+// rendered size, weighed per id as its own one-id packet less the shared
+// header and rules. A packet larger than one Read call is written as part
+// files the agent reads in one message.
 const toolsDir = path.dirname(fileURLToPath(import.meta.url));
 const version = JSON.parse(fs.readFileSync(jsonPath, 'utf8')).version;
 const absOut = path.resolve(outDir);
@@ -343,10 +372,7 @@ const corpusBlock = {
   // The prompt-text part alone, so harvest can prove the corpus stayed frozen.
   corpusDigest: index ? index.corpusDigest : null,
 };
-const mdBudget = Math.max(
-  4000,
-  Number(process.env.TWEAKCC_AUDIT_MD_BUDGET) || 48000
-);
+const partBytes = partByteCap();
 
 // The LCC decision rule travels inside every packet, so no agent re-reads the
 // whole CLAUDE.md. Missing headings fail the build: a packet without the rules
@@ -495,47 +521,26 @@ const renderMd = (n, slice) => {
   });
 };
 
-const partition = target => {
-  const out = [];
-  let cur = [];
-  for (const id of ids) {
-    if (cur.length) {
-      const n = String(out.length).padStart(2, '0');
-      const full =
-        cur.length >= groupSize ||
-        Buffer.byteLength(renderMd(n, [...cur, id])) > target;
-      if (full) {
-        out.push(cur);
-        cur = [];
-      }
-    }
-    cur.push(id);
-  }
-  if (cur.length) out.push(cur);
-  return out;
-};
-let bins = partition(mdBudget);
-{
-  let lo = Math.floor(mdBudget / 2);
-  let hi = mdBudget;
-  while (hi - lo > 500) {
-    const mid = Math.floor((lo + hi) / 2);
-    const trial = partition(mid);
-    if (trial.length <= bins.length) {
-      bins = trial;
-      hi = mid;
-    } else lo = mid;
-  }
-}
+// The shared part of every packet (header, LCC rules) is weighed once: an
+// id's weight is its one-id packet less an empty packet.
+const emptyMd = Buffer.byteLength(renderMd('00', []));
+const weightOf = new Map(
+  ids.map(id => [id, Buffer.byteLength(renderMd('00', [id])) - emptyMd])
+);
+const agents = agentsFor(ids.length, idsPerAgent);
+const bins = partitionContiguous(ids, agents, id => weightOf.get(id));
 const mdMs = Date.now() - tMd;
 
 const groups = [];
 const mdSizes = [];
+for (const f of fs.readdirSync(absOut)) {
+  if (/^audit-packet-\d+\.part\d+\.md$/.test(f)) fs.unlinkSync(path.join(absOut, f));
+}
 for (const slice of bins) {
   const n = String(groups.length).padStart(2, '0');
   const p = pathsFor(n);
   const md = renderMd(n, slice);
-  fs.writeFileSync(p.md, md);
+  const mdParts = writeMarkdownParts(p.md, md, { maxBytes: partBytes });
   mdSizes.push(Buffer.byteLength(md));
   fs.writeFileSync(
     p.file,
@@ -549,6 +554,7 @@ for (const slice of bins) {
         corpus: corpusBlock,
         meta: path.join(absOut, 'audit-meta.json'),
         md: p.md,
+        mdParts,
         verdictsFile: p.verdicts,
         commands: commandsFor(p),
         coRenderNote: CORENDER_NOTE,
@@ -566,6 +572,7 @@ for (const slice of bins) {
     name: `g${n}`,
     packet: p.file,
     md: p.md,
+    mdParts,
     verdicts: p.verdicts,
     ids: slice,
   });
@@ -577,14 +584,12 @@ fs.writeFileSync(
 );
 
 const sorted = [...mdSizes].sort((a, b) => a - b);
-const over = groups.filter((g, i) => mdSizes[i] > mdBudget);
+const partCounts = groups.map(g => g.mdParts.length);
 console.log(
-  `audit packets: ${groups.length} group(s), ${ids.length} id(s), md budget ${mdBudget} B, groupSize cap ${groupSize} | ` +
+  `audit packets: ${groups.length} group(s), ${ids.length} id(s) at ${idsPerAgent} per agent | ` +
     `md sizes min ${sorted[0]} / median ${sorted[Math.floor(sorted.length / 2)]} / max ${sorted[sorted.length - 1]} B, ` +
-    `ids per group ${Math.min(...bins.map(b => b.length))}-${Math.max(...bins.map(b => b.length))}, rendered in ${mdMs} ms` +
-    (over.length
-      ? ` | OVER BUDGET (one id alone exceeds it): ${over.map(g => `${g.name} ${g.ids[0]}`).join(', ')}`
-      : '')
+    `ids per group ${Math.min(...bins.map(b => b.length))}-${Math.max(...bins.map(b => b.length))}, ` +
+    `${partCounts.reduce((a, b) => a + b, 0)} part file(s) of ≤${partBytes} B (max ${Math.max(...partCounts)} per packet), rendered in ${mdMs} ms`
 );
 console.log(`LCC decision rule: ${lccPath}`);
 console.log(
@@ -623,6 +628,7 @@ fs.writeFileSync(
       idsFile: path.resolve(idsPath),
       corpus: corpusBlock,
       bundleSha: index ? index.bundleSha : null,
+      packing: { idsPerAgent, agents, partBytes },
       groupCount: groups.length,
       groups,
     },
@@ -633,5 +639,5 @@ fs.writeFileSync(
 console.log(`groups descriptor -> ${path.join(absOut, 'audit-groups.json')}`);
 console.log(`manifest -> ${path.join(absOut, 'audit-manifest.json')}`);
 console.log(
-  `workflow args: ${JSON.stringify({ version, packetDir: absOut, groupCount: groups.length, activeSet, repoDir: path.dirname(toolsDir), remindersDir })}`
+  `workflow args: ${JSON.stringify({ version, packetDir: absOut, groupCount: groups.length, mdParts: partCounts, activeSet, repoDir: path.dirname(toolsDir), remindersDir })}`
 );

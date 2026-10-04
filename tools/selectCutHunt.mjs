@@ -1,28 +1,34 @@
 #!/usr/bin/env node
-// Select the stage-1 keeps a cut-hunt pass re-reads, and build its packets.
+// Build the cut-hunt packets: every stage-1 keep gets a second read.
 //
-//   node tools/selectCutHunt.mjs <stage1 packetDir> <huntDir> [--share 0.25] [--family-cap 3] [--group-size 8] [--md-bytes 46000]
+//   node tools/selectCutHunt.mjs <stage1 packetDir> <huntDir> [--ids-per-agent N]
 //
 // Reads <packetDir>/stage1-result.json (harvestAudit's output) and the stage-1
-// packets. Every pristine-keep whose packet evidence makes a cut plausible
-// (tools/lib/cutLeads.mjs: a claim restated by a carrier that may co-render,
-// the tool's own description/schema, a same-tool emitter sibling, a near
-// body) is ranked by lead strength; the top --share of the keeps is taken,
-// at most --family-cap per id family (the first four id segments), so one
-// switch of alternative messages cannot use the whole budget. Selection is
-// deterministic and decides only who gets a second read.
+// packets. Every pristine-keep is hunted. Its cut leads (tools/lib/cutLeads.mjs:
+// a claim restated by a carrier that may co-render, the tool's own
+// description/schema, a same-tool emitter sibling, a near body) travel with it
+// as evidence; they no longer decide who is hunted (CC 2.1.288 replay: 367 of
+// 450 keeps had a lead, a quarter-share cap hunted 112 of them).
 //
 // Writes into <huntDir>: hunt-packet-NN.json (the stage-1 packet entries of
-// the selected ids, same shape, so writeAuditVerdicts/checkAuditVerdicts work
+// those ids, same shape, so writeAuditVerdicts/checkAuditVerdicts work
 // unchanged), hunt-packet-NN.md (the stage-1 markdown of those ids with their
 // stage-1 verdict and leads, the LCC sections, and every carrier and lead
-// body once), hunt-selection.json (every keep with its score and leads) and
+// body once; split into hunt-packet-NN.partK.md when larger than one Read
+// call), hunt-selection.json (every keep with its score and leads) and
 // hunt-manifest.json. Last line: the workflow args.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { openIndex, resolveCarrier } from './lib/auditCorpus.mjs';
 import { cutLeads, leadScore } from './lib/cutLeads.mjs';
+import { partitionContiguous, agentsFor } from './lib/packByWeight.mjs';
+import { writeMarkdownParts, partByteCap } from './lib/packetParts.mjs';
+
+// Keeps one hunter re-reads. Set from the 2.1.288 batching replay (see memory
+// showtime-token-cost): per-agent cost there was dominated by the fixed
+// context every agent pays, not by the ids it ruled.
+export const IDS_PER_AGENT = 29;
 
 const argv = process.argv.slice(2);
 const opt = (k, d) => {
@@ -30,24 +36,6 @@ const opt = (k, d) => {
   return i >= 0 ? argv[i + 1] : d;
 };
 const pos = argv.filter((a, i) => !a.startsWith('--') && !(i > 0 && argv[i - 1].startsWith('--')));
-
-export const familyOf = id => id.split('-').slice(0, 4).join('-');
-
-// Rank, cap per family, cap overall. rows: [{id, score}] (score 0 = no lead).
-export function pickHunt(rows, { share = 0.25, familyCap = 3 } = {}) {
-  const cap = Math.floor(rows.length * share);
-  const sorted = rows.filter(r => r.score > 0).sort((a, b) => b.score - a.score || a.id.localeCompare(b.id));
-  const per = new Map();
-  const out = [];
-  for (const r of sorted) {
-    if (out.length >= cap) break;
-    const f = familyOf(r.id);
-    if ((per.get(f) || 0) >= familyCap) continue;
-    per.set(f, (per.get(f) || 0) + 1);
-    out.push(r);
-  }
-  return { cap, picked: out };
-}
 
 // Split a stage-1 md into header parts, per-id sections and carrier sections.
 export function splitStageMd(md) {
@@ -88,7 +76,7 @@ export function renderHuntMd({ group, version, ids, stage1, leadsById, parts, co
   const L = [];
   L.push(`# Cut hunt ${group} — Claude Code ${version} (${ids.length} ids)`);
   L.push('');
-  L.push('Every id below was ruled pristine-keep by stage 1, and its packet evidence names a plausible cut. Your job: build the STRONGEST LEGITIMATE cut for each (trim or wipe-merge) under the full rules, then decide honestly whether it holds. Stage 1\'s reasoning and the leads are shown per id; they are evidence, not verdicts.');
+  L.push('Every id below was ruled pristine-keep by stage 1. Your job: build the STRONGEST LEGITIMATE cut for each (trim or wipe-merge) under the full rules, then decide honestly whether it holds. Stage 1\'s reasoning and the cut leads the packet evidence names are shown per id; they are evidence, not verdicts, and an id without a lead still gets the full hunt.');
   L.push('');
   L.push('## Commands (each answers many questions in ONE call)');
   L.push(`Bundle queries (every lookup for ALL ids in one call, two at most; never python/grep the bundle):\n~~~sh\n${commands.query} <<'Q'\n[{"fn":123},{"callers":123,"depth":2},{"refs":"Xy","at":123},{"text":"literal"},{"prop":"optionName"}]\nQ\n~~~`);
@@ -106,8 +94,9 @@ export function renderHuntMd({ group, version, ids, stage1, leadsById, parts, co
     L.push(`**Stage 1 ruled pristine-keep.** why: ${v.why || '—'}`);
     if (v.duplicateCheck) L.push(`duplicateCheck: ${v.duplicateCheck}`);
     if (v.slopCheck) L.push(`slopCheck: ${v.slopCheck}`);
-    L.push('**Cut leads (why this id was selected):**');
-    for (const l of leadsById.get(id) || []) L.push(leadLine(l));
+    const leads = leadsById.get(id) || [];
+    L.push(leads.length ? '**Cut leads:**' : '**Cut leads:** none in the packet evidence; hunt from the body, the slop check and the corpus search.');
+    for (const l of leads) L.push(leadLine(l));
   });
   L.push('');
   const all = new Map([...parts.carriers, ...extraCarriers]);
@@ -119,14 +108,22 @@ export function renderHuntMd({ group, version, ids, stage1, leadsById, parts, co
 function main() {
   const [packetDirArg, huntDirArg] = pos;
   if (!packetDirArg || !huntDirArg) {
-    console.error('usage: selectCutHunt.mjs <stage1 packetDir> <huntDir> [--share 0.25] [--family-cap 3] [--group-size 8] [--md-bytes 46000]');
+    console.error('usage: selectCutHunt.mjs <stage1 packetDir> <huntDir> [--ids-per-agent N]');
     process.exit(2);
+  }
+  for (const gone of ['share', 'family-cap', 'group-size', 'md-bytes']) {
+    if (argv.includes(`--${gone}`)) {
+      console.error(`selectCutHunt: --${gone} is gone — every stage-1 keep is hunted and a packet larger than one Read is split into part files; size the fan-out with --ids-per-agent N (default ${IDS_PER_AGENT}).`);
+      process.exit(2);
+    }
   }
   const packetDir = path.resolve(packetDirArg);
   const huntDir = path.resolve(huntDirArg);
-  const share = Number(opt('share', '0.25'));
-  const familyCap = Number(opt('family-cap', '3'));
-  const groupSize = Number(opt('group-size', '8'));
+  const idsPerAgent = Number(opt('ids-per-agent', String(IDS_PER_AGENT)));
+  if (!(Number.isInteger(idsPerAgent) && idsPerAgent > 0)) {
+    console.error('selectCutHunt: --ids-per-agent must be a positive integer');
+    process.exit(2);
+  }
   const repoDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
   const man = JSON.parse(fs.readFileSync(path.join(packetDir, 'audit-manifest.json'), 'utf8'));
   const resultPath = path.join(packetDir, 'stage1-result.json');
@@ -147,15 +144,14 @@ function main() {
       rows.push({ id: pr.id, score: leadScore(leads), leads });
     }
   }
-  const { cap, picked } = pickHunt(rows, { share, familyCap });
-  const pickedSet = new Set(picked.map(r => r.id));
   const leadsById = new Map(rows.map(r => [r.id, r.leads]));
   // Packet order keeps an id next to the ids that share its carriers.
-  const order = [...entry.keys()].filter(id => pickedSet.has(id));
-  const mdBudget = Number(opt('md-bytes', '46000'));
+  const keepSet = new Set(rows.map(r => r.id));
+  const order = [...entry.keys()].filter(id => keepSet.has(id));
+  const partBytes = partByteCap();
 
   fs.mkdirSync(huntDir, { recursive: true });
-  for (const f of fs.readdirSync(huntDir)) if (/^(hunt-packet|verdicts|search)-\d+\.(json|md|out\.json)$|^hunt-(manifest|selection|report)\.json$|^stage1-result\.json$/.test(f)) fs.unlinkSync(path.join(huntDir, f));
+  for (const f of fs.readdirSync(huntDir)) if (/^(hunt-packet|verdicts|search)-\d+\.(json|md|out\.json)$|^hunt-packet-\d+\.part\d+\.md$|^hunt-(manifest|selection|report)\.json$|^stage1-result\.json$/.test(f)) fs.unlinkSync(path.join(huntDir, f));
   const mdCache = new Map();
   const pathsFor = nn => ({
     packetPath: path.join(huntDir, `hunt-packet-${nn}.json`),
@@ -197,18 +193,11 @@ function main() {
     }
     return { P, commands, md: renderHuntMd({ group: name, version: man.version, ids, stage1, leadsById, parts, commands: { ...commands, queries: P.queries }, extraCarriers }) };
   };
-  // Greedy packing in packet order: a group closes at --group-size ids or
-  // when the next id would push its markdown past --md-bytes (one Read).
-  const groups = [];
-  let cur = [];
-  for (const id of order) {
-    const trial = [...cur, id];
-    if (cur.length && (trial.length > groupSize || buildMd(trial, '00', 'h00').md.length > mdBudget)) {
-      groups.push(cur);
-      cur = [id];
-    } else cur = trial;
-  }
-  if (cur.length) groups.push(cur);
+  // ceil(keeps / idsPerAgent) groups in packet order, cut where the rendered
+  // sizes even out; an id weighs its one-id packet less the shared header.
+  const empty = Buffer.byteLength(buildMd([], '00', 'h00').md);
+  const weight = new Map(order.map(id => [id, Buffer.byteLength(buildMd([id], '00', 'h00').md) - empty]));
+  const groups = order.length ? partitionContiguous(order, agentsFor(order.length, idsPerAgent), id => weight.get(id)) : [];
   const width = Math.max(2, String(groups.length - 1).length);
   const manGroups = [];
   groups.forEach((ids, gi) => {
@@ -219,18 +208,20 @@ function main() {
     const { prompts: _p, md: _m, ...head } = first;
     void _p;
     void _m;
-    const packet = { ...head, group: name, md: P.mdPath, verdictsFile: P.verdictsFile, commands, hunt: { stage1Result: resultPath }, prompts: ids.map(id => entry.get(id).pr) };
+    const mdParts = writeMarkdownParts(P.mdPath, md, { maxBytes: partBytes });
+    const packet = { ...head, group: name, md: P.mdPath, mdParts, verdictsFile: P.verdictsFile, commands, hunt: { stage1Result: resultPath }, prompts: ids.map(id => entry.get(id).pr) };
     fs.writeFileSync(P.packetPath, JSON.stringify(packet, null, 1));
-    fs.writeFileSync(P.mdPath, md);
-    manGroups.push({ name, packet: P.packetPath, md: P.mdPath, mdBytes: md.length, verdicts: P.verdictsFile, queries: P.queries, ids });
+    manGroups.push({ name, packet: P.packetPath, md: P.mdPath, mdParts, mdBytes: Buffer.byteLength(md), verdicts: P.verdictsFile, queries: P.queries, ids });
   });
-  fs.writeFileSync(path.join(huntDir, 'hunt-selection.json'), JSON.stringify({ keeps: rows.length, cap, share, familyCap, selected: picked.length, rows: rows.sort((a, b) => b.score - a.score || a.id.localeCompare(b.id)).map(r => ({ ...r, selected: pickedSet.has(r.id) })) }, null, 1));
-  const manifest = { format: 1, version: man.version, stage1Result: resultPath, stage1PacketDir: packetDir, corpus: c, keeps: rows.length, selected: picked.length, groupCount: groups.length, groups: manGroups };
+  fs.writeFileSync(path.join(huntDir, 'hunt-selection.json'), JSON.stringify({ keeps: rows.length, hunted: order.length, withLead: rows.filter(r => r.score > 0).length, rows: rows.sort((a, b) => b.score - a.score || a.id.localeCompare(b.id)) }, null, 1));
+  const manifest = { format: 1, version: man.version, stage1Result: resultPath, stage1PacketDir: packetDir, corpus: c, keeps: rows.length, selected: order.length, packing: { idsPerAgent, agents: groups.length, partBytes }, groupCount: groups.length, groups: manGroups };
   fs.writeFileSync(path.join(huntDir, 'hunt-manifest.json'), JSON.stringify(manifest, null, 1));
   const sizes = manGroups.map(g => g.mdBytes);
-  console.log(`cut hunt ${man.version}: ${picked.length} of ${rows.length} keep(s) selected (cap ${cap} = ${share} × keeps; ${rows.filter(r => r.score > 0).length} had a lead), ${groups.length} group(s) of ≤${groupSize}; md ${Math.min(...sizes)}–${Math.max(...sizes)} bytes -> ${huntDir}`);
+  const partCounts = manGroups.map(g => g.mdParts.length);
+  const perGroup = groups.map(g => g.length);
+  console.log(`cut hunt ${man.version}: all ${order.length} keep(s) hunted (${rows.filter(r => r.score > 0).length} with a cut lead) in ${groups.length} group(s) at ${idsPerAgent} per agent (${groups.length ? `${Math.min(...perGroup)}–${Math.max(...perGroup)}` : 0} ids each); md ${sizes.length ? `${Math.min(...sizes)}–${Math.max(...sizes)}` : 0} bytes, ${partCounts.reduce((a, b) => a + b, 0)} part file(s) of ≤${partBytes} B -> ${huntDir}`);
   // model and effort have no default: the caller adds them.
-  console.log(`workflow args: ${JSON.stringify({ version: man.version, huntDir, groupCount: groups.length, activeSet: c.activeSet, repoDir, ...(c.remindersDir ? { remindersDir: c.remindersDir } : {}) })}`);
+  console.log(`workflow args: ${JSON.stringify({ version: man.version, huntDir, groupCount: groups.length, mdParts: partCounts, activeSet: c.activeSet, repoDir, ...(c.remindersDir ? { remindersDir: c.remindersDir } : {}) })}`);
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main();

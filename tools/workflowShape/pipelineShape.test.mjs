@@ -78,6 +78,7 @@ describe.skipIf(!has('classify-and-name-prompts.workflow.js'))(
       version: '9.9.9',
       evidenceDir: '/tmp/classify-evidence-9.9.9',
       chunkCount: 4,
+      mdParts: [1, 2, 1, 1],
       model: 'sonnet',
       verifyModel: 'opus',
       classifyEffort: 'high',
@@ -94,7 +95,7 @@ describe.skipIf(!has('classify-and-name-prompts.workflow.js'))(
       const logs = [];
       const ctx = {
         args: input,
-        agent: async (prompt, o) => { prompts.push({ prompt, label: o.label }); return reply(o.label, prompt); },
+        agent: async (prompt, o) => { prompts.push({ prompt, label: o.label, agentType: o.agentType }); return reply(o.label, prompt); },
         pipeline: async (items, ...stages) =>
           Promise.all(items.map(async it => {
             let v = it;
@@ -129,7 +130,7 @@ describe.skipIf(!has('classify-and-name-prompts.workflow.js'))(
     });
 
     it('takes paths and counts only, and refuses anything less before any agent runs', async () => {
-      for (const drop of ['evidenceDir', 'chunkCount', 'model', 'verifyModel', 'classifyEffort', 'verifyEffort', 'repoDir']) {
+      for (const drop of ['evidenceDir', 'chunkCount', 'mdParts', 'model', 'verifyModel', 'classifyEffort', 'verifyEffort', 'repoDir']) {
         const input = { ...base };
         delete input[drop];
         let spawned = 0;
@@ -142,15 +143,20 @@ describe.skipIf(!has('classify-and-name-prompts.workflow.js'))(
       await expect(
         runWith({ version: '9.9.9', chunks: ['/tmp/c0.json'], expectedHashes: { '/tmp/c0.json': ['0'.repeat(40)] } }, () => null)
       ).rejects.toThrow(/evidenceDir/);
+      // A part count per chunk, no more and no less.
+      await expect(runWith({ ...base, mdParts: [1, 1] }, () => null)).rejects.toThrow(/mdParts/);
+      await expect(runWith({ ...base, mdParts: [1, 0, 1, 1] }, () => null)).rejects.toThrow(/mdParts/);
     });
 
     it('names zero-based padded chunks and points every agent at files, never inline hashes', async () => {
-      const { out, prompts } = await runWith({ ...base, chunkCount: 2 }, (label) => {
+      const { out, prompts } = await runWith({ ...base, chunkCount: 2, mdParts: [1, 2] }, (label) => {
         const nn = label.split(':')[1];
         return label.startsWith('classify')
-          ? { chunk: nn, pass: true, verdicts: 3, scope: 2, note: '' }
+          ? { chunk: nn, pass: true, verdicts: 3, scope: 2, verifyParts: nn === '01' ? 2 : 1, note: '' }
           : { chunk: nn, pass: true, audited: 2, changed: 0, note: '' };
       });
+      // Every agent is the lean worker type (no skills, no CLAUDE.md).
+      expect(prompts.every(p => p.agentType === 'showtime-worker')).toBe(true);
       expect(prompts.map(p => p.label).sort()).toEqual(['classify:00', 'classify:01', 'verify:00', 'verify:01']);
       const c0 = prompts.find(p => p.label === 'classify:00').prompt;
       expect(c0).toContain('/tmp/classify-evidence-9.9.9/chunk-00.json');
@@ -159,12 +165,17 @@ describe.skipIf(!has('classify-and-name-prompts.workflow.js'))(
       const v1 = prompts.find(p => p.label === 'verify:01').prompt;
       expect(v1).toContain('/tmp/classify-evidence-9.9.9/verify-scope-01.json');
       expect(v1).toContain('--stage verify');
-      // Turn economy: one Read of a markdown packet, batched bundle queries,
-      // write+check in one step, no skill loads.
-      expect(c0).toContain('/tmp/classify-evidence-9.9.9/chunk-00.md');
-      expect(c0).toContain('with ONE Read call');
+      // Turn economy: every part of a markdown packet read in one message,
+      // batched bundle queries, write+check in one step.
+      expect(c0).toContain('/tmp/classify-evidence-9.9.9/chunk-00.md in full');
+      expect(c0).toContain('ONE message of Read calls covering every part');
+      const c1 = prompts.find(p => p.label === 'classify:01').prompt;
+      expect(c1).toContain('/tmp/classify-evidence-9.9.9/chunk-01.part1.md, /tmp/classify-evidence-9.9.9/chunk-01.part2.md');
+      expect(c1).toContain('every Read call in ONE message');
+      expect(c1).not.toContain('chunk-01.md');
       expect(c0).toContain('writeClassifyVerdicts.mjs /tmp/classify-evidence-9.9.9 00');
-      expect(c0).toContain('Do not load any skill');
+      expect(c0).toContain('"verifyParts"');
+      expect(c0).not.toMatch(/load any skill/);
       expect(c0).toContain('bundleQuery');
       expect(c0).toContain('confirm the branch that yields this string is reachable from the model-bound caller');
       expect(c0).toContain('"roleChange"');
@@ -178,16 +189,17 @@ describe.skipIf(!has('classify-and-name-prompts.workflow.js'))(
       expect(c0).toContain('Never rule ui or internal while a branch of the route is still open');
       expect(c0).toContain('check whether ANY reachable caller sets the option');
       expect(c0).toContain('sent OUTBOUND as a control_response');
-      expect(v1).toContain('/tmp/classify-evidence-9.9.9/verify-01.md');
+      expect(v1).toContain('/tmp/classify-evidence-9.9.9/verify-01.part1.md, /tmp/classify-evidence-9.9.9/verify-01.part2.md');
+      expect(prompts.find(p => p.label === 'verify:00').prompt).toContain('/tmp/classify-evidence-9.9.9/verify-00.md in full');
       expect(v1).toContain('writeClassifyVerdicts.mjs /tmp/classify-evidence-9.9.9 01 --stage verify');
       expect(out).toMatchObject({ classified: 2, verified: 2, chunkCount: 2 });
       expect(out.next).toContain('harvestClassify.mjs /tmp/classify-evidence-9.9.9');
     });
 
     it('keeps every facing rule and adds the local-command and metaMessages rules', async () => {
-      const { prompts } = await runWith({ ...base, chunkCount: 1 }, (label) =>
+      const { prompts } = await runWith({ ...base, chunkCount: 1, mdParts: [1] }, (label) =>
         label.startsWith('classify')
-          ? { chunk: '00', pass: true, verdicts: 1, scope: 1, note: '' }
+          ? { chunk: '00', pass: true, verdicts: 1, scope: 1, verifyParts: 1, note: '' }
           : { chunk: '00', pass: true, audited: 1, changed: 0, note: '' });
       for (const p of prompts) {
         expect(p.prompt).toContain('{behavior:"ask", message}');
@@ -204,7 +216,7 @@ describe.skipIf(!has('classify-and-name-prompts.workflow.js'))(
 
     it('re-asks a chunk whose checker did not pass, and skips verify on an empty scope', async () => {
       let tries = 0;
-      const { out, prompts, logs } = await runWith({ ...base, chunkCount: 1 }, (label) => {
+      const { out, prompts, logs } = await runWith({ ...base, chunkCount: 1, mdParts: [1] }, (label) => {
         if (label.startsWith('verify')) return { chunk: '00', pass: true, audited: 0, changed: 0, note: '' };
         tries += 1;
         return tries === 1
@@ -232,16 +244,30 @@ describe.skipIf(!has('classify-and-name-prompts.workflow.js'))(
     });
 
     it('reports a chunk that never passes instead of throwing the run away', async () => {
-      const { out } = await runWith({ ...base, chunkCount: 2 }, (label) => {
+      const { out } = await runWith({ ...base, chunkCount: 2, mdParts: [1, 1] }, (label) => {
         const nn = label.split(':')[1];
         if (label === 'classify:01') return { chunk: '01', pass: false, verdicts: 0, scope: 0, note: 'bad' };
         return label.startsWith('classify')
-          ? { chunk: nn, pass: true, verdicts: 1, scope: 1, note: '' }
+          ? { chunk: nn, pass: true, verdicts: 1, scope: 1, verifyParts: 1, note: '' }
           : { chunk: nn, pass: true, audited: 1, changed: 1, note: '' };
       });
       expect(out.notClassified).toEqual(['01']);
       expect(out.classified).toBe(1);
       expect(out.changedByVerifier).toBe(1);
+    });
+
+    it('re-asks a receipt that does not relay the verify part count', async () => {
+      let tries = 0;
+      const { prompts } = await runWith({ ...base, chunkCount: 1, mdParts: [1] }, (label) => {
+        if (label.startsWith('verify')) return { chunk: '00', pass: true, audited: 2, changed: 0, note: '' };
+        tries += 1;
+        return tries === 1
+          ? { chunk: '00', pass: true, verdicts: 4, scope: 2, note: '' }
+          : { chunk: '00', pass: true, verdicts: 4, scope: 2, verifyParts: 3, note: '' };
+      });
+      expect(tries).toBe(2);
+      expect(prompts[1].prompt).toContain('receipt has no verifyParts count');
+      expect(prompts.find(p => p.label === 'verify:00').prompt).toContain('verify-00.part3.md');
     });
   }
 );

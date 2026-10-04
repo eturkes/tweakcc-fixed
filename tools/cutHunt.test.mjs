@@ -1,11 +1,11 @@
-// The stage-1 cut hunt: deterministic selection, packet assembly, the merge
+// The stage-1 cut hunt: lead scoring, packet assembly, the merge
 // rule (a hunter's cut counts only when it passes the checker and holds
 // against the merged result), and the workflow's path-only contract.
 import { describe, it, expect } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { pickHunt, splitStageMd, familyOf, renderHuntMd } from './selectCutHunt.mjs';
+import { splitStageMd, renderHuntMd } from './selectCutHunt.mjs';
 import { mergeHunt } from './harvestCutHunt.mjs';
 import { leadScore } from './lib/cutLeads.mjs';
 
@@ -13,23 +13,7 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 const WF = path.resolve(HERE, '../.claude/workflows');
 const FILE = path.join(WF, 'audit-stage1-cut-hunt.workflow.js');
 
-describe('selection', () => {
-  it('ranks by score, caps a share of the keeps and a family, skips ids without a lead', () => {
-    const rows = [
-      ...['a', 'b', 'c', 'd'].map((x, i) => ({ id: `tool-result-plugin-switch-${x}`, score: 5 - i * 0.1 })),
-      { id: 'tool-result-memory-version-hint', score: 4 },
-      { id: 'system-prompt-x-y-z', score: 1 },
-      ...Array.from({ length: 14 }, (_, i) => ({ id: `system-reminder-none-${i}-x`, score: 0 })),
-    ];
-    const { cap, picked } = pickHunt(rows, { share: 0.25, familyCap: 3 });
-    expect(cap).toBe(5);
-    const ids = picked.map(r => r.id);
-    expect(ids.filter(i => familyOf(i) === 'tool-result-plugin-switch')).toHaveLength(3);
-    expect(ids).toContain('tool-result-memory-version-hint');
-    expect(ids).toContain('system-prompt-x-y-z');
-    expect(ids.some(i => i.startsWith('system-reminder-none'))).toBe(false);
-  });
-
+describe('leads', () => {
   it('counts a carrier named by two kinds of evidence above a lone lead', () => {
     const lone = leadScore([{ kind: 'restated', carrier: 'a', weight: 3 }]);
     const twice = leadScore([{ kind: 'restated', carrier: 'a', weight: 3 }, { kind: 'near-body', carrier: 'a', weight: 1 }]);
@@ -71,6 +55,20 @@ describe('packet assembly', () => {
     expect(out).toContain('### `carrier-x`');
     expect(out).toContain('### `lead-z`');
     expect(out).not.toContain('carrier-y');
+  });
+
+  it('hunts a keep without a lead and says so', () => {
+    const s = splitStageMd(md);
+    const out = renderHuntMd({
+      group: 'h00', version: '9.9.9', ids: ['id-b'],
+      stage1: new Map([['id-b', { why: 'unique' }]]),
+      leadsById: new Map(),
+      parts: { common: s.common, sections: new Map([['id-b', s.sections.get('id-b')]]), carriers: new Map() },
+      commands: { query: 'Q', search: 'S', write: 'W', queries: '/h/search-00.json' },
+      extraCarriers: new Map(),
+    });
+    expect(out).toContain('an id without a lead still gets the full hunt');
+    expect(out).toContain('**Cut leads:** none in the packet evidence');
   });
 });
 
@@ -130,17 +128,20 @@ const run = async (args, reply) => {
   const out = await fn(args, agent, parallel, () => {}, () => {});
   return { out, prompts };
 };
-const ARGS = { version: '2.1.288', huntDir: '/h', groupCount: 2, activeSet: '/sets/system-prompts-lcc', repoDir: '/work/tweakcc-fixed', remindersDir: '/work/lcc/system-reminders', model: 'opus', effort: 'medium' };
+const ARGS = { version: '2.1.288', huntDir: '/h', groupCount: 2, mdParts: [1, 2], activeSet: '/sets/system-prompts-lcc', repoDir: '/work/tweakcc-fixed', remindersDir: '/work/lcc/system-reminders', model: 'opus', effort: 'medium' };
 
 describe.skipIf(!has)('audit-stage1-cut-hunt workflow', () => {
   it('derives hunt paths, carries the hunter role and the stage-1 rules, and names the harvest', async () => {
     const { out, prompts } = await run(ARGS, g => ({ group: g, verdictsFile: 'x', checker: `PASS ${g} 4/4 verdicts sha256=0123456789ab` }));
     expect(prompts).toHaveLength(2);
     const p = prompts[1].prompt;
-    expect(p).toContain('/h/hunt-packet-01.md');
+    expect(p).toContain('all 2 parts of it in full — /h/hunt-packet-01.part1.md, /h/hunt-packet-01.part2.md — with every Read call in ONE message');
+    expect(prompts[0].prompt).toContain('Read the markdown packet, /h/hunt-packet-00.md in full;');
     expect(p).toContain('writeAuditVerdicts.mjs /h/hunt-packet-01.json');
     expect(p).toContain('CUT HUNTER');
-    expect(p).toContain('Do not load any skill');
+    expect(p).toContain('an id with no lead gets the same hunt');
+    expect(p).not.toMatch(/load any skill|showtime rules/);
+    expect(prompts.map(x => x.opts.agentType)).toEqual(['showtime-worker', 'showtime-worker']);
     expect(p).toContain('Do not cut to have cut');
     for (const rule of [
       'Tripwire: a pristine sentence is FROZEN verbatim-or-delete',
@@ -157,7 +158,7 @@ describe.skipIf(!has)('audit-stage1-cut-hunt workflow', () => {
   });
 
   it('requires every path-only arg, model and effort; reruns only named groups', async () => {
-    for (const k of ['version', 'huntDir', 'groupCount', 'activeSet', 'repoDir', 'remindersDir', 'model', 'effort']) {
+    for (const k of ['version', 'huntDir', 'groupCount', 'mdParts', 'activeSet', 'repoDir', 'remindersDir', 'model', 'effort']) {
       const a = { ...ARGS };
       delete a[k];
       await expect(run(a, () => null)).rejects.toThrow(new RegExp(k));
