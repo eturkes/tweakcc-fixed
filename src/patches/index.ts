@@ -90,6 +90,7 @@ import { writeAgentsMd } from './agentsMd';
 import { writeAutoAcceptPlanMode } from './autoAcceptPlanMode';
 import { writeAllowBypassPermsInSudo } from './allowBypassPermsInSudo';
 import { writeSuppressNativeInstallerWarning } from './suppressNativeInstallerWarning';
+import { writeModelAtEffort } from './modelAtEffort';
 import { writeScrollEscapeSequenceFilter } from './scrollEscapeSequenceFilter';
 import { writeWorktreeMode } from './worktreeMode';
 import { writeResponsiveMode } from './responsiveMode';
@@ -161,6 +162,10 @@ export interface PatchResult {
   group: PatchGroup;
   applied: boolean;
   failed?: boolean;
+  // Returned a patched file but logged an error on the way: one of its
+  // sub-patches did not land. Reported apart from `failed` because the rest of
+  // the patch did apply and the repack proceeds.
+  partial?: boolean;
   skipped?: boolean;
   details?: string;
   description?: string;
@@ -462,6 +467,13 @@ const PATCH_DEFINITIONS = [
     description: 'Suppress the native installer warning message at startup',
   },
   {
+    id: 'model-at-effort',
+    name: '/model name@effort',
+    group: PatchGroup.MISC_CONFIGURABLE,
+    description:
+      '/model opus@high sets the model and then runs /effort high, in one command',
+  },
+  {
     id: 'filter-scroll-escape-sequences',
     name: 'Filter scroll escape sequences',
     group: PatchGroup.MISC_CONFIGURABLE,
@@ -697,7 +709,7 @@ export const escapeIdent = (ident: string): string => {
  * Apply patches to content using the implementations map, tracking results.
  * @param patchFilter - Optional list of patch IDs to apply (if provided, only matching patches are applied)
  */
-const applyPatchImplementations = (
+export const applyPatchImplementations = (
   content: string,
   implementations: Record<PatchId, PatchImplementation>,
   patchFilter?: string[] | null
@@ -743,11 +755,23 @@ const applyPatchImplementations = (
     }
 
     debug(`Applying patch: ${def.name}`);
-    const result = impl.fn(content);
+    const errors: string[] = [];
+    const consoleError = console.error;
+    console.error = (...args: unknown[]) => {
+      errors.push(args.map(String).join(' '));
+      consoleError(...args);
+    };
+    let result: string | null;
+    try {
+      result = impl.fn(content);
+    } finally {
+      console.error = consoleError;
+    }
     const failed = result === null;
     const applied = !failed && result !== content;
+    const partial = !failed && errors.length > 0;
 
-    if (!failed) {
+    if (result !== null) {
       content = result;
     }
 
@@ -757,6 +781,10 @@ const applyPatchImplementations = (
       group: def.group,
       applied,
       failed,
+      ...(partial && {
+        partial,
+        details: `partially applied (${errors[0].replace(/^patch: [^:]+: /, '')})`,
+      }),
       description: def.description,
       modelFacing: (def as PatchDefinition).modelFacing,
     });
@@ -1275,6 +1303,10 @@ export const applyCustomization = async (
     'suppress-native-installer-warning': {
       fn: c => writeSuppressNativeInstallerWarning(c),
       condition: !!config.settings.misc?.suppressNativeInstallerWarning,
+    },
+    'model-at-effort': {
+      fn: c => writeModelAtEffort(c),
+      condition: config.settings.misc?.modelAtEffort ?? true,
     },
     'filter-scroll-escape-sequences': {
       fn: c => writeScrollEscapeSequenceFilter(c),

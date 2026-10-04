@@ -153,6 +153,7 @@ export interface MiscConfig {
   autoAcceptPlanMode: boolean;
   allowBypassPermissionsInSudo: boolean | null;
   suppressNativeInstallerWarning: boolean;
+  modelAtEffort: boolean;
   filterScrollEscapeSequences: boolean;
   enableWorktreeMode: boolean;
   unlockResponsiveMode: boolean;

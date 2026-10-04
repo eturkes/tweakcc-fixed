@@ -568,8 +568,11 @@ const findPatchesListLocation = (
 const IMPORTED_VERSION_ROW =
   /([$\w]+)=([$\w]+)\(([$\w]+),\{children:\[[$\w]+," ",([$\w]+)\(([$\w]+),\{dimColor:!0,children:\["v",[$\w]+\]\}\)\]\}\)/;
 
+// Matches the row expression alone: it is assigned to a var up to 2.1.284
+// (`ya=l(p,{...})`) and inlined as a column child from 2.1.285
+// (`Pt=r(s,{flexDirection:"column",children:[r(s,{...}),St]})`).
 const IMPORTED_BANNER_ROW =
-  /([$\w]+)=([$\w]+)\(([$\w]+),\{flexDirection:"row",gap:2,alignItems:"center",children:\[[$\w]+,[$\w]+\]\}\)/;
+  /([$\w]+)\(([$\w]+),\{flexDirection:"row",gap:2,alignItems:"center",children:\[[$\w]+,[$\w]+\]\}\)/y;
 
 const TWEAKCC_MODULE_MARK = '/*@@TWEAKCC_MODULE:';
 
@@ -666,47 +669,57 @@ const applyImportedJsxHeader = (
     showPatchesApplied &&
     !content.includes('tweakcc-fixed patches are applied')
   ) {
-    const anchor = 'flexDirection:"row",gap:2,alignItems:"center",children:[';
-    const rowAt = content.indexOf(anchor);
-    const lookbackStart = rowAt === -1 ? 0 : Math.max(0, rowAt - 40);
-    const window =
-      rowAt === -1 ? '' : content.slice(lookbackStart, rowAt + 120);
-    const rowMatch = window.match(IMPORTED_BANNER_ROW);
-    if (rowMatch && rowMatch.index !== undefined) {
-      const absIndex = lookbackStart + rowMatch.index;
-      const assignVar = rowMatch[1];
-      const jsxs = rowMatch[2];
-      const box = rowMatch[3];
-      const title = findNearbyJsxTitle(content, absIndex);
-      // No fallback here: `box` renders its children as a layout node, so
-      // handing it a bare string throws Ink's "must be rendered inside <Text>"
-      // at startup — an unrecoverable interface error that boots fine under
-      // --print. Refuse to splice rather than emit a Box where Text is needed.
-      if (!title || title.text === box) {
-        console.error(
-          'patch: patchesAppliedIndication: failed to find the Text component near the startup banner'
-        );
-        return { content, didVersion, didList };
-      }
-      const jsx = title.jsx;
-      const text = title.text;
-      const rowExpr = rowMatch[0].slice(assignVar.length + 1);
-      const patchesElement = renderImportedJsxPatchList(
-        jsx,
-        jsxs,
-        box,
-        text,
-        patchesApplies
+    const anchor = ',{flexDirection:"row",gap:2,alignItems:"center",children:[';
+    let rowMatch: RegExpExecArray | null = null;
+    for (
+      let at = content.indexOf(anchor);
+      at !== -1 && !rowMatch;
+      at = content.indexOf(anchor, at + anchor.length)
+    ) {
+      const head = /[$\w]+\([$\w]+$/.exec(
+        content.slice(Math.max(0, at - 40), at)
       );
-      const wrapped = `${assignVar}=${jsxs}(${box},{flexDirection:"column",children:[${rowExpr},${patchesElement}]})`;
-      const old = content;
-      content =
-        content.slice(0, absIndex) +
-        wrapped +
-        content.slice(absIndex + rowMatch[0].length);
-      showDiff(old, content, wrapped, absIndex, absIndex + wrapped.length);
-      didList = true;
+      if (!head) continue;
+      IMPORTED_BANNER_ROW.lastIndex = at - head[0].length;
+      rowMatch = IMPORTED_BANNER_ROW.exec(content);
     }
+    if (!rowMatch) {
+      if (content.includes(TWEAKCC_MODULE_MARK)) {
+        console.error(
+          'patch: patchesAppliedIndication: failed to find the startup banner row for the patches list'
+        );
+      }
+      return { content, didVersion, didList };
+    }
+    const absIndex = rowMatch.index;
+    const jsxs = rowMatch[1];
+    const box = rowMatch[2];
+    const title = findNearbyJsxTitle(content, absIndex);
+    // No fallback here: `box` renders its children as a layout node, so
+    // handing it a bare string throws Ink's "must be rendered inside <Text>"
+    // at startup — an unrecoverable interface error that boots fine under
+    // --print. Refuse to splice rather than emit a Box where Text is needed.
+    if (!title || title.text === box) {
+      console.error(
+        'patch: patchesAppliedIndication: failed to find the Text component near the startup banner'
+      );
+      return { content, didVersion, didList };
+    }
+    const patchesElement = renderImportedJsxPatchList(
+      title.jsx,
+      jsxs,
+      box,
+      title.text,
+      patchesApplies
+    );
+    const wrapped = `${jsxs}(${box},{flexDirection:"column",children:[${rowMatch[0]},${patchesElement}]})`;
+    const old = content;
+    content =
+      content.slice(0, absIndex) +
+      wrapped +
+      content.slice(absIndex + rowMatch[0].length);
+    showDiff(old, content, wrapped, absIndex, absIndex + wrapped.length);
+    didList = true;
   }
 
   return { content, didVersion, didList };

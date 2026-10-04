@@ -28,4 +28,59 @@ describe('systemPromptSync.ts', () => {
       expect(pattern).not.toContain('\\[[\\w$]+\\]');
     });
   });
+  describe('buildSearchRegexFromPieces — identifiers deep in a slot expression', () => {
+    // CC 2.1.286's html-saved viewed-once clause: `At` is `kt` on linux-x64.
+    const viewedOnce = ['file${', '(', ',', '.slug,', '.ver,{ignoreHold:At})}'];
+
+    it('generalizes a minified value behind an object-literal key', () => {
+      const re = new RegExp(buildSearchRegexFromPieces(viewedOnce, '2.1.286'));
+      expect(re.test('file${WOe(n,e.slug,r.ver,{ignoreHold:At})}')).toBe(true);
+      expect(re.test('file${NHe(n,e.slug,r.ver,{ignoreHold:kt})}')).toBe(true);
+      expect(re.test('file${NHe(n,e.slug,r.ver,{ignoreHeld:kt})}')).toBe(false);
+    });
+
+    // CC 2.1.286's live-doc shim: the spreads repeat `Oe`, which is `Le` on
+    // linux-x64, and each occurrence must match on its own.
+    const shim = [
+      '${',
+      '.line(',
+      '.file,{edits:',
+      '.edits,...',
+      '.copy!==void 0&&{copy:Oe.copy},...typeof Oe.live==="string"&&{live:Oe.live}})}',
+    ];
+
+    it('generalizes every repeated minified name in spreads', () => {
+      const pattern = buildSearchRegexFromPieces(shim, '2.1.286');
+      const re = new RegExp(pattern);
+      const darwin =
+        '${se.line(Oe.file,{edits:Oe.edits,...Oe.copy!==void 0&&{copy:Oe.copy},...typeof Oe.live==="string"&&{live:Oe.live}})}';
+      expect(re.test(darwin)).toBe(true);
+      expect(re.test(darwin.replace(/Oe/g, 'Le'))).toBe(true);
+      expect(re.test(darwin.replace(/Oe\.live\}/, 'Zz.live}'))).toBe(true);
+      expect(pattern).toContain('\\.copy');
+      expect(pattern).toContain('typeof ');
+      expect(pattern).toContain('void 0');
+      expect(re.test(darwin.replace('{copy:', '{kopy:'))).toBe(false);
+      expect(re.test(darwin.replace('.live}', '.life}'))).toBe(false);
+    });
+
+    it('keeps keywords, strings, regex literals and private names literal', () => {
+      const pattern = buildSearchRegexFromPieces(
+        ['a ${', '?this.#p:n.replace(/^Not here/,"keep me")} b'],
+        '2.1.286'
+      );
+      expect(pattern).toContain('this\\.#p');
+      expect(pattern).toContain('/\\^Not here/');
+      expect(pattern).toContain('keep me');
+      expect(pattern).not.toContain('n\\.replace');
+    });
+
+    it('leaves prose after the interpolation closes untouched', () => {
+      const pattern = buildSearchRegexFromPieces(
+        ['x ${', '[q]} then words here'],
+        '2.1.286'
+      );
+      expect(pattern).toContain('then words here');
+    });
+  });
 });

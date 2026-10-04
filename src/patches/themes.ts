@@ -22,11 +22,38 @@ import { LocationResult, showDiff } from './index';
 const THEME_ID_REGISTRY =
   /([$\w]+)=(\["dark","light"(?:,"[\w-]+")*\]),([$\w]+)=\["auto",\.\.\.\1\]/;
 
+// The switch CC ships returns module-scope theme objects by reference
+// (`case"light":return v;…default:return B`). Each patched case spreads the
+// matching one under the user's colours, so a colour key a newer CC adds (CC
+// 2.1.285's `effortUltra`) falls back to Anthropic's value instead of reading
+// `undefined` — which crashed the startup logo on the first frame.
+interface PristineThemeVars {
+  byId: Record<string, string>;
+  defaultVar: string;
+}
+
+function parsePristineThemeVars(switchSrc: string): PristineThemeVars | null {
+  const defaultMatch = switchSrc.match(/default:return ([$\w]+)\}$/);
+  if (!defaultMatch) return null;
+  const byId: Record<string, string> = {};
+  for (const m of switchSrc.matchAll(/((?:case"[\w-]+":)+)return ([$\w]+);/g)) {
+    for (const id of m[1].matchAll(/case"([\w-]+)":/g)) byId[id[1]] = m[2];
+  }
+  return { byId, defaultVar: defaultMatch[1] };
+}
+
+function pristineBaseFor(id: string, vars: PristineThemeVars): string {
+  if (vars.byId[id]) return vars.byId[id];
+  if (/light/.test(id) && vars.byId.light) return vars.byId.light;
+  return vars.defaultVar;
+}
+
 function getThemesLocation(oldFile: string): {
   switchStatement: LocationResult;
   objArr: LocationResult;
   obj: LocationResult | null;
   idRegistry: LocationResult | null;
+  pristineThemeVars: PristineThemeVars | null;
 } | null {
   // === Switch Statement ===
   // CC >=2.1.83: switch(A){case"light":return LX9;...default:return CX9}
@@ -40,10 +67,12 @@ function getThemesLocation(oldFile: string): {
     /switch\(([$\w]+)\)\{case"(?:light|dark)":[^}]*return [$\w]+;[^}]*default:return [$\w]+\}/;
   const newSwitchMatch = oldFile.match(newSwitchPat);
 
+  let pristineThemeVars: PristineThemeVars | null = null;
   if (newSwitchMatch && newSwitchMatch.index != undefined) {
     switchStart = newSwitchMatch.index;
     switchEnd = switchStart + newSwitchMatch[0].length;
     switchIdent = newSwitchMatch[1];
+    pristineThemeVars = parsePristineThemeVars(newSwitchMatch[0]);
   } else {
     // Try old format (inline objects) — use brace counting
     const oldAnchor = oldFile.indexOf('case"dark":return{"autoAccept"');
@@ -171,6 +200,7 @@ function getThemesLocation(oldFile: string): {
       endIndex: switchEnd,
       identifiers: [switchIdent],
     },
+    pristineThemeVars,
     objArr: {
       startIndex: objArrStart,
       endIndex: objArrEnd,
@@ -263,17 +293,24 @@ export const writeThemes = (
   );
   oldFile = newFile;
 
+  const vars = locations.pristineThemeVars;
+  const themeObject = (id: string, colors: Theme['colors']): string =>
+    vars
+      ? `{...${pristineBaseFor(id, vars)},...${JSON.stringify(colors)}}`
+      : JSON.stringify(colors);
+
   // Update switch statement
   let switchStatement = `switch(${locations.switchStatement.identifiers?.[0]}){\n`;
   themes.forEach(theme => {
     // JSON.stringify the id (not raw `"${theme.id}"`): a `"` in a user/remote
     // theme id would otherwise break out of the case-label string and inject
     // into cli.js. Identical output for normal slug ids.
-    switchStatement += `case${JSON.stringify(theme.id)}:return${JSON.stringify(
+    switchStatement += `case${JSON.stringify(theme.id)}:return${themeObject(
+      theme.id,
       theme.colors
     )};\n`;
   });
-  switchStatement += `default:return${JSON.stringify(themes[0].colors)};\n}`;
+  switchStatement += `default:return${themeObject(themes[0].id, themes[0].colors)};\n}`;
 
   newFile =
     newFile.slice(0, locations.switchStatement.startIndex) +

@@ -25,7 +25,51 @@ function harness() {
   return { run };
 }
 
+const fixture285 =
+  'function duration(e,n,r,s,g){return{type:"system",subtype:"turn_duration",durationMs:e,messageCount:r,pendingBackgroundAgentCount:s,pendingWorkflowCount:g}}' +
+  'function*query(e,n,r,s,g,h){let{fallbackModel:b}=x(h.model,h.fallbackModel),D=b===h.fallbackModel?h:{...h,fallbackModel:b},S=f=>f();let effort=S(()=>resolve(model,D.effortValue,{turnEffort:D.turnEffort,hookEffortValue:D.hookEffortValue}));yield effort}' +
+  'class T{a(N,ye,E){N.transcript.apply({type:"append",messages:[duration(ye.durationMs,E,V(N.transcript.getSnapshot(),TE),ye.pendingBackgroundAgentCount,ye.pendingWorkflowCount)]})}b(D,N){this._requireHost().transcript.apply({type:"append",messages:[duration(D,N,V(this._requireHost().transcript.getSnapshot(),TE))]})}}' +
+  'function render(m){let{message:l,addMargin:p,verb:h}=m,q="42s",W="5:17 PM";return{children:`${h} for ${q}${W?` \\xB7 done ${W}`:""}`}}';
+
+// 2.1.288: options param destructured as `{modelFacts:h,...b}`, and the
+// request-site call passes carriedEffort beside a counterfactual null call.
+const fixture288 =
+  'function duration(e,n,r,s,g){return{type:"system",subtype:"turn_duration",durationMs:e,messageCount:r,pendingBackgroundAgentCount:s,pendingWorkflowCount:g}}' +
+  'async function*query(e,n,r,s,g,{modelFacts:h,...b}){let{fallbackModel:w}=x(b.model,b.fallbackModel),V=w===b.fallbackModel?b:{...b,fallbackModel:w},ye=f=>f();let Jr=ye(()=>carry(V)),sr=ye(()=>ow(Xe,V.effortValue,{turnEffort:V.turnEffort,hookEffortValue:V.hookEffortValue,carriedEffort:Jr})),As={withoutIt:ye(()=>ow(Xe,V.effortValue,{turnEffort:V.turnEffort,hookEffortValue:V.hookEffortValue,carriedEffort:null}))};yield sr}' +
+  'class T{a(N,ye,E){N.transcript.apply({type:"append",messages:[duration(ye.durationMs,E,V(N.transcript.getSnapshot(),TE),ye.pendingBackgroundAgentCount,ye.pendingWorkflowCount)]})}}' +
+  'function render(m){let{message:l,addMargin:p,verb:h}=m,q="42s",W="5:17 PM";return{children:`${h} for ${q}${W?` \\xB7 done ${W}`:""}`}}';
+
 describe('router completed-turn status', () => {
+  it('patches the 2.1.288 shape: rest-destructured options + carriedEffort request', () => {
+    const patched = writeComplexityRouterTurnStatus(fixture288)!;
+    expect(patched).not.toBeNull();
+    expect(patched).toContain(
+      'sr=ye(()=>{globalThis.__tweakccRouterResolution=void 0;let __tweakccResolved=ow(Xe,V.effortValue,{turnEffort:V.turnEffort,hookEffortValue:V.hookEffortValue,carriedEffort:Jr},V);globalThis.__tweakccRouterRecordTurn?.(e,V,__tweakccResolved,'
+    );
+    expect(patched).toContain(
+      'withoutIt:ye(()=>ow(Xe,V.effortValue,{turnEffort:V.turnEffort,hookEffortValue:V.hookEffortValue,carriedEffort:null}))'
+    );
+    expect(patched).toContain(
+      'globalThis.__tweakccRouterSnapshotTurn?.(N.transcript.getSnapshot())'
+    );
+    expect(() => new vm.Script(patched)).not.toThrow();
+  });
+
+  it('patches the 2.1.285 shape: options alias + snapshot-getter message arg', () => {
+    const patched = writeComplexityRouterTurnStatus(fixture285)!;
+    expect(patched).not.toBeNull();
+    expect(patched).toContain(
+      'globalThis.__tweakccRouterRecordTurn?.(e,D,__tweakccResolved,'
+    );
+    expect(patched).toContain(
+      'globalThis.__tweakccRouterSnapshotTurn?.(N.transcript.getSnapshot())'
+    );
+    expect(patched).toContain(
+      'globalThis.__tweakccRouterSnapshotTurn?.(this._requireHost().transcript.getSnapshot())'
+    );
+    expect(() => new vm.Script(patched)).not.toThrow();
+  });
+
   it('persists confidence on its own turn across later decisions and resume', () => {
     const { run } = harness();
     run(
@@ -181,7 +225,11 @@ describe('router completed-turn status', () => {
       fs.readFileSync(pristine, 'utf8')
     );
     expect(patched).not.toBeNull();
-    expect(patched).toContain('globalThis.__tweakccRouterRecordTurn?.(e,h,');
+    // Minified names change every build (the options arg was `h` through
+    // 2.1.284 and is the `D` alias in 2.1.285), so assert the call's shape.
+    expect(patched).toMatch(
+      /globalThis\.__tweakccRouterRecordTurn\?\.\([$\w]+,[$\w]+,__tweakccResolved,/
+    );
     expect(
       patched?.match(/globalThis\.__tweakccRouterSnapshotTurn\?\.\(/g)
     ).toHaveLength(3);

@@ -43,15 +43,17 @@ export const writeResponsiveMode = (oldFile: string): string | null => {
   // The listing object carries the plugin name, so anchor on that and capture
   // the `isAvailable` binding it names rather than assuming a minified name.
   //   var d={name:"responsive-mode",description:"...",isAvailable:h};
+  // CC 2.1.285 renamed it "cc-plugin-responsive-mode" and ships
+  // `isAvailable:h,defaultEnabled:!1` itself (either order is accepted).
   // The `defaultEnabled` alternative is what WE splice in below, so the pattern
   // has to tolerate it or a re-apply cannot find the listing it already edited.
   // Captures: 1=head through `description:`, 2=description value,
   //           3=tail from the first following prop, 4=isAvailable binding.
   const listingPattern =
-    /(\{name:"responsive-mode",description:)("(?:[^"\\]|\\.)*")((?:,defaultEnabled:![01])?,isAvailable:([$\w]+)\})/;
+    /(\{name:"(?:cc-plugin-)?responsive-mode",description:)("(?:[^"\\]|\\.)*")((?:,defaultEnabled:![01])?,isAvailable:([$\w]+)(?:,defaultEnabled:![01])?\})/;
   const listing = oldFile.match(listingPattern);
   if (!listing || listing.index === undefined) {
-    if (!oldFile.includes('"responsive-mode"')) {
+    if (!/"(?:cc-plugin-)?responsive-mode"/.test(oldFile)) {
       console.log(
         'patch: responsiveMode: this CC build ships no responsive-mode plugin — no-op'
       );

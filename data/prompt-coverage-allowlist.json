@@ -229,20 +229,10 @@
     "version": "2.1.282",
     "why": "Appended by SD() to the gateway protocol markdown when criEnabled; SD() is only served as the HTTP GET /protocol response (text/markdown) to gateway implementers, never placed in a model context."
   },
-  "data-cloud-session-folder-sync-consent-dialog": {
-    "verdict": "not-model-facing",
-    "version": "2.1.282",
-    "why": "consent.attach_sync.body: body of the terminal Yes/No folder-sync consent dialog payload {folder,title,body,detail}; human-only UI copy."
-  },
   "data-telemetry-variables-ignored-notice": {
     "verdict": "not-model-facing",
     "version": "2.1.282",
     "why": "Pushed with statusOnly into the settings errors, split into statusNotices that reach only /status and the claude doctor terminal lines; filtered out of every model-facing settings error path."
-  },
-  "data-sdk-set-max-thinking-tokens-request-schema": {
-    "verdict": "not-model-facing",
-    "version": "2.1.284",
-    "why": "SDK control-protocol set_max_thinking_tokens request schema .describe(); control messages from a host, never sent to the model (cache verdict internal)."
   },
   "data-self-hosted-runner-git-ssl-no-verify-lifecycle-hook-exception": {
     "verdict": "not-model-facing",
@@ -274,34 +264,54 @@
     "version": "2.1.284",
     "why": "Self-hosted runner [runner:warn] line written to the runner log (oo() -> w(fe)); not model-facing."
   },
-  "tool-description-schedulewakeup-delay-and-reason-guidance": {
-    "verdict": "covered-reworded",
-    "version": "2.1.284",
-    "why": "2.1.283 reference composite; on 2.1.284 its text is catalogued under our split ids (system-prompt-loop-noop-flag-guidance, tool-description-schedulewakeup-reason-field, tool-parameter-schedulewakeup-delay-seconds-{general,5m-ttl,1h-ttl}-guidance). Goes stale once the reference catches up."
+  "data-sdk-set-max-thinking-tokens-request-schema": {
+    "verdict": "not-model-facing",
+    "version": "2.1.285",
+    "why": "SDK control-protocol set_max_thinking_tokens request schema .describe() (2.1.285 adds thinking_display/highlights text); control messages from a host, never sent to the model."
   },
-  "system-reminder-directory-sync-full-environment-restore": {
-    "verdict": "covered-reworded",
-    "version": "2.1.284",
-    "why": "2.1.283 reference wording; 2.1.284 composes it from the rc phrase table and we catalogue it as system-reminder-directory-sync-environment-replaced-work-restored + rc entries. Every run absent from ours is absent from the 2.1.284 bundle too."
+  "data-submit-feedback-control-request": {
+    "verdict": "not-model-facing",
+    "version": "2.1.285",
+    "why": "@internal SDK control-request schema for /feedback submission; host-facing, deleted from what CC sends and never in a model request."
   },
-  "system-reminder-directory-sync-partial-environment-restore": {
-    "verdict": "covered-reworded",
-    "version": "2.1.284",
-    "why": "2.1.283 reference wording; catalogued on 2.1.284 as system-reminder-dir-sync-environment-replaced-partial-restore + rc phrase entries. Missing runs are absent from the bundle."
+  "data-sandbox-root-without-cap-setfcap-error": {
+    "verdict": "not-model-facing",
+    "version": "2.1.285",
+    "why": "Linux sandbox dependency-check error (EV in rT) pushed with bwrap/socat/ripgrep siblings to the /sandbox and startup warnings, and to the debug log; none of those siblings reach the model."
   },
-  "tool-description-artifact-responsive-page-contract": {
-    "verdict": "covered-reworded",
-    "version": "2.1.284",
-    "why": "Catalogued as tool-description-artifact-responsive; the run the gate misses was reworded in 2.1.284 and is absent from the bundle."
+  "data-sdk-initialize-response-sdk-mcp-manifests-parked-field": {
+    "verdict": "not-model-facing",
+    "version": "2.1.286",
+    "why": "sdk_mcp_manifests_parked .describe() on the SDK initialize control-response schema: host-facing control-protocol documentation, never in a model request."
   },
-  "tool-description-artifact-database-version-pinning-guidance": {
-    "verdict": "covered-reworded",
-    "version": "2.1.284",
-    "why": "Catalogued as tool-description-artifact-database-if-version; the missing run was reworded in 2.1.284 and is absent from the bundle."
+  "data-interrupt-send-now-parameter": {
+    "verdict": "not-model-facing",
+    "version": "2.1.288",
+    "why": "@internal send_now .describe() on the SDK interrupt control-request schema: host-facing control-protocol documentation, never in a model request."
   },
-  "tool-parameter-artifact-url-guidance": {
-    "verdict": "covered-reworded",
-    "version": "2.1.284",
-    "why": "Catalogued as tool-parameter-artifact-existing-url; the missing runs were reworded in 2.1.284 and are absent from the bundle."
+  "data-interrupt-send-now-message-uuid-parameter": {
+    "verdict": "not-model-facing",
+    "version": "2.1.288",
+    "why": "@internal message_uuid .describe() beside send_now on the SDK interrupt control-request schema: control-protocol documentation for hosts."
+  },
+  "data-turn-handoff-file-names-field": {
+    "verdict": "not-model-facing",
+    "version": "2.1.288",
+    "why": "@internal file_names .describe() on the SDK turn_handoff user-message member schema: host-facing wire contract, not a prompt or tool schema."
+  },
+  "data-sdk-thinking-duration-ms-field": {
+    "verdict": "not-model-facing",
+    "version": "2.1.288",
+    "why": "@internal thinking_duration_ms .describe() on the SDK stream-frame wrapper schema; the text itself says it is not replayed to the model."
+  },
+  "data-get-task-output-control-request": {
+    "verdict": "not-model-facing",
+    "version": "2.1.288",
+    "why": "get_task_output control-request .describe() in the SDK control-protocol union (next to background_tasks): documentation for SDK hosts, not sent to the model."
+  },
+  "data-plugin-manifest-types-field": {
+    "verdict": "not-model-facing",
+    "version": "2.1.288",
+    "why": "types .describe() on the plugin manifest (plugin.json) zod schema: validates plugin files; the manifest schema is not part of the settings schema sent by /update-config and never enters a model request."
   }
 }

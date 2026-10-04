@@ -10,7 +10,22 @@ const CALL =
 const CALL_2210 =
   'content:X6r(H,{suppressFollowUpQuestions:!1,transcriptPath:V,replStateCleared:j}),isCompactSummary:!0,...m.length>0?{summarizeMetadata:{messagesSummarized:f.length,userContext:i,direction:s}}:{isVisibleInTranscriptOnly:!0}';
 
+// CC 2.1.285+: the helper returns {content,modelOnlyText?}, spread into the message.
+const CALL_2285 =
+  'ke({...a2(Ut,{suppressFollowUpQuestions:!1,transcriptPath:Qn,...!1,foreignArtifactContent:eqe(b==="up_to"?Se:e)}),isCompactSummary:!0,...Ee.length>0?{summarizeMetadata:{messagesSummarized:Se.length,userContext:h,direction:b}}:{isVisibleInTranscriptOnly:!0}})';
+
 describe('writeFixRewindSummaryHeader', () => {
+  it('matches the CC 2.1.285 spread-object helper call site and keeps other fields', () => {
+    const out = writeFixRewindSummaryHeader(`${HEADER_DEF}x;${CALL_2285};`);
+    expect(out).not.toBeNull();
+    expect(out).toContain(
+      'ke({...(($rw)=>({...$rw,content:$rw.content.replace(/This session is being continued from a previous conversation that ran out of context\\.[^\\n]*/,b==="up_to"?'
+    );
+    expect(out).toContain('))(a2(Ut,{suppressFollowUpQuestions:!1');
+    expect(out).toContain(',isCompactSummary:!0,');
+    expect(writeFixRewindSummaryHeader(out!)).toBe(out);
+  });
+
   it('wraps the rewind jR_ call with a direction-aware header swap', () => {
     const out = writeFixRewindSummaryHeader(`${HEADER_DEF}x;${CALL};`);
     expect(out).toContain(

@@ -1005,5 +1005,27 @@
     "why": "plugin-validate MCP diagnostic; /plugin validate output routes to the model via the local-jsx onDone",
     "shape": "concat",
     "excerpt": "A directory on the way to this MCP servers file is a symlink or escapes the plugin, and the file was not read — the plugin loader follows it"
+  },
+  "b53450673ac0b025": {
+    "verdict": "ui",
+    "shape": "array",
+    "excerpt": "This machine's managed settings restrict which API providers Claude Code may use (allowedProviders), so it cannot run the Cloud gateway serv"
+  },
+  "a34d88e8a275822d": {
+    "verdict": "internal",
+    "shape": "concat",
+    "excerpt": "Host-asserted context shown to the auto-mode permission classifier alongside this tool call's result. In the live session the classifier may"
+  },
+  "4ac83759a6b28e2d": {
+    "verdict": "internal",
+    "note": "PostToolUse classifierContext .describe() in the hook-output zod schema (2.1.288 rewording of a34d88e8a275822d); validates hook JSON, never sent to the model; sibling describes cached internal",
+    "shape": "concat",
+    "excerpt": "Host-asserted context shown to the auto-mode permission classifier alongside this tool call's result. In the live session the classifier may"
+  },
+  "f167d18231d357bc": {
+    "verdict": "internal",
+    "note": "Set of exact 403 response bodies matched by Ne() to recognise an artifact-storage network-policy denial; a matcher, never rendered to the model",
+    "shape": "array",
+    "excerpt": "organization network policy denies artifact storage writes for this session organization network policy could not be determined for this ses"
   }
 }

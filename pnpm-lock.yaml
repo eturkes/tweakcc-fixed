@@ -60,12 +60,18 @@ importers:
       '@types/which':
         specifier: ^3.0.4
         version: 3.0.4
+      acorn:
+        specifier: ^8.15.0
+        version: 8.15.0
       eslint:
         specifier: ^9.33.0
         version: 9.33.0
       eslint-plugin-react:
         specifier: ^7.37.5
         version: 7.37.5(eslint@9.33.0)
+      eslint-scope:
+        specifier: ^8.4.0
+        version: 8.4.0
       globals:
         specifier: ^16.3.0
         version: 16.3.0

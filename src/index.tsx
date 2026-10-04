@@ -146,6 +146,7 @@ function printPatchResults(
       r =>
         r.applied ||
         r.failed ||
+        r.partial ||
         isShowUnchanged() ||
         (patchFilter && patchFilter.includes(r.id))
     );
@@ -156,9 +157,11 @@ function printPatchResults(
     for (const result of filtered) {
       const status = result.failed
         ? chalk.red('✗')
-        : result.applied
-          ? chalk.green('✓')
-          : chalk.dim('○');
+        : result.partial
+          ? chalk.yellow('⚠')
+          : result.applied
+            ? chalk.green('✓')
+            : chalk.dim('○');
       const details = result.details ? `: ${result.details}` : '';
       // Show description in gray on the same line for applied patches only
       const description =

@@ -1,4 +1,8 @@
 import { findAllMatchesWithStackFallback } from './safeRegexMatch';
+import {
+  generalizeExpressionIdentifiers,
+  IDENTIFIER_SENTINEL,
+} from './systemPromptExpressionIdentifiers';
 
 const MIN_ANCHOR = 12;
 const MAX_OCCURRENCES = 250;
@@ -10,7 +14,7 @@ type MatchToken =
   | { kind: 'newline' }
   | { kind: 'non-ascii'; value: string; code: number }
   | { kind: 'interpolation' }
-  | { kind: 'member'; path?: string }
+  | { kind: 'identifier' }
   | { kind: 'capture'; index: number };
 
 interface AnchorPlan {
@@ -75,62 +79,27 @@ const replaceMarkers = (
   return result;
 };
 
-const tokensForPiece = (piece: string, pieceIndex: number): MatchToken[] => {
+const tokensForPiece = (piece: string): MatchToken[] => {
   const tokens: MatchToken[] = [];
-  let rest = piece;
-  if (pieceIndex > 0) {
-    // The lookahead accepts ANY expression continuation, not a fixed
-    // shortlist. A piece at index > 0 begins INSIDE the `${...}` the previous
-    // capture opened -- the capture consumed the identifier, so a leading
-    // `[key]` there is a member access by construction and can never be prose
-    // (prose cannot start before the closing `}`). CC 2.1.266's
-    // getTask-stopped result is `${a?b[E]:"stopped before it completed"}`,
-    // where the key is followed by a ternary `:`; the old `}`/`.prop`/`)`
-    // shortlist left `E` -- a name that differs Mac<->Linux -- pinned, so the
-    // prompt was unmatchable on linux-x64 while every local gate stayed green.
-    // Fourth instance of this family after [g.terminal], [P-1] and [K].value,
-    // so this widens for the CLASS rather than for one more shape.
-    const member = rest.match(
-      /^\[[A-Za-z_$][\w$]*\](?=\}|\.[A-Za-z_$][\w$]*|[):,;?\]]|$)/
-    );
-    if (member) {
-      tokens.push({ kind: 'member' });
-      rest = rest.slice(member[0].length);
-    } else {
-      // Same shape carrying a PROPERTY path — `${OBJ[g.terminal]}` leaves
-      // "[g.terminal]}…" at a piece start. Only the leading identifier is
-      // minified (`G` on darwin and linux-arm64, `q` on linux-x64); the property
-      // path is Anthropic's own and identical everywhere, so generalize the
-      // identifier and keep the path literal. Without this the path pins the
-      // Mac name and the prompt is unmatchable on linux-x64 while passing on the
-      // Mac and on linux-arm64. buildSearchRegexFromPieces does the same thing;
-      // the two engines have to agree or test:matcher fails.
-      // Also covers an ARITHMETIC key on a minified name (`${o[P-1]}` ->
-      // "[P-1]}…", where `P` is `E` on linux-arm64). Same reason, same fix, and
-      // buildSearchRegexFromPieces has to agree or test:matcher fails.
-      const memberPath = rest.match(
-        /^\[[A-Za-z_$][\w$]*((?:\.[\w$]+)+|\s*[-+*/%]\s*[^\]]*)\](?=\}|\.[A-Za-z_$][\w$]*|[):,;?\]]|$)/
-      );
-      if (memberPath) {
-        tokens.push({ kind: 'member', path: memberPath[1] });
-        rest = rest.slice(memberPath[0].length);
-      }
+  for (let i = 0; i < piece.length; ) {
+    if (piece.startsWith(IDENTIFIER_SENTINEL, i)) {
+      tokens.push({ kind: 'identifier' });
+      i += IDENTIFIER_SENTINEL.length;
+      continue;
     }
-  }
-  for (let i = 0; i < rest.length; ) {
-    if (rest.startsWith('${', i)) {
+    if (piece.startsWith('${', i)) {
       let end = i + 2;
-      while (end < rest.length && rest[end] !== '{' && rest[end] !== '}') {
+      while (end < piece.length && piece[end] !== '{' && piece[end] !== '}') {
         end++;
       }
-      if (rest[end] === '}') {
+      if (piece[end] === '}') {
         tokens.push({ kind: 'interpolation' });
         i = end + 1;
         continue;
       }
     }
-    const value = rest[i];
-    const code = rest.charCodeAt(i);
+    const value = piece[i];
+    const code = piece.charCodeAt(i);
     if (value === '\\') tokens.push({ kind: 'backslash' });
     else if (value === '"' || value === "'" || value === '`') {
       tokens.push({ kind: 'quote', value });
@@ -150,9 +119,11 @@ const compileTokens = (
 ): MatchToken[] => {
   const tokens: MatchToken[] = [];
   let capture = 0;
-  for (let i = 0; i < pieces.length; i++) {
-    const piece = replaceMarkers(pieces[i], version, buildTime);
-    for (const token of tokensForPiece(piece, i)) tokens.push(token);
+  const generalized = generalizeExpressionIdentifiers(
+    pieces.map(piece => replaceMarkers(piece, version, buildTime))
+  );
+  for (let i = 0; i < generalized.length; i++) {
+    for (const token of tokensForPiece(generalized[i])) tokens.push(token);
     if (i < pieces.length - 1) {
       tokens.push({ kind: 'capture', index: capture++ });
     }
@@ -350,40 +321,6 @@ const matchTokensAt = (
       continue;
     }
     let end = position;
-    if (token.kind === 'member') {
-      if (sourceCharAt(content, end) !== '[') {
-        if (!fail()) return null;
-        continue;
-      }
-      end++;
-      const wordStart = end;
-      while (isWord(sourceCharAt(content, end))) end++;
-      if (end === wordStart) {
-        if (!fail()) return null;
-        continue;
-      }
-      if (token.path) {
-        let ok = true;
-        for (let k = 0; k < token.path.length; k++) {
-          if (sourceCharAt(content, end + k) !== token.path[k]) {
-            ok = false;
-            break;
-          }
-        }
-        if (!ok) {
-          if (!fail()) return null;
-          continue;
-        }
-        end += token.path.length;
-      }
-      if (sourceCharAt(content, end) !== ']') {
-        if (!fail()) return null;
-        continue;
-      }
-      position = end + 1;
-      tokenIndex++;
-      continue;
-    }
     while (isWord(sourceCharAt(content, end))) end++;
     if (end === position) {
       if (!fail()) return null;
@@ -391,15 +328,23 @@ const matchTokensAt = (
     }
     for (let alternateEnd = position + 1; alternateEnd < end; alternateEnd++) {
       const nextCaptures = [...captures];
-      nextCaptures[token.index] = sourceSlice(content, position, alternateEnd);
+      if (token.kind === 'capture') {
+        nextCaptures[token.index] = sourceSlice(
+          content,
+          position,
+          alternateEnd
+        );
+      }
       alternatives.push({
         token: tokenIndex + 1,
         position: alternateEnd,
         captures: nextCaptures,
       });
     }
-    captures = [...captures];
-    captures[token.index] = sourceSlice(content, position, end);
+    if (token.kind === 'capture') {
+      captures = [...captures];
+      captures[token.index] = sourceSlice(content, position, end);
+    }
     position = end;
     tokenIndex++;
   }
@@ -486,21 +431,6 @@ const reverseTokenPositions = (
     return sourceCharAt(content, start) === '{' &&
       sourceCharAt(content, start - 1) === '$'
       ? [start - 1]
-      : [];
-  }
-  if (token.kind === 'member') {
-    if (sourceCharAt(content, end - 1) !== ']') return [];
-    let start = end - 2;
-    if (token.path) {
-      for (let k = token.path.length - 1; k >= 0; k--) {
-        if (sourceCharAt(content, start) !== token.path[k]) return [];
-        start--;
-      }
-    }
-    const wordEnd = start;
-    while (start >= 0 && isWord(sourceCharAt(content, start))) start--;
-    return start < wordEnd && sourceCharAt(content, start) === '['
-      ? [start]
       : [];
   }
   const positions: number[] = [];

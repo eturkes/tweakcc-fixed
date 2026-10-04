@@ -55,8 +55,36 @@ const findPosedClawdWrapper = (oldFile: string): number | null => {
   return null;
 };
 
+/**
+ * Method 0 (CC >= 2.1.285): the pose table was split into arm/eye/feet tables
+ * and the wrapper became a React-compiler memo component that destructures its
+ * props: `function xpe(o){let i=w(47),t;...let{pose:c,color:l,paint:m}=t,...`.
+ * That destructure is the anchor; walk back to the function that owns it and
+ * insert at its body start. Rejects the match if another function starts in
+ * between (the destructure would then belong to a nested function).
+ */
+const findDestructuredPoseWrapper = (oldFile: string): number | null => {
+  const props = /let\{pose:[$\w]+,color:[$\w]+,paint:[$\w]+\}=/g;
+  let m: RegExpExecArray | null;
+  while ((m = props.exec(oldFile)) !== null) {
+    const fnStart = oldFile.lastIndexOf('function ', m.index);
+    if (fnStart === -1) continue;
+    const head = oldFile.slice(fnStart, m.index);
+    const decl = head.match(/^function ([$\w]+)\(([$\w]*)\)\{/);
+    if (!decl || head.indexOf('function ', 1) !== -1) continue;
+    return fnStart + decl[0].length;
+  }
+  return null;
+};
+
 const findStartupClawdComponents = (oldFile: string): number[] => {
   const indices: number[] = [];
+
+  const destructured = findDestructuredPoseWrapper(oldFile);
+  if (destructured !== null) {
+    indices.push(destructured);
+    return indices;
+  }
 
   const posed = findPosedClawdWrapper(oldFile);
   if (posed !== null) {

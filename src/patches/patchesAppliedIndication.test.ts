@@ -255,6 +255,23 @@ describe('writePatchesAppliedIndication', () => {
     );
   });
 
+  it('wraps an inline banner row that is a column child (CC >=2.1.285)', () => {
+    const inline = IMPORTED_JSX_FIXTURE.replace(
+      'let ya;if(e[27]!==Ym||e[28]!==ha)ya=l(p,{flexDirection:"row",gap:2,alignItems:"center",children:[Ym,ha]}),e[27]=Ym,e[28]=ha,e[29]=ya;else ya=e[29];',
+      'let ya=l(p,{flexDirection:"column",children:[l(p,{flexDirection:"row",gap:2,alignItems:"center",children:[Ym,ha]}),St]});'
+    );
+    expect(inline).not.toEqual(IMPORTED_JSX_FIXTURE);
+    const out = writePatchesAppliedIndication(inline, '3.2.1', [
+      'shrink: 12 fewer chars',
+    ]);
+    expect(out).not.toBeNull();
+    expect(out).toContain('* shrink: 12 fewer chars');
+    expect(out).toContain(
+      'ya=l(p,{flexDirection:"column",children:[l(p,{flexDirection:"column",children:[l(p,{flexDirection:"row",gap:2,alignItems:"center",children:[Ym,ha]}),'
+    );
+    expect(out).toContain(']})]}),St]});');
+  });
+
   // The real 2.1.246 bundle puts ~780 chars between the "Claude Code" title and
   // the banner row; the fixture above puts ~300. A 500-char lookback passed the
   // fixture and missed the binary, so the resolver fell back to the BOX

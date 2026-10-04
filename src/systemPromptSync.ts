@@ -13,6 +13,10 @@ import chalk from 'chalk';
 import { SYSTEM_PROMPTS_DIR, SYSTEM_REMINDERS_DIR } from './config';
 import { REMINDER_REGISTRY } from './patches/systemReminderOverrides';
 import { debug, escapeNonAscii } from './utils';
+import {
+  generalizeExpressionIdentifiers,
+  IDENTIFIER_SENTINEL,
+} from './systemPromptExpressionIdentifiers';
 
 /**
  * Scan every override .md in system-prompts/ and system-reminders/ for a
@@ -1183,70 +1187,15 @@ export const buildSearchRegexFromPieces = (
   // has one `\` per source `\\` while cli.js retains the two-char source form.
   const BS_SENTINEL = '\x00BS\x00';
 
-  // Sentinel for a member-access key (`obj[f]`) closing an interpolation. The
-  // object is captured as a slot, leaving `[f]}…` at a piece start; `f` is a
-  // minified identifier that differs Mac↔Linux, so it must be generalized like
-  // the slot rather than pinned to the literal Mac key.
-  const MEMBER_SENTINEL = '\x00MEMBER\x00';
-  // Same idea as MEMBER_SENTINEL but for a key that carries a property path
-  // (`obj[g.terminal]`): only the leading identifier is generalized, and the
-  // literal property path that follows is escaped normally.
-  const MEMBER_PREFIX_SENTINEL = '\x00MEMBERPFX\x00';
+  const generalized = generalizeExpressionIdentifiers(
+    pieces.map(raw => {
+      const piece = raw.replace(/<<CCVERSION>>/g, ccVersion);
+      return buildTime ? piece.replace(/<<BUILD_TIME>>/g, buildTime) : piece;
+    })
+  );
 
-  for (let i = 0; i < pieces.length; i++) {
-    // Replace <<CCVERSION>> with actual version before escaping
-    let piece = pieces[i].replace(/<<CCVERSION>>/g, ccVersion);
-
-    // Replace <<BUILD_TIME>> with actual build time if provided
-    if (buildTime) {
-      piece = piece.replace(/<<BUILD_TIME>>/g, buildTime);
-    }
-
-    // A piece beginning with `[<ident>]` directly followed by `}` (only when a
-    // slot precedes it, i>0) is a member access closing the prior interpolation
-    // — e.g. ${OBJ[f]} extracts OBJ as a slot and leaves "[f]}…" here. Stash the
-    // bracketed key so the final step matches ANY minified key; otherwise the
-    // literal Mac key fails on the Linux native build ("Could not find ...").
-    if (i > 0) {
-      // The lookahead also accepts a property access or a closing paren, not
-      // only `}`: CC 2.1.259's worktree-guard results interpolate
-      // `${Mh(me[K].value)}`, which leaves "[K].value)}" at a piece start. The
-      // `}`-only form left `K` — a minified name that differs Mac<->Linux —
-      // pinned, so both prompts were unmatchable on linux-arm64 while every
-      // local gate stayed green. Same class as the [g.terminal] and [P-1] rows.
-      // The lookahead accepts ANY expression continuation, not a fixed
-      // shortlist. A piece at index > 0 begins INSIDE the `${...}` the previous
-      // capture opened -- the capture consumed the identifier, so a leading
-      // `[key]` there is a member access by construction and can never be prose
-      // (prose cannot start before the closing `}`). CC 2.1.266's
-      // getTask-stopped result is `${a?b[E]:"stopped before it completed"}`,
-      // where the key is followed by a ternary `:`; the old `}`/`.prop`/`)`
-      // shortlist left `E` -- a name that differs Mac<->Linux -- pinned, so the
-      // prompt was unmatchable on linux-x64 while every local gate stayed green.
-      // Fourth instance of this family after [g.terminal], [P-1] and [K].value,
-      // so this widens for the CLASS rather than for one more shape.
-      piece = piece.replace(
-        /^\[[A-Za-z_$][\w$]*\](?=\}|\.[A-Za-z_$][\w$]*|[):,;?\]]|$)/,
-        MEMBER_SENTINEL
-      );
-      // The same shape with a PROPERTY path on the key — `${OBJ[g.terminal]}`
-      // leaves "[g.terminal]}…" here. Only the leading identifier is minified
-      // (`G` on darwin and linux-arm64, `q` on linux-x64), while the property
-      // name is Anthropic's own and identical everywhere, so generalize the
-      // identifier and keep the path literal. Pinning the whole key made the two
-      // /terminal-setup prompts unmatchable on linux-x64 while passing on the
-      // Mac and on linux-arm64 — invisible to every local gate, which is exactly
-      // what the cross-platform gate exists to catch.
-      // The same generalization covers a key that is an ARITHMETIC expression
-      // on a minified name — `${o[P-1]}` leaves "[P-1]}…" here, and `P` is `E`
-      // on linux-arm64. CC 2.1.251's two zsh `read` tool-results are exactly
-      // that shape, and pinning the Mac name made both unmatchable on Linux
-      // while every local gate stayed green.
-      piece = piece.replace(
-        /^\[[A-Za-z_$][\w$]*((?:\.[\w$]+)+|\s*[-+*/%]\s*[^\]]*)\](?=\}|\.[A-Za-z_$][\w$]*|[):,;?\]]|$)/,
-        (_m, tail) => `${MEMBER_PREFIX_SENTINEL}${tail}]`
-      );
-    }
+  for (let i = 0; i < generalized.length; i++) {
+    let piece = generalized[i];
 
     // Stash inline ${...} interpolations behind a sentinel before regex-escape.
     piece = piece.replace(/\$\{[^{}]*\}/g, INTERP_SENTINEL);
@@ -1295,20 +1244,13 @@ export const buildSearchRegexFromPieces = (
       '(?:\\\\|\\\\\\\\)'
     );
 
-    // Restore each member-access key sentinel as a "match any minified key"
-    // bracket so the regex works on both Mac and Linux native builds.
-    const withMemberHandling = withBackslashHandling.replace(
-      new RegExp(MEMBER_SENTINEL, 'g'),
-      '\\[[\\w$]+\\]'
+    pattern += withBackslashHandling.replace(
+      new RegExp(IDENTIFIER_SENTINEL, 'g'),
+      '[\\w$]+'
     );
-    const withMemberPrefixHandling = withMemberHandling.replace(
-      new RegExp(MEMBER_PREFIX_SENTINEL, 'g'),
-      '\\[[\\w$]+'
-    );
-    pattern += withMemberPrefixHandling;
 
     // Add capture group for the variable if this isn't the last piece
-    if (i < pieces.length - 1) {
+    if (i < generalized.length - 1) {
       // Match only the identifier itself - pieces contain ${, }, and any method calls
       // This is more robust as it doesn't assume where } appears
       pattern += '([\\w$]+)';

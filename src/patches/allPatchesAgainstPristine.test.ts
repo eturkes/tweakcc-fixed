@@ -68,6 +68,7 @@ import { writeAgentsMd } from './agentsMd';
 import { writeAutoAcceptPlanMode } from './autoAcceptPlanMode';
 import { writeAllowBypassPermsInSudo } from './allowBypassPermsInSudo';
 import { writeSuppressNativeInstallerWarning } from './suppressNativeInstallerWarning';
+import { writeModelAtEffort } from './modelAtEffort';
 import { writeScrollEscapeSequenceFilter } from './scrollEscapeSequenceFilter';
 import { writeMaxEffortDefault } from './maxEffortDefault';
 import { writeAutonomousOperationAllModels } from './autonomousOperationAllModels';
@@ -373,6 +374,7 @@ const INVOCATIONS: Record<PatchId, (src: string) => string | null> = {
   'allow-sudo-bypass-permissions': c => writeAllowBypassPermsInSudo(c),
   'suppress-native-installer-warning': c =>
     writeSuppressNativeInstallerWarning(c),
+  'model-at-effort': c => writeModelAtEffort(c),
   'filter-scroll-escape-sequences': c => writeScrollEscapeSequenceFilter(c),
   'max-effort-default': c => writeMaxEffortDefault(c),
   'autonomous-operation-all-models': c => writeAutonomousOperationAllModels(c),

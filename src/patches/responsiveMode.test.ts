@@ -72,6 +72,29 @@ describe('writeResponsiveMode', () => {
     });
   });
 
+  describe('CC 2.1.285 shape (renamed, ships defaultEnabled itself)', () => {
+    const cli285 = cli
+      .replace(
+        'var h=()=>yVe()&&Oa("tengu_quiet_ember",l());',
+        'var h=()=>Cue()&&!xSn()&&Lo("tengu_quiet_ember",l());'
+      )
+      .replace('name:"responsive-mode"', 'name:"cc-plugin-responsive-mode"')
+      .replace('isAvailable:h}', 'isAvailable:h,defaultEnabled:!1}');
+
+    it('drops the flag, keeps guards, does not duplicate defaultEnabled', () => {
+      const out = writeResponsiveMode(cli285)!;
+      expect(out).not.toBeNull();
+      expect(out).toContain('var h=()=>Cue()&&!xSn();');
+      expect(out).not.toContain('tengu_quiet_ember');
+      expect(out!.match(/defaultEnabled/g)!.length).toBe(1);
+    });
+
+    it('is idempotent', () => {
+      const once = writeResponsiveMode(cli285)!;
+      expect(writeResponsiveMode(once)).toBe(once);
+    });
+  });
+
   it('fails loudly when the plugin is present but the gate drifted', () => {
     // Listing intact, availability predicate reshaped into something else.
     const drifted = cli.replace(

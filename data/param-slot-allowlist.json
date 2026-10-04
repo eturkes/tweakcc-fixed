@@ -444,5 +444,12 @@
     "text": "HEAD could not be read after the branch moved",
     "verdict": "glue",
     "reason": "failure reason clause interpolated into a catalogued message; no instruction"
+  },
+  "8b2199f6e23e9d6a": {
+    "builder": "Ie",
+    "param": "e",
+    "text": "no certificate in it",
+    "verdict": "glue",
+    "reason": "cause clause in Ie()'s parenthesis (tool-result-bash-builtin-gh-proxy-ca-unreadable, \"could not read this session's GitHub proxy CA bundle (${e}).\"); the other caller passes the raw error message; no instruction"
   }
 }

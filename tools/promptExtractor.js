@@ -267,7 +267,184 @@ const CURATED_IDENTIFIER_MAPS = {
       },
     },
   ],
+  // CC 2.1.288 added a --max-findings option: every literal "≤N findings" cap
+  // in the code-review effort tiers became `${B(n)}` (B = the "≤N findings" /
+  // "all findings" label fn, n = the cap parameter), inserting two slots at
+  // the FRONT of each template and sliding every carried label. The carried
+  // names were also already wrong before the shift (the 2.1.286 maps named the
+  // Phase-2 verify block ANGLE_EFFICIENCY and the output fn ANGLE_ALTITUDE).
+  // Derived from each builder's template, distinct vars in first-seen order;
+  // vocabulary follows upstream's honest maps for the same builders under
+  // their agent-prompt-code-review-part-* ids, keeping our names where ours
+  // were already right (PHASE_0_GATHER_DIFF = K, AGENT_TOOL_NAME = ht).
+  'skill-code-review-effort-medium': [
+    {
+      // Uo(e,o,n=8): B, n, K, ht, vt (Agent-unavailable fallback), je (the
+      // eight finder angles), ue (cleanup/altitude candidate shape note),
+      // Oo (Phase 2 1-vote 3-state verify), e (output fn), n.
+      identifiers: [0, 1, 2, 3, 4, 5, 6, 7, 8, 1],
+      identifierMap: {
+        0: 'FORMAT_FINDINGS_LIMIT_LABEL_FN',
+        1: 'MAX_FINDINGS',
+        2: 'PHASE_0_GATHER_DIFF',
+        3: 'AGENT_TOOL_NAME',
+        4: 'AGENT_UNAVAILABLE_INSTRUCTIONS',
+        5: 'BASE_FINDER_ANGLES_BLOCK',
+        6: 'CLEANUP_AND_ALTITUDE_CANDIDATES_NOTE',
+        7: 'THREE_STATE_VERIFY_PHASE',
+        8: 'OUTPUT_FORMAT_FN',
+      },
+    },
+  ],
+  'skill-code-review-effort-high': [
+    {
+      // jo(e,o,n=10): as medium, but slot 7 is sa (Phase 2 recall-biased verify).
+      identifiers: [0, 1, 2, 3, 4, 5, 6, 7, 8, 1],
+      identifierMap: {
+        0: 'FORMAT_FINDINGS_LIMIT_LABEL_FN',
+        1: 'MAX_FINDINGS',
+        2: 'PHASE_0_GATHER_DIFF',
+        3: 'AGENT_TOOL_NAME',
+        4: 'AGENT_UNAVAILABLE_INSTRUCTIONS',
+        5: 'BASE_FINDER_ANGLES_BLOCK',
+        6: 'CLEANUP_AND_ALTITUDE_CANDIDATES_NOTE',
+        7: 'RECALL_BIASED_VERIFY_PHASE',
+        8: 'OUTPUT_FORMAT_FN',
+      },
+    },
+  ],
+  'skill-code-review-effort-max-3': [
+    {
+      // Ho(e)(o,n,s=15), the xhigh/max fan-out tier: e (effort level), B, s,
+      // K, ht, vt, Ao (the ten finder angles), ue, Oo, aa (Phase 3 sweep), o.
+      identifiers: [0, 1, 2, 0, 3, 4, 5, 6, 7, 8, 9, 10, 2],
+      identifierMap: {
+        0: 'EFFORT_LEVEL',
+        1: 'FORMAT_FINDINGS_LIMIT_LABEL_FN',
+        2: 'MAX_FINDINGS',
+        3: 'PHASE_0_GATHER_DIFF',
+        4: 'AGENT_TOOL_NAME',
+        5: 'AGENT_UNAVAILABLE_INSTRUCTIONS',
+        6: 'EXTENDED_FINDER_ANGLES_BLOCK',
+        7: 'CLEANUP_AND_ALTITUDE_CANDIDATES_NOTE',
+        8: 'THREE_STATE_VERIFY_PHASE',
+        9: 'GAP_SWEEP_PHASE',
+        10: 'OUTPUT_FORMAT_FN',
+      },
+    },
+  ],
+  'skill-code-review-effort-max': [
+    {
+      // da(e,o=15), the xhigh inline tier: B, o, K, Vo (correctness angles
+      // A-C), Wo (reuse), z, Q, Z, we, ue, Ko (output-with-minimum wrapper),
+      // e (output fn), o. No effort-level slot: "xhigh" is literal here.
+      identifiers: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 1],
+      identifierMap: {
+        0: 'FORMAT_FINDINGS_LIMIT_LABEL_FN',
+        1: 'MAX_FINDINGS',
+        2: 'PHASE_0_GATHER_DIFF',
+        3: 'CORRECTNESS_ANGLES',
+        4: 'ANGLE_REUSE',
+        5: 'ANGLE_SIMPLIFICATION',
+        6: 'ANGLE_EFFICIENCY',
+        7: 'ANGLE_ALTITUDE',
+        8: 'ANGLE_CONVENTIONS',
+        9: 'CLEANUP_AND_ALTITUDE_CANDIDATES_NOTE',
+        10: 'FORMAT_REVIEW_OUTPUT_WITH_MINIMUM_FINDINGS_FN',
+        11: 'OUTPUT_FORMAT_FN',
+      },
+    },
+  ],
+  'skill-code-review-effort-low-2': [
+    {
+      // Fo(e,o=4): B, o, e (ReportFindings-tool branch flag), xe (the "at
+      // most **N findings**" phrase fn), ZP ("ReportFindings").
+      identifiers: [0, 1, 2, 3, 1, 4, 3, 1, 4],
+      identifierMap: {
+        0: 'FORMAT_FINDINGS_LIMIT_LABEL_FN',
+        1: 'MAX_FINDINGS',
+        2: 'HAS_REPORT_FINDINGS_TOOL',
+        3: 'FORMAT_FINDINGS_LIMIT_PHRASE_FN',
+        4: 'REPORT_FINDINGS_TOOL_NAME',
+      },
+    },
+  ],
+  'skill-code-review-effort-low-3': [
+    {
+      // qo(e,o=8): as low-2, plus n = min(4, cap), the findings floor.
+      identifiers: [0, 1, 2, 3, 1, 4, 5, 5, 3, 1, 5, 5],
+      identifierMap: {
+        0: 'FORMAT_FINDINGS_LIMIT_LABEL_FN',
+        1: 'MAX_FINDINGS',
+        2: 'HAS_REPORT_FINDINGS_TOOL',
+        3: 'FORMAT_FINDINGS_LIMIT_PHRASE_FN',
+        4: 'REPORT_FINDINGS_TOOL_NAME',
+        5: 'MIN_FINDINGS_TARGET',
+      },
+    },
+  ],
+  'skill-code-review-output-format': [
+    {
+      // Mo(e): e (the cap, or "all"), I (pluralize), ZP ("ReportFindings").
+      identifiers: [0, 0, 1, 0, 0, 0, 0, 2],
+      identifierMap: {
+        0: 'MAX_FINDINGS',
+        1: 'PLURALIZE_FN',
+        2: 'REPORT_FINDINGS_TOOL_NAME',
+      },
+    },
+  ],
+  'skill-code-review-output-report-findings': [
+    {
+      // Do(e): ZP ("ReportFindings"), e (the cap, or "all"), I (pluralize).
+      identifiers: [0, 1, 1, 2, 1, 1, 1, 1],
+      identifierMap: {
+        0: 'REPORT_FINDINGS_TOOL_NAME',
+        1: 'MAX_FINDINGS',
+        2: 'PLURALIZE_FN',
+      },
+    },
+  ],
+  'skill-code-review-output-findings-target': [
+    {
+      // Ko's injected floor: s = max(1, floor(min(cap, default) / 2)), I.
+      identifiers: [0, 1, 0],
+      identifierMap: {
+        0: 'MIN_FINDINGS_TARGET',
+        1: 'PLURALIZE_FN',
+      },
+    },
+  ],
   'system-prompt-coordinator-mode': [
+    {
+      // CC 2.1.288 hoisted both comms-mode ternaries into locals —
+      // k = t?S:"Every message you send is to the user." and
+      // v = t?A:"briefly tell the user what you launched" — so the flag and
+      // the comms note are gone as slots and slot 0 is the resolved routing
+      // sentence. It also added Z2o(), the note on which server's copy of the
+      // PR-activity tools to call when both are listed, after the
+      // subscribe_pr_activity bullet. The carried map then sat one off at
+      // every slot (Agent was COMMS_TOOL_CHANNEL_NOTE). Distinct vars in
+      // first-seen order: k, ht, no, Ic, p, c, Z2o, s, l, v, oIe, u.
+      identifiers: [
+        0, 1, 2, 3, 4, 5, 6, 7, 1, 8, 2, 9, 1, 10, 2, 1, 11, 2, 3, 1, 2, 1, 3,
+        2, 1, 1, 1, 2, 1, 2, 2, 2, 1, 1, 10, 2,
+      ],
+      identifierMap: {
+        0: 'USER_MESSAGE_ROUTING_INSTRUCTION',
+        1: 'AGENT_TOOL_NAME',
+        2: 'SENDMESSAGE_TOOL_NAME',
+        3: 'TASKSTOP_TOOL_NAME',
+        4: 'WORKFLOW_CONDITIONAL_TOOL_NOTE',
+        5: 'SKILL_TOOL_CONDITIONAL_NOTE',
+        6: 'PREFERRED_PR_ACTIVITY_TOOL_COPY_NOTE_FN',
+        7: 'CROSS_SESSION_PEERS_NOTE',
+        8: 'WORKER_MODEL_PARAMETER_NOTE',
+        9: 'POST_LAUNCH_COMMS_INSTRUCTION',
+        10: 'SYSTEM_REMINDER_OPENING_TEXT',
+        11: 'WORKER_TOOLS_INTRO_TEXT',
+      },
+    },
     {
       // CC 2.1.269 appended three distinct vars after the 2.1.257 twelve, so
       // slots 0-11 keep their names: S (the `Commit${S}` suffix naming the
@@ -275,8 +452,9 @@ const CURATED_IDENTIFIER_MAPS = {
       // skill-routing bullet after the QA note). Names match upstream's
       // system-prompt-coordinator-mode-orchestration at the same slots.
       identifiers: [
-        0, 1, 2, 3, 4, 5, 6, 7, 2, 8, 3, 0, 9, 2, 10, 3, 2, 11, 3, 4, 2, 3, 2, 4,
-        3, 2, 2, 2, 12, 3, 2, 3, 3, 12, 3, 12, 13, 12, 12, 14, 2, 2, 10, 3, 12,
+        0, 1, 2, 3, 4, 5, 6, 7, 2, 8, 3, 0, 9, 2, 10, 3, 2, 11, 3, 4, 2, 3, 2,
+        4, 3, 2, 2, 2, 12, 3, 2, 3, 3, 12, 3, 12, 13, 12, 12, 14, 2, 2, 10, 3,
+        12,
       ],
       identifierMap: {
         ...COORDINATOR_MODE_2_1_257_MAP,
@@ -287,7 +465,10 @@ const CURATED_IDENTIFIER_MAPS = {
     },
     {
       // 2.1.257 shape — see COORDINATOR_MODE_2_1_257_MAP.
-      identifiers: [0, 1, 2, 3, 4, 5, 6, 7, 2, 8, 3, 0, 9, 2, 10, 3, 2, 11, 3, 4, 2, 3, 2, 4, 3, 2, 2, 2, 3, 2, 3, 3, 3, 2, 2, 10, 3],
+      identifiers: [
+        0, 1, 2, 3, 4, 5, 6, 7, 2, 8, 3, 0, 9, 2, 10, 3, 2, 11, 3, 4, 2, 3, 2,
+        4, 3, 2, 2, 2, 3, 2, 3, 3, 3, 2, 2, 10, 3,
+      ],
       identifierMap: COORDINATOR_MODE_2_1_257_MAP,
     },
     {
@@ -505,17 +686,16 @@ const CURATED_IDENTIFIER_MAPS = {
       // Autonomous-tick module chunk-s3c3fm9y.js `d()`: Tl ("Monitor"),
       // Dw ("TaskList"), n (local "Immediately before/After re-arming, …"
       // sentence), Nln (status-update visibility fn), Cl ("ScheduleWakeup"),
-      // ug ("TaskStop"). Slot 4 keeps the upstream label TASK_STOP_TOOL_NAME
-      // for ScheduleWakeup (the `call … with stop: true` tool) and slot 5 keeps
-      // STOP_MONITOR_TOOL_NAME for TaskStop, so existing overrides still bind.
+      // ug ("TaskStop"). Names match upstream's 2.1.285 map, which labels
+      // slot 4 as the ScheduleWakeup tool (the `call … with stop: true` one).
       identifiers: [0, 1, 0, 2, 3, 4, 5, 1],
       identifierMap: {
         0: 'MONITOR_TOOL_NAME',
         1: 'TASK_LIST_TOOL_NAME',
-        2: 'REARM_STATUS_UPDATE_TIMING',
-        3: 'STATUS_UPDATE_VISIBILITY_GUIDANCE_FN',
-        4: 'TASK_STOP_TOOL_NAME',
-        5: 'STOP_MONITOR_TOOL_NAME',
+        2: 'REARM_STATUS_UPDATE_INSTRUCTION',
+        3: 'LOOP_STATUS_UPDATE_VISIBILITY_GUIDANCE_FN',
+        4: 'SCHEDULE_WAKEUP_TOOL_NAME',
+        5: 'TASK_STOP_TOOL_NAME',
       },
     },
   ],
@@ -3065,7 +3245,9 @@ const NEW_PROMPT_ASSIGNMENTS = [
   },
   {
     matcher: t =>
-      t.startsWith('The permission handler narrowed the input to a shape SendMessage'),
+      t.startsWith(
+        'The permission handler narrowed the input to a shape SendMessage'
+      ),
     name: 'Tool Result: SendMessage permission handler narrowed the input',
     id: 'tool-result-send-message-permission-handler-narrowed-input',
     description:
@@ -3377,9 +3559,11 @@ const CLASSIFICATION_CACHE_PATH = path.join(
   'prompt-classification.json'
 );
 let _classificationCache = null;
+let _classificationCacheInjected = false;
 // Test seam: inject a cache object (pass null to restore file-backed loading).
 function _setClassificationCacheForTests(obj) {
   _classificationCache = obj;
+  _classificationCacheInjected = !!obj;
 }
 function loadClassificationCache() {
   if (_classificationCache) return _classificationCache;
@@ -3456,7 +3640,11 @@ function loadSlotLiterals() {
 // Dump the candidates and key against what the extractor actually hashes.
 const CANDIDATE_DUMP_PATH = process.env.TWEAKCC_DUMP_CANDIDATES || null;
 let _candidateDumpFd = null;
+// In-memory twin of the dump, used by collectLiteralSites (classify evidence).
+let _siteCollector = null;
+let _collectComposites = false;
 function dumpCandidate(rec) {
+  if (_siteCollector) _siteCollector.push(rec);
   if (!CANDIDATE_DUMP_PATH) return;
   if (_candidateDumpFd === null)
     _candidateDumpFd = fs.openSync(CANDIDATE_DUMP_PATH, 'w');
@@ -3525,9 +3713,59 @@ const normalizeBuildTime = s =>
     }
   );
 
-function classifyByCache(body) {
-  const cache = loadClassificationCache();
-  const sha = s => crypto.createHash('sha1').update(s).digest('hex');
+// Inside each `${…}` slot, a bare-identifier bracket index (`[Ye]`) becomes
+// `[]`. The cacheBody keeps member/index access, so a minifier rename of an
+// index variable between builds (Ye→Xe) changes the sha1 of an otherwise
+// byte-identical prompt and silently strands its verdict. Numeric, quoted and
+// operator indexes (`[0]`, `["x"]`, `[P-1]`) are a different class and stay.
+function normalizeBracketIndexes(body) {
+  const BARE = /\[[A-Za-z_$][\w$]*\]/g;
+  let out = '';
+  let i = 0;
+  while (i < body.length) {
+    if (body[i] === '$' && body[i + 1] === '{' && body[i - 1] !== '\\') {
+      let depth = 1;
+      let j = i + 2;
+      let seg = '';
+      let segStart = j;
+      const flush = end => {
+        seg += body.slice(segStart, end).replace(BARE, '[]');
+      };
+      while (j < body.length && depth > 0) {
+        const c = body[j];
+        if (c === "'" || c === '"' || c === '`') {
+          flush(j);
+          let k = j + 1;
+          while (k < body.length && body[k] !== c)
+            k += body[k] === '\\' ? 2 : 1;
+          const lit = body.slice(j, k + 1);
+          seg +=
+            c === '`'
+              ? '`' + normalizeBracketIndexes(lit.slice(1, -1)) + lit.slice(-1)
+              : lit;
+          j = k + 1;
+          segStart = j;
+          continue;
+        }
+        if (c === '{') depth += 1;
+        else if (c === '}') depth -= 1;
+        j += 1;
+      }
+      flush(j);
+      out += '${' + seg;
+      i = j;
+      continue;
+    }
+    out += body[i];
+    i += 1;
+  }
+  return out;
+}
+
+const sha1Hex = s => crypto.createHash('sha1').update(s).digest('hex');
+
+// Every raw (un-normalized) form a body is looked up under.
+function rawCacheForms(body) {
   const forms = [body];
   if (_ccVersionForCache) {
     if (body.includes(_ccVersionForCache))
@@ -3541,11 +3779,94 @@ function classifyByCache(body) {
     if (_buildTimeForCache && form.includes('<<BUILD_TIME>>'))
       forms.push(form.split('<<BUILD_TIME>>').join(_buildTimeForCache));
   }
-  for (const form of forms) {
-    const hit = cache[sha(form)];
+  return forms;
+}
+
+// Every form classifyByCache hashes, lazily and in lookup order: the raw forms,
+// then their bracket-index-normalized twins.
+function* cacheLookupForms(body) {
+  const raw = rawCacheForms(body);
+  yield* raw;
+  for (const form of raw) {
+    const nf = normalizeBracketIndexes(form);
+    if (nf !== form) yield nf;
+  }
+}
+
+function classifyByCache(body) {
+  const cache = loadClassificationCache();
+  for (const form of cacheLookupForms(body)) {
+    const hit = cache[sha1Hex(form)];
     if (hit) return hit;
   }
   return null;
+}
+
+// Serialize the cache in the repo's canonical one-entry-per-line format (the
+// showtime driver's classify-merge writes the same bytes).
+function serializeClassificationCache(cache) {
+  const parts = [];
+  for (const [k, v] of Object.entries(cache)) {
+    const keys = Object.keys(v);
+    let val;
+    if (keys.length === 1) {
+      val = `{ "facing": ${JSON.stringify(v.facing)} }`;
+    } else {
+      const lines = ['facing', 'id', 'name', 'desc']
+        .filter(f => f in v)
+        .map(f => `    ${JSON.stringify(f)}: ${JSON.stringify(v[f])}`);
+      val = `{\n${lines.join(',\n')}\n  }`;
+    }
+    parts.push(`  ${JSON.stringify(k)}: ${val}`);
+  }
+  return `{\n${parts.join(',\n')}\n}\n`;
+}
+
+// For each prompt whose body has a bare-identifier bracket index and whose
+// verdict was recorded under a raw key, return the cache with an alias
+// `sha1(normalized) -> same verdict` inserted directly after its source entry,
+// so the file diff is insertions only. Returns {cache, added}.
+function withBracketAliases(prompts, cache) {
+  const aliases = new Map();
+  for (const p of prompts) {
+    const body = (p.pieces || []).filter(x => typeof x === 'string').join('');
+    for (const form of rawCacheForms(body)) {
+      const nf = normalizeBracketIndexes(form);
+      if (nf === form) continue;
+      const srcKey = sha1Hex(form);
+      const aliasKey = sha1Hex(nf);
+      if (!cache[srcKey] || cache[aliasKey] || aliases.has(aliasKey)) continue;
+      aliases.set(aliasKey, { srcKey, verdict: { ...cache[srcKey] } });
+    }
+  }
+  if (!aliases.size) return { cache, added: 0 };
+  const bySrc = new Map();
+  for (const [aliasKey, { srcKey, verdict }] of aliases)
+    bySrc.set(srcKey, [...(bySrc.get(srcKey) || []), [aliasKey, verdict]]);
+  const next = {};
+  for (const [k, v] of Object.entries(cache)) {
+    next[k] = v;
+    for (const [ak, av] of bySrc.get(k) || []) next[ak] = av;
+  }
+  return { cache: next, added: aliases.size };
+}
+
+// Writes to `cachePath` (default: the real file). A cache injected through the
+// test seam is never persisted to the default path.
+function backfillCacheAliases(prompts, cachePath) {
+  if (!cachePath && _classificationCacheInjected) return 0;
+  const file = cachePath || CLASSIFICATION_CACHE_PATH;
+  const cache = cachePath
+    ? JSON.parse(fs.readFileSync(file, 'utf-8'))
+    : loadClassificationCache();
+  const { cache: next, added } = withBracketAliases(prompts, cache);
+  if (!added) return 0;
+  fs.writeFileSync(file, serializeClassificationCache(next));
+  if (!cachePath) _classificationCache = next;
+  console.log(
+    `Added ${added} classification-cache alias key(s) for bracket-indexed slots`
+  );
+  return added;
 }
 
 // Structural excludes that win even over a classification-cache 'model'
@@ -3566,14 +3887,16 @@ function proseOutsideSlots(text) {
         const c = text[j];
         if (c === "'" || c === '"') {
           let k = j + 1;
-          while (k < text.length && text[k] !== c) k += text[k] === '\\' ? 2 : 1;
+          while (k < text.length && text[k] !== c)
+            k += text[k] === '\\' ? 2 : 1;
           out += ' ' + text.slice(j + 1, k) + ' ';
           j = k + 1;
           continue;
         }
         if (c === '`') {
           let k = j + 1;
-          while (k < text.length && text[k] !== '`') k += text[k] === '\\' ? 2 : 1;
+          while (k < text.length && text[k] !== '`')
+            k += text[k] === '\\' ? 2 : 1;
           out += ' ' + proseOutsideSlots(text.slice(j + 1, k)) + ' ';
           j = k + 1;
           continue;
@@ -3605,9 +3928,7 @@ function isHardExcluded(text) {
   // not (`ain`, `content`, `command` are not prose).
   // A lone glyph prefix (`⚠ ${e.content}`, stored as `\u26a0` in the Bun
   // bundle) is still authored text; keep it.
-  if (
-    !/[A-Za-z]{3,}|[^ -~\s]|\\u[0-9a-fA-F]{4}/.test(proseOutsideSlots(text))
-  )
+  if (!/[A-Za-z]{3,}|[^ -~\s]|\\u[0-9a-fA-F]{4}/.test(proseOutsideSlots(text)))
     return true;
   // The release-notes changelog (`Inn()` -> computeUpdateSummary -> the startup
   // "what's new" notice). It is a DOCUMENT, not a prompt: no system prompt, tool
@@ -3788,7 +4109,8 @@ function shouldCapture(text, cacheBody, lead, minLength, opts = {}) {
     // tool description: the model reads it on every session that exposes the
     // tool. Naming a prompt in NEW_PROMPT_ASSIGNMENTS is a human decision about
     // one specific string, so it wins; everything else still defers to the cache.
-    if (cls.facing !== 'model' && !lookupNewPromptAssignment(text)) return false;
+    if (cls.facing !== 'model' && !lookupNewPromptAssignment(text))
+      return false;
     if (cls.facing === 'model') return true;
   }
   const signalled = leadShowsModelFacingContext(lead, text);
@@ -4406,7 +4728,7 @@ function backfillIdenticalSites(stringData, ast, code) {
   }
 }
 
-function extractStrings(filepath, minLength = 500) {
+function extractStrings(filepath, minLength = 500, opts = {}) {
   _gateCandidates.clear(); // idempotent across calls
   const code = fs.readFileSync(filepath, 'utf-8');
   const settingsIndex = buildSettingsIndex(code);
@@ -4434,6 +4756,18 @@ function extractStrings(filepath, minLength = 500) {
     {
       const composite = assembleComposite(node);
       if (composite !== null) {
+        if (_siteCollector && _collectComposites)
+          _siteCollector.push({
+            start: node.start,
+            end: node.end,
+            kind: 'composite',
+            cacheBody: composite.text,
+            fragments: composite.nodes.map(n => ({
+              start: n.start,
+              end: n.end,
+              body: literalOf(n),
+            })),
+          });
         const fragCaptured = composite.nodes.map(frag => {
           const v = literalOf(frag);
           const fragLead = code.slice(
@@ -4507,7 +4841,12 @@ function extractStrings(filepath, minLength = 500) {
       const lead = code.slice(Math.max(0, node.start - 600), node.start);
       const slotLiteral = Boolean(slotLiteralVerdict(node.value));
       const settings = settingsAt(node);
-      dumpCandidate({ start: node.start, end: node.end, kind: 'string', cacheBody: node.value });
+      dumpCandidate({
+        start: node.start,
+        end: node.end,
+        kind: 'string',
+        cacheBody: node.value,
+      });
       if (
         shouldCapture(node.value, node.value, lead, minLength, {
           slotLiteral,
@@ -4688,7 +5027,12 @@ function extractStrings(filepath, minLength = 500) {
         Boolean(slotLiteralVerdict(q.value.cooked ?? q.value.raw))
       );
       const settings = settingsAt(node);
-      dumpCandidate({ start: node.start, end: node.end, kind: 'template', cacheBody: tbody });
+      dumpCandidate({
+        start: node.start,
+        end: node.end,
+        kind: 'template',
+        cacheBody: tbody,
+      });
       if (
         shouldCapture(fullContent, tbody, lead, minLength, {
           slotLiteral,
@@ -4738,6 +5082,7 @@ function extractStrings(filepath, minLength = 500) {
     console.log(
       `extractStrings: parsed ${parsed}/${segments.length} bundle modules`
     );
+    if (opts.sitesOnly) return null;
     for (const seg of segments) {
       const segAst = parseModuleSegment(seg);
       if (!segAst) continue;
@@ -4745,6 +5090,7 @@ function extractStrings(filepath, minLength = 500) {
     }
   } else {
     traverse(ast);
+    if (opts.sitesOnly) return null;
     backfillIdenticalSites(stringData, ast, code);
   }
 
@@ -4885,7 +5231,9 @@ function applySlotLiteralNames(prompts) {
     }
   }
   if (named.length) {
-    console.log(`Named ${named.length} slot-literal capture(s) from the allowlist`);
+    console.log(
+      `Named ${named.length} slot-literal capture(s) from the allowlist`
+    );
   }
   return prompts;
 }
@@ -5427,6 +5775,7 @@ if (require.main === module) {
     version
   );
   mergedResult.prompts = applyCacheNames(mergedResult.prompts);
+  backfillCacheAliases(mergedResult.prompts);
   mergedResult.prompts = applySlotLiteralNames(mergedResult.prompts);
   mergedResult.prompts = applySettingsDescriptionNames(
     mergedResult.prompts,
@@ -5575,11 +5924,16 @@ if (require.main === module) {
   // override and has already shipped a ReferenceError once (2.1.257). Refuse to
   // write a catalogue that carries one.
   const dupReport = mergedResult.prompts
-    .map(p => [p.id, duplicateSlotNames(p.identifierMap, (p.identifiers || []).map(String))])
+    .map(p => [
+      p.id,
+      duplicateSlotNames(p.identifierMap, (p.identifiers || []).map(String)),
+    ])
     .filter(([, d]) => d.length > 0);
   if (dupReport.length > 0) {
     for (const [id, d] of dupReport) {
-      console.error(`FATAL: "${id}" names ${d.join(', ')} on more than one slot`);
+      console.error(
+        `FATAL: "${id}" names ${d.join(', ')} on more than one slot`
+      );
     }
     process.exit(1);
   }
@@ -5633,7 +5987,27 @@ if (require.main === module) {
   );
 }
 
+// Every string/template literal the extractor visits, with the exact body it
+// hashes (`cacheBody`) and its absolute range. This is the extractor's own AST
+// view, so a candidate hash maps to its emission sites without re-deriving the
+// template-piece encoding. Runs the traversal pass only. `composites: true`
+// also records each multi-node composite (kind 'composite', the joined text
+// classifyByCache hashes, and its fragments with the body each one is looked
+// up under).
+function collectLiteralSites(filepath, { composites = false } = {}) {
+  _siteCollector = [];
+  _collectComposites = composites;
+  try {
+    extractStrings(filepath, 500, { sitesOnly: true });
+    return _siteCollector;
+  } finally {
+    _siteCollector = null;
+    _collectComposites = false;
+  }
+}
+
 module.exports = extractStrings;
+module.exports.collectLiteralSites = collectLiteralSites;
 module.exports.normalizeIdGroups = normalizeIdGroups;
 // Exported for the test suite (below-floor capture rules — battleproof guarantee).
 module.exports.leadShowsModelFacingContext = leadShowsModelFacingContext;
@@ -5654,6 +6028,14 @@ module.exports._setClassificationCacheForTests =
 // Test seam: fuzzy-carryover collision policy (same-id multi-site vs
 // genuinely-ambiguous cross-id) is behavior worth locking down.
 module.exports.mergeWithExisting = mergeWithExisting;
+module.exports.classifyByCache = classifyByCache;
+module.exports.rawCacheForms = rawCacheForms;
+module.exports.cacheLookupForms = cacheLookupForms;
+module.exports.sha1Hex = sha1Hex;
+module.exports.normalizeBracketIndexes = normalizeBracketIndexes;
+module.exports.withBracketAliases = withBracketAliases;
+module.exports.backfillCacheAliases = backfillCacheAliases;
+module.exports.serializeClassificationCache = serializeClassificationCache;
 module.exports.templateKey = templateKey;
 module.exports.sameVarPattern = sameVarPattern;
 module.exports.IDENTICAL_SITE_FLOOR = IDENTICAL_SITE_FLOOR;

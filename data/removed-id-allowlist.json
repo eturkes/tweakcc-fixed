@@ -1566,5 +1566,2685 @@
     "verdict": "archived",
     "version": "2.1.284",
     "why": "skill permission-rule old-name note removed in 2.1.284"
+  },
+  "data-automem-memory-index-header": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "removed in 2.1.285: distinctive text absent from bundle and catalogue"
+  },
+  "data-dir-sync-apply-interrupted-partial-checkout": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "data-dir-sync-apply-partial-rewrite-undone": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "data-dir-sync-deleted-files-moved-to-trash": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "data-dir-sync-nested-repo-inside-uncarried-dir": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "data-dir-sync-nested-repo-keep-as-ordinary-files": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "data-dir-sync-nested-repo-ordinary-except-uncarried": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "data-dir-sync-overcap-file-listing": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "data-dir-sync-partial-writes-remain-in-worktree": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "data-dir-sync-restore-reason-no-basis-agent": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "data-dir-sync-restore-reason-not-stored": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "data-dir-sync-restore-reason-rolled-back-no-basis-agent": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "data-dir-sync-shadowed-files-moved-to-trash": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "data-dir-sync-trash-restore-failed": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "data-memory-index-listing-cap-note": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "removed in 2.1.285: distinctive text absent from bundle and catalogue"
+  },
+  "data-memory-truncation-byte-limit-detail": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "removed in 2.1.285: distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-agent-commits-carried-along": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-agent-commits-parked": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-agent-commits-reparented": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-agent-files-created-before-arrival-trashed": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-agent-snapshot-commits-restored": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-agent-staging-contents-unchanged": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-agent-staging-dropped": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-agent-staging-no-longer-in-checkout": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-agent-staging-reread-before-relying": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-bookkeeping-newest-snapshot-ref-command": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-bookkeeping-reset-to-user-commit": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-bookkeeping-user-commit-not-in-history": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-carried-commits-many-sync-snapshots": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-carried-commits-one-sync-snapshot": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-changed-during-read": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-checkout-back-on-user-branch": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-checkout-follows-user-branch": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-checkout-unready-mid-operation": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-checkout-unready-unmerged": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-checkout-update-unfinished": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-claude-changes-did-not-reach-machine": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-cloud-branch-name-collides-rename": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-cloud-changes-not-applied-turn-retry": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-cloud-checkout-unready-not-sent": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-conflicts-resolved-on-laptop": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-credential-named-uncommitted-skipped": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-device-link-unusable-resend-current-files": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-device-upload-gone-resend-asked": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-device-upload-lacks-history-unchanged": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-device-upload-refused-fresh-snapshot": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-duplicate-generation-ignored": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-earlier-update-now-reached": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-earlier-work-not-restored-told": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-edit-over-delete": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-empty-start-directory-not-empty": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-empty-start-files-may-not-come": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-empty-start-first-upload-did-not-verify": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-empty-start-git-could-not-write-checkout": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-empty-start-upload-begun": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-environment-recreated-happened": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-environment-recreated-local-state-gone": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-environment-recreated-setup-gone": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-file-store-full-refused": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-file-store-share-used-up": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-file-store-share-used-up-counts": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-files-displaced": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-files-refused-write-summary": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-files-trashed": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-files-updated-in-place": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-filter-attributed-files": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-from-stays-put": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-git-error-detail-diff-files": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-halt-line-lane-full": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-halt-line-layout-unserved": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-halt-line-offline": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-halt-line-refused": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-halt-line-set-aside-failed": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-halt-line-start-gone": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-head-fast-forwarded": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-head-moved": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-head-on-sync-snapshot-commit": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-head-restored": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-held-back-work-now-sent": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-index-not-mirrored": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-info-attributes-changed": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-info-attributes-unusable": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-kept-in-cloud-only-list": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-latest-upload-unusable": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-merge-driver-unswitchable-name": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-merge-drivers-too-many": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-merge-tree-unsupported": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-merge-unsettled": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-missing-link-upload-unusable": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-name-list-overflow-suffix": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-nested-git-repos-left-in-cloud": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-nested-repository-not-entered": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-not-applied-reason-bad-bundle": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-not-applied-reason-detached-head": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-not-applied-reason-git-error": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-not-applied-reason-mid-operation": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-not-applied-reason-prerequisites-missing": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-not-applied-reason-refused-here": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-not-applied-reason-unborn": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-not-applied-reason-unexpected": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-not-applied-reason-unmerged-index": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-not-applied-reason-worktree-changed": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-not-installed-list-truncated": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-not-installed-on-user-machine": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-not-installed-reason-deferred": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-not-installed-reason-outside-checkout": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-not-installed-stale-basis": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-not-taken-from-user-machine": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-not-uploaded-reason-compliance-restricted": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-not-uploaded-reason-git-error": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-off-head-unreadable": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-oversize-files-not-sent": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-oversize-turn-version-stays-cloud": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-parked-commits-still-kept": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-parked-reason-cannot-recreate": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-parked-reason-published": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-published-commits-off-work-branch": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-published-remote-changes-guidance": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-renamed-on-user-machine": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-restored-files-no-longer-match-user-commits": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-restored-user-commits": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-rewrite-reparented-guidance": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-rewrite-uncommitted-guidance": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-service-answering-again": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-service-answering-again-resumes-this-turn": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-service-resumed": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-stopped-emptied-only-marker-left": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-stopped-no-checkout-to-empty": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-stopped-reason-commit-not-held": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-stopped-reason-machine-stopped": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-stopped-redo-on-machine": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-stopped-set-aside-redo-on-machine": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-stopped-unsent-files-when-ended": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-too-large-on-laptop": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-trash-files-not-moved-back-clause": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-turn-changes-too-large-to-send": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-turn-overcap": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-uncommitted-too-large-largest-file": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-unresolved-conflicts-on-laptop": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-update-record-not-taken": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-update-record-refused": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-uploads-going-through-again": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-user-branch-followed": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-user-changes-fetch-gave-up": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-user-changes-reaching-again": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-user-changes-refused": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-user-file-replaced-agent-directory": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-user-file-replaced-agent-directory-many-more": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-user-file-replaced-agent-directory-one-more": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-user-switched-checkout-followed": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-withheld-rules-unreadable": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-withheld-summary-current-and-tracked": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-withheld-summary-tracked-only": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-dir-sync-written-during-read-not-synced": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-directory-sync-branch-name-collision": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-directory-sync-branch-switch-parked-work": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-directory-sync-checkout-recreated": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-directory-sync-checkout-recreated-comes-back-after-refused": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-directory-sync-checkout-recreated-comes-back-later-upload": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-directory-sync-checkout-recreated-comes-back-on-resend": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-directory-sync-checkout-recreated-comes-back-taken": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-directory-sync-checkout-recreated-from-user-files": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-directory-sync-checkout-recreated-wait-for-files-tail": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-directory-sync-checkout-reset-partial-restore-commits-missing": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-directory-sync-checkout-rolled-back": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-directory-sync-checkout-rolled-back-local-state-gone": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-directory-sync-checkout-rolled-back-not-restored": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-directory-sync-checkout-rolled-back-setup-gone": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-directory-sync-checkout-unready-git-unreadable": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-directory-sync-checkout-unready-unborn-branch": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-directory-sync-cloud-only-files": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-directory-sync-disabled-container-recreated": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-directory-sync-disabled-device-key-unreadable": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-directory-sync-disabled-first-object-unreadable": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-directory-sync-disabled-set-aside-failed": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-directory-sync-disabled-trash-unavailable": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-directory-sync-environment-replaced-work-restored": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-directory-sync-git-keeps-failing-upload": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-directory-sync-lane-down": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-directory-sync-latest-changes-unusable": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-directory-sync-latest-not-uploaded": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-directory-sync-live-checkout-guidance": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-directory-sync-not-applied": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-directory-sync-not-sent-checkout-unreadable": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-directory-sync-not-sent-git-unreadable": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-directory-sync-service-not-answering": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-directory-sync-service-offline-this-turn": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-directory-sync-service-unreachable-no-user-files": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-directory-sync-snapshot-commit-reset": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-directory-sync-stopped-checkout-kept": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-directory-sync-switched-back-on-by-anthropic": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-directory-sync-turn-held-waiting-service": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-directory-sync-upload-began-before-turn": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-directory-sync-upload-began-before-turn-newer-changes": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-directory-sync-user-edits-won": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-directory-sync-working-directory-not-yet-user-files": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-settings-sync-dropped": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "removed in 2.1.285: distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-settings-sync-pending": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "removed in 2.1.285: distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-tool-hosts-file-sync-timing": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-tool-hosts-file-sync-timing-after-task": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-tool-hosts-file-sync-timing-mid-turn": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-tool-hosts-here-no-synced-copy": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-tool-hosts-housekeeping-either-machine": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-tool-hosts-look-for-it-there": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-tool-hosts-machine-files-synced-copy-work-here": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-tool-hosts-not-in-session-copy": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-tool-hosts-project-sync-scope-checkout-or-folder": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-tool-hosts-project-sync-scope-containing-checkout": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-tool-hosts-project-upload-only": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-tool-hosts-project-upload-only-changes-in-scope": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-tool-hosts-two-way-commit-timing": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-reminder-tool-hosts-upload-only-absolute-path": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-description-directory-sync-device-sync-files": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-cloud-session-file-sync-back-on-catching-up": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-cloud-session-file-sync-compliance-policy-blocked": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-cloud-session-file-sync-git-symlink-refused": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-cloud-session-file-sync-off-anthropic-side-continues": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-cloud-session-file-sync-off-before-files-reached": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-cloud-session-file-sync-off-holds-none-yet": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-cloud-session-file-sync-repo-setting-steers-git": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-cloud-session-first-upload-unexpected": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-cloud-session-folder-seed-bundle-seed-switched-off": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-cloud-session-folder-seed-git-entry-unvouched": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-cloud-session-folder-seed-packaging-failed": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-cloud-session-github-clone-would-lack": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-cloud-session-no-github-remote": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-cloud-session-pass-ref-github-file-sync-off": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-cloud-session-run-cloud-ref-file-sync-off": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-dir-sync-anchor-not-opened-reading": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-dir-sync-attribute-rule-setting-cannot-follow": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-dir-sync-branch-changed": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-dir-sync-branch-could-not-be-put-back": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-dir-sync-branch-not-put-back-index-old": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-dir-sync-changes-unapplied": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-dir-sync-checkout-unready-cause": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-dir-sync-could-not-ask-catch-up": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-dir-sync-could-not-send-first": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-dir-sync-could-not-take-in-failed": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-dir-sync-file-store-full-ends-sync": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-dir-sync-files-held-open-cause": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-dir-sync-held-open-command-ran-note": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-dir-sync-held-open-read-older-copy-note": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-dir-sync-host-not-syncing": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-dir-sync-host-stopped-syncing": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-dir-sync-ignore-case-included-file": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-dir-sync-layout-changed-reflog-not-plain-file": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-dir-sync-layout-changed-refs-dir-changed-not-restored": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-dir-sync-layout-changed-refs-dir-changed-undone": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-dir-sync-layout-changed-refs-dir-not-plain": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-dir-sync-layout-changed-session-ref-log-not-plain": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-dir-sync-layout-changed-session-ref-log-replaced": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-dir-sync-next-sync-point-remedy": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-dir-sync-overcap-remedy": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-dir-sync-peer-refused-reason": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-dir-sync-peer-upload-did-not-go": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-dir-sync-pre-forward-internal-error": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-dir-sync-publish-refused": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-dir-sync-read-ran-on-stale-files": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-dir-sync-ref-moved-head-mismatch": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-dir-sync-seed-anchor-not-opened": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-dir-sync-stale-files-hold": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-dir-sync-stale-remedy-next-upload": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-dir-sync-stale-remedy-turn-end": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-dir-sync-switch-back-remedy": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-dir-sync-unreadable-sync-response": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-dir-sync-user-clears-on-machine-remedy": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-fork-unavailable-in-parent-mode": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "removed in 2.1.285: distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-git-bundle-forged-path-names": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-git-bundle-git-could-not-read": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-memory-paused": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "removed in 2.1.285: distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-remote-host-session-copy-omits-gitignored": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "removed in 2.1.285: distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-remote-tool-plumbing-not-served-dir-sync-hold": {
+    "verdict": "archived",
+    "version": "2.1.285",
+    "why": "directory-sync subsystem removed in 2.1.285 (its tengu_dir_sync_* flags are gone); distinctive text absent from bundle and catalogue"
+  },
+  "system-prompt-auto-mode-classifier-blocked-actions-list-candidate": {
+    "verdict": "archived",
+    "version": "2.1.286",
+    "why": "removed in 2.1.286: distinctive text absent from bundle and catalogue"
+  },
+  "system-prompt-auto-mode-classifier-external-system-writes-bullet-baseline": {
+    "verdict": "archived",
+    "version": "2.1.286",
+    "why": "removed in 2.1.286: distinctive text absent from bundle and catalogue"
+  },
+  "system-prompt-auto-mode-classifier-external-system-writes-bullet-candidate": {
+    "verdict": "archived",
+    "version": "2.1.286",
+    "why": "removed in 2.1.286: distinctive text absent from bundle and catalogue"
+  },
+  "system-prompt-auto-mode-classifier-external-system-writes-scope-baseline": {
+    "verdict": "archived",
+    "version": "2.1.286",
+    "why": "removed in 2.1.286: distinctive text absent from bundle and catalogue"
+  },
+  "system-prompt-auto-mode-classifier-external-system-writes-scope-candidate": {
+    "verdict": "archived",
+    "version": "2.1.286",
+    "why": "removed in 2.1.286: distinctive text absent from bundle and catalogue"
+  },
+  "system-prompt-auto-mode-classifier-remote-service-tool-scope-candidate": {
+    "verdict": "archived",
+    "version": "2.1.286",
+    "why": "removed in 2.1.286: distinctive text absent from bundle and catalogue"
+  },
+  "system-prompt-claude-test-starting-reload-plugins": {
+    "verdict": "archived",
+    "version": "2.1.286",
+    "why": "removed in 2.1.286: distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-fetch-inbox-message-attachments-not-downloaded": {
+    "verdict": "archived",
+    "version": "2.1.286",
+    "why": "removed in 2.1.286: distinctive text absent from bundle and catalogue"
+  },
+  "agent-prompt-you-should-know-first-person-lead": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "why": "removed in 2.1.288: the you-should-know agent prompt dropped its first-person framing (examples now read 'The main agent chose…'); 'describe decisions the main agent' and 'in the first person' absent from bundle and catalogue"
+  },
+  "agent-prompt-you-should-know-offer-write-as-main-agent-first-person": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "why": "removed in 2.1.288: same first-person framing removal; 'write as the main agent, in the first person' absent from bundle and catalogue"
+  },
+  "slash-command-plugin-types-description": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "why": "removed in 2.1.288: the /plugin-types command left the binary; every distinctive window absent from bundle and catalogue"
+  },
+  "slash-command-plugin-types-empty": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "why": "removed in 2.1.288 with the /plugin-types command; distinctive text absent from bundle and catalogue"
+  },
+  "slash-command-plugin-types-no-plugin-contracts": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "why": "removed in 2.1.288 with the /plugin-types command; distinctive text absent from bundle and catalogue"
+  },
+  "slash-command-plugin-types-plugins-not-loaded": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "why": "removed in 2.1.288 with the /plugin-types command; distinctive text absent from bundle and catalogue"
+  },
+  "slash-command-plugin-types-tsconfig-include": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "why": "removed in 2.1.288 with the /plugin-types command; the one 25-char hit ('claude plugin validate <d') is boilerplate in the doctor skill"
+  },
+  "slash-command-plugin-types-wrote-plugin-api": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "why": "removed in 2.1.288 with the /plugin-types command; distinctive text absent from bundle and catalogue"
+  },
+  "tool-result-remote-tool-approval-answers-different-request": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "why": "merged in 2.1.288 into one template with tool-result-remote-host-approval-no-longer-pending, which keeps the id (its 'gone' branch comes first)"
+  },
+  "tool-result-git-bundle-old-git-reads-skipped": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "internal",
+    "hash": "26e53066b81152d6792cf32af5350d51cd8da5c6",
+    "why": "ruled internal in a 2.1.288 catalogue correction: only reached by debug logging"
+  },
+  "slash-command-plugin-switch-needs-fresh-marketplace-read": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "6963d764fb97ad8a900c2d297170a97d756357f8",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-more-installs-than-shown": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "aac9a87992b7c5e27a57fb1a2d4b6ec5b2de4f10",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-switch-target-changed-since-shown": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "40c85f69013894e3ae028f064400d6723097c07f",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-already-installed-not-switched-needs-fresh-listing": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "f80202df08b84035f97321e29c8fa687540083f9",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-not-switched-directory-unavailable-lead": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "ca96ebc1e820c130c86d46cda6ba9e1a60617835",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-already-installed-not-switched-reason": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "723dbd5d0100a058d5dc54c4d688c0f81b648184",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-already-installed-not-switched-other-marketplace": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "7c7e670d995fbd43d4a16c5f96f1f4f66e526609",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-switched-but-disabled-note": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "6cb0af1f4f66e7ad13180f7a3ea2aecd854f716a",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-not-switched-needs-fresh-listing-resolution": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "6d9f134cf0351d58f36012141b599cc26b8147c7",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-nothing-switched-no-matching-copy": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "7ccf62c155625c34f31208ed0f5350644b45c34c",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-switch-data-directory-kept": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "3e8fd97ba21d6de06f9759789338f44298a51366",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-switch-data-directory-kept-another-plugin-uses-it": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "e4a4f06958d5614e30478fe4bbb53fff313d27f5",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-switch-data-directory-kept-list-unreadable": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "84c0ca2313f231e15e1c162a00ea03735eee5a34",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-switch-data-directory-copied-note": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "ae324b0299100417b7585826ef86407f9434d7c4",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-switch-old-copy-local-record-left-lead": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "acb00a23b8f2c81c6f290ccb8591315d0a96fb17",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-switch-old-copy-own-local-line-left": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "b867414f05f6ae1034920414a447efcca06178af",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-switch-old-copy-fix-unreadable-file-switch-off-step": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "61ca95a7faa50a88d56853fe5c8aec0fdf8f2cc3",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-switch-old-copy-legacy-local-file-left": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "d440b9766714d391cc104643058229bedeaa19c2",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-switch-old-copy-settings-files-not-read-network-path": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "a28e7cfe70aa9645db1f628552c8fbc6336c707c",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-switch-old-copy-launch-folder-file-entry": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "cc45314f3ab5ad882b73236358c57aed5e7c9dfa",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-switch-old-copy-fix-any-file-switch-off-each-step": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "a473c599012503e3b999a09d3d2693e8fc18f5e1",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-switch-old-copy-settings-files-not-read-left": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "d96d30f3e90bde4c4d47735839a00419c6dc6c9d",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-switch-old-copy-settings-files-in-other-folders-left": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "0991482da6fef9fd7af37ed06c7acab9c3b5877b",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-switch-old-copy-other-folders-switch-off-step": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "2da43d4452c0b970012683694f4de6c844e0daa7",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-switch-old-copy-other-folders-fix-file-suffix": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "25290398e7f62f00be4921ad39dcf245c4bb59d6",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-switch-old-copy-settings-files-unreadable-may-switch-on": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "89bcfa542c0266f9c7fabdb83a0724000db60d14",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-switch-old-copy-settings-files-network-path-may-switch-on": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "7e888f1a7b5b17d7eed1507a88ce775d76c3d867",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-switch-old-copy-settings-files-not-trusted-may-switch-on": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "724c56ac6ca7f2f99747111e1a0155af4c0a4de1",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-switch-old-copy-fix-unreadable-file-switch-off-both-step": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "51813cb38894a14f513de87504a2296b6b078244",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-switch-old-copy-launch-folder-files-left": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "c6f43ba937661abd99aa1258816b2c821235b05c",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-switch-old-copy-shared-checkout-file-left": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "7efb86eb0d9b860055366359970d8475d74e2011",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-switch-old-copy-other-folder-files-left": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "e371445de5c5e5228baafc05b1b7acdcde53e322",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-switch-old-copy-secrets-store-keychain": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "0a20e1fd35c3b83b26217ab734b0b7e59bd5e837",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-switch-old-copy-secrets-store-credential-manager": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "6bfde1b1a8c9a24c8dedf177c3bd40b2e9ee41d4",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-switch-old-copy-carried-over-clause": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "667725cc08d3cd54ab27b09dd2edcd191fe44339",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-switch-cleanup-unfinished-settings-and-secrets-left": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "0fb08cd5733a40121a5a9ed7e4e5d6b98042584d",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-switch-cleanup-unfinished-data-folder-may-go": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "e1dba7c4a405f7f8a8aa41526b4481d94fba205f",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-switch-leftover-data-folder-install-records-unreadable": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "fe0bea25bfcca7a04eb847d428ad2af87f0feca6",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-switch-old-copy-cleanup-unfinished-lead": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "75d9530426b68c1d3afb9467c0f85f36264d5bbe",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-switch-old-copy-cleanup-unfinished-held": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "d7f0a3f0b89c264984188a3498ff56fdfb5b21de",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-cleanup-unfinished-name-not-tied": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "e60204b035ce2cc3da88bb85c47ca3d555bf3824",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-switch-old-copy-cleanup-unfinished-bindings-unreadable": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "8aa098fc85ecf48cf9e91f1322c14500d4e0c11d",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-switch-old-copy-record-unknown-leftovers": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "a887f1bcb1cbfaaa1536d8e992d7f19ba6c9aabf",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-switch-old-copy-records-unreadable-after-removal-lead": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "6c1835e21cfdbed4c89cfef97dae5537632702de",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-switch-old-copy-records-unreadable-held": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "ba741792142fd4eb6277cf49152587323460eb6d",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-switch-bindings-cannot-hold": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "95af55f1b6fb92105dc4904b24ebf1fd2da8941e",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-switch-enabled-plugins-lines-remaining": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "cdcfd61163e0287024abd98543e43565b45a71c2",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-switch-enabled-plugins-unmatched-entries": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "49e17e63f51eb09e38d810b76755f7774396adf2",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-switch-copy-failed-both-installed": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "93f2f1e62f84a64da1448eb7402539ed0b783ed6",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-switch-uninstall-failed-rolled-back": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "f23fde1a55e97e0342c28cc2e1edc3f19fdc9e7b",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-switch-carry-over-failed-rolled-back": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "ba61edff011fe209b950c6eb8a690bdd6a406585",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-switch-both-installed-copy-failed": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "4b23170999a4ab5ee1d4ec116e88fd347232a08c",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-switch-not-put-back-enabled-line-restored-copy": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "1a79568cd93b79b5d61a2a2c795d2e81f01ff786",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-switch-not-put-back-left-out-clause": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "2f8251eae8570de505866cd1e28fda82cbc6e786",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-switch-not-put-back-enabled-line-failed-copy": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "b3d87d6ef884d36ffe3e219a123adc30273742a7",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-switch-not-put-back-options-and-secrets": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "24b7fa67bfd2b7944f6f7b7e29f915007524617f",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-switch-not-put-back-option-values-new-copy-had-own": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "3536c760e9a2c540c787e7f08af4340dc8529e8b",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-switch-not-put-back-data-directory": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "d98378e369b79b067b798f19193484ee3a9eaffa",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-switch-not-put-back-data-directory-incomplete": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "98b7404000a76df92efb3ee99a41866587313535",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-switch-rollback-could-not-put-back": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "7a301b3cbd936fd3ef272f93d60b8090bc32af87",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-switch-rollback-others-saved-settings-not-back": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "91486e7015f74bc2463bb80aefb454d10070810a",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-switch-rollback-put-back": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "7d6ffc89568e7a3244ff538880cb98d3ebeb1633",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-switch-rollback-put-back-except-saved": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "c8ba248d19eb80cc6dcd275bc568b82903c7af4a",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-switch-both-installed-uninstall-failed-finish": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "ef99a0e497066d301fbfa95b8f8fc9b9930cce85",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-switch-both-installed-uninstall-failed-until": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "5dfff8df1fd3ac85b8982fb58aa410e33599d7ac",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-switch-settings-left-in-place-list-unreadable": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "1c70fe2034b662428d43a72a05277f51ff62d4e0",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-switch-delete-left-in-place-hint": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "37ac2435f62ca4909b11ea6522fe96b0951781b3",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-switch-also-recorded-folders-removed": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "ead3b74fa040c90c6993bff3ca0a3405411812d2",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-switch-still-recorded-local-scope-lead": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "10d4a6ee77e85e0a06c7b210c4bb28c4cfa108ee",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-switch-still-recorded-one-folder": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "b8bbc5f51fee50d6a565f6b3cf6dfc2c42032be9",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-switch-still-recorded-many-folders": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "18880b02a563ca3dd73dc32e011984e91efdc4e5",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-switch-settings-source-managed": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "65b1a2669873f7bd4f3692e228091082d1008338",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-switch-settings-source-user-kept-list-unreadable": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "f61264bbdfcd6a536cd31ccd9ebd49052598dd50",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-switch-settings-source-user-kept-other-folder": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "147af2e8d58cf342cde7b1fb264201030d7f957d",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-switch-other-plugin-line-entry": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "5548b1350658d72ed900c5a25a8fd9be29797775",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-switch-other-plugin-line-list-unreadable-clause": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "915c02d2bf41883d7509a2294e840ccf33ec055e",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-switch-disabled-before-clause": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "c094b3cfc76f311ad8e5ab539daa09c9cfbf5059",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-switch-installed-elsewhere-folder": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "6a9e64e7df8f0419a070161c6dc6387fe36abbbd",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-switch-enabled-plugins-line-not-restored": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "bf20382f42b440055f15045c86868cadda765585",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-switch-failed-disable-status-suffix": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "1aaa61b4ff2f07b9654f21bcb9745ee96cf748d9",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-switch-failed-disable-failed-clause": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "d6fc071c069a9f6b1f325ca060ccfcb35e400191",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-switch-saved-data-left-in-place-in-use": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "a305ee13c480e6c69af97b4ef1d9a2f2d3201c1a",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-switch-saved-data-left-in-place-list-unreadable": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "c868a958780c90b6882c839dd1c89153b148c204",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-untrusted-workspace-unchecked": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "c89da81f494830c9558e802bfb0dc2ac4b16392c",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-switched-off-bindings-unwritable": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "3f5a07e0aad7ecedf02a04d070c3308e2298f740",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-settings-not-read-still-installed": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "e19bb34f02ad9f1ee834938b0aaf074150e617c6",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-enabled-plugins-removal-failed": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "65917e63c23e70c2cb1e9db2ad89efd149754302",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-install-record-appeared": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "a48adc9606a11b9f9682401b7b2f0c9bbc36c1c1",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-name-held-by-installed-plugin": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "50a912b64ab3841796e79bc58f2edcadb814bb97",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-held-remove-from-project-scope-hint": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "79bd5aaf4a07654abea492cb9901721590fd6dc5",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-held-switched-off-then-again-hint": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "135aca282eb90af1f28199fa6dc03857dba01dea",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-held-still-switched-on": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "c45aacae2c4db2331e563e45e41cf08db25c14d5",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-held-removed-from-enabled-plugins-clause": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "2531c5da167f051fec27014c5c18dd2b48e87504",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-no-longer-installed-result": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "4a97c89a04eb797428a115a116116de6dca9a67c",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-no-longer-installed-removed-enabled-clause": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "3b63c775178b20123929087159bb6b302aa6290a",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-fix-hint-unlock-keychain": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "b25bf9600384cc028fa1013c257275dbd437e60a",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-fix-hint-fix-user-settings-file": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "409d10d0781e35d504627b338fbc3656992cce26",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-fix-hint-credentials-store-writable": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "9f11ee4006daeb299f9b28aa011376eddb2c1961",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-fix-hint-credential-manager": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "cb16d980900ff938e5668437948db3209c16e161",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-fix-hint-remove-plugin-configs-entry": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "af5b88485e99dc7efee713066bf808e584497d06",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-held-installable-only-from-same-repository": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "7075220d07706c4560ded0027bebd4a9200fe938",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-leftover-still-switched-on": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "695816f0ab264abdb331dd10dd191c455833931d",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-leftover-list-unreadable": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "858ce52e8fb0c06247a2a05e114765d6ad12d447",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-leftover-install-record-appeared": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "b097f5c71120dc6c8c665d965874b134c60cde43",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-leftover-then-uninstall-clause": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "008cff7be82dbdd5ee722696c044b36311720d81",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-leftover-data-folder-in-use": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "3824019f9fe7d271710ff93732e968e5c814dc7f",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-leftover-options-secrets-maybe-not-deleted": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "1c0c3ac953ee62616a457b638c939f51788775af",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-leftover-data-folder-delete-yourself": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "f6ca3336c88340ea0c2fce7fe0bccbd9ce03c38f",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-leftover-data-folder-kept-on-request": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "5c165c87cd2c408c9bcf90c5399836e584b2374f",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-leftover-data-folder-not-deleted-retry": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "78df32fd0f4d9ff684da944a8d58e23f1da7022c",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-leftover-options-secrets-delete-hint": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "cbab1d6a1b1c0bd8dd4549d930b5995589c8e9b4",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-options-and-data-kept-delete-both": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "610c8d0a29287e289459dfbd41c23e0a80e94b0d",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-options-and-data-not-deleted-retry": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "7975e6642c5f3cd6daeb1ae2bd587c1155d227a3",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-update-packages-not-installed": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "4a559f96ac3df8613d04598cb42b070f78e1cd43",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-update-dependencies-not-screened": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "bdaf9a71ab1362525ea2b4068fde02b3127aae2f",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-update-dependencies-installed-restart": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "0f086bfe020372ad3a9d7e94b59535d4c2db16ac",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-update-directory-bindings-unreadable": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "e44ca2d03c92be747837eda1bc685043a0df26dc",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-update-directory-repository-changed": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "890dac664826ef7801b6f6843efffd4bc74eb3a2",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-update-directory-check-failed": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "db9e192310ce1edb953a242e8eeb5555f4b8c085",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-update-command-source-skipped-background": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "d895b067ede81b5d3c717caa706f5fa60548c83d",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-update-command-source-disabled": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "9468214ea8a7dedba155c4fbea92c8ba9674edd6",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-update-directory-listing-repository-too-long": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "b2f250de90ce8c0667b94a4c2a55cb7f43b1c6aa",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-update-updated-to-listed-commit": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "4302d49fe0a040d3e30ed6fc4ade2166ead33ec8",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the /plugin install-switch, uninstall and update result builders reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-directory-policy-not-checked": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "66621d68b49663055ce2716b987f545eef9f3a04",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin-directory search reasons reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-directory-results-page-not-continued": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "e60cd0ad96f44eb09c4418cdc1804781677ae0f4",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin-directory search reasons reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-directory-reason-temporarily-unavailable": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "acef0e198417a401bad8a948dad7522e17915054",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin-directory search reasons reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-directory-reason-unreachable-check-network": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "b84a365a229b5672cb40daf6d625433fb116f0af",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin-directory search reasons reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-directory-listing-not-installable": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "5ea83c940143ab86b7453cc19e5d90301084c568",
+    "why": "ruled ui in a 2.1.288 catalogue correction: reached only from the CLI install, the TUI switch and the update failure path"
+  },
+  "slash-command-plugin-directory-reason-switch-needs-fresh-read": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "2ce5ec9bf33b6472b105d7c83b375c105cf3ee5f",
+    "why": "ruled ui in a 2.1.288 catalogue correction: branch unreachable from any caller, and its consumers are CLI/TUI only"
+  },
+  "tool-result-send-message-approval-required-nothing-sent": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "internal",
+    "hash": "cbfef03c8452b410f9a98155da43e6283475a7ec",
+    "why": "ruled internal in a 2.1.288 catalogue correction: dead branch, no caller passes the option that selects it"
+  },
+  "slash-command-plugin-update-records-unreadable": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "588ade632bbfbcafa510c10d05a36e3a2a4b2215",
+    "why": "ruled ui in a 2.1.288 catalogue correction: a failed plugin-update outcome reaches only local error state, the CLI and logs"
+  },
+  "system-reminder-remote-session-git-attribution-none-lead": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "why": "split-rule correction: the opening sentence takes back system-reminder-remote-session-git-attribution-none; the tail is system-reminder-git-attribution-none-applies-over-claude-md-clause"
+  },
+  "tool-result-remote-host-approval-outside-honoured-window": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "why": "split-rule correction: the outer template takes back tool-result-remote-host-approval-undated-channel-expired; the inner clause is tool-result-remote-host-approval-undated-channel-age-clause"
+  },
+  "tool-result-git-lazy-fetch-transport-mismatch-nothing-fetched": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "b6fb7b42dba312f4a4d662451ece037255273c4e",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the note is appended to git stderr only on plugin clone paths, whose model route truncates the error before it"
+  },
+  "tool-result-git-lazy-fetch-transport-mismatch-insteadof-note": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "e087531ee749de3e03da8b7befae8ae8b7323491",
+    "why": "ruled ui in a 2.1.288 catalogue correction: the note is appended to git stderr only on plugin clone paths, whose model route truncates the error before it"
+  },
+  "slash-command-plugin-marketplace-directory-refresh-stale-failed": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "d056efd6d1f79d8ee7c9d78484eb06b9c4d325b2",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-marketplace-directory-blocked-by-organization": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "6efb71e3efecbc4e9bf8bb5403cbf30d63510901",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-marketplace-refresh-source-blocked-by-policy": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "46a9644ccbced9a115559e095f2d952dd5608052",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-already-installed-switch-command": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "4a7c047bb8abf59a8bb11dbf303ab8cb75527fa5",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-other-marketplace-switch-copy-command": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "4cb7a77087f2ff18da588f74957cf96e7958725c",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-other-marketplace-switch-copies-command": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "6748cf801abc7eaa6dbd899a80d4d71e763daa66",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-other-marketplace-switch-all-command": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "0feb1eb448fe62695d503703ca518c2aa762a7fc",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-already-installed-turned-off-in-project": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "669e5081d7c8e631fdb3f961d817c592b6c7338d",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-not-found-directory-blocked-by-organization": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "9ef0fd56b51cd1b04eaca50685c6eb6b930188be",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-not-found-directory-listing-blocked-by-policy": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "6dc4a60cfcc4e78ce8c23d9cc98277f96a0c08e7",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-already-installed-directory-bindings-unreadable": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "04c0311c30dd13b1b6b4e088379c9d6da2b68540",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-installed-from-other-marketplace-cache-missing": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "6f2398a5e0a1dd50b4d3cf4ec1f0b183b47e7e37",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-directory-unchecked-installed-from-note": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "c491274475d3a44fb4f6a87ec49b2280b12d55b4",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-directory-turned-off-note": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "6421cbfbf2df0dbda971f0efe06ae244477f6d9b",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-directory-not-in-session": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "cb12a95ed1e2f839de1bcc526bcf160a5db0ee8d",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-directory-off": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "bbd8fa53f82014115fe44cca69841aa02c4472af",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-not-found-marketplace-not-used": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "89530692a7aba96329956b001b5d771aa31db251",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-not-found-directory-unchecked-note": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "23aa26c5ac58fb209f42ff5e94a61f7133dd3fab",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-not-found-may-be-listed-as": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "81b7d951ee9db04106d74e18c8b66890c9f18be1",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-already-installed-listed-at-same-folder-by-other-marketplace": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "4d4cc0e84f99b8017220ae29b1df3a4a90d3fbd9",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-already-installed-duplicate-copies-note": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "87fede9b0e6f4e6f2af72698fba5930fabe5a2f9",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-also-installed-from-note": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "b301b218311c0310a91289726c352312e38864b6",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-other-plugins-listed-at-same-folder-note": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "256e5ffbddcadf6cbc03ffb3361e54e106a3b5fe",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-loads-twice-if-same-plugin": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "e1ee44d29a782fdc34bef728e809fd7597e61e51",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-loads-n-times-if-same-plugin": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "ee11558794f19d849628ef79c2c047a22354e687",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-switch-hint-open-plugin-menu": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "651464d89116a47a34ae2cb31211197df472a68a",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-switch-hint-install-replace": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "0bcc79f0a7658f718b75433a5e1b3887a885a309",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-already-installed-turned-off-by-override": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "63d538d964eac34197438e0b18382959fd70d8b1",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-install-already-installed-from-other-marketplace-nothing-to-install": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "b37407c9a063a13cad021efd09f20de2c41443f6",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-blocked-by-organization-marketplace": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "93dd8aff2c4f61c3b5f83cff5f20ab296391c63e",
+    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-records-unreadable": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "05e5ca3baa8559e83b40eb740144d7b7fc0b5e57",
+    "why": "ruled ui in a 2.1.288 catalogue correction: uninstall results reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-settings-change-failed-suffix": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "5460ae97e450d5443e14b15560abac215f2a449e",
+    "why": "ruled ui in a 2.1.288 catalogue correction: uninstall results reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-source-not-read-untrusted-workspace": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "87c2110f9960f4cb89f716fbe5dd0320b13f37c4",
+    "why": "ruled ui in a 2.1.288 catalogue correction: uninstall results reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-source-add-dir-settings": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "ff7ffa4fa858fcaab5179cb047d1f56436a48b93",
+    "why": "ruled ui in a 2.1.288 catalogue correction: uninstall results reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-source-flag-settings-file": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "6f486c122db16ce905ba63a72517f336a35ab0d1",
+    "why": "ruled ui in a 2.1.288 catalogue correction: uninstall results reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-source-other-folder-settings": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "b97d465ba73707cb92da84671ddb1db53f80fd1c",
+    "why": "ruled ui in a 2.1.288 catalogue correction: uninstall results reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-source-flag-settings-given": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "1727a8ea3cb9a1ef7cb3bcd534a6765149be3659",
+    "why": "ruled ui in a 2.1.288 catalogue correction: uninstall results reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-source-managed-settings": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "10be72231cfc6c57984dcc1975e5d599ce28d20f",
+    "why": "ruled ui in a 2.1.288 catalogue correction: uninstall results reach only local view state, the CLI and logs"
+  },
+  "slash-command-plugin-uninstall-leftover-uninstall-again-from-command-line": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "8929c8df053d11c3a9eeb7dcf38a44f56dbc5c64",
+    "why": "ruled ui in a 2.1.288 catalogue correction: uninstall results reach only local view state, the CLI and logs"
+  },
+  "tool-result-git-promisor-lazy-fetch-forgone": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "0893f4a7adb0c922f998bc01af05ce783c6b7c7e",
+    "why": "ruled ui in a 2.1.288 catalogue correction: same git-stderr note path as the transport-mismatch notes, truncated before any model route"
+  },
+  "tool-result-git-lazy-fetch-unscoped-extra-header": {
+    "verdict": "archived",
+    "version": "2.1.288",
+    "facing": "ui",
+    "hash": "7236880bc646ab865efe5570461ef7668540ceb4",
+    "why": "ruled ui in a 2.1.288 catalogue correction: same git-stderr note path as the transport-mismatch notes, truncated before any model route"
   }
 }

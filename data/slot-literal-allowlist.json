@@ -29,16 +29,6 @@
     "reason": "states why the hook gate refused rather than skipped",
     "text": "gave no verdict in time"
   },
-  "04eaad71dfd462a9": {
-    "verdict": "catalogue",
-    "desc": "Reason directory sync did not apply this turn: the snapshot builds on history this checkout lacks.",
-    "id": "system-reminder-dir-sync-not-applied-reason-prerequisites-missing",
-    "label": "SYSTEM_REMINDER_DIRECTORY_SYNC_NOT_APPLIED_VAR_0",
-    "name": "System Reminder: Dir Sync Not-Applied Reason Prerequisites Missing",
-    "promptId": "system-reminder-directory-sync-not-applied",
-    "reason": "tells the model why the user's edits are not in this checkout",
-    "text": "it builds on history this checkout lacks"
-  },
   "06edc5ca537fb78c": {
     "desc": "Shared clause in the artifact auto-reply notification builder B2e() @11724974 naming the exact `resume_replies` action and the condition for it. Reaches the model through both the name-chord receipt and the typed-resume clause.",
     "id": "data-artifact-auto-reply-resume-replies-clause",
@@ -101,16 +91,6 @@
     "reason": "field label before an interpolated path",
     "text": "\nTranscript dir: ",
     "verdict": "glue"
-  },
-  "123fa3b5a697b086": {
-    "verdict": "catalogue",
-    "desc": "Reason a served-call PreToolUse hook refused the call: a non-blocking error that was required by contract, so it could not render a verdict.",
-    "id": "tool-result-pretooluse-hook-could-not-render-verdict",
-    "label": "TOOL_RESULT_PRETOOLUSE_HOOK_SERVED_CALL_GATE_REFUSED_VAR_1",
-    "name": "Tool Result: PreToolUse hook could not render a verdict",
-    "promptId": "tool-result-pretooluse-hook-served-call-gate-refused",
-    "reason": "states why the hook gate refused rather than skipped",
-    "text": "could not render a verdict"
   },
   "1477827d48e13d8c": {
     "desc": "The reason clause explaining why a peer could not be verified before sending: the account session list could not be checked.",
@@ -208,16 +188,6 @@
     "reason": "names tools inside a surrounding sentence",
     "text": "`find` or `grep` via the ",
     "verdict": "glue"
-  },
-  "330490325eef4d1c": {
-    "verdict": "catalogue",
-    "desc": "Remedy interpolated into the cloud-session local-changes bundle-failed tool result: start from GitHub with --ref and file sync off, then claude --cloud again.",
-    "id": "tool-result-cloud-session-pass-ref-github-file-sync-off",
-    "label": "TOOL_RESULT_CLOUD_SESSION_LOCAL_CHANGES_BUNDLE_FAILED_VAR_2",
-    "name": "Tool Result: Cloud session — pass --ref to start from GitHub with file sync off",
-    "promptId": "tool-result-cloud-session-local-changes-bundle-failed",
-    "reason": "names the exact flags the model must use to start from GitHub instead",
-    "text": ", or pass --ref <branch> to start from GitHub as it is there, with file sync off; then run claude --cloud again."
   },
   "33ce28e37edcbd39": {
     "desc": "Tells the model the command opens an interactive panel that this environment cannot show, and that it must be run from the Claude Code terminal.",
@@ -600,16 +570,6 @@
     "text": "None captured",
     "verdict": "glue"
   },
-  "8553d8f2a4733a87": {
-    "verdict": "catalogue",
-    "desc": "Reason directory sync did not apply this turn: the checkout is detached and is not in a state sync can update.",
-    "id": "system-reminder-dir-sync-not-applied-reason-detached-head",
-    "label": "SYSTEM_REMINDER_DIRECTORY_SYNC_NOT_APPLIED_VAR_0",
-    "name": "System Reminder: Dir Sync Not-Applied Reason Detached Head",
-    "promptId": "system-reminder-directory-sync-not-applied",
-    "reason": "tells the model why the user's edits are not in this checkout",
-    "text": "this checkout is not in a state sync can update"
-  },
   "88ad843c8b4b235d": {
     "label": "DATA_ARTIFACT_WRITE_DB_AUTO_CLASSIFIER_INPUT_VAR_0",
     "promptId": "data-artifact-write-db-auto-classifier-input",
@@ -824,16 +784,6 @@
     "reason": "names the in-app file-dialog state the keystroke restrictions apply to",
     "text": "a file dialog is open in this app"
   },
-  "b4a5e8354f99f452": {
-    "verdict": "catalogue",
-    "desc": "Reason directory sync did not apply this turn: this checkout has unresolved merge conflicts.",
-    "id": "system-reminder-dir-sync-not-applied-reason-unmerged-index",
-    "label": "SYSTEM_REMINDER_DIRECTORY_SYNC_NOT_APPLIED_VAR_0",
-    "name": "System Reminder: Dir Sync Not-Applied Reason Unmerged Index",
-    "promptId": "system-reminder-directory-sync-not-applied",
-    "reason": "tells the model why the user's edits are not in this checkout",
-    "text": "this checkout has unresolved merge conflicts"
-  },
   "b4c2ab68c83bdabf": {
     "label": "TOOL_DESCRIPTION_CHROME_MULTIPLE_BROWSERS_NONE_SELECTED_VAR_1",
     "promptId": "tool-description-chrome-multiple-browsers-none-selected",
@@ -898,16 +848,6 @@
     "reason": "states that the attachment is the private global instructions",
     "text": " (user's private global instructions for all projects)",
     "verdict": "catalogue"
-  },
-  "c049ad3302061f6c": {
-    "verdict": "catalogue",
-    "desc": "Fallback reason directory sync did not apply this turn: an unexpected condition not in the named map.",
-    "id": "system-reminder-dir-sync-not-applied-reason-unexpected",
-    "label": "SYSTEM_REMINDER_DIRECTORY_SYNC_NOT_APPLIED_VAR_0",
-    "name": "System Reminder: Dir Sync Not-Applied Reason Unexpected Condition",
-    "promptId": "system-reminder-directory-sync-not-applied",
-    "reason": "tells the model why the user's edits are not in this checkout",
-    "text": "of an unexpected condition"
   },
   "c0dabec62341035c": {
     "desc": "The task-list path listed among the team resources, shown only when task tools are available. Its sibling branch is system-reminder-team-coordination-task-list-upkeep.",
@@ -1047,16 +987,6 @@
     "verdict": "catalogue",
     "why": "carries an instruction or consequence the model acts on, so it needs an id an override can reach"
   },
-  "f3d559e276f99557": {
-    "verdict": "catalogue",
-    "desc": "Reason directory sync did not apply this turn: what arrived did not verify (bad_bundle).",
-    "id": "system-reminder-dir-sync-not-applied-reason-bad-bundle",
-    "label": "SYSTEM_REMINDER_DIRECTORY_SYNC_NOT_APPLIED_VAR_0",
-    "name": "System Reminder: Dir Sync Not-Applied Reason Bad Bundle",
-    "promptId": "system-reminder-directory-sync-not-applied",
-    "reason": "tells the model why the user's edits are not in this checkout",
-    "text": "what arrived did not verify"
-  },
   "fb156f422db7d575": {
     "label": "DATA_ARTIFACT_WRITE_DB_AUTO_CLASSIFIER_INPUT_VAR_5",
     "promptId": "data-artifact-write-db-auto-classifier-input",
@@ -1070,16 +1000,6 @@
     "reason": "field label before interpolated directories",
     "text": "Additional working directories: ",
     "verdict": "glue"
-  },
-  "fd0c125286677453": {
-    "verdict": "catalogue",
-    "desc": "Reason directory sync did not apply this turn: this checkout has no commit yet (unborn).",
-    "id": "system-reminder-dir-sync-not-applied-reason-unborn",
-    "label": "SYSTEM_REMINDER_DIRECTORY_SYNC_NOT_APPLIED_VAR_0",
-    "name": "System Reminder: Dir Sync Not-Applied Reason Unborn",
-    "promptId": "system-reminder-directory-sync-not-applied",
-    "reason": "tells the model why the user's edits are not in this checkout",
-    "text": "this checkout has no commit yet"
   },
   "fd0d24baab5cbdfa": {
     "desc": "Provenance arm of the artifact read summary @11306119 marking the page as third-party content authored outside the org. A trust constraint the model must act on, not a role label like its sibling arms.",
@@ -1147,51 +1067,6 @@
     "id": "agent-prompt-eval-authoring-canned-tool-result-placeholder",
     "name": "Eval Authoring: Canned Tool-Result Placeholder",
     "desc": "Placeholder line instructing the model to replace it with the canned result the mocked tool should return."
-  },
-  "5ce5fc8c191581cd": {
-    "promptId": "system-reminder-directory-sync-checkout-cannot-snapshot",
-    "label": "SYSTEM_REMINDER_DIRECTORY_SYNC_CHECKOUT_CANNOT_SNAPSHOT_VAR_0",
-    "text": "it holds unresolved merge conflicts",
-    "verdict": "catalogue",
-    "id": "system-reminder-dir-sync-checkout-unready-unmerged",
-    "name": "Dir Sync Checkout Unready: Unresolved Merge Conflicts",
-    "desc": "Reason clause telling the model the checkout could not be snapshotted because it holds unresolved merge conflicts."
-  },
-  "811cbbc42b219a1a": {
-    "promptId": "system-reminder-directory-sync-checkout-cannot-snapshot",
-    "label": "SYSTEM_REMINDER_DIRECTORY_SYNC_CHECKOUT_CANNOT_SNAPSHOT_VAR_0",
-    "text": "its branch has no commit yet",
-    "verdict": "catalogue",
-    "id": "system-reminder-directory-sync-checkout-unready-unborn-branch",
-    "name": "Directory Sync: Checkout Unready — Unborn Branch",
-    "desc": "Reason clause telling the model the checkout could not be snapshotted because its branch has no commit yet."
-  },
-  "18b6b57f5aaf3dde": {
-    "promptId": "system-reminder-directory-sync-checkout-cannot-snapshot",
-    "label": "SYSTEM_REMINDER_DIRECTORY_SYNC_CHECKOUT_CANNOT_SNAPSHOT_VAR_0",
-    "text": "git could not read it just now",
-    "verdict": "catalogue",
-    "id": "system-reminder-directory-sync-checkout-unready-git-unreadable",
-    "name": "Directory Sync: Checkout Unready — Git Unreadable",
-    "desc": "Reason clause telling the model the checkout could not be snapshotted because git could not read it."
-  },
-  "cc49357f96d7d006": {
-    "promptId": "system-reminder-directory-sync-disabled-after-initial-checkout-failure",
-    "label": "SYNC_DISABLE_REASON",
-    "text": "the user's first upload was sent in a form this build cannot read",
-    "verdict": "catalogue",
-    "id": "system-reminder-directory-sync-disabled-first-object-unreadable",
-    "name": "Directory Sync Disabled: First Upload Unreadable",
-    "desc": "Reason clause telling the model sync was disabled because the user's first upload arrived in a form this build cannot read."
-  },
-  "77113e974dd6b586": {
-    "promptId": "system-reminder-directory-sync-disabled-after-initial-checkout-failure",
-    "label": "SYNC_DISABLE_REASON",
-    "text": "this environment was recreated empty and the user's machine only sends changes on top of what the earlier one had",
-    "verdict": "catalogue",
-    "id": "system-reminder-directory-sync-disabled-container-recreated",
-    "name": "Directory Sync Disabled: Container Recreated",
-    "desc": "Reason clause telling the model sync was disabled because the environment was recreated empty while the user only sends incremental changes."
   },
   "40509d3912c31a94": {
     "promptId": "tool-result-bash-worktree-isolation-runtime-command-name",
@@ -1760,15 +1635,6 @@
     "verdict": "not-a-slot",
     "desc": "Search needle of w.includes inside the condition that chooses A; A evaluates to Hf or the empty string."
   },
-  "44d899aa9a89b0b8": {
-    "promptId": "tool-result-cloud-session-github-clone-would-lack",
-    "label": "TOOL_RESULT_CLOUD_SESSION_GITHUB_CLONE_WOULD_LACK_VAR_2",
-    "text": "or run claude --cloud --ref <branch> to start from GitHub as it is there, with file sync off.",
-    "verdict": "catalogue",
-    "desc": "Remedy appended to the GitHub-clone-would-lack result telling the model to run claude --cloud --ref <branch> so the session starts from GitHub with file sync off.",
-    "id": "tool-result-cloud-session-run-cloud-ref-file-sync-off",
-    "name": "Tool Result: Cloud session — start from GitHub with file sync off"
-  },
   "0b8477232b0475a0": {
     "promptId": "system-reminder-tool-hosts-correction-lead",
     "label": "SYSTEM_REMINDER_TOOL_HOSTS_CORRECTION_LEAD_VAR_1",
@@ -1805,30 +1671,12 @@
     "id": "system-reminder-tool-hosts-header-without-machine-arg-run-here",
     "name": "System Reminder: Tool hosts header — calls without a machine run here"
   },
-  "13b7cd68ef415683": {
-    "promptId": "system-reminder-dir-sync-agent-staging-dropped",
-    "label": "SYSTEM_REMINDER_DIR_SYNC_AGENT_STAGING_DROPPED_VAR_1",
-    "text": " (the file contents are unchanged)",
-    "verdict": "catalogue",
-    "desc": "Suffix on the staging-dropped reminder when the update unstaged the agent's files but their contents are unchanged.",
-    "id": "system-reminder-dir-sync-agent-staging-contents-unchanged",
-    "name": "System Reminder: Dir sync agent staging dropped — contents unchanged"
-  },
   "5014e788ca3aa445": {
     "promptId": "system-reminder-directory-sync-latest-changes-unusable",
     "label": "SYSTEM_REMINDER_DIRECTORY_SYNC_LATEST_CHANGES_UNUSABLE_VAR_0",
     "text": "their machine's latest upload (number ",
     "verdict": "glue",
     "desc": "Labels the upload number inside `their machine's latest upload (number ${n}) cannot be used here`, the parenthetical of the latest-changes-unusable reminder."
-  },
-  "763a56102ee1a7c3": {
-    "promptId": "system-reminder-directory-sync-latest-changes-unusable",
-    "label": "SYSTEM_REMINDER_DIRECTORY_SYNC_LATEST_CHANGES_UNUSABLE_VAR_0",
-    "text": ") cannot be used here",
-    "verdict": "catalogue",
-    "desc": "Cause clause inside the directory-sync notice when the user's machine's latest upload cannot be used in this checkout.",
-    "id": "system-reminder-dir-sync-latest-upload-unusable",
-    "name": "System Reminder: Dir sync — latest upload unusable here"
   },
   "3194f4ebde4fcb86": {
     "promptId": "system-prompt-worker-tools-context-skills",
@@ -2046,5 +1894,275 @@
     "text": "Claude Code accepts it, but the",
     "reason": "connective fragment of the kebab-case warning",
     "verdict": "glue"
+  },
+  "7bd1053acb9fbb39": {
+    "promptId": "tool-result-cloud-session-tools-not-echoed",
+    "label": "TOOL_RESULT_CLOUD_SESSION_TOOLS_NOT_ECHOED_VAR_1",
+    "text": "the service did not confirm the list",
+    "reason": "reason fragment naming why the tool list is unconfirmed; nothing to act on beyond the parent message",
+    "verdict": "glue"
+  },
+  "fb254ad5bfd7d1a9": {
+    "promptId": "tool-result-cloud-session-tools-not-echoed",
+    "label": "TOOL_RESULT_CLOUD_SESSION_TOOLS_NOT_ECHOED_VAR_2",
+    "text": " was archived.",
+    "reason": "status tail of the archive outcome",
+    "verdict": "glue"
+  },
+  "0b1cfd534993afeb": {
+    "promptId": "tool-result-artifact-updated-from-type",
+    "label": "TOOL_RESULT_ARTIFACT_UPDATED_FROM_TYPE_VAR_1",
+    "text": "action \"read\" with its `path`",
+    "id": "tool-result-artifact-read-action-with-path-hint",
+    "name": "Tool Result: Artifact read action with path hint",
+    "desc": "How to fetch a published file back: the Artifact tool's action \"read\" with its path. Shared by the updated-from-type and published-at results.",
+    "reason": "names the action and parameter the model must use to read a file back",
+    "verdict": "catalogue"
+  },
+  "23764acc2fea0bd7": {
+    "promptId": "tool-result-project-content-truncated-saved-to-local-file",
+    "label": "TOOL_RESULT_PROJECT_CONTENT_TRUNCATED_SAVED_TO_LOCAL_FILE_VAR_2",
+    "text": " project_search still covers the whole doc.",
+    "id": "tool-result-project-content-truncated-search-still-covers-doc",
+    "name": "Tool Result: Project content truncated search still covers doc",
+    "desc": "Tail of the project_read truncation notice telling the model project_search still covers the whole document.",
+    "reason": "tells the model a capability it still has after truncation",
+    "verdict": "catalogue"
+  },
+  "ae1a22b78cd2114c": {
+    "promptId": "tool-result-artifact-share-not-owner",
+    "label": "TOOL_RESULT_ARTIFACT_SHARE_NOT_OWNER_VAR_0",
+    "id": "tool-result-artifact-share-nothing-shared",
+    "name": "Tool Result: Artifact share — nothing shared",
+    "desc": "Closing clause on an Artifact share denial telling the model that no sharing change was made.",
+    "reason": "states the consequence of the denial, like the catalogued Nothing was published.",
+    "verdict": "catalogue",
+    "text": "Nothing was shared."
+  },
+  "5c05e00f3d7b728b": {
+    "promptId": "tool-result-artifact-share-org-shared",
+    "label": "TOOL_RESULT_ARTIFACT_SHARE_ORG_SHARED_VAR_2",
+    "reason": "labels the organization name the slot interpolates",
+    "verdict": "glue",
+    "text": "everyone at "
+  },
+  "d89d8b8c2593393c": {
+    "promptId": "tool-result-artifact-share-org-shared",
+    "label": "TOOL_RESULT_ARTIFACT_SHARE_ORG_SHARED_VAR_3",
+    "reason": "renders the view access value of the share",
+    "verdict": "glue",
+    "text": "can open it (view only)"
+  },
+  "863acc93f3a27575": {
+    "promptId": "tool-result-artifact-share-org-shared",
+    "label": "TOOL_RESULT_ARTIFACT_SHARE_ORG_SHARED_VAR_3",
+    "reason": "renders the comment access value of the share",
+    "verdict": "glue",
+    "text": "can open and comment on it"
+  },
+  "5ce05c3f55f39515": {
+    "promptId": "tool-result-artifact-share-people-already-shared",
+    "label": "TOOL_RESULT_ARTIFACT_SHARE_PEOPLE_ALREADY_SHARED_VAR_0",
+    "reason": "labels who confirmed; joins the interpolated people list",
+    "verdict": "glue",
+    "text": " the person confirmed on the card"
+  },
+  "92b1139302b9e8dc": {
+    "promptId": "system-reminder-auto-mode-classifier-too-long-calls-not-reviewed",
+    "label": "SYSTEM_REMINDER_AUTO_MODE_CLASSIFIER_TOO_LONG_CALLS_NOT_REVIEWED_VAR_0",
+    "text": "an earlier tool call (",
+    "verdict": "glue",
+    "reason": "singular count noun phrase wrapping the joined tool-name list in QHt() @9946036; labels a value"
+  },
+  "b2f69a58b2b980b9": {
+    "promptId": "system-reminder-auto-mode-classifier-too-long-calls-not-reviewed",
+    "label": "SYSTEM_REMINDER_AUTO_MODE_CLASSIFIER_TOO_LONG_CALLS_NOT_REVIEWED_VAR_0",
+    "text": " earlier tool calls (",
+    "verdict": "glue",
+    "reason": "plural count noun phrase wrapping the joined tool-name list in QHt() @9946081; labels a value"
+  },
+  "47a8ce6999163bdc": {
+    "promptId": "slash-command-plugin-marketplace-add-different-source",
+    "label": "SLASH_COMMAND_PLUGIN_MARKETPLACE_ADD_DIFFERENT_SOURCE_VAR_1",
+    "text": "user settings, --settings and managed settings",
+    "verdict": "not-a-slot",
+    "reason": "oFt @11570634 renders into the Xj(...,\"debug\") marketplace autoUpdate log @11570899 (Xj -> t(n,{level}) debug log), a different template that only shares the leading quasi \"Marketplace \" with this prompt; also used in a TUI line and a [reconcile] debug log, never model-facing"
+  },
+  "2a0ad0bec58db903": {
+    "promptId": "slash-command-plugin-marketplace-add-different-source",
+    "label": "SLASH_COMMAND_PLUGIN_MARKETPLACE_ADD_DIFFERENT_SOURCE_VAR_2",
+    "text": "do not set it, so the default (on) applies",
+    "verdict": "not-a-slot",
+    "reason": "inline branch of the same Xj(...,\"debug\") autoUpdate debug log @11570899, matched to this prompt by its \"Marketplace \" lead quasi only; not model-facing"
+  },
+  "68e33015bbb526a4": {
+    "promptId": "slash-command-plugin-marketplace-add-different-source",
+    "label": "SLASH_COMMAND_PLUGIN_MARKETPLACE_ADD_DIFFERENT_SOURCE_VAR_3",
+    "text": "an entry in project or local settings that has no autoUpdate and would otherwise replace the entry that sets it",
+    "verdict": "not-a-slot",
+    "reason": "inline branch of the same Xj(...,\"debug\") autoUpdate debug log @11570899, matched to this prompt by its \"Marketplace \" lead quasi only; not model-facing"
+  },
+  "e9b46f5a9831f848": {
+    "promptId": "slash-command-plugin-marketplace-add-different-source",
+    "label": "SLASH_COMMAND_PLUGIN_MARKETPLACE_ADD_DIFFERENT_SOURCE_VAR_3",
+    "text": " in project, local or --add-dir settings",
+    "verdict": "not-a-slot",
+    "reason": "quasi of an inline branch of the same Xj(...,\"debug\") autoUpdate debug log @11570899, matched to this prompt by its \"Marketplace \" lead quasi only; not model-facing"
+  },
+  "43f67f6abe18d0f5": {
+    "promptId": "slash-command-plugin-marketplace-refresh-manifest-missing-in-repository",
+    "label": "SLASH_COMMAND_PLUGIN_MARKETPLACE_REFRESH_MANIFEST_MISSING_IN_REPOSITORY_VAR_0",
+    "text": "We've deprecated \"claude-code-plugins\" in favor of \"claude-plugins-official\".",
+    "verdict": "catalogue",
+    "id": "slash-command-plugin-marketplace-refresh-claude-code-plugins-deprecated",
+    "name": "Slash Command: /plugin marketplace refresh — claude-code-plugins deprecated",
+    "desc": "Line in the marketplace-manifest-missing refresh error for the old \"claude-code-plugins\" marketplace, saying it is deprecated in favor of \"claude-plugins-official\".",
+    "reason": "names the replacement marketplace the model should move to (ke branch in the refresh catch @11643126)"
+  },
+  "00aa4ed16bd20a72": {
+    "promptId": "slash-command-plugin-marketplace-refresh-manifest-missing-in-repository",
+    "label": "SLASH_COMMAND_PLUGIN_MARKETPLACE_REFRESH_MANIFEST_MISSING_IN_REPOSITORY_VAR_0",
+    "text": "This marketplace may have been deprecated or moved to a new location.",
+    "verdict": "catalogue",
+    "id": "slash-command-plugin-marketplace-refresh-may-have-moved",
+    "name": "Slash Command: /plugin marketplace refresh — marketplace may have moved",
+    "desc": "Line in the marketplace-manifest-missing refresh error for any other marketplace, saying it may have been deprecated or moved to a new location.",
+    "reason": "states the likely cause the model reports and acts on (ke else-branch @11643205)"
+  },
+  "4d43c7cf56a78e64": {
+    "promptId": "tool-result-artifact-db-bytes-per-database-limit-reached",
+    "label": "TOOL_RESULT_ARTIFACT_DB_BYTES_PER_DATABASE_LIMIT_REACHED_VAR_0",
+    "text": "document limit",
+    "verdict": "glue",
+    "reason": "value of r in se() @16601227, the limit noun interpolated into the database-limit reasons; labels a value"
+  },
+  "e5b11923bd2a6875": {
+    "promptId": "tool-result-artifact-db-bytes-per-database-limit-reached",
+    "label": "TOOL_RESULT_ARTIFACT_DB_BYTES_PER_DATABASE_LIMIT_REACHED_VAR_0",
+    "text": "storage limit of ",
+    "verdict": "glue",
+    "reason": "leading quasi of c's template `storage limit of ${KEt(t)}` in se() @16601300; labels the size value"
+  },
+  "7343dc11763bbeeb": {
+    "promptId": "slash-command-plugin-install-switch-hint-install-replace",
+    "label": "SLASH_COMMAND_PLUGIN_INSTALL_SWITCH_HINT_INSTALL_REPLACE_VAR_2",
+    "text": "--replace --scope ",
+    "verdict": "glue",
+    "reason": "flag fragment `--replace --scope ${n}` (Ae) completed by the scope value; the parent template already carries the instruction"
+  },
+  "2ccbfceffc58926a": {
+    "promptId": "slash-command-plugin-uninstall-leftover-list-unreadable",
+    "label": "SLASH_COMMAND_PLUGIN_UNINSTALL_LEFTOVER_LIST_UNREADABLE_VAR_1",
+    "text": "\" again from the command line",
+    "verdict": "glue",
+    "reason": "the remedy instruction ng() falls back to (fallback template @17983035), rendered into the still-switched-on and list-unreadable notes; 2.1.288 correction: those notes and this fallback were ruled ui (uninstall results reach no model sink), so it is no longer catalogued (formerly slash-command-plugin-uninstall-leftover-uninstall-again-from-command-line)"
+  },
+  "906c981c2a298fc7": {
+    "promptId": "tool-result-bash-builtin-gh-release-download-no-form",
+    "label": "TOOL_RESULT_BASH_BUILTIN_GH_RELEASE_DOWNLOAD_NO_FORM_VAR_0",
+    "text": "which are served from another host that this gh does not follow a redirect to",
+    "verdict": "catalogue",
+    "id": "tool-result-bash-builtin-gh-no-form-other-host-reason",
+    "name": "Tool Result: built-in gh — files served from another host",
+    "desc": "Shared reason clause in the built-in gh no-form answers for run and release downloads: the files are served from another host that this gh does not follow a redirect to.",
+    "reason": "states the constraint behind the no-form answer (ce @19271441, used by run download and release download)"
+  },
+  "06a734b892ae4639": {
+    "promptId": "tool-result-bash-builtin-gh-search-code-clone-instead",
+    "label": "TOOL_RESULT_BASH_BUILTIN_GH_SEARCH_CODE_CLONE_INSTEAD_VAR_0",
+    "text": "where this session's GitHub proxy refuses search/",
+    "verdict": "catalogue",
+    "id": "tool-result-bash-builtin-gh-proxy-refuses-search-clause",
+    "name": "Tool Result: built-in gh — proxy refuses search",
+    "desc": "Shared clause in the built-in gh search answers saying this session's GitHub proxy refuses search/ endpoints, so filter a list or search a clone instead.",
+    "reason": "states the constraint behind the search fallbacks (Q @19271718, used by search issues, search prs and search code)"
+  },
+  "ca2043798ab05fe2": {
+    "promptId": "tool-result-bash-builtin-gh-only-api-command-refusal",
+    "label": "TOOL_RESULT_BASH_BUILTIN_GH_ONLY_API_COMMAND_REFUSAL_VAR_2",
+    "text": "no GitHub CLI was found on this machine when this session started",
+    "verdict": "catalogue",
+    "id": "data-built-in-gh-no-github-cli-found-reason",
+    "name": "Data: built-in gh — no GitHub CLI found",
+    "desc": "Shared reason in the built-in gh help and refusal saying no GitHub CLI was found on this machine when the session started, which is why only gh api works.",
+    "reason": "explains to the model why only `gh api` exists (ge @19277711, used by the help text and the only-api refusal)"
+  },
+  "5560450ad216c26d": {
+    "promptId": "tool-result-artifact-unknown-capability",
+    "label": "TOOL_RESULT_ARTIFACT_UNKNOWN_CAPABILITY_VAR_0",
+    "text": "shorthand flag",
+    "verdict": "glue",
+    "reason": "branch of `unknown ${A?\"flag\":\"shorthand flag\"}: …` in the built-in gh parser @19281955 (matched to this prompt only by the \"unknown \" lead quasi); labels the flag kind"
+  },
+  "e3eed748f4a30856": {
+    "promptId": "tool-result-bash-builtin-gh-redirect-refused",
+    "label": "TOOL_RESULT_BASH_BUILTIN_GH_REDIRECT_REFUSED_VAR_1",
+    "text": " with a username or password in its URL",
+    "verdict": "glue",
+    "reason": "qualifier on the refused redirect target in Gt() @19298380; describes the interpolated host"
+  },
+  "d4508633413b8b58": {
+    "promptId": "tool-result-remote-host-approval-outside-honoured-window",
+    "label": "TOOL_RESULT_REMOTE_HOST_APPROVAL_OUTSIDE_HONOURED_WINDOW_VAR_1",
+    "text": " after the request was raised — longer than an answer",
+    "verdict": "catalogue",
+    "id": "tool-result-remote-host-approval-dated-channel-expired",
+    "name": "Tool Result: Remote host approval — dated answer arrived too late",
+    "desc": "Dated-channel branch of the approval-outside-honoured-window result: the approval arrived the given time after the request was raised, longer than an answer is honoured for.",
+    "reason": "sibling of the catalogued undated branch (tool-result-remote-host-approval-undated-channel-expired); r ternary in Ego() @24580200"
+  },
+  "225bf557d983b627": {
+    "promptId": "tool-result-remote-served-background-command-status",
+    "label": "TOOL_RESULT_REMOTE_SERVED_BACKGROUND_COMMAND_STATUS_VAR_2",
+    "text": " Its output could not be read.",
+    "verdict": "catalogue",
+    "id": "tool-result-remote-tool-background-command-output-unreadable",
+    "name": "Tool Result: Remote background command — output unreadable",
+    "desc": "Tail of the remote-served background command status saying its output could not be read.",
+    "reason": "outcome the model acts on (B branch in we() @28028436); siblings running-status / ended-status are catalogued"
+  },
+  "0157b67414e56295": {
+    "promptId": "tool-result-remote-served-background-command-status",
+    "label": "TOOL_RESULT_REMOTE_SERVED_BACKGROUND_COMMAND_STATUS_VAR_2",
+    "text": " It has written no output.",
+    "verdict": "catalogue",
+    "id": "tool-result-remote-tool-background-command-no-output",
+    "name": "Tool Result: Remote background command — no output",
+    "desc": "Tail of the remote-served background command status saying the command has written no output.",
+    "reason": "outcome the model acts on (B branch in we() @28028483)"
+  },
+  "ced49e4254561e5e": {
+    "promptId": "tool-result-remote-served-background-command-status",
+    "label": "TOOL_RESULT_REMOTE_SERVED_BACKGROUND_COMMAND_STATUS_VAR_2",
+    "text": "\nIts output ends:\n",
+    "verdict": "glue",
+    "reason": "label before the interpolated output tail (`\\nIts output ends:\\n${g}`) in we() @28028513"
+  },
+  "1de9ba95dd8c6000": {
+    "promptId": "slash-command-plugin-validate-plugin-name-reads-as-anthropic-warning",
+    "label": "SLASH_COMMAND_PLUGIN_VALIDATE_PLUGIN_NAME_READS_AS_ANTHROPIC_WARNING_VAR_0",
+    "text": "\" (read as \"",
+    "verdict": "glue",
+    "reason": "quote/paren join `\"${e}\" (read as \"${r}\")` in UAt() @28191173; labels the normalised name"
+  },
+  "70ea32d2c7506378": {
+    "promptId": "tool-result-artifact-db-write-upload-with-publish-asset-clause",
+    "label": "TOOL_RESULT_ARTIFACT_DB_WRITE_UPLOAD_WITH_PUBLISH_ASSET_CLAUSE_VAR_1",
+    "text": "`file_paths` takes up to ",
+    "verdict": "catalogue",
+    "id": "tool-result-artifact-db-write-upload-file-paths-limit-clause",
+    "name": "Tool Result: Artifact DB write — file_paths upload limit",
+    "desc": "Clause in the embedded-file upload guidance saying `file_paths` takes up to N files in one call.",
+    "reason": "states a call-shape limit the model acts on (h template in ot() @31591560)"
+  },
+  "0bbc2fc7493f19e9": {
+    "promptId": "tool-result-pretooluse-hook-served-call-gate-refused",
+    "label": "TOOL_RESULT_PRETOOLUSE_HOOK_SERVED_CALL_GATE_REFUSED_VAR_1",
+    "text": "gave no verdict",
+    "verdict": "catalogue",
+    "id": "tool-result-pretooluse-hook-could-not-render-verdict",
+    "name": "Tool Result: PreToolUse hook gave no verdict",
+    "desc": "Reason a served-call PreToolUse hook refused the call: it ended in a non-blocking error without having run by contract, so it gave no verdict.",
+    "reason": "2.1.288 rewording of \"could not render a verdict\" (r in Kzo() @10359203); same role, so the id is kept"
   }
 }

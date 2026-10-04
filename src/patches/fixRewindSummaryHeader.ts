@@ -37,6 +37,10 @@ export const writeFixRewindSummaryHeader = (file: string): string | null => {
   // Every method captures the same 3 groups: [1] the header-helper call to wrap,
   // [2] the isCompactSummary…summarizeMetadata tail, [3] the direction var.
   const patterns = [
+    // Method 0 (CC >= 2.1.285): the helper returns a message-fields object
+    // ({content,modelOnlyText?}) that is spread into the message, e.g.
+    // ke({...a2(Ut,{suppressFollowUpQuestions:!1,...}),isCompactSummary:!0,...}).
+    /\.\.\.([$\w]+\([$\w]+,\{[^}]*\}\)),(isCompactSummary:!0,\.\.\.[$\w]+\.length>0\?\{summarizeMetadata:\{messagesSummarized:[$\w]+\.length,userContext:[$\w]+,direction:([$\w]+)\}\})/,
     // Method 1 (CC 2.1.210+): the header helper takes an options-object arg,
     // e.g. X6r(H,{suppressFollowUpQuestions:!1,transcriptPath:V,replStateCleared:j}).
     // Tolerant of object-key reorder/additions (no nested braces at this site).
@@ -73,10 +77,13 @@ export const writeFixRewindSummaryHeader = (file: string): string | null => {
 
   const [, jrCall, metaTail, dirVar] = match;
   // Replace the whole header line (stable phrase + remainder up to the blank line).
-  const swap =
-    `${jrCall}.replace(/This session is being continued from a previous conversation that ran out of context\\.[^\\n]*/,` +
-    `${dirVar}==="up_to"?${JSON.stringify(UP_TO_HEADER)}:${JSON.stringify(FROM_HEADER)})`;
-  const replacement = `content:${swap},${metaTail}`;
+  const spread = match[0].startsWith('...');
+  const headerRe =
+    '/This session is being continued from a previous conversation that ran out of context\\.[^\\n]*/';
+  const headerSwap = `${dirVar}==="up_to"?${JSON.stringify(UP_TO_HEADER)}:${JSON.stringify(FROM_HEADER)}`;
+  const replacement = spread
+    ? `...(($rw)=>({...$rw,content:$rw.content.replace(${headerRe},${headerSwap})}))(${jrCall}),${metaTail}`
+    : `content:${jrCall}.replace(${headerRe},${headerSwap}),${metaTail}`;
   const newFile =
     file.slice(0, match.index) +
     replacement +

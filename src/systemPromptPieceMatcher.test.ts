@@ -325,6 +325,52 @@ describe('bracket keys on an interpolated object are platform-generalized', () =
     ).toBe(1);
   });
 
+  // CC 2.1.286's html-saved viewed-once clause: `{ignoreHold:At}` sits deep in
+  // the slot expression, and `At` is `kt` on linux-x64.
+  it('generalizes a minified value behind an object-literal key', async () => {
+    const pieces = ['file${', '(', ',', '.slug,', '.ver,{ignoreHold:At})}'];
+    expect(
+      await bothEngines(
+        pieces,
+        'x=`file${WOe(n,e.slug,r.ver,{ignoreHold:At})}`'
+      )
+    ).toBe(1);
+    expect(
+      await bothEngines(
+        pieces,
+        'x=`file${NHe(n,e.slug,r.ver,{ignoreHold:kt})}`'
+      )
+    ).toBe(1);
+    expect(
+      await bothEngines(
+        pieces,
+        'x=`file${NHe(n,e.slug,r.ver,{ignoreHeld:kt})}`'
+      )
+    ).toBe(0);
+  });
+
+  // CC 2.1.286's live-doc shim: the spreads repeat `Oe` (`Le` on linux-x64);
+  // each occurrence matches independently.
+  it('generalizes every repeated minified name in spreads', async () => {
+    const pieces = [
+      '${',
+      '.line(',
+      '.file,{edits:',
+      '.edits,...',
+      '.copy!==void 0&&{copy:Oe.copy},...typeof Oe.live==="string"&&{live:Oe.live}})}',
+    ];
+    const darwin =
+      '${se.line(Oe.file,{edits:Oe.edits,...Oe.copy!==void 0&&{copy:Oe.copy},...typeof Oe.live==="string"&&{live:Oe.live}})}';
+    expect(await bothEngines(pieces, darwin)).toBe(1);
+    expect(await bothEngines(pieces, darwin.replace(/Oe/g, 'Le'))).toBe(1);
+    expect(
+      await bothEngines(pieces, darwin.replace(/Oe\.live\}/, 'Zz.live}'))
+    ).toBe(1);
+    expect(await bothEngines(pieces, darwin.replace('{copy:', '{kopy:'))).toBe(
+      0
+    );
+  });
+
   // Same class, comma and closing-bracket continuations.
   it('generalizes a bracket key followed by a comma or a closing bracket', async () => {
     const comma = ['call ${', '(', '[K], 2) end'];

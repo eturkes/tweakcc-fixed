@@ -68,4 +68,17 @@ describe('themes patch', () => {
       'Kls=["dark","light","light-daltonized","dark-daltonized","light-ansi","dark-ansi"]'
     );
   });
+
+  it('spreads the pristine theme under each user theme so keys a newer CC adds are never undefined', () => {
+    // CC 2.1.285 added `effortUltra`; a user theme written before it crashed
+    // the startup logo with "undefined is not an object (evaluating 'e.match')".
+    const light: Theme = { ...theme, id: 'light', name: 'Light mode' };
+    const lightCustom: Theme = { ...theme, id: 'my-light', name: 'Mine' };
+    const out = writeThemes(cli, [theme, light, lightCustom]);
+    expect(out).not.toBeNull();
+    expect(out).toContain('case"neon":return{...CC,...{');
+    expect(out).toContain('case"light":return{...AA,...{');
+    expect(out).toContain('case"my-light":return{...AA,...{');
+    expect(out).toContain('default:return{...CC,...{');
+  });
 });

@@ -17,7 +17,21 @@ const FIXTURE =
   'function MKz(A){return Z.createElement("pre",null,"▛███▜▙▟")}' +
   ';tail=3;';
 
+const FIXTURE_2285 =
+  'var De={down:{r1L:" \\u2590",r1R:"",r2L:"\\u259D\\u259C",r2R:"\\u2588\\u2580"}};function yAn(o){return o}' +
+  'function xpe(o){let i=w(47),t;if(i[0]!==o)t=o===void 0?{}:o,i[0]=o,i[1]=t;else t=i[1];let{pose:c,color:l,paint:m}=t,p=c===void 0?"default":c;if(bt()){return null}return p}' +
+  'function E({glyphs:o}){return o}';
+
 describe('writeHideStartupClawd', () => {
+  it('splices `return null;` into the CC 2.1.285 props-destructuring wrapper', () => {
+    const out = writeHideStartupClawd(FIXTURE_2285);
+    expect(out).not.toBeNull();
+    expect(out).toContain('function xpe(o){return null;let i=w(47)');
+    expect(out).toContain('function yAn(o){return o}');
+    expect(out!.match(/return null;let/g)!.length).toBe(1);
+    expect(() => new Function(out!)).not.toThrow();
+  });
+
   it('splices `return null;` at the WRAPPER component body start', () => {
     const out = writeHideStartupClawd(FIXTURE);
     expect(out).not.toBeNull();

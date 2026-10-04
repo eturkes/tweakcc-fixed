@@ -83,6 +83,7 @@ export function MiscView({ onSubmit }: MiscViewProps) {
     autoAcceptPlanMode: false,
     allowBypassPermissionsInSudo: false,
     suppressNativeInstallerWarning: false,
+    modelAtEffort: true,
     filterScrollEscapeSequences: false,
     enableWorktreeMode: true,
     unlockResponsiveMode: false,
@@ -793,6 +794,19 @@ export function MiscView({ onSubmit }: MiscViewProps) {
             ensureMisc();
             settings.misc!.suppressNativeInstallerWarning =
               !settings.misc!.suppressNativeInstallerWarning;
+          });
+        },
+      },
+      {
+        id: 'modelAtEffort',
+        title: 'Allow /model name@effort',
+        description:
+          'Lets /model opus@high set the model and the effort level in one command.',
+        getValue: () => settings.misc?.modelAtEffort ?? true,
+        toggle: () => {
+          updateSettings(settings => {
+            ensureMisc();
+            settings.misc!.modelAtEffort = !settings.misc!.modelAtEffort;
           });
         },
       },
