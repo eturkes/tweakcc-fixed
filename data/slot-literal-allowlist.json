@@ -2054,11 +2054,8 @@
     "promptId": "slash-command-plugin-uninstall-leftover-list-unreadable",
     "label": "SLASH_COMMAND_PLUGIN_UNINSTALL_LEFTOVER_LIST_UNREADABLE_VAR_1",
     "text": "\" again from the command line",
-    "verdict": "catalogue",
-    "id": "slash-command-plugin-uninstall-leftover-uninstall-again-from-command-line",
-    "name": "Slash Command: /plugin uninstall leftover — uninstall again from the command line",
-    "desc": "Fallback remedy in the uninstall-leftover notes when no runnable command can be shown: uninstall the plugin again from the command line, with --scope project when it is still on in the project file.",
-    "reason": "the remedy instruction ng() falls back to (fallback template @17983035), rendered into the still-switched-on and list-unreadable notes"
+    "verdict": "glue",
+    "reason": "the remedy instruction ng() falls back to (fallback template @17983035), rendered into the still-switched-on and list-unreadable notes; 2.1.288 correction: those notes and this fallback were ruled ui (uninstall results reach no model sink), so it is no longer catalogued (formerly slash-command-plugin-uninstall-leftover-uninstall-again-from-command-line)"
   },
   "906c981c2a298fc7": {
     "promptId": "tool-result-bash-builtin-gh-release-download-no-form",

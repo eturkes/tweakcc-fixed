@@ -326,7 +326,12 @@
     "desc": "Permission-classifier instructions for host_context_live versus restored host_context lines attached to tool results."
   },
   "01fa24ccb6306f9db78a637e9faa5579fcdf9176": { "facing": "internal" },
-  "01fff03ff49b2fbad4a437da05447cdfb7cabec1": { "facing": "internal" },
+  "01fff03ff49b2fbad4a437da05447cdfb7cabec1": {
+    "facing": "model",
+    "id": "data-settings-auto-compact-window-description",
+    "name": "Data: autoCompactWindow setting description",
+    "desc": "Description of the `autoCompactWindow` setting in Claude Code's settings JSON schema. The model reads it through /update-config and settings validation errors; it is also shown to users in the settings help."
+  },
   "02000c032ae68ed0ef774748bf7ca2a4eb532a4e": { "facing": "ui" },
   "020380ecc2bea39374849596b947101314c4db7d": { "facing": "ui" },
   "020951530bda9ea5bc2842b457021fd379c4b34e": { "facing": "ui" },
@@ -23957,7 +23962,12 @@
     "desc": "Tail of the auto-edit task notification stating the artifact was changed and asking for a review."
   },
   "90fab8858b2b525dee3da4866949b324cfa311a5": { "facing": "internal" },
-  "90fd87dd33ef5b46a6da58f191b96cfe55ff1c46": { "facing": "ui" },
+  "90fd87dd33ef5b46a6da58f191b96cfe55ff1c46": {
+    "facing": "model",
+    "id": "tool-result-write-permission-ask-plan-mode",
+    "name": "Tool Result: Write Permission Ask In Plan Mode",
+    "desc": "checkPermissions ask message returned when a file write is attempted while the session is in plan mode."
+  },
   "90fecfc9173ba98e62cbc023bc66e5134d2edaeb": { "facing": "internal" },
   "9106af1336d4b725951152e4dcc7766872db1f06": {
     "facing": "model",
@@ -72419,12 +72429,7 @@
   "fc15bad36c37a0fa7c7913c7855f896962dc73bc": { "facing": "internal" },
   "60d3a7878a8350c2e3a0afaa9b97bc9e67875a99": { "facing": "internal" },
   "984d1236f20ad97de2249f51e9b8b7604d74f3fc": { "facing": "ui" },
-  "0893f4a7adb0c922f998bc01af05ce783c6b7c7e": {
-    "facing": "model",
-    "id": "tool-result-git-promisor-lazy-fetch-forgone",
-    "name": "Tool Result: Git Promisor Lazy Fetch Forgone",
-    "desc": "Appended to git stderr when a partial clone is not retried with a constrained lazy fetch, including the forgone reason."
-  },
+  "0893f4a7adb0c922f998bc01af05ce783c6b7c7e": { "facing": "ui" },
   "18fb0930b8a2aebede8ad6627073818fc95628c0": { "facing": "internal" },
   "051431747f3f459a3515dc878d1771da29d6abf9": {
     "facing": "model",
@@ -81511,42 +81516,12 @@
   "baf3a52b12a2642c5dfa29b58307a14ca71a5689": { "facing": "ui" },
   "009d0ac47f7cc7c9e5c9b3ea4e748cedc09ac915": { "facing": "ui" },
   "65ce1585a965adc6f9657bc6b87d1054862f47eb": { "facing": "ui" },
-  "87c2110f9960f4cb89f716fbe5dd0320b13f37c4": {
-    "facing": "model",
-    "id": "slash-command-plugin-uninstall-source-not-read-untrusted-workspace",
-    "name": "Slash Command: Plugin Uninstall — Settings File Not Read (Untrusted Workspace)",
-    "desc": "Yao() settings-source clause for a file not read because the workspace is not yet trusted; interpolated into the /plugin uninstall \"was not uninstalled\" result the model reads."
-  },
-  "ff7ffa4fa858fcaab5179cb047d1f56436a48b93": {
-    "facing": "model",
-    "id": "slash-command-plugin-uninstall-source-add-dir-settings",
-    "name": "Slash Command: Plugin Uninstall — Settings Source Is an Added Directory",
-    "desc": "Yao() clause naming a settings file from an --add-dir directory, which uninstall does not edit; part of the plugin uninstall refusal the model reads."
-  },
-  "b97d465ba73707cb92da84671ddb1db53f80fd1c": {
-    "facing": "model",
-    "id": "slash-command-plugin-uninstall-source-other-folder-settings",
-    "name": "Slash Command: Plugin Uninstall — Settings Source Is Another Folder",
-    "desc": "Yao() clause naming another folder's settings file, which uninstalling from here does not edit; part of the plugin uninstall refusal the model reads."
-  },
-  "10be72231cfc6c57984dcc1975e5d599ce28d20f": {
-    "facing": "model",
-    "id": "slash-command-plugin-uninstall-source-managed-settings",
-    "name": "Slash Command: Plugin Uninstall — Settings Source Is Managed Settings",
-    "desc": "Yao() clause saying the computer's managed settings enable the plugin and only an administrator can change them; part of the plugin uninstall refusal the model reads."
-  },
-  "6f486c122db16ce905ba63a72517f336a35ab0d1": {
-    "facing": "model",
-    "id": "slash-command-plugin-uninstall-source-flag-settings-file",
-    "name": "Slash Command: Plugin Uninstall — Settings Source Is the --settings File",
-    "desc": "Yao() clause for a --settings file that is on disk now and that later sessions would read, telling the user to switch the plugin off there; part of the uninstall refusal."
-  },
-  "1727a8ea3cb9a1ef7cb3bcd534a6765149be3659": {
-    "facing": "model",
-    "id": "slash-command-plugin-uninstall-source-flag-settings-given",
-    "name": "Slash Command: Plugin Uninstall — Settings Given at Start-Up",
-    "desc": "Yao() clause for settings passed with --settings or by the launching application, which uninstall cannot change; tells the user to switch it off where they are given or restart without them."
-  },
+  "87c2110f9960f4cb89f716fbe5dd0320b13f37c4": { "facing": "ui" },
+  "ff7ffa4fa858fcaab5179cb047d1f56436a48b93": { "facing": "ui" },
+  "b97d465ba73707cb92da84671ddb1db53f80fd1c": { "facing": "ui" },
+  "10be72231cfc6c57984dcc1975e5d599ce28d20f": { "facing": "ui" },
+  "6f486c122db16ce905ba63a72517f336a35ab0d1": { "facing": "ui" },
+  "1727a8ea3cb9a1ef7cb3bcd534a6765149be3659": { "facing": "ui" },
   "40ce16a492f058ceb07193d56a860840421ec1a0": {
     "facing": "model",
     "id": "slash-command-plugin-install-invalid-id-npm-first-half",
@@ -81697,12 +81672,7 @@
     "name": "Slash Command: Plugin Install — Already Installed",
     "desc": "Success message from /plugin install when the plugin is already installed at the requested scope, with optional manually-installed marker and version/refresh suffixes."
   },
-  "5460ae97e450d5443e14b15560abac215f2a449e": {
-    "facing": "model",
-    "id": "slash-command-plugin-uninstall-settings-change-failed-suffix",
-    "name": "Slash Command: Plugin Uninstall — Settings Change Failed Suffix",
-    "desc": "Suffix appended to the plugin-not-uninstalled refusals when the settings write also failed, carrying the error message."
-  },
+  "5460ae97e450d5443e14b15560abac215f2a449e": { "facing": "ui" },
   "328b9633cedd0ccc3127726705e0c5894084f9d1": { "facing": "internal" },
   "616a244e3911ac6601776622a34f3cf4f9108e5b": { "facing": "internal" },
   "2c530c5c0c10da53d11c84555ae408a3bef3b43d": {
@@ -85362,18 +85332,8 @@
   "5529f27bcbb287e9dd3f2baa7f235be044a4c085": { "facing": "ui" },
   "5c644f73816057fa7fb745a773d237a338dc05eb": { "facing": "ui" },
   "46520d63f422dd65b34b00acba2e94b2a31596e0": { "facing": "internal" },
-  "05e5ca3baa8559e83b40eb740144d7b7fc0b5e57": {
-    "facing": "model",
-    "id": "slash-command-plugin-uninstall-records-unreadable",
-    "name": "Plugin uninstall: install records unreadable",
-    "desc": "Result message returned by the plugin uninstall implementation when the installed-plugin records file could not be read, reported with failureCode 'install_records_unreadable'."
-  },
-  "588ade632bbfbcafa510c10d05a36e3a2a4b2215": {
-    "facing": "model",
-    "id": "slash-command-plugin-update-records-unreadable",
-    "name": "Plugin update: install records unreadable",
-    "desc": "Result message returned by the plugin update implementation when the installed-plugin records file could not be read, reported with failureCode 'install_records_unreadable'."
-  },
+  "05e5ca3baa8559e83b40eb740144d7b7fc0b5e57": { "facing": "ui" },
+  "588ade632bbfbcafa510c10d05a36e3a2a4b2215": { "facing": "ui" },
   "3f04c21f56057bc115d8c30015c0d4cbf14d10c5": {
     "facing": "model",
     "id": "slash-command-plugin-update-command-source-skipped-background",
@@ -89974,12 +89934,7 @@
     "desc": "Tail of the environment-block note about the built-in GitHub client: `gh api --help`, the note holds even if an earlier instruction says there is no gh or GitHub API access, GitHub MCP tools stay preferred, and a 403 from the proxy is not fixed by retrying."
   },
   "6fcca70981b48485fe13c0ed7f29ff5738ca4460": { "facing": "internal" },
-  "669e5081d7c8e631fdb3f961d817c592b6c7338d": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-already-installed-turned-off-in-project",
-    "name": "Slash Command: /plugin install — Already Installed, Turned Off In Project",
-    "desc": "Suffix on the 'already installed, nothing to install' result when the plugin is turned off in this project and the command did not turn it on, with the command or /plugin route to turn it on."
-  },
+  "669e5081d7c8e631fdb3f961d817c592b6c7338d": { "facing": "ui" },
   "5421d590e60705a1c2a36c6b375513bc47a208f0": {
     "facing": "model",
     "id": "tool-result-mcp-output-json-single-line-note",
@@ -89992,30 +89947,10 @@
     "name": "Tool Result: Read Long-Lines Char-Range Guidance",
     "desc": "Note in the saved-large-output tool result that the file's lines are too long for the Read tool's offset/limit chunking, and to slice by character range (python read()[A:B], dd, cut -c) if a shell tool is available."
   },
-  "9ef0fd56b51cd1b04eaca50685c6eb6b930188be": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-not-found-directory-blocked-by-organization",
-    "name": "Slash Command: /plugin install — Not Found, Directory Blocked By Organization",
-    "desc": "Parenthetical on the plugin-not-found install failure saying the plugin directory is blocked by the user's organization, with the reason from the policy helper."
-  },
-  "6dc4a60cfcc4e78ce8c23d9cc98277f96a0c08e7": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-not-found-directory-listing-blocked-by-policy",
-    "name": "Slash Command: /plugin install — Not Found, Listing Blocked By Policy",
-    "desc": "Parenthetical on the plugin-not-found install failure saying the directory lists the plugin but it is blocked by the organization's policy."
-  },
-  "cdcfd61163e0287024abd98543e43565b45a71c2": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-switch-enabled-plugins-lines-remaining",
-    "name": "Slash Command: /plugin install — Switch, enabledPlugins Lines Still Present",
-    "desc": "Switch-install note listing 'enabledPlugins' entries that are still present in settings and must be removed, because an old copy could load again beside the new one or show as enabled but not installed."
-  },
-  "49e17e63f51eb09e38d810b76755f7774396adf2": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-switch-enabled-plugins-unmatched-entries",
-    "name": "Slash Command: /plugin install — Switch, Unmatched enabledPlugins Entries",
-    "desc": "Switch-install note listing 'enabledPlugins' entries that may refer to an old copy, saying to remove any that do not name an installed plugin, because the old copy could load again or show as enabled but not installed."
-  },
+  "9ef0fd56b51cd1b04eaca50685c6eb6b930188be": { "facing": "ui" },
+  "6dc4a60cfcc4e78ce8c23d9cc98277f96a0c08e7": { "facing": "ui" },
+  "cdcfd61163e0287024abd98543e43565b45a71c2": { "facing": "ui" },
+  "49e17e63f51eb09e38d810b76755f7774396adf2": { "facing": "ui" },
   "e8c80747c567a0104cd400b5e810d83370a1f34f": {
     "facing": "model",
     "id": "tool-description-poll-no-pending-events-caveat",
@@ -90034,12 +89969,7 @@
     "name": "Slash Command: /plugin install — Already Installed From Different Repository",
     "desc": "Refusal saying the named plugin is already installed from a different repository than the one the directory now lists under that name, and to uninstall it first and then install again."
   },
-  "04c0311c30dd13b1b6b4e088379c9d6da2b68540": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-already-installed-directory-bindings-unreadable",
-    "name": "Plugin Install: Already Installed, Directory Bindings Unreadable",
-    "desc": "Install refusal when the plugin is already installed but plugin-directory-bindings.json could not be used to check its directory listing against the installed repository; returned as {success:false,message} with failureCode directory_binding_unreadable."
-  },
+  "04c0311c30dd13b1b6b4e088379c9d6da2b68540": { "facing": "ui" },
   "530b5505f6c32642c84ae51c9c5170ca6c79661f": {
     "facing": "model",
     "id": "slash-command-plugin-install-directory-records-unreadable-bound-elsewhere",
@@ -90064,54 +89994,14 @@
     "name": "Plugin Install: Listing Names Different Repository, Saved Data Kept",
     "desc": "Install refusal when an earlier install under the name came from a different repository than the directory now lists; says saved options, secrets and data may remain and gives the uninstall command to delete them before installing again."
   },
-  "c89da81f494830c9558e802bfb0dc2ac4b16392c": {
-    "facing": "model",
-    "id": "slash-command-plugin-uninstall-untrusted-workspace-unchecked",
-    "name": "Plugin Uninstall: Workspace Untrusted, Change Unchecked",
-    "desc": "Uninstall refusal when the workspace is not yet trusted, so its settings files are not read and the settings change could not be checked afterwards; tells the user to trust the workspace, restart Claude Code and uninstall again."
-  },
-  "e44ca2d03c92be747837eda1bc685043a0df26dc": {
-    "facing": "model",
-    "id": "slash-command-plugin-update-directory-bindings-unreadable",
-    "name": "Plugin Update: Directory Bindings Unreadable",
-    "desc": "Update failure when plugin-directory-bindings.json could not be used, so the directory listing could not be checked against the repository the plugin was installed from."
-  },
-  "890dac664826ef7801b6f6843efffd4bc74eb3a2": {
-    "facing": "model",
-    "id": "slash-command-plugin-update-directory-repository-changed",
-    "name": "Plugin Update: Directory Lists Different Repository",
-    "desc": "Update failure when the plugin directory now lists a different repository under the plugin's name; tells the user to uninstall it and then install the new listing if they want it."
-  },
-  "3f5a07e0aad7ecedf02a04d070c3308e2298f740": {
-    "facing": "model",
-    "id": "slash-command-plugin-uninstall-switched-off-bindings-unwritable",
-    "name": "Plugin Uninstall: Switched Off But Directory Bindings Unwritable",
-    "desc": "Uninstall refusal when the plugin was only switched off at a scope, with nothing it saved removed, because plugin-directory-bindings.json could not be used or written; tells the user to uninstall again once the file can be written."
-  },
-  "65917e63c23e70c2cb1e9db2ad89efd149754302": {
-    "facing": "model",
-    "id": "slash-command-plugin-uninstall-enabled-plugins-removal-failed",
-    "name": "Plugin Uninstall: Enabled Plugins Removal Failed",
-    "desc": "Uninstall refusal when the plugin could not be removed from enabledPlugins in a settings file, noting where it was removed, that nothing it saved was removed and that its name can still only be installed from the same repository."
-  },
-  "6f2398a5e0a1dd50b4d3cf4ec1f0b183b47e7e37": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-installed-from-other-marketplace-cache-missing",
-    "name": "Plugin Install: Installed From Other Marketplace, Cache Files Missing",
-    "desc": "Install refusal when the plugin is already installed from another marketplace but its files are missing from the plugin cache; tells the reader to install it again from /plugin or gives the install command."
-  },
-  "a48adc9606a11b9f9682401b7b2f0c9bbc36c1c1": {
-    "facing": "model",
-    "id": "slash-command-plugin-uninstall-install-record-appeared",
-    "name": "Plugin Uninstall: Install Record Appeared During Switch-Off",
-    "desc": "Uninstall refusal when an install record appeared while the plugin was being switched off, or the install records could no longer be read; nothing it saved was removed and the user should run uninstall again."
-  },
-  "e19bb34f02ad9f1ee834938b0aaf074150e617c6": {
-    "facing": "model",
-    "id": "slash-command-plugin-uninstall-settings-not-read-still-installed",
-    "name": "Plugin Uninstall: Settings Source Not Read, Still Installed",
-    "desc": "Uninstall refusal from Dt() when a settings source is not read here or sits on a network path, so it may still switch the plugin on; the plugin stays installed, and the closing advice depends on why the file was not read."
-  },
+  "c89da81f494830c9558e802bfb0dc2ac4b16392c": { "facing": "ui" },
+  "e44ca2d03c92be747837eda1bc685043a0df26dc": { "facing": "ui" },
+  "890dac664826ef7801b6f6843efffd4bc74eb3a2": { "facing": "ui" },
+  "3f5a07e0aad7ecedf02a04d070c3308e2298f740": { "facing": "ui" },
+  "65917e63c23e70c2cb1e9db2ad89efd149754302": { "facing": "ui" },
+  "6f2398a5e0a1dd50b4d3cf4ec1f0b183b47e7e37": { "facing": "ui" },
+  "a48adc9606a11b9f9682401b7b2f0c9bbc36c1c1": { "facing": "ui" },
+  "e19bb34f02ad9f1ee834938b0aaf074150e617c6": { "facing": "ui" },
   "63e1b1f0cb377d99794aebe104e01eb113eeff2f": {
     "facing": "model",
     "id": "system-prompt-you-should-know-attribution-you-if-user-only-tail",
@@ -90210,12 +90100,7 @@
   },
   "ead9a348034d9ea1cd61d448530fc8f6d9aa6560": { "facing": "ui" },
   "ddb6a5937a2969e52a404df2cdeea4f601307b6d": { "facing": "ui" },
-  "93f2f1e62f84a64da1448eb7402539ed0b783ed6": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-switch-copy-failed-both-installed",
-    "name": "Slash Command: /plugin Install — Switch Copy Failed, Both Installed",
-    "desc": "Result note when switching a plugin to another marketplace copy could not copy the option values or stored secrets, so the old plugin was not uninstalled and both stay installed until switched again"
-  },
+  "93f2f1e62f84a64da1448eb7402539ed0b783ed6": { "facing": "ui" },
   "33d4d5fabb886de51b441a5c218c657ab0972863": { "facing": "ui" },
   "128dd6ff4f2ef6d3bebc80e0878ecefa61d3adf8": { "facing": "ui" },
   "5fb8434597a6ba577fe9187a824854065adb371f": {
@@ -90288,42 +90173,17 @@
   "9dabc504aba699073578f917f6f2346f25984db3": { "facing": "ui" },
   "1aa64b9725680d1741fe7bd27583031dd080e59e": { "facing": "ui" },
   "986635f9ccf98876f904e2da0cf6ef8c5b584bb1": { "facing": "ui" },
-  "a887f1bcb1cbfaaa1536d8e992d7f19ba6c9aabf": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-switch-old-copy-record-unknown-leftovers",
-    "name": "Slash Command: /plugin Install — Switch Old Copy Record Unknown, Leftovers",
-    "desc": "Note appended to the plugin switch result listing the settings, stored secrets and data folder left in place when the old copy's install records could not be read, with the removal guidance"
-  },
+  "a887f1bcb1cbfaaa1536d8e992d7f19ba6c9aabf": { "facing": "ui" },
   "43b5f7a801695b44502bcdce4ed3cd4796751726": {
     "facing": "model",
     "id": "tool-description-agent-available-types",
     "name": "Tool Description: Agent Available Types",
     "desc": "Agent tool description block saying each agent type has its own capabilities, that the available types are listed in system-reminders, and how to pass subagent_type including fork"
   },
-  "4a7c047bb8abf59a8bb11dbf303ab8cb75527fa5": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-already-installed-switch-command",
-    "name": "Slash Command: /plugin Install — Already Installed, Switch Command",
-    "desc": "Hint appended to the 'already installed from another marketplace' refusal giving the command that switches to the requested marketplace copy and keeps the plugin settings"
-  },
-  "0fb08cd5733a40121a5a9ed7e4e5d6b98042584d": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-switch-cleanup-unfinished-settings-and-secrets-left",
-    "name": "Slash Command: /plugin Install — Switch Cleanup Unfinished, Settings And Secrets Left",
-    "desc": "Note appended to the plugin switch result saying the cleanup after the last uninstall did not finish, so the plugin's settings and stored secrets may still be left and no command removes them yet"
-  },
-  "e1dba7c4a405f7f8a8aa41526b4481d94fba205f": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-switch-cleanup-unfinished-data-folder-may-go",
-    "name": "Slash Command: /plugin Install — Switch Cleanup Unfinished, Data Folder May Go",
-    "desc": "Note appended to the plugin switch result saying the cleanup after the last uninstall did not finish, so settings, stored secrets and the data folder may still be left and can be removed by hand"
-  },
-  "fe0bea25bfcca7a04eb847d428ad2af87f0feca6": {
-    "facing": "model",
-    "id": "slash-command-plugin-switch-leftover-data-folder-install-records-unreadable",
-    "name": "Slash Command: Plugin switch leftover data folder install records unreadable",
-    "desc": "Clause in the plugin switch result when the old plugin's settings, stored secrets and data folder may still be left and the install records cannot be read, telling the user to leave the data folder because another installed plugin may use it."
-  },
+  "4a7c047bb8abf59a8bb11dbf303ab8cb75527fa5": { "facing": "ui" },
+  "0fb08cd5733a40121a5a9ed7e4e5d6b98042584d": { "facing": "ui" },
+  "e1dba7c4a405f7f8a8aa41526b4481d94fba205f": { "facing": "ui" },
+  "fe0bea25bfcca7a04eb847d428ad2af87f0feca6": { "facing": "ui" },
   "458c84c506b65298910ce0aff40a6084399f5113": {
     "facing": "model",
     "id": "tool-result-remote-host-approval-no-longer-pending",
@@ -90347,12 +90207,7 @@
     "desc": "Permission-ask question when the project's command-check script changed since this computer last used it, offering to run the updated script in a read-only sandbox or leave each command to ask."
   },
   "9a3d59cd51a21c6c1b394e906ea5199ab6bfc397": { "facing": "internal" },
-  "6963d764fb97ad8a900c2d297170a97d756357f8": {
-    "facing": "model",
-    "id": "slash-command-plugin-switch-needs-fresh-marketplace-read",
-    "name": "Slash Command: Plugin switch needs fresh marketplace read",
-    "desc": "Refusal from the plugin switch flow when it needs a fresh read of the marketplace listing rather than the saved copy and that read failed, saying nothing was changed."
-  },
+  "6963d764fb97ad8a900c2d297170a97d756357f8": { "facing": "ui" },
   "a2247d197bc13df9e9eef2decf7e9be33b56a77c": {
     "facing": "model",
     "id": "agent-prompt-you-should-know-offer-dont-lose-them-at-outset",
@@ -90464,28 +90319,18 @@
     "name": "Tool Result: Artifact Publish Copy Refused Document",
     "desc": "Publish abort telling the model a copied page or XML document cannot skip this tool's checks and nothing was published."
   },
-  "4a559f96ac3df8613d04598cb42b070f78e1cd43": {
-    "facing": "model",
-    "id": "slash-command-plugin-update-packages-not-installed",
-    "name": "Slash Command: Plugin update packages not installed",
-    "desc": "Failure message from a plugin update when the packages the plugin lists for a scope could not be installed, with the cause, saying updating again retries."
-  },
+  "4a559f96ac3df8613d04598cb42b070f78e1cd43": { "facing": "ui" },
   "b1b3da3e82c2fe0bdf2e1854365a5ead510af915": { "facing": "ui" },
   "a0a8ceb449cc07dcd8ebdb77009cd0beb47299d4": { "facing": "ui" },
   "fc321737d7bf094021bfffee83fb0be78b1c067a": { "facing": "ui" },
-  "b1a6c194f2afd379e5345e13a6c8fa128d995d4d": { "facing": "ui" },
-  "f23fde1a55e97e0342c28cc2e1edc3f19fdc9e7b": {
+  "b1a6c194f2afd379e5345e13a6c8fa128d995d4d": {
     "facing": "model",
-    "id": "slash-command-plugin-switch-uninstall-failed-rolled-back",
-    "name": "Slash Command: Plugin switch uninstall failed rolled back",
-    "desc": "Plugin switch failure when the old plugin could not be uninstalled, whether anything was put back, and that the new plugin was uninstalled again; its dependencies stay installed."
+    "id": "slash-command-config-save-to-config-file-failed",
+    "name": "Slash Command: /config could not save to the config file",
+    "desc": "Error from /config key=value when the setting could not be written to the config file: nothing changed, check the file is writable and try again."
   },
-  "ba61edff011fe209b950c6eb8a690bdd6a406585": {
-    "facing": "model",
-    "id": "slash-command-plugin-switch-carry-over-failed-rolled-back",
-    "name": "Slash Command: Plugin switch carry-over failed rolled back",
-    "desc": "Plugin switch failure when the option values or stored secrets of the old plugin could not be copied to the new one, saying the new plugin was uninstalled again; its dependencies stay installed."
-  },
+  "f23fde1a55e97e0342c28cc2e1edc3f19fdc9e7b": { "facing": "ui" },
+  "ba61edff011fe209b950c6eb8a690bdd6a406585": { "facing": "ui" },
   "dcc17ac04b320200e1771d1f48f14d823c0c59c0": { "facing": "ui" },
   "a0a6a1b735c71537328f9358a4af9cdd16119616": {
     "facing": "model",
@@ -90513,12 +90358,7 @@
     "name": "Tool Result: Chrome file_upload unavailable in session",
     "desc": "Deny message that file_upload is unavailable in this session (alone or inside browser_batch), nothing in the call ran, and the user should choose the file in their browser."
   },
-  "26e53066b81152d6792cf32af5350d51cd8da5c6": {
-    "facing": "model",
-    "id": "tool-result-git-bundle-old-git-reads-skipped",
-    "name": "Tool Result: Git bundle old git reads skipped",
-    "desc": "Explanation that git reads before a cloud session starts were skipped because git is older than 2.32 or its version could not be read, and to update git and restart Claude Code."
-  },
+  "26e53066b81152d6792cf32af5350d51cd8da5c6": { "facing": "internal" },
   "9594bc1056f0ea58dd05387450bce422bed52259": {
     "facing": "model",
     "id": "system-prompt-environment-github-session-proxy",
@@ -90559,12 +90399,7 @@
     "name": "Tool Result: mcp_call MCP response over size cap",
     "desc": "Error result for an mcp_call whose MCP server response exceeded Claude Code's byte cap: no result returned, the tool may have run, check the effect before retrying and request a smaller result"
   },
-  "aac9a87992b7c5e27a57fb1a2d4b6ec5b2de4f10": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-more-installs-than-shown",
-    "name": "Slash Command: Plugin install more installs than shown",
-    "desc": "Refusal when more installs of a plugin were found than the switch offer showed; nothing changed, reopen the plugin"
-  },
+  "aac9a87992b7c5e27a57fb1a2d4b6ec5b2de4f10": { "facing": "ui" },
   "02a6ac4fdbe878f58f1c14b0e52dc6ee5dfb5409": {
     "facing": "model",
     "id": "tool-result-bash-gh-run-watch-no-api-form",
@@ -90727,9 +90562,9 @@
   },
   "8cb5e2591be50252d90bea0a096ec2cf46eaf9fe": {
     "facing": "model",
-    "id": "tool-result-remote-host-approval-outside-honoured-window",
-    "name": "Tool Result: Remote host approval outside honoured window",
-    "desc": "Tells Claude a permission approval reached the target host after the window in which such an answer is honoured, so the request was withdrawn and nothing ran; send the call again if still wanted."
+    "id": "tool-result-remote-host-approval-undated-channel-expired",
+    "name": "Tool Result: Remote host approval answer too old",
+    "desc": "Tells the model a permission approval reached the target too long after the request was raised (dated or over a channel with no delivery time) to be honoured, so the request was withdrawn and nothing ran."
   },
   "bd7d9221cfb832a448e4b8571ba8332816ff3a49": {
     "facing": "model",
@@ -90756,8 +90591,18 @@
     "desc": "Error from the built-in gh stand-in when the session's GitHub proxy could not open the connection: nothing was sent, wait and retry once, then read the proxy's /__agentproxy/status."
   },
   "cffbe8f84925b469ed4f81bfbb4159846a6246f3": { "facing": "ui" },
-  "31eda30ff4f180d7ba27778107fdb86f5e199a04": { "facing": "ui" },
-  "94f6639e65c12a782f12d33419e3d913fd1ef506": { "facing": "ui" },
+  "31eda30ff4f180d7ba27778107fdb86f5e199a04": {
+    "facing": "model",
+    "id": "slash-command-plugin-marketplace-remove-plugins-turned-off-commit-mismatch",
+    "name": "Slash Command: Plugin Marketplace Remove Plugins Turned Off Commit Mismatch",
+    "desc": "Result note after removing a marketplace entry: names the plugins turned off because they are not at the commit the built-in marketplace lists, and how to reinstate one (claude plugin update, then enable)."
+  },
+  "94f6639e65c12a782f12d33419e3d913fd1ef506": {
+    "facing": "model",
+    "id": "slash-command-plugin-marketplace-remove-plugins-turned-off-catalog-unreadable",
+    "name": "Slash Command: Plugin Marketplace Remove Plugins Turned Off Catalog Unreadable",
+    "desc": "Result note after removing a marketplace entry: names the plugins turned off because they could not be checked against the built-in marketplace's listed commit, and how to reinstate one once it is available."
+  },
   "8d09260d5abc75e097b7303ead14681d1d6b7caf": { "facing": "ui" },
   "41eebdfefa34a3bab134e06a223df278f197bb60": {
     "facing": "model",
@@ -90773,12 +90618,7 @@
   },
   "4ffb57a687499534fb310a7edbc7a4dd28476c5e": { "facing": "ui" },
   "c0680412966982df3ae2daf5db9b4912f0a8434b": { "facing": "internal" },
-  "40c85f69013894e3ae028f064400d6723097c07f": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-switch-target-changed-since-shown",
-    "name": "Slash Command: Plugin install switch target changed since shown",
-    "desc": "Install failure when what switching a plugin would replace changed since it was shown: nothing was changed, open the plugin again to see whether a switch is still offered."
-  },
+  "40c85f69013894e3ae028f064400d6723097c07f": { "facing": "ui" },
   "a3e86cc5caf307560f735eaf41df5f70b4757147": { "facing": "ui" },
   "53dda37c175770eb606c2f58f5bcd7eacf2a64f4": { "facing": "ui" },
   "772ea8c9506f104084f31c505ff13de785d6354d": { "facing": "internal" },
@@ -90801,9 +90641,24 @@
   "3492d7c2e59aac52392989921b3fa2db69320973": { "facing": "ui" },
   "45f6a1e9c5d3be170255f2efe02ae82b4910ca9e": { "facing": "ui" },
   "c34e8512e605f55994b317841cac4ea7376d3237": { "facing": "ui" },
-  "7325d2cee9caf7feab10e483f74b7f24f57a1f42": { "facing": "ui" },
-  "2804699f4ed9ac86ba857ca0fdb4174630831515": { "facing": "ui" },
-  "d31c58b297d59a3d878e8fd224163e37821ac694": { "facing": "ui" },
+  "7325d2cee9caf7feab10e483f74b7f24f57a1f42": {
+    "facing": "model",
+    "id": "slash-command-plugin-marketplace-remove-entry-removed-built-in-unchanged",
+    "name": "Slash Command: Plugin Marketplace Remove Entry Removed Built-In Unchanged",
+    "desc": "Result line after /plugin marketplace remove deletes a known_marketplaces.json entry that was not the built-in marketplace, stating the built-in is unchanged."
+  },
+  "2804699f4ed9ac86ba857ca0fdb4174630831515": {
+    "facing": "model",
+    "id": "slash-command-plugin-marketplace-remove-entry-removed-name-reserved",
+    "name": "Slash Command: Plugin Marketplace Remove Entry Removed Name Reserved",
+    "desc": "Result line after /plugin marketplace remove deletes a known_marketplaces.json entry whose name is reserved."
+  },
+  "d31c58b297d59a3d878e8fd224163e37821ac694": {
+    "facing": "model",
+    "id": "slash-command-plugin-marketplace-remove-other-projects-settings-not-checked",
+    "name": "Slash Command: Plugin Marketplace Remove Other Projects Settings Not Checked",
+    "desc": "Clause appended to the plugins-turned-off note after a marketplace-entry removal: other projects' settings are not checked, so a plugin another project's own settings enable stays on there."
+  },
   "38a4ab5ab410296d61f056eff406542d6d38df12": { "facing": "ui" },
   "c0965fc952ae4445e84c5c4ec503d1be982d5f29": { "facing": "ui" },
   "010344f0323cf5ae3c092f350b97282b188e7728": {
@@ -90844,10 +90699,30 @@
   "0b3e6fad58a76aada6e2d80edbe2bc675f834d60": { "facing": "ui" },
   "12ac734a0e5cde38fcbff2655c78df87d2b0fae9": { "facing": "ui" },
   "e29db6a6b69412d9d67c7ec96905f09ba77d83b2": { "facing": "ui" },
-  "8a2fbc673b75aa72cdceabb34110c55ff2ffe872": { "facing": "ui" },
-  "83cb402f17f7252fa2e997b9fa8a937917dcc8e7": { "facing": "ui" },
-  "4c46db02bb1dabe5f10e73b90fe36c6d38f1f2ed": { "facing": "ui" },
-  "069c564eb16e95ab8136aab50bbe8abfa191c8c1": { "facing": "ui" },
+  "8a2fbc673b75aa72cdceabb34110c55ff2ffe872": {
+    "facing": "model",
+    "id": "slash-command-plugin-directory-blocked-reason-managed-setting",
+    "name": "Slash Command: Plugin directory blocked reason - managed setting",
+    "desc": "Reason appended to plugin directory blocked messages: the administrator turned the directory off with disablePluginDirectory in managed settings."
+  },
+  "83cb402f17f7252fa2e997b9fa8a937917dcc8e7": {
+    "facing": "model",
+    "id": "slash-command-plugin-directory-blocked-reason-allowlist",
+    "name": "Slash Command: Plugin directory blocked reason - allowlist",
+    "desc": "Reason appended to plugin directory blocked messages: the administrator marketplace allowlist (strictKnownMarketplaces) does not include the Anthropic Directory."
+  },
+  "4c46db02bb1dabe5f10e73b90fe36c6d38f1f2ed": {
+    "facing": "model",
+    "id": "slash-command-plugin-directory-blocked-reason-blocklist",
+    "name": "Slash Command: Plugin directory blocked reason - blocklist",
+    "desc": "Reason appended to plugin directory blocked messages: the administrator listed it in blockedMarketplaces in managed settings."
+  },
+  "069c564eb16e95ab8136aab50bbe8abfa191c8c1": {
+    "facing": "model",
+    "id": "slash-command-plugin-directory-blocked-reason-policy-limit",
+    "name": "Slash Command: Plugin directory blocked reason - policy limit",
+    "desc": "Reason appended to plugin directory blocked messages: the organization policy does not allow it."
+  },
   "1b6e4d960e510f5b1c701bf81f1f77f3b19b0c7b": { "facing": "ui" },
   "9611cf0aec9ef57b327181d98f978537261b1466": { "facing": "ui" },
   "686cb1b47229875c34ed6d56b14dad7548cd1aab": { "facing": "ui" },
@@ -90855,7 +90730,12 @@
   "13f7ed7191451548170e856cbea5504bbcaf25c6": { "facing": "ui" },
   "58f39a8039c2e48230693eea2158846722dc5ae3": { "facing": "ui" },
   "178b85406cb30b1a320c3f2a3fa2cff20d0d0b62": { "facing": "ui" },
-  "1981f70c8e19c6b94095d54a4a0a51cc46254891": { "facing": "ui" },
+  "1981f70c8e19c6b94095d54a4a0a51cc46254891": {
+    "facing": "model",
+    "id": "slash-command-plugin-marketplace-location-network-drive-reason",
+    "name": "Slash Command: Plugin Marketplace Location Network Drive Reason",
+    "desc": "Refusal reason for a recorded marketplace or plugin location that is on a network drive, has dot segments in its path, or could not be checked."
+  },
   "d6870b3e70240e2af99b9f1ec6c6d3a77520ea16": { "facing": "internal" },
   "d6ea21fba2a32a64c586d5079dbe01717377a00e": {
     "facing": "model",
@@ -90898,7 +90778,12 @@
     "name": "Tool Result: Git bundle HEAD changed while reading branches",
     "desc": "Failure detail spliced into the cloud-upload refusal when HEAD changed while the branches were read, most likely because a branch was switched, renamed or deleted"
   },
-  "ae4c5a045595325f5e2aec00ff58d0d398fea077": { "facing": "ui" },
+  "ae4c5a045595325f5e2aec00ff58d0d398fea077": {
+    "facing": "model",
+    "id": "tool-result-remote-tool-auto-off-reason-consent-unset",
+    "name": "Tool Result: Remote tool auto-off reason (consent unset or declined)",
+    "desc": "Reason appended to the served-call permission-ask note when unattended commands from cloud sessions are off on this computer because the consent question was never answered or was declined, pointing to its Claude Code settings"
+  },
   "29317a591b73d8581f19b072de52b04873a2e085": {
     "facing": "model",
     "id": "tool-result-remote-tool-auto-off-reason-consent-unknown",
@@ -90990,15 +90875,15 @@
   },
   "43b36bd55a734b70939ed5de841b9576464d29db": {
     "facing": "model",
-    "id": "system-reminder-remote-session-git-attribution-none-lead",
-    "name": "System Reminder: Remote Session Git Attribution None Lead",
-    "desc": "Constant opening sentence of the no-attribution remote-session reminder: from here on, do not add attribution lines to git commit messages or pull request descriptions."
+    "id": "system-reminder-remote-session-git-attribution-none",
+    "name": "System Reminder: Remote Session Git Attribution None",
+    "desc": "Opening sentence of the no-attribution remote-session reminder: from here on, do not add attribution lines to git commit messages or pull request descriptions."
   },
   "a74c4e29356bba57693e211ef8569057da52d949": {
     "facing": "model",
-    "id": "system-reminder-remote-session-git-attribution-none",
-    "name": "System Reminder: Remote Session Git Attribution None",
-    "desc": "Remote-session reminder used when no commit/PR attribution lines are configured: do not add attribution lines, and the instruction applies even if CLAUDE.md or memory asks for them."
+    "id": "system-reminder-git-attribution-none-applies-over-claude-md-clause",
+    "name": "System Reminder: Git attribution none applies over CLAUDE.md",
+    "desc": "Tail of the no-attribution reminder: parenthetical stating the instruction applies even if a CLAUDE.md or memory rule asks for attribution lines."
   },
   "0c1e3997eccc26ba2615b5270c930e1507943dc6": { "facing": "ui" },
   "91934ce54f6e2ec26956a4f7b243d49f2d215a77": {
@@ -91326,27 +91211,12 @@
   "e74d39faa50493a5e84ca4bc0ddb3f100d20f6dc": { "facing": "internal" },
   "ef3d540ffe9e85b0b14b1a6b66a1e41ebe5fe2ed": { "facing": "internal" },
   "95f39e1c54d6448e41f28956a9832880411c548b": { "facing": "internal" },
-  "d056efd6d1f79d8ee7c9d78484eb06b9c4d325b2": {
-    "facing": "model",
-    "id": "slash-command-plugin-marketplace-directory-refresh-stale-failed",
-    "name": "Slash Command: Plugin Directory Marketplace Refresh Served Stale",
-    "desc": "Error that the Anthropic Directory marketplace could not be refreshed, with the staleness reason. It appears as a marketplace-not-refreshed note or a could-not-check failure in plugin update and install results."
-  },
-  "6efb71e3efecbc4e9bf8bb5403cbf30d63510901": {
-    "facing": "model",
-    "id": "slash-command-plugin-marketplace-directory-blocked-by-organization",
-    "name": "Slash Command: Plugin Directory Marketplace Blocked By Organization",
-    "desc": "Error that the Anthropic Directory marketplace is blocked by the organization, followed by the policy reason."
-  },
+  "d056efd6d1f79d8ee7c9d78484eb06b9c4d325b2": { "facing": "ui" },
+  "6efb71e3efecbc4e9bf8bb5403cbf30d63510901": { "facing": "ui" },
   "9cbfc4ec91c623d9d2ca2a8e9f272fce9d3f125d": { "facing": "internal" },
   "60391d12f5978391c95131e864cd4fb50198a6f0": { "facing": "ui" },
   "eaee67f24875636eba713b607248da97e417c1c8": { "facing": "internal" },
-  "46a9644ccbced9a115559e095f2d952dd5608052": {
-    "facing": "model",
-    "id": "slash-command-plugin-marketplace-refresh-source-blocked-by-policy",
-    "name": "Slash Command: Plugin Marketplace Refresh Source Blocked By Enterprise Policy",
-    "desc": "Error that a marketplace's registered source is blocked by enterprise policy when refreshing it, naming the source."
-  },
+  "46a9644ccbced9a115559e095f2d952dd5608052": { "facing": "ui" },
   "22da2a333a1f038ee8d0d203c34e722dec75bebb": { "facing": "internal" },
   "09a941fe67ea038cd3727c1f0610eb518398378b": {
     "facing": "model",
@@ -91430,30 +91300,15 @@
     "name": "Slash Command: Plugin Install — Project-Scope Copies Tail",
     "desc": "Tail clause of the uninstall instruction that also names the copies installed at project scope."
   },
-  "4cb7a77087f2ff18da588f74957cf96e7958725c": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-other-marketplace-switch-copy-command",
-    "name": "Slash Command: Plugin Install Other Marketplace Switch Copy Command",
-    "desc": "Tail of the already-installed-from-another-marketplace refusal telling the reader to run the switch command to switch and keep the settings of the one other-marketplace copy."
-  },
-  "6748cf801abc7eaa6dbd899a80d4d71e763daa66": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-other-marketplace-switch-copies-command",
-    "name": "Slash Command: Plugin Install Other Marketplace Switch Copies Command",
-    "desc": "Tail of the already-installed-from-another-marketplace refusal giving the command that switches several other-marketplace copies while keeping one set of plugin settings."
-  },
+  "4cb7a77087f2ff18da588f74957cf96e7958725c": { "facing": "ui" },
+  "6748cf801abc7eaa6dbd899a80d4d71e763daa66": { "facing": "ui" },
   "c96ba55f02f1f86a561b2119d258872616442ab4": {
     "facing": "model",
     "id": "slash-command-plugin-install-other-marketplace-not-all-switchable",
     "name": "Slash Command: Plugin Install Other Marketplace Not All Switchable",
     "desc": "Refusal when several other-marketplace copies are installed and not all can be switched, followed by each copy's own instruction."
   },
-  "0feb1eb448fe62695d503703ca518c2aa762a7fc": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-other-marketplace-switch-all-command",
-    "name": "Slash Command: Plugin Install Other Marketplace Switch All Command",
-    "desc": "Refusal tail telling the reader to run the switch command to switch both or all other-marketplace copies to the new one, keeping one set of plugin settings."
-  },
+  "0feb1eb448fe62695d503703ca518c2aa762a7fc": { "facing": "ui" },
   "d17d986b792c1488cd4ed523803e99d815f74e80": {
     "facing": "model",
     "id": "slash-command-plugin-install-other-marketplace-switch-all-open-plugin-menu",
@@ -91868,144 +91723,29 @@
   "bf93be682790d6a0670c1f0deb0cb90f8a036352": { "facing": "ui" },
   "1953ec46b7337e008ccefcd146ccfd438fb5eb05": { "facing": "ui" },
   "c6c375c3b002f2f02319f80cf250577121d97073": { "facing": "ui" },
-  "c491274475d3a44fb4f6a87ec49b2280b12d55b4": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-directory-unchecked-installed-from-note",
-    "name": "Slash Command: Plugin Install Directory Unchecked Installed From Note",
-    "desc": "Note appended to an install result that the Anthropic Directory could not be checked (with the reason) and that the plugin was installed from another marketplace."
-  },
-  "6421cbfbf2df0dbda971f0efe06ae244477f6d9b": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-directory-turned-off-note",
-    "name": "Slash Command: Plugin Install Directory Turned Off Note",
-    "desc": "Note appended to a plugin-not-found install failure saying the Anthropic Directory was not searched because it is turned off, with the claude plugin marketplace add command to turn it back on."
-  },
-  "cb12a95ed1e2f839de1bcc526bcf160a5db0ee8d": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-directory-not-in-session",
-    "name": "Slash Command: Plugin Install — Directory Not In Session",
-    "desc": "Install refusal returned when the plugin directory marketplace is not available in this session, so the named plugin cannot be found."
-  },
-  "bbd8fa53f82014115fe44cca69841aa02c4472af": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-directory-off",
-    "name": "Slash Command: Plugin Install — Directory Turned Off",
-    "desc": "Install refusal returned when the plugin directory marketplace is off, giving the command that turns it back on."
-  },
-  "89530692a7aba96329956b001b5d771aa31db251": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-not-found-marketplace-not-used",
-    "name": "Slash Command: Plugin Install — Not Found, Marketplace Not Used",
-    "desc": "Install refusal saying the plugin was not found because the named marketplace is not one Claude Code uses, pointing at the warning shown above."
-  },
-  "23aa26c5ac58fb209f42ff5e94a61f7133dd3fab": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-not-found-directory-unchecked-note",
-    "name": "Slash Command: Plugin Install — Not Found, Directory Could Not Be Checked Note",
-    "desc": "Parenthetical appended to the plugin-not-found install refusal saying the plugin directory could not be checked and why."
-  },
-  "81b7d951ee9db04106d74e18c8b66890c9f18be1": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-not-found-may-be-listed-as",
-    "name": "Slash Command: Plugin Install — Not Found, May Be Listed As",
-    "desc": "Clause appended to the plugin-not-found install refusal suggesting up to three listed plugin names whose display name matches what was typed."
-  },
-  "f80202df08b84035f97321e29c8fa687540083f9": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-already-installed-not-switched-needs-fresh-listing",
-    "name": "Slash Command: Plugin Install — Already Installed, Not Switched, Needs Fresh Listing",
-    "desc": "Install refusal saying the plugin is already installed at a scope, nothing was switched, and a switch needs a fresh marketplace listing that could not be read."
-  },
-  "ca96ebc1e820c130c86d46cda6ba9e1a60617835": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-not-switched-directory-unavailable-lead",
-    "name": "Slash Command: Plugin Install — Not Switched, Directory Unavailable Lead",
-    "desc": "Connective clause before the directory-unavailable reason in the already-installed, nothing-switched refusal, saying switching to this copy is allowed only where installing it is."
-  },
-  "723dbd5d0100a058d5dc54c4d688c0f81b648184": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-already-installed-not-switched-reason",
-    "name": "Slash Command: Plugin Install — Already Installed, Not Switched, Reason",
-    "desc": "Install refusal saying the plugin is already installed at a scope and nothing was switched, followed by the specific reason the switch was refused."
-  },
-  "7c7e670d995fbd43d4a16c5f96f1f4f66e526609": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-already-installed-not-switched-other-marketplace",
-    "name": "Slash Command: Plugin Install — Already Installed, Not Switched, Other Marketplace",
-    "desc": "Install refusal saying the plugin is already installed at a scope and nothing was switched, followed by guidance about the copy installed from another marketplace."
-  },
-  "6cb0af1f4f66e7ad13180f7a3ea2aecd854f716a": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-switched-but-disabled-note",
-    "name": "Slash Command: Plugin Install — Switched But Disabled Note",
-    "desc": "Sentence appended to the successful switch result telling the reader the plugin is disabled in their settings and how to enable it."
-  },
-  "4d4cc0e84f99b8017220ae29b1df3a4a90d3fbd9": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-already-installed-listed-at-same-folder-by-other-marketplace",
-    "name": "Slash Command: Plugin Install — Already Installed, Other Marketplace Lists Same Folder",
-    "desc": "Clause in the already-installed result saying this marketplace lists the plugin at the same repository and folder as plugins installed from another marketplace, so it may load more than once."
-  },
-  "87fede9b0e6f4e6f2af72698fba5930fabe5a2f9": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-already-installed-duplicate-copies-note",
-    "name": "Slash Command: Plugin Install — Already Installed, Duplicate Copies Note",
-    "desc": "Composite clause of the already-installed result describing other installed copies of the plugin and other plugins listed at the same repository and folder, with what to uninstall to keep only one."
-  },
-  "b301b218311c0310a91289726c352312e38864b6": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-also-installed-from-note",
-    "name": "Slash Command: Plugin Install — Also Installed From Note",
-    "desc": "Clause saying the plugin is also installed from another marketplace, optionally naming the command that keeps only this copy."
-  },
-  "256e5ffbddcadf6cbc03ffb3361e54e106a3b5fe": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-other-plugins-listed-at-same-folder-note",
-    "name": "Slash Command: Plugin Install — Other Plugins Listed At Same Folder Note",
-    "desc": "Clause saying plugins installed from another marketplace are listed at the same repository and folder as this one, so they may be the same plugin and load more than once."
-  },
-  "e1ee44d29a782fdc34bef728e809fd7597e61e51": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-loads-twice-if-same-plugin",
-    "name": "Slash Command: Plugin Install — Loads Twice If Same Plugin",
-    "desc": "Sentence saying that if the listed copies are the same plugin it loads twice, or more than once."
-  },
-  "ee11558794f19d849628ef79c2c047a22354e687": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-loads-n-times-if-same-plugin",
-    "name": "Slash Command: Plugin Install — Loads N Times If Same Plugin",
-    "desc": "Sentence saying that if the other listed copies are also the same plugin, the plugin loads that many times."
-  },
-  "6d9f134cf0351d58f36012141b599cc26b8147c7": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-not-switched-needs-fresh-listing-resolution",
-    "name": "Slash Command: Plugin Install — Not Switched, Needs Fresh Listing (Resolution)",
-    "desc": "Install refusal saying the named plugin was not switched because a fresh marketplace listing could not be read, from the install-resolution switch."
-  },
-  "651464d89116a47a34ae2cb31211197df472a68a": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-switch-hint-open-plugin-menu",
-    "name": "Slash Command: Plugin Install — Switch Hint, Open Plugin Menu",
-    "desc": "Hint appended to an already-installed-from-another-marketplace install result telling the reader to open the plugin in /plugin, go to Installed and choose Switch."
-  },
-  "0bcc79f0a7658f718b75433a5e1b3887a885a309": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-switch-hint-install-replace",
-    "name": "Slash Command: Plugin Install — Switch Hint, Install With Replace",
-    "desc": "Hint appended to an already-installed-from-another-marketplace install result naming the install flag (--replace) that switches the plugin."
-  },
-  "63d538d964eac34197438e0b18382959fd70d8b1": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-already-installed-turned-off-by-override",
-    "name": "Slash Command: Plugin Install — Already Installed, Turned Off By Override",
-    "desc": "Sentence saying the plugin is turned off by managed settings or the --settings flag and the command changed nothing."
-  },
-  "b37407c9a063a13cad021efd09f20de2c41443f6": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-already-installed-from-other-marketplace-nothing-to-install",
-    "name": "Slash Command: Plugin Install — Already Installed From Other Marketplace, Nothing To Install",
-    "desc": "Success result saying the plugin is already installed from another marketplace's copy, so there is nothing to install, with optional switch or turn-on hints."
-  },
+  "c491274475d3a44fb4f6a87ec49b2280b12d55b4": { "facing": "ui" },
+  "6421cbfbf2df0dbda971f0efe06ae244477f6d9b": { "facing": "ui" },
+  "cb12a95ed1e2f839de1bcc526bcf160a5db0ee8d": { "facing": "ui" },
+  "bbd8fa53f82014115fe44cca69841aa02c4472af": { "facing": "ui" },
+  "89530692a7aba96329956b001b5d771aa31db251": { "facing": "ui" },
+  "23aa26c5ac58fb209f42ff5e94a61f7133dd3fab": { "facing": "ui" },
+  "81b7d951ee9db04106d74e18c8b66890c9f18be1": { "facing": "ui" },
+  "f80202df08b84035f97321e29c8fa687540083f9": { "facing": "ui" },
+  "ca96ebc1e820c130c86d46cda6ba9e1a60617835": { "facing": "ui" },
+  "723dbd5d0100a058d5dc54c4d688c0f81b648184": { "facing": "ui" },
+  "7c7e670d995fbd43d4a16c5f96f1f4f66e526609": { "facing": "ui" },
+  "6cb0af1f4f66e7ad13180f7a3ea2aecd854f716a": { "facing": "ui" },
+  "4d4cc0e84f99b8017220ae29b1df3a4a90d3fbd9": { "facing": "ui" },
+  "87fede9b0e6f4e6f2af72698fba5930fabe5a2f9": { "facing": "ui" },
+  "b301b218311c0310a91289726c352312e38864b6": { "facing": "ui" },
+  "256e5ffbddcadf6cbc03ffb3361e54e106a3b5fe": { "facing": "ui" },
+  "e1ee44d29a782fdc34bef728e809fd7597e61e51": { "facing": "ui" },
+  "ee11558794f19d849628ef79c2c047a22354e687": { "facing": "ui" },
+  "6d9f134cf0351d58f36012141b599cc26b8147c7": { "facing": "ui" },
+  "651464d89116a47a34ae2cb31211197df472a68a": { "facing": "ui" },
+  "0bcc79f0a7658f718b75433a5e1b3887a885a309": { "facing": "ui" },
+  "63d538d964eac34197438e0b18382959fd70d8b1": { "facing": "ui" },
+  "b37407c9a063a13cad021efd09f20de2c41443f6": { "facing": "ui" },
   "3cba95e36eb432bc156f817bd65b5099b25cdd92": {
     "facing": "model",
     "id": "slash-command-plugin-install-already-installed-from-other-marketplace-reenabled",
@@ -92024,406 +91764,76 @@
     "name": "Slash Command: Plugin Install — Marked Manually Installed Note",
     "desc": "Sentence saying the already-installed plugin is now marked as manually installed."
   },
-  "7ccf62c155625c34f31208ed0f5350644b45c34c": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-nothing-switched-no-matching-copy",
-    "name": "Slash Command: Plugin Install — Nothing Switched, No Matching Copy",
-    "desc": "Sentence appended to an install result saying nothing was switched because no installed copy from another marketplace matched this listing."
-  },
-  "3e8fd97ba21d6de06f9759789338f44298a51366": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-switch-data-directory-kept",
-    "name": "Slash Command: Plugin Install — Switch Data Directory Kept",
-    "desc": "Note saying the old plugin's data directory was kept during a switch, why, and whether its contents were copied to the new plugin."
-  },
-  "e4a4f06958d5614e30478fe4bbb53fff313d27f5": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-switch-data-directory-kept-another-plugin-uses-it",
-    "name": "Slash Command: Plugin Install — Switch Data Directory Kept, Another Plugin Uses It",
-    "desc": "Reason clause saying the old data directory was kept because another installed plugin uses it, and whether it was copied."
-  },
-  "84c0ca2313f231e15e1c162a00ea03735eee5a34": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-switch-data-directory-kept-list-unreadable",
-    "name": "Slash Command: Plugin Install — Switch Data Directory Kept, List Unreadable",
-    "desc": "Reason clause saying the list of installed plugins could not be read, so another installed plugin may use the data directory."
-  },
-  "ae324b0299100417b7585826ef86407f9434d7c4": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-switch-data-directory-copied-note",
-    "name": "Slash Command: Plugin Install — Switch Data Directory Copied Note",
-    "desc": "Clause saying the kept data directory's contents were also copied to the new plugin."
-  },
-  "acb00a23b8f2c81c6f290ccb8591315d0a96fb17": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-switch-old-copy-local-record-left-lead",
-    "name": "Slash Command: Plugin Install — Switch, Old Copy Local Record Left Lead",
-    "desc": "Lead of a switch note saying the old plugin copy is still recorded as installed at local scope from the named folders, and why those records were left."
-  },
-  "b867414f05f6ae1034920414a447efcca06178af": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-switch-old-copy-own-local-line-left",
-    "name": "Slash Command: Plugin Install — Switch, Old Copy Own Local Line Left",
-    "desc": "Switch note saying the old copy's line in local settings is still there and how to remove it by hand."
-  },
-  "61ca95a7faa50a88d56853fe5c8aec0fdf8f2cc3": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-switch-old-copy-fix-unreadable-file-switch-off-step",
-    "name": "Slash Command: Plugin Install — Switch, Old Copy Fix Unreadable File Step",
-    "desc": "Step text telling the reader to fix a settings file so it can be read as settings, and switch the plugin off in it if it is on there."
-  },
-  "d440b9766714d391cc104643058229bedeaa19c2": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-switch-old-copy-legacy-local-file-left",
-    "name": "Slash Command: Plugin Install — Switch, Old Copy Legacy Local File Left",
-    "desc": "Switch note saying an older local settings file in the launch folder still switches the old copy on, and what to do about it."
-  },
-  "a28e7cfe70aa9645db1f628552c8fbc6336c707c": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-switch-old-copy-settings-files-not-read-network-path",
-    "name": "Slash Command: Plugin Install — Switch, Old Copy Settings Files Not Read (Network Path)",
-    "desc": "Clause saying settings files were not read because they are on a network path or are links to one, or could not be checked."
-  },
-  "cc45314f3ab5ad882b73236358c57aed5e7c9dfa": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-switch-old-copy-launch-folder-file-entry",
-    "name": "Slash Command: Plugin Install — Switch, Old Copy Launch Folder File Entry",
-    "desc": "List entry naming a settings file in the folder this session was started in, with optional detail."
-  },
-  "a473c599012503e3b999a09d3d2693e8fc18f5e1": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-switch-old-copy-fix-any-file-switch-off-each-step",
-    "name": "Slash Command: Plugin Install — Switch, Old Copy Fix Any File Step",
-    "desc": "Step text telling the reader to fix any settings file that cannot be read and switch the plugin off in each file where it is on."
-  },
-  "d96d30f3e90bde4c4d47735839a00419c6dc6c9d": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-switch-old-copy-settings-files-not-read-left",
-    "name": "Slash Command: Plugin Install — Switch, Old Copy Unread Settings Files Left",
-    "desc": "Switch note saying settings files this session does not read may still switch the old copy on, and what to do first."
-  },
-  "0991482da6fef9fd7af37ed06c7acab9c3b5877b": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-switch-old-copy-settings-files-in-other-folders-left",
-    "name": "Slash Command: Plugin Install — Switch, Old Copy Settings Files In Other Folders Left",
-    "desc": "Switch note saying settings files in other folders may still switch the old copy on, with steps for each folder."
-  },
-  "2da43d4452c0b970012683694f4de6c844e0daa7": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-switch-old-copy-other-folders-switch-off-step",
-    "name": "Slash Command: Plugin Install — Switch, Old Copy Other Folders Switch Off Step",
-    "desc": "Per-folder step telling the reader to switch the plugin off in its settings file, or to fix the file if it cannot be read."
-  },
-  "25290398e7f62f00be4921ad39dcf245c4bb59d6": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-switch-old-copy-other-folders-fix-file-suffix",
-    "name": "Slash Command: Plugin Install — Switch, Old Copy Fix File Suffix",
-    "desc": "Suffix telling the reader to fix the file if it cannot be read as settings."
-  },
-  "89bcfa542c0266f9c7fabdb83a0724000db60d14": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-switch-old-copy-settings-files-unreadable-may-switch-on",
-    "name": "Slash Command: Plugin Install — Switch, Old Copy Settings Files Unreadable",
-    "desc": "Clause saying settings files are there but could not be read, and may still switch the plugin on."
-  },
-  "7e888f1a7b5b17d7eed1507a88ce775d76c3d867": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-switch-old-copy-settings-files-network-path-may-switch-on",
-    "name": "Slash Command: Plugin Install — Switch, Old Copy Settings Files On Network Path",
-    "desc": "Clause saying settings files were not read because they are on a network path or are links to one, and may still switch the plugin on."
-  },
-  "724c56ac6ca7f2f99747111e1a0155af4c0a4de1": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-switch-old-copy-settings-files-not-trusted-may-switch-on",
-    "name": "Slash Command: Plugin Install — Switch, Old Copy Settings Files Not Trusted",
-    "desc": "Clause saying settings files were not read because the workspace is not yet trusted, and may still switch the plugin on."
-  },
-  "51813cb38894a14f513de87504a2296b6b078244": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-switch-old-copy-fix-unreadable-file-switch-off-both-step",
-    "name": "Slash Command: Plugin Install — Switch, Old Copy Fix File And Switch Off In Both Step",
-    "desc": "Step text telling the reader to fix the unreadable settings file and switch the plugin off in both files where it is on."
-  },
-  "c6f43ba937661abd99aa1258816b2c821235b05c": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-switch-old-copy-launch-folder-files-left",
-    "name": "Slash Command: Plugin Install — Switch, Old Copy Launch Folder Files Left",
-    "desc": "Switch note saying files in the launch folder still switch the old copy on, although this session reads its settings from another folder."
-  },
-  "7efb86eb0d9b860055366359970d8475d74e2011": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-switch-old-copy-shared-checkout-file-left",
-    "name": "Slash Command: Plugin Install — Switch, Old Copy Shared Checkout File Left",
-    "desc": "Switch note about a settings file that may be the repository's shared settings file checked out in another folder, with advice for either case."
-  },
-  "e371445de5c5e5228baafc05b1b7acdcde53e322": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-switch-old-copy-other-folder-files-left",
-    "name": "Slash Command: Plugin Install — Switch, Old Copy Other Folder Files Left",
-    "desc": "Switch note about settings files in one other folder that may still switch the old copy on, with first and then steps."
-  },
-  "0a20e1fd35c3b83b26217ab734b0b7e59bd5e837": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-switch-old-copy-secrets-store-keychain",
-    "name": "Slash Command: Plugin Install — Switch, Old Copy Secrets Store (Keychain)",
-    "desc": "Store name used in switch leftover notes: the keychain, or the credentials file in the Claude configuration folder."
-  },
-  "6bfde1b1a8c9a24c8dedf177c3bd40b2e9ee41d4": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-switch-old-copy-secrets-store-credential-manager",
-    "name": "Slash Command: Plugin Install — Switch, Old Copy Secrets Store (Credential Manager)",
-    "desc": "Store name used in switch leftover notes: Windows Credential Manager, or the credentials file in the Claude configuration folder."
-  },
-  "667725cc08d3cd54ab27b09dd2edcd191fe44339": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-switch-old-copy-carried-over-clause",
-    "name": "Slash Command: Plugin Install — Switch, Old Copy Carried Over Clause",
-    "desc": "Parenthetical saying the old copy's settings and stored secrets were also carried over to the new plugin, and what to do with the old copies."
-  },
-  "75d9530426b68c1d3afb9467c0f85f36264d5bbe": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-switch-old-copy-cleanup-unfinished-lead",
-    "name": "Slash Command: Plugin Install — Switch, Old Copy Clean-Up Unfinished Lead",
-    "desc": "Lead saying an old plugin copy has no install record left, but the clean-up after its last uninstall did not finish."
-  },
-  "d7f0a3f0b89c264984188a3498ff56fdfb5b21de": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-switch-old-copy-cleanup-unfinished-held",
-    "name": "Slash Command: Plugin Install — Switch, Old Copy Clean-Up Unfinished (Held)",
-    "desc": "Switch note saying leftover settings, secrets or data may remain and the name may still be tied to its repository, with the command that finishes the clean-up."
-  },
-  "e60204b035ce2cc3da88bb85c47ca3d555bf3824": {
-    "facing": "model",
-    "id": "slash-command-plugin-uninstall-cleanup-unfinished-name-not-tied",
-    "name": "Slash Command: Plugin Uninstall — Clean-Up Unfinished, Name Not Tied",
-    "desc": "Uninstall note saying nothing ties the plugin name to its repository, so a later plugin installed under that name could read what is left."
-  },
-  "8aa098fc85ecf48cf9e91f1322c14500d4e0c11d": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-switch-old-copy-cleanup-unfinished-bindings-unreadable",
-    "name": "Slash Command: Plugin Install — Switch, Old Copy Bindings File Unreadable",
-    "desc": "Switch note saying plugin-directory-bindings.json could not be used, so the plugin name cannot be installed again until it can."
-  },
-  "6c1835e21cfdbed4c89cfef97dae5537632702de": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-switch-old-copy-records-unreadable-after-removal-lead",
-    "name": "Slash Command: Plugin Install — Switch, Old Copy Install Records Unreadable After Removal Lead",
-    "desc": "Lead saying the install records could not be read after Claude Code tried to remove the old copy's record, so it is unknown whether the plugin is still installed, and its saved data was left in place."
-  },
-  "ba741792142fd4eb6277cf49152587323460eb6d": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-switch-old-copy-records-unreadable-held",
-    "name": "Slash Command: Plugin Install — Switch, Old Copy Install Records Unreadable (Held)",
-    "desc": "Switch note saying that if the old copy is installed nowhere any more, the given command removes what it saved and frees its name."
-  },
-  "95af55f1b6fb92105dc4904b24ebf1fd2da8941e": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-switch-bindings-cannot-hold",
-    "name": "Slash Command: Plugin Install — Switch Bindings Cannot Hold",
-    "desc": "Switch refusal reason saying the plugin id is too long for plugin-directory-bindings.json to hold, so nothing would keep the name for its repository."
-  },
-  "4b23170999a4ab5ee1d4ec116e88fd347232a08c": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-switch-both-installed-copy-failed",
-    "name": "Slash Command: Plugin Install — Switch Both Installed, Copy Failed",
-    "desc": "Switch result saying the new plugin is installed but the old copies' option values or secrets could not be copied to it, so nothing was uninstalled and both stay installed until the next switch or uninstall."
-  },
-  "6a9e64e7df8f0419a070161c6dc6387fe36abbbd": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-switch-installed-elsewhere-folder",
-    "name": "Slash Command: Plugin Install — Switch, Installed From Another Folder",
-    "desc": "Switch refusal reason saying the plugin was installed at a scope from a different folder, so Claude Code must be started there to switch."
-  },
-  "bf20382f42b440055f15045c86868cadda765585": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-switch-enabled-plugins-line-not-restored",
-    "name": "Slash Command: Plugin Install — Switch, Enabled Plugins Line Not Restored",
-    "desc": "Switch note naming the enabledPlugins line in a settings file that turned the old plugin off and could not be restored."
-  },
-  "1a79568cd93b79b5d61a2a2c795d2e81f01ff786": {
-    "facing": "model",
-    "id": "slash-command-plugin-switch-not-put-back-enabled-line-restored-copy",
-    "name": "Slash Command: /plugin Switch Item — Enabled Line Not Put Back (Restored Copy)",
-    "desc": "List item in the plugin-switch rollback message naming an enabledPlugins settings line for a restored old copy that could not be put back, with a note when the line that turned it off was left out."
-  },
-  "2f8251eae8570de505866cd1e28fda82cbc6e786": {
-    "facing": "model",
-    "id": "slash-command-plugin-switch-not-put-back-left-out-clause",
-    "name": "Slash Command: /plugin Switch Clause — Left Out Because Off-Line Not Restored",
-    "desc": "Parenthetical on a not-put-back enabledPlugins item saying the line was left out because the line that turned it off could not be put back, and how to enable it in /plugin."
-  },
-  "b3d87d6ef884d36ffe3e219a123adc30273742a7": {
-    "facing": "model",
-    "id": "slash-command-plugin-switch-not-put-back-enabled-line-failed-copy",
-    "name": "Slash Command: /plugin Switch Item — Enabled Line Not Put Back (Copy That Failed)",
-    "desc": "List item in the plugin-switch rollback message naming the enabledPlugins line of the copy whose uninstall failed that could not be put back."
-  },
-  "24b7fa67bfd2b7944f6f7b7e29f915007524617f": {
-    "facing": "model",
-    "id": "slash-command-plugin-switch-not-put-back-options-and-secrets",
-    "name": "Slash Command: /plugin Switch Item — Option Values And Secrets Not Put Back",
-    "desc": "List item in the switch rollback message saying the old copy's option values and stored secrets could not be carried back, and where they are now."
-  },
-  "3536c760e9a2c540c787e7f08af4340dc8529e8b": {
-    "facing": "model",
-    "id": "slash-command-plugin-switch-not-put-back-option-values-new-copy-had-own",
-    "name": "Slash Command: /plugin Switch Item — Option Values Moved Though New Copy Had Own",
-    "desc": "List item in the switch rollback message saying the old copy's option values were moved back although the new copy already had its own."
-  },
-  "d98378e369b79b067b798f19193484ee3a9eaffa": {
-    "facing": "model",
-    "id": "slash-command-plugin-switch-not-put-back-data-directory",
-    "name": "Slash Command: /plugin Switch Item — Data Directory Not Put Back",
-    "desc": "List item in the switch rollback message saying the old copy's data directory could not be put back and where it is now."
-  },
-  "98b7404000a76df92efb3ee99a41866587313535": {
-    "facing": "model",
-    "id": "slash-command-plugin-switch-not-put-back-data-directory-incomplete",
-    "name": "Slash Command: /plugin Switch Item — Data Directory May Be Incomplete",
-    "desc": "List item in the switch rollback message saying the old copy's data directory may be incomplete and where the whole copy is."
-  },
-  "7a301b3cbd936fd3ef272f93d60b8090bc32af87": {
-    "facing": "model",
-    "id": "slash-command-plugin-switch-rollback-could-not-put-back",
-    "name": "Slash Command: /plugin Switch Rollback — Could Not Be Put Back",
-    "desc": "Sentence in the switch failure message listing what could not be put back after a rollback, with an optional note about other uninstalled plugins' saved settings."
-  },
-  "91486e7015f74bc2463bb80aefb454d10070810a": {
-    "facing": "model",
-    "id": "slash-command-plugin-switch-rollback-others-saved-settings-not-back",
-    "name": "Slash Command: /plugin Switch Rollback — Others Saved Settings Did Not Come Back",
-    "desc": "Clause appended to the not-put-back sentence saying the settings and stored secrets saved for other uninstalled plugins did not come back, and why."
-  },
-  "7d6ffc89568e7a3244ff538880cb98d3ebeb1633": {
-    "facing": "model",
-    "id": "slash-command-plugin-switch-rollback-put-back",
-    "name": "Slash Command: /plugin Switch Rollback — Uninstalled Copies Put Back",
-    "desc": "Sentence in the switch failure message saying what had been uninstalled was put back, optionally except the saved settings of other plugins."
-  },
-  "c8ba248d19eb80cc6dcd275bc568b82903c7af4a": {
-    "facing": "model",
-    "id": "slash-command-plugin-switch-rollback-put-back-except-saved",
-    "name": "Slash Command: /plugin Switch Rollback — Put Back Except Saved Settings",
-    "desc": "Clause saying what was put back excludes the settings and stored secrets saved for other plugins, and why."
-  },
-  "ef99a0e497066d301fbfa95b8f8fc9b9930cce85": {
-    "facing": "model",
-    "id": "slash-command-plugin-switch-both-installed-uninstall-failed-finish",
-    "name": "Slash Command: /plugin Switch — Both Installed, Old Copy Uninstall Failed (Finish Switch)",
-    "desc": "Switch failure message when several old copies exist: the new copy is installed but one old copy could not be uninstalled at its scope, with what to uninstall to finish the switch."
-  },
-  "5dfff8df1fd3ac85b8982fb58aa410e33599d7ac": {
-    "facing": "model",
-    "id": "slash-command-plugin-switch-both-installed-uninstall-failed-until",
-    "name": "Slash Command: /plugin Switch — Both Installed, Old Copy Uninstall Failed (Until Uninstalled)",
-    "desc": "Switch failure message for a single old copy: the new copy is installed but the old copy could not be uninstalled at its scope, so both stay installed until it is uninstalled."
-  },
-  "1aaa61b4ff2f07b9654f21bcb9745ee96cf748d9": {
-    "facing": "model",
-    "id": "slash-command-plugin-switch-failed-disable-status-suffix",
-    "name": "Slash Command: /plugin Switch Failure — Disable Status Suffix",
-    "desc": "Wrapper appended to a switch failure message reporting that the new plugin was turned off as the old one was, or that the old one was disabled but the new one could not be."
-  },
-  "d6fc071c069a9f6b1f325ca060ccfcb35e400191": {
-    "facing": "model",
-    "id": "slash-command-plugin-switch-failed-disable-failed-clause",
-    "name": "Slash Command: /plugin Switch Failure — Old Copy Disabled But New Copy Could Not Be",
-    "desc": "Clause in a switch failure message saying the old plugin was disabled but the new one could not be, so the user should disable it in /plugin."
-  },
+  "7ccf62c155625c34f31208ed0f5350644b45c34c": { "facing": "ui" },
+  "3e8fd97ba21d6de06f9759789338f44298a51366": { "facing": "ui" },
+  "e4a4f06958d5614e30478fe4bbb53fff313d27f5": { "facing": "ui" },
+  "84c0ca2313f231e15e1c162a00ea03735eee5a34": { "facing": "ui" },
+  "ae324b0299100417b7585826ef86407f9434d7c4": { "facing": "ui" },
+  "acb00a23b8f2c81c6f290ccb8591315d0a96fb17": { "facing": "ui" },
+  "b867414f05f6ae1034920414a447efcca06178af": { "facing": "ui" },
+  "61ca95a7faa50a88d56853fe5c8aec0fdf8f2cc3": { "facing": "ui" },
+  "d440b9766714d391cc104643058229bedeaa19c2": { "facing": "ui" },
+  "a28e7cfe70aa9645db1f628552c8fbc6336c707c": { "facing": "ui" },
+  "cc45314f3ab5ad882b73236358c57aed5e7c9dfa": { "facing": "ui" },
+  "a473c599012503e3b999a09d3d2693e8fc18f5e1": { "facing": "ui" },
+  "d96d30f3e90bde4c4d47735839a00419c6dc6c9d": { "facing": "ui" },
+  "0991482da6fef9fd7af37ed06c7acab9c3b5877b": { "facing": "ui" },
+  "2da43d4452c0b970012683694f4de6c844e0daa7": { "facing": "ui" },
+  "25290398e7f62f00be4921ad39dcf245c4bb59d6": { "facing": "ui" },
+  "89bcfa542c0266f9c7fabdb83a0724000db60d14": { "facing": "ui" },
+  "7e888f1a7b5b17d7eed1507a88ce775d76c3d867": { "facing": "ui" },
+  "724c56ac6ca7f2f99747111e1a0155af4c0a4de1": { "facing": "ui" },
+  "51813cb38894a14f513de87504a2296b6b078244": { "facing": "ui" },
+  "c6f43ba937661abd99aa1258816b2c821235b05c": { "facing": "ui" },
+  "7efb86eb0d9b860055366359970d8475d74e2011": { "facing": "ui" },
+  "e371445de5c5e5228baafc05b1b7acdcde53e322": { "facing": "ui" },
+  "0a20e1fd35c3b83b26217ab734b0b7e59bd5e837": { "facing": "ui" },
+  "6bfde1b1a8c9a24c8dedf177c3bd40b2e9ee41d4": { "facing": "ui" },
+  "667725cc08d3cd54ab27b09dd2edcd191fe44339": { "facing": "ui" },
+  "75d9530426b68c1d3afb9467c0f85f36264d5bbe": { "facing": "ui" },
+  "d7f0a3f0b89c264984188a3498ff56fdfb5b21de": { "facing": "ui" },
+  "e60204b035ce2cc3da88bb85c47ca3d555bf3824": { "facing": "ui" },
+  "8aa098fc85ecf48cf9e91f1322c14500d4e0c11d": { "facing": "ui" },
+  "6c1835e21cfdbed4c89cfef97dae5537632702de": { "facing": "ui" },
+  "ba741792142fd4eb6277cf49152587323460eb6d": { "facing": "ui" },
+  "95af55f1b6fb92105dc4904b24ebf1fd2da8941e": { "facing": "ui" },
+  "4b23170999a4ab5ee1d4ec116e88fd347232a08c": { "facing": "ui" },
+  "6a9e64e7df8f0419a070161c6dc6387fe36abbbd": { "facing": "ui" },
+  "bf20382f42b440055f15045c86868cadda765585": { "facing": "ui" },
+  "1a79568cd93b79b5d61a2a2c795d2e81f01ff786": { "facing": "ui" },
+  "2f8251eae8570de505866cd1e28fda82cbc6e786": { "facing": "ui" },
+  "b3d87d6ef884d36ffe3e219a123adc30273742a7": { "facing": "ui" },
+  "24b7fa67bfd2b7944f6f7b7e29f915007524617f": { "facing": "ui" },
+  "3536c760e9a2c540c787e7f08af4340dc8529e8b": { "facing": "ui" },
+  "d98378e369b79b067b798f19193484ee3a9eaffa": { "facing": "ui" },
+  "98b7404000a76df92efb3ee99a41866587313535": { "facing": "ui" },
+  "7a301b3cbd936fd3ef272f93d60b8090bc32af87": { "facing": "ui" },
+  "91486e7015f74bc2463bb80aefb454d10070810a": { "facing": "ui" },
+  "7d6ffc89568e7a3244ff538880cb98d3ebeb1633": { "facing": "ui" },
+  "c8ba248d19eb80cc6dcd275bc568b82903c7af4a": { "facing": "ui" },
+  "ef99a0e497066d301fbfa95b8f8fc9b9930cce85": { "facing": "ui" },
+  "5dfff8df1fd3ac85b8982fb58aa410e33599d7ac": { "facing": "ui" },
+  "1aaa61b4ff2f07b9654f21bcb9745ee96cf748d9": { "facing": "ui" },
+  "d6fc071c069a9f6b1f325ca060ccfcb35e400191": { "facing": "ui" },
   "5b0abc9c8d43a3e0c492784d285cb3eec088b1c5": { "facing": "internal" },
-  "1c70fe2034b662428d43a72a05277f51ff62d4e0": {
-    "facing": "model",
-    "id": "slash-command-plugin-switch-settings-left-in-place-list-unreadable",
-    "name": "Slash Command: /plugin Switch Note — Settings Left In Place (List Unreadable)",
-    "desc": "Sentence in the switch success note saying an old plugin's settings and stored secrets were left in place because the installed-plugins list could not be read."
-  },
-  "37ac2435f62ca4909b11ea6522fe96b0951781b3": {
-    "facing": "model",
-    "id": "slash-command-plugin-switch-delete-left-in-place-hint",
-    "name": "Slash Command: /plugin Switch Note — How To Delete What Was Left In Place",
-    "desc": "Sentence in the switch success note introducing how to delete the settings and secrets that were left in place."
-  },
-  "a305ee13c480e6c69af97b4ef1d9a2f2d3201c1a": {
-    "facing": "model",
-    "id": "slash-command-plugin-switch-saved-data-left-in-place-in-use",
-    "name": "Slash Command: /plugin Switch Note — Saved Data Left In Place (In Use Or List Unreadable)",
-    "desc": "Sentence in the switch success note saying an old plugin's saved data was left in place because the installed list could not be read or another plugin uses it."
-  },
+  "1c70fe2034b662428d43a72a05277f51ff62d4e0": { "facing": "ui" },
+  "37ac2435f62ca4909b11ea6522fe96b0951781b3": { "facing": "ui" },
+  "a305ee13c480e6c69af97b4ef1d9a2f2d3201c1a": { "facing": "ui" },
   "5dd35e7e66dff7b11b6fb1063ce59b62a54be646": { "facing": "internal" },
-  "c868a958780c90b6882c839dd1c89153b148c204": {
-    "facing": "model",
-    "id": "slash-command-plugin-switch-saved-data-left-in-place-list-unreadable",
-    "name": "Slash Command: /plugin Switch Note — Saved Data Left In Place (List Unreadable)",
-    "desc": "Sentence in the switch success note saying an old plugin's saved data was left in place because the installed plugin list could not be read."
-  },
+  "c868a958780c90b6882c839dd1c89153b148c204": { "facing": "ui" },
   "f26315c1b4d0ea2bd593252c016eb0ab4f8b1a80": { "facing": "internal" },
-  "ead3b74fa040c90c6993bff3ca0a3405411812d2": {
-    "facing": "model",
-    "id": "slash-command-plugin-switch-also-recorded-folders-removed",
-    "name": "Slash Command: /plugin Switch Note — Records From Other Folders Removed",
-    "desc": "Sentence in the switch success note saying Claude Code had also recorded the old plugin as installed from other folders of the repository and those records were removed too."
-  },
-  "10d4a6ee77e85e0a06c7b210c4bb28c4cfa108ee": {
-    "facing": "model",
-    "id": "slash-command-plugin-switch-still-recorded-local-scope-lead",
-    "name": "Slash Command: /plugin Switch Note — Still Recorded At Local Scope (Lead)",
-    "desc": "Lead sentence of the switch note saying the old plugin is still recorded as installed at local scope from specific folders."
-  },
-  "b8bbc5f51fee50d6a565f6b3cf6dfc2c42032be9": {
-    "facing": "model",
-    "id": "slash-command-plugin-switch-still-recorded-one-folder",
-    "name": "Slash Command: /plugin Switch Note — Still Recorded In One Folder",
-    "desc": "Switch note clause saying the old plugin is still recorded from one folder and how to remove it by starting Claude Code there."
-  },
-  "18880b02a563ca3dd73dc32e011984e91efdc4e5": {
-    "facing": "model",
-    "id": "slash-command-plugin-switch-still-recorded-many-folders",
-    "name": "Slash Command: /plugin Switch Note — Still Recorded In Several Folders",
-    "desc": "Switch note clause saying the old plugin is still recorded from several folders and to start Claude Code in each to uninstall it."
-  },
-  "65b1a2669873f7bd4f3692e228091082d1008338": {
-    "facing": "model",
-    "id": "slash-command-plugin-switch-settings-source-managed",
-    "name": "Slash Command: /plugin Switch Note — Settings Source: Managed Settings",
-    "desc": "Settings-source label in the switch note saying the enabledPlugins line sits in managed settings that only an administrator can change."
-  },
-  "f61264bbdfcd6a536cd31ccd9ebd49052598dd50": {
-    "facing": "model",
-    "id": "slash-command-plugin-switch-settings-source-user-kept-list-unreadable",
-    "name": "Slash Command: /plugin Switch Note — Settings Source: User Settings Kept (List Unreadable)",
-    "desc": "Settings-source label saying the user-settings line was kept because the installed list could not be read."
-  },
-  "147af2e8d58cf342cde7b1fb264201030d7f957d": {
-    "facing": "model",
-    "id": "slash-command-plugin-switch-settings-source-user-kept-other-folder",
-    "name": "Slash Command: /plugin Switch Note — Settings Source: User Settings Kept (Other Folder)",
-    "desc": "Settings-source label saying the user-settings line was kept because the plugin is still recorded as installed from another folder, and what to do there."
-  },
-  "5548b1350658d72ed900c5a25a8fd9be29797775": {
-    "facing": "model",
-    "id": "slash-command-plugin-switch-other-plugin-line-entry",
-    "name": "Slash Command: /plugin Switch Note — Another Plugin Line Entry",
-    "desc": "Entry in the switch note naming an enabledPlugins line that may belong to another installed plugin, with its settings source."
-  },
-  "915c02d2bf41883d7509a2294e840ccf33ec055e": {
-    "facing": "model",
-    "id": "slash-command-plugin-switch-other-plugin-line-list-unreadable-clause",
-    "name": "Slash Command: /plugin Switch Note — Another Plugin Line (List Unreadable Clause)",
-    "desc": "Clause on the another-plugin-line entry saying the installed-plugins list could not be read."
-  },
+  "ead3b74fa040c90c6993bff3ca0a3405411812d2": { "facing": "ui" },
+  "10d4a6ee77e85e0a06c7b210c4bb28c4cfa108ee": { "facing": "ui" },
+  "b8bbc5f51fee50d6a565f6b3cf6dfc2c42032be9": { "facing": "ui" },
+  "18880b02a563ca3dd73dc32e011984e91efdc4e5": { "facing": "ui" },
+  "65b1a2669873f7bd4f3692e228091082d1008338": { "facing": "ui" },
+  "f61264bbdfcd6a536cd31ccd9ebd49052598dd50": { "facing": "ui" },
+  "147af2e8d58cf342cde7b1fb264201030d7f957d": { "facing": "ui" },
+  "5548b1350658d72ed900c5a25a8fd9be29797775": { "facing": "ui" },
+  "915c02d2bf41883d7509a2294e840ccf33ec055e": { "facing": "ui" },
   "84f5f7a9a0eaf2c50a3cf660a8eae07d7848546c": { "facing": "internal" },
-  "c094b3cfc76f311ad8e5ab539daa09c9cfbf5059": {
-    "facing": "model",
-    "id": "slash-command-plugin-switch-disabled-before-clause",
-    "name": "Slash Command: /plugin Switch Note — Disabled Before But New Copy Could Not Be",
-    "desc": "Clause in the switch success note saying the old plugin was disabled before but the new one could not be disabled, so disable it in /plugin."
-  },
-  "93dd8aff2c4f61c3b5f83cff5f20ab296391c63e": {
-    "facing": "model",
-    "id": "slash-command-plugin-blocked-by-organization-marketplace",
-    "name": "Slash Command: /plugin Refusal — Plugin Marketplace Blocked By Organization",
-    "desc": "Refusal saying a plugin comes from a marketplace source blocked by the organization, followed by the policy hint."
-  },
+  "c094b3cfc76f311ad8e5ab539daa09c9cfbf5059": { "facing": "ui" },
+  "93dd8aff2c4f61c3b5f83cff5f20ab296391c63e": { "facing": "ui" },
   "9b1ba93f25101e32b3d34f0558e920093c966c60": {
     "facing": "model",
     "id": "slash-command-plugin-marketplace-unreachable-stale-warning",
@@ -92437,199 +91847,39 @@
     "desc": "Plugin update result saying the plugin was not checked for updates because the marketplace directory is not available in this session."
   },
   "0e405a3e01e42a493dcf7433976489dda8ce3701": { "facing": "internal" },
-  "50a912b64ab3841796e79bc58f2edcadb814bb97": {
-    "facing": "model",
-    "id": "slash-command-plugin-uninstall-name-held-by-installed-plugin",
-    "name": "Slash Command: /plugin Uninstall Refusal — Name Held By Installed Plugin",
-    "desc": "Uninstall refusal saying the plugin is not installed but another installed plugin uses the same data folder, so nothing was removed, with how to free the name."
-  },
-  "79bd5aaf4a07654abea492cb9901721590fd6dc5": {
-    "facing": "model",
-    "id": "slash-command-plugin-uninstall-held-remove-from-project-scope-hint",
-    "name": "Slash Command: /plugin Uninstall Hint — Remove It From Project Scope",
-    "desc": "Closing hint in the name-held uninstall refusal saying to uninstall again with --scope project."
-  },
-  "135aca282eb90af1f28199fa6dc03857dba01dea": {
-    "facing": "model",
-    "id": "slash-command-plugin-uninstall-held-switched-off-then-again-hint",
-    "name": "Slash Command: /plugin Uninstall Hint — Switched Off There, Then Uninstall Again",
-    "desc": "Closing hint in the name-held uninstall refusal saying to uninstall again once the plugin is switched off there, or once the workspace is trusted and Claude Code restarted."
-  },
-  "c45aacae2c4db2331e563e45e41cf08db25c14d5": {
-    "facing": "model",
-    "id": "slash-command-plugin-uninstall-held-still-switched-on",
-    "name": "Slash Command: /plugin Uninstall Refusal — Still Switched On, Nothing Removed",
-    "desc": "Uninstall refusal saying the plugin is still switched on in the listed settings files, so nothing it saved was removed and it can still only be installed from the same repository."
-  },
-  "2531c5da167f051fec27014c5c18dd2b48e87504": {
-    "facing": "model",
-    "id": "slash-command-plugin-uninstall-held-removed-from-enabled-plugins-clause",
-    "name": "Slash Command: /plugin Uninstall Clause — Removed From Enabled Plugins In Scopes",
-    "desc": "Clause in the name-held uninstall refusals saying the plugin was removed from the enabled plugins in the listed settings scopes."
-  },
-  "4a97c89a04eb797428a115a116116de6dca9a67c": {
-    "facing": "model",
-    "id": "slash-command-plugin-uninstall-no-longer-installed-result",
-    "name": "Slash Command: /plugin Uninstall Result — No Longer Installed, Saved Data Cleared",
-    "desc": "Success result when an uninstall targets a plugin that was no longer installed, describing what was removed from enabled plugins and from its saved options, secrets and data."
-  },
-  "3b63c775178b20123929087159bb6b302aa6290a": {
-    "facing": "model",
-    "id": "slash-command-plugin-uninstall-no-longer-installed-removed-enabled-clause",
-    "name": "Slash Command: /plugin Uninstall Clause — Removed From Enabled Plugins",
-    "desc": "Clause in the no-longer-installed uninstall result saying the plugin was removed from the enabled plugins in the listed scopes."
-  },
-  "b25bf9600384cc028fa1013c257275dbd437e60a": {
-    "facing": "model",
-    "id": "slash-command-plugin-uninstall-fix-hint-unlock-keychain",
-    "name": "Slash Command: /plugin Uninstall Hint — Unlock Keychain To Check Secrets",
-    "desc": "Advice item in the uninstall follow-up telling the user to unlock the keychain or allow its prompt so saved secrets can be checked."
-  },
-  "409d10d0781e35d504627b338fbc3656992cce26": {
-    "facing": "model",
-    "id": "slash-command-plugin-uninstall-fix-hint-fix-user-settings-file",
-    "name": "Slash Command: /plugin Uninstall Hint — Fix Unreadable User Settings File",
-    "desc": "Advice item in the uninstall follow-up telling the user to fix their user settings file, which exists but could not be read."
-  },
-  "9f11ee4006daeb299f9b28aa011376eddb2c1961": {
-    "facing": "model",
-    "id": "slash-command-plugin-uninstall-fix-hint-credentials-store-writable",
-    "name": "Slash Command: /plugin Uninstall Hint — Make Credentials Store Writable",
-    "desc": "Advice item in the uninstall follow-up telling the user to make sure the credentials store can be written, and to retry if another Claude Code was using it."
-  },
-  "cb16d980900ff938e5668437948db3209c16e161": {
-    "facing": "model",
-    "id": "slash-command-plugin-uninstall-fix-hint-credential-manager",
-    "name": "Slash Command: /plugin Uninstall Hint — Reach Windows Credential Manager",
-    "desc": "Advice item in the uninstall follow-up telling the user to run from a Claude Code that can reach Windows Credential Manager, since this one cannot tell whether secrets are still saved."
-  },
-  "af5b88485e99dc7efee713066bf808e584497d06": {
-    "facing": "model",
-    "id": "slash-command-plugin-uninstall-fix-hint-remove-plugin-configs-entry",
-    "name": "Slash Command: /plugin Uninstall Hint — Remove pluginConfigs Entry Yourself",
-    "desc": "Advice item saying the plugin's options were still in the user settings file after the delete and the user should take its entry out of pluginConfigs themselves."
-  },
-  "7075220d07706c4560ded0027bebd4a9200fe938": {
-    "facing": "model",
-    "id": "slash-command-plugin-uninstall-held-installable-only-from-same-repository",
-    "name": "Slash Command: /plugin Uninstall Clause — Can Only Be Installed From Same Repository",
-    "desc": "Clause in the uninstall leftover notes saying the plugin can still only be installed from the same repository."
-  },
-  "695816f0ab264abdb331dd10dd191c455833931d": {
-    "facing": "model",
-    "id": "slash-command-plugin-uninstall-leftover-still-switched-on",
-    "name": "Slash Command: /plugin Uninstall Note — Still Switched On, Nothing Saved Removed",
-    "desc": "Uninstall note saying the plugin is still switched on in the listed settings, so nothing it saved was removed, with how to finish removal."
-  },
-  "858ce52e8fb0c06247a2a05e114765d6ad12d447": {
-    "facing": "model",
-    "id": "slash-command-plugin-uninstall-leftover-list-unreadable",
-    "name": "Slash Command: /plugin Uninstall Note — Installed List Unreadable, Nothing Saved Removed",
-    "desc": "Uninstall note saying the list of installed plugins could not be read so nothing the plugin saved was removed, and when to retry."
-  },
-  "b097f5c71120dc6c8c665d965874b134c60cde43": {
-    "facing": "model",
-    "id": "slash-command-plugin-uninstall-leftover-install-record-appeared",
-    "name": "Slash Command: /plugin Uninstall Note — Install Record Appeared During Uninstall",
-    "desc": "Uninstall note saying an install record for the plugin appeared while it was being uninstalled, so nothing it saved was removed."
-  },
-  "008cff7be82dbdd5ee722696c044b36311720d81": {
-    "facing": "model",
-    "id": "slash-command-plugin-uninstall-leftover-then-uninstall-clause",
-    "name": "Slash Command: /plugin Uninstall Clause — Then Uninstall This Plugin Too",
-    "desc": "Clause telling the user to then uninstall the original plugin after uninstalling the plugin that holds its data folder."
-  },
-  "3824019f9fe7d271710ff93732e968e5c814dc7f": {
-    "facing": "model",
-    "id": "slash-command-plugin-uninstall-leftover-data-folder-in-use",
-    "name": "Slash Command: /plugin Uninstall Note — Data Folder Left In Place, Held By Another Plugin",
-    "desc": "Uninstall note saying the plugin's data folder was left in place because another installed plugin uses it, and when it is removed."
-  },
-  "1c0c3ac953ee62616a457b638c939f51788775af": {
-    "facing": "model",
-    "id": "slash-command-plugin-uninstall-leftover-options-secrets-maybe-not-deleted",
-    "name": "Slash Command: /plugin Uninstall Note — Options And Secrets May Not Be Deleted",
-    "desc": "List item saying the plugin's saved options and secrets may not have been deleted."
-  },
-  "f6ca3336c88340ea0c2fce7fe0bccbd9ce03c38f": {
-    "facing": "model",
-    "id": "slash-command-plugin-uninstall-leftover-data-folder-delete-yourself",
-    "name": "Slash Command: /plugin Uninstall Note — Data Folder Not Deleted, Delete It Yourself",
-    "desc": "List item saying the plugin's data folder could not be deleted and the user can delete it themselves."
-  },
-  "5c165c87cd2c408c9bcf90c5399836e584b2374f": {
-    "facing": "model",
-    "id": "slash-command-plugin-uninstall-leftover-data-folder-kept-on-request",
-    "name": "Slash Command: /plugin Uninstall Note — Data Folder Kept On Request",
-    "desc": "Uninstall note saying the data folder was kept at the user's request and how to free the name, which deletes the folder."
-  },
-  "78df32fd0f4d9ff684da944a8d58e23f1da7022c": {
-    "facing": "model",
-    "id": "slash-command-plugin-uninstall-leftover-data-folder-not-deleted-retry",
-    "name": "Slash Command: /plugin Uninstall Note — Data Folder Not Deleted, Retry To Free Name",
-    "desc": "Uninstall note saying the data folder could not be deleted and to retry once it can be."
-  },
-  "cbab1d6a1b1c0bd8dd4549d930b5995589c8e9b4": {
-    "facing": "model",
-    "id": "slash-command-plugin-uninstall-leftover-options-secrets-delete-hint",
-    "name": "Slash Command: /plugin Uninstall Note — Options And Secrets Not Deleted, How To Free Name",
-    "desc": "Uninstall note saying the saved options and secrets could not be deleted, and how to delete them and free the plugin name."
-  },
-  "610c8d0a29287e289459dfbd41c23e0a80e94b0d": {
-    "facing": "model",
-    "id": "slash-command-plugin-uninstall-options-and-data-kept-delete-both",
-    "name": "Plugin uninstall: options and data folder left, delete both",
-    "desc": "Uninstall leftover note for a plugin whose saved options/secrets were not all deleted but whose data folder was kept on request; says how to delete both and free the name."
-  },
-  "7975e6642c5f3cd6daeb1ae2bd587c1155d227a3": {
-    "facing": "model",
-    "id": "slash-command-plugin-uninstall-options-and-data-not-deleted-retry",
-    "name": "Plugin uninstall: options and data folder not deleted, retry",
-    "desc": "Uninstall leftover note for when neither the saved options/secrets nor the data folder could be deleted; says to retry the uninstall once they can be deleted to free the name."
-  },
-  "bdaf9a71ab1362525ea2b4068fde02b3127aae2f": {
-    "facing": "model",
-    "id": "slash-command-plugin-update-dependencies-not-screened",
-    "name": "Plugin update: dependencies installed but not screened",
-    "desc": "Failed update result: the plugin's listed packages installed but the check for links leading outside the plugin could not finish; includes the cause."
-  },
-  "0f086bfe020372ad3a9d7e94b59535d4c2db16ac": {
-    "facing": "model",
-    "id": "slash-command-plugin-update-dependencies-installed-restart",
-    "name": "Plugin update: dependencies installed, restart to apply",
-    "desc": "Update result message saying the plugin's listed packages were installed for the scope and a restart is needed, followed by the underlying update message."
-  },
-  "db9e192310ce1edb953a242e8eeb5555f4b8c085": {
-    "facing": "model",
-    "id": "slash-command-plugin-update-directory-check-failed",
-    "name": "Plugin update: directory could not be checked",
-    "desc": "Failed update result when the Anthropic Directory could not be checked for updates for a plugin; appends the reason."
-  },
-  "d895b067ede81b5d3c717caa706f5fa60548c83d": {
-    "facing": "model",
-    "id": "slash-command-plugin-update-command-source-skipped-background",
-    "name": "Plugin update: command-source skipped by background update",
-    "desc": "Explains that a command-installed plugin is not updated by the background marketplace update, and points to /plugin update or automatic per-session re-resolve instead."
-  },
-  "9468214ea8a7dedba155c4fbea92c8ba9674edd6": {
-    "facing": "model",
-    "id": "slash-command-plugin-update-command-source-disabled",
-    "name": "Plugin update: command source disabled",
-    "desc": "Explains that a command-installed plugin's install command was not run because the plugin is disabled, and tells the user to enable it first."
-  },
-  "b2f250de90ce8c0667b94a4c2a55cb7f43b1c6aa": {
-    "facing": "model",
-    "id": "slash-command-plugin-update-directory-listing-repository-too-long",
-    "name": "Plugin update: directory listing repository address too long",
-    "desc": "Failed update result saying the plugin was not updated because the repository address in its Anthropic Directory listing is too long; only a listing change can fix it."
-  },
+  "50a912b64ab3841796e79bc58f2edcadb814bb97": { "facing": "ui" },
+  "79bd5aaf4a07654abea492cb9901721590fd6dc5": { "facing": "ui" },
+  "135aca282eb90af1f28199fa6dc03857dba01dea": { "facing": "ui" },
+  "c45aacae2c4db2331e563e45e41cf08db25c14d5": { "facing": "ui" },
+  "2531c5da167f051fec27014c5c18dd2b48e87504": { "facing": "ui" },
+  "4a97c89a04eb797428a115a116116de6dca9a67c": { "facing": "ui" },
+  "3b63c775178b20123929087159bb6b302aa6290a": { "facing": "ui" },
+  "b25bf9600384cc028fa1013c257275dbd437e60a": { "facing": "ui" },
+  "409d10d0781e35d504627b338fbc3656992cce26": { "facing": "ui" },
+  "9f11ee4006daeb299f9b28aa011376eddb2c1961": { "facing": "ui" },
+  "cb16d980900ff938e5668437948db3209c16e161": { "facing": "ui" },
+  "af5b88485e99dc7efee713066bf808e584497d06": { "facing": "ui" },
+  "7075220d07706c4560ded0027bebd4a9200fe938": { "facing": "ui" },
+  "695816f0ab264abdb331dd10dd191c455833931d": { "facing": "ui" },
+  "858ce52e8fb0c06247a2a05e114765d6ad12d447": { "facing": "ui" },
+  "b097f5c71120dc6c8c665d965874b134c60cde43": { "facing": "ui" },
+  "008cff7be82dbdd5ee722696c044b36311720d81": { "facing": "ui" },
+  "3824019f9fe7d271710ff93732e968e5c814dc7f": { "facing": "ui" },
+  "1c0c3ac953ee62616a457b638c939f51788775af": { "facing": "ui" },
+  "f6ca3336c88340ea0c2fce7fe0bccbd9ce03c38f": { "facing": "ui" },
+  "5c165c87cd2c408c9bcf90c5399836e584b2374f": { "facing": "ui" },
+  "78df32fd0f4d9ff684da944a8d58e23f1da7022c": { "facing": "ui" },
+  "cbab1d6a1b1c0bd8dd4549d930b5995589c8e9b4": { "facing": "ui" },
+  "610c8d0a29287e289459dfbd41c23e0a80e94b0d": { "facing": "ui" },
+  "7975e6642c5f3cd6daeb1ae2bd587c1155d227a3": { "facing": "ui" },
+  "bdaf9a71ab1362525ea2b4068fde02b3127aae2f": { "facing": "ui" },
+  "0f086bfe020372ad3a9d7e94b59535d4c2db16ac": { "facing": "ui" },
+  "db9e192310ce1edb953a242e8eeb5555f4b8c085": { "facing": "ui" },
+  "d895b067ede81b5d3c717caa706f5fa60548c83d": { "facing": "ui" },
+  "9468214ea8a7dedba155c4fbea92c8ba9674edd6": { "facing": "ui" },
+  "b2f250de90ce8c0667b94a4c2a55cb7f43b1c6aa": { "facing": "ui" },
   "5ad3033fa2965a40b5c15aeb7899cf613d0942a8": { "facing": "internal" },
-  "4302d49fe0a040d3e30ed6fc4ade2166ead33ec8": {
-    "facing": "model",
-    "id": "slash-command-plugin-update-updated-to-listed-commit",
-    "name": "Plugin update: updated to listed commit",
-    "desc": "Success result of a plugin update pinned to a directory-listed commit, naming the commit prefix, optional version and scope, and asking for a restart."
-  },
+  "4302d49fe0a040d3e30ed6fc4ade2166ead33ec8": { "facing": "ui" },
   "4c1e52aa95a3dbdb23b5c85b21f83cf428eb9cf1": { "facing": "internal" },
   "3e412ddae77efb7e67af0b45d2371005896cf6a6": { "facing": "ui" },
   "61d539fa9887199439d432c542ed1790b4d846b8": {
@@ -92873,48 +92123,18 @@
     "name": "Slash Command: /autocompact — auto set but overridden",
     "desc": "Reports that the auto-compact window was set to auto in settings but a higher-priority override is still in effect, with its token size."
   },
-  "66621d68b49663055ce2716b987f545eef9f3a04": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-directory-policy-not-checked",
-    "name": "Slash Command: /plugin install — directory policy not yet checked",
-    "desc": "Reason given when the plugin directory's organization policy has not been fetched yet, so the model retries the install in a moment."
-  },
-  "e60cd0ad96f44eb09c4418cdc1804781677ae0f4": {
-    "facing": "model",
-    "id": "slash-command-plugin-directory-results-page-not-continued",
-    "name": "Slash Command: /plugin directory — results page could not be continued",
-    "desc": "Reason text when the plugin directory rejects a next-page request, so the model should start the listing again from the first page."
-  },
-  "acef0e198417a401bad8a948dad7522e17915054": {
-    "facing": "model",
-    "id": "slash-command-plugin-directory-reason-temporarily-unavailable",
-    "name": "Plugin Directory Reason: Temporarily Unavailable",
-    "desc": "Reason clause for a failed plugin directory search or catalog read (HTTP 429/5xx): it is temporarily unavailable, try again shortly. Interpolated into the directory-unavailable and switch-refusal sentences that /plugin install returns."
-  },
-  "b84a365a229b5672cb40daf6d625433fb116f0af": {
-    "facing": "model",
-    "id": "slash-command-plugin-directory-reason-unreachable-check-network",
-    "name": "Plugin Directory Reason: Unreachable, Check Network",
-    "desc": "Reason clause for a plugin directory search that failed without an HTTP response: it could not be reached, check the network connection. Interpolated into the directory-unavailable and switch-refusal sentences that /plugin install returns."
-  },
+  "66621d68b49663055ce2716b987f545eef9f3a04": { "facing": "ui" },
+  "e60cd0ad96f44eb09c4418cdc1804781677ae0f4": { "facing": "ui" },
+  "acef0e198417a401bad8a948dad7522e17915054": { "facing": "ui" },
+  "b84a365a229b5672cb40daf6d625433fb116f0af": { "facing": "ui" },
   "a7df8f4442a1f13b4dd2b1959801e4151852d416": { "facing": "internal" },
   "6587382ab9c3b2c60e6030647c2066eacb59d0a1": { "facing": "internal" },
   "2ed5b22d85e9f556680943eee9a33f3e99be1c6e": { "facing": "internal" },
   "bb926c2ec5f18bef8d017d5434308ea393714aba": { "facing": "internal" },
   "3bdc0471d15d651bbe4ee7f599c5ed9826498237": { "facing": "internal" },
   "72d6e2e558227e39a0ea39251c79fa2305d2175d": { "facing": "internal" },
-  "5ea83c940143ab86b7453cc19e5d90301084c568": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-directory-listing-not-installable",
-    "name": "Plugin Install: Directory Listing Not Installable",
-    "desc": "Refusal returned by plugin install and update when the plugin is listed in the plugin directory but this Claude Code version cannot install it, followed by the reason."
-  },
-  "2ce5ec9bf33b6472b105d7c83b375c105cf3ee5f": {
-    "facing": "model",
-    "id": "slash-command-plugin-directory-reason-switch-needs-fresh-read",
-    "name": "Plugin Directory Reason: Switch Needs Fresh Read",
-    "desc": "Reason clause that the plugin directory was not asked for a fresh read, which a marketplace switch needs; passed as the detail of the not-switched refusal that /plugin install hands to the model."
-  },
+  "5ea83c940143ab86b7453cc19e5d90301084c568": { "facing": "ui" },
+  "2ce5ec9bf33b6472b105d7c83b375c105cf3ee5f": { "facing": "ui" },
   "964dd373c1cc5fe3c88b695eae5b240cf773a2ab": {
     "facing": "model",
     "id": "tool-description-artifact-files-reuse-from-another",
@@ -92973,9 +92193,9 @@
   },
   "a3859c18adaf660aec7813eb10b50df046d5faa8": {
     "facing": "model",
-    "id": "tool-result-remote-host-approval-undated-channel-expired",
-    "name": "Remote Host Approval: Undated Channel Expired",
-    "desc": "Clause in the stale-approval refusal explaining the approval arrived over a channel with no delivery time, too long after the request was raised to be honoured."
+    "id": "tool-result-remote-host-approval-undated-channel-age-clause",
+    "name": "Tool Result: Remote host approval undated-channel age clause",
+    "desc": "Clause spliced into the stale-approval message when the approval arrived over a channel that carries no delivery time: how long after the request was raised it came."
   },
   "5a4e7290746b2459f6aecd40c1dfb4430d8ab683": {
     "facing": "model",
@@ -93066,7 +92286,12 @@
   "28d8939d8b81282b9b34946baad5b9170ea19968": { "facing": "internal" },
   "4b0d279fd1a6c6f2e762436fb06de9e3bb4ab2b4": { "facing": "internal" },
   "0bcaf70d7989a760943f7f3ca9b799713b82f8fa": { "facing": "internal" },
-  "de029084a66984a8331c441a23bc47a89b48137f": { "facing": "internal" },
+  "de029084a66984a8331c441a23bc47a89b48137f": {
+    "facing": "model",
+    "id": "tool-result-mcp-call-connection-closed-unparseable-message",
+    "name": "Tool Result: MCP call connection closed on unparseable message",
+    "desc": "Error returned to an mcp_call when the MCP server sent a message too large or unparseable and Claude Code closed the connection: no result, the server may have run the tool, check effect before retrying."
+  },
   "699e8e33d4dc3ad4865b4f95ec07e82aa3de25c6": { "facing": "internal" },
   "a1b6d41073214945d70bd873cb51bb1ad3adea5a": { "facing": "ui" },
   "e6f9809240240577c2ec33cef4bb07c739af681e": { "facing": "ui" },
@@ -93169,12 +92394,7 @@
   "12b171692dc8aeabb0d663ee101f44b2ae39e160": { "facing": "ui" },
   "4d1238134d92ee77c0f15a0dc809234c67652e2d": { "facing": "ui" },
   "076dd037d2016d6ac4e5788c2b48763808264619": { "facing": "ui" },
-  "cbfef03c8452b410f9a98155da43e6283475a7ec": {
-    "facing": "model",
-    "id": "tool-result-send-message-approval-required-nothing-sent",
-    "name": "Tool Result: Peer send needs approval, nothing sent",
-    "desc": "Result returned to Claude when an unconditionally-asked peer send was not approved at the permission phase, stating nothing was sent."
-  },
+  "cbfef03c8452b410f9a98155da43e6283475a7ec": { "facing": "internal" },
   "5b0ea44831228cba15c54b8d00e40d8c1a09f4d7": { "facing": "ui" },
   "3459a83615ecc7b14d6aed6bab65e43dcf0a973e": { "facing": "ui" },
   "0b3918d4cc7697c8cf3eed008d122d4927971f1d": { "facing": "ui" },
@@ -93527,7 +92747,12 @@
   "3189c20309b15565ffb5a2eefdb32d6f8ddc0c01": { "facing": "ui" },
   "a8c87838af9936aa41047079f3a8532515bd3e67": { "facing": "ui" },
   "5b00e7c92afc3c63167b17f4ebf4a24af5e930ae": { "facing": "ui" },
-  "d25ce81e8a138bb1db1b3066ffbb4c16b08b05a0": { "facing": "ui" },
+  "d25ce81e8a138bb1db1b3066ffbb4c16b08b05a0": {
+    "facing": "model",
+    "id": "slash-command-plugin-marketplace-built-in-turned-on",
+    "name": "Slash Command: Plugin Marketplace — Built-in Turned On",
+    "desc": "Result of turning the built-in Anthropic Directory marketplace back on: says it is on and that its plugins are back in /plugin → Discover; delivered to the model as /plugin command output."
+  },
   "d7057b5110d33dc96dd3072c2a3918baa2a485b9": { "facing": "ui" },
   "83c3818ac7c290df54687365b66b1005a5838615": { "facing": "ui" },
   "a70595f6c7e404effd20cb1569ac707f64605dcb": { "facing": "ui" },
@@ -93662,5 +92887,34 @@
     "id": "slash-command-autocompact-set-confirmation",
     "name": "Slash Command: /autocompact — Set Confirmation",
     "desc": "/autocompact setter result confirming the new auto-compact window in tokens."
-  }
+  },
+  "87a401012c7587f36761c5689ba305e7f4ff5ce6": {
+    "facing": "model",
+    "id": "slash-command-plugin-marketplace-location-refused-reason",
+    "name": "Slash Command: Plugin Marketplace Location Refused Reason",
+    "desc": "Refusal reason used when a plugin cannot be installed because its marketplace's recorded location was refused; the network-drive / dot-segment / unchecked reason is spliced in."
+  },
+  "657b3dbccc424d3ee473cce86792f8a77b3ae70b": { "facing": "ui" },
+  "83710bacb486863099f143756425b383ae24972f": { "facing": "ui" },
+  "e7d58ca4974935321d8eb840f1cd2242e9c919be": { "facing": "ui" },
+  "628234eab85cf5ba3896ee87a6bc066f4b5c1ac3": { "facing": "ui" },
+  "1c46c8041a6b2ec3a5f29ec854593e0ddd339675": { "facing": "ui" },
+  "0d073fddfd4c234ba0b55367b29a4aa1cf9cca7e": { "facing": "ui" },
+  "3ec65ee6c01f18e720fd63c8728e719a44ee4d94": { "facing": "ui" },
+  "bbcf98e928fa4ea71b9f6a44bdddf7bdd31349ab": { "facing": "ui" },
+  "b4ea740b6748b03bb6c7fdba325d256af68f9960": { "facing": "ui" },
+  "4229c2f34b3297f58bdeb89f451fde06e48df18e": { "facing": "ui" },
+  "1bb7a5c892c346a4574bc862dfd928a771218044": { "facing": "ui" },
+  "19c7b531bca2d3778d8aca46addbc57f8865f494": { "facing": "ui" },
+  "b5abce188e556b2f0bb55b46b51cdedb4403ff7e": { "facing": "ui" },
+  "15e3a98b3e2299e56fa356cba44378187a3580a6": { "facing": "ui" },
+  "7236880bc646ab865efe5570461ef7668540ceb4": { "facing": "ui" },
+  "757bc9ed8c87d9c3d2d9b65d28b259c05645b58b": {
+    "facing": "model",
+    "id": "slash-command-plugin-marketplace-directory-refused-recorded-location",
+    "name": "Slash Command: Plugin Marketplace Directory Refused Recorded Location",
+    "desc": "Plugin load error used when a marketplace directory is refused because its recorded location is on a network drive, has dot segments, or could not be checked; reaches the model through the managed-plugin hook check reported by /model."
+  },
+  "8929c8df053d11c3a9eeb7dcf38a44f56dbc5c64": { "facing": "ui" },
+  "0e1a952a25eceda4959abd5186bfa6baafcd021b": { "facing": "ui" }
 }

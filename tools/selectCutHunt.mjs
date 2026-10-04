@@ -229,7 +229,8 @@ function main() {
   fs.writeFileSync(path.join(huntDir, 'hunt-manifest.json'), JSON.stringify(manifest, null, 1));
   const sizes = manGroups.map(g => g.mdBytes);
   console.log(`cut hunt ${man.version}: ${picked.length} of ${rows.length} keep(s) selected (cap ${cap} = ${share} × keeps; ${rows.filter(r => r.score > 0).length} had a lead), ${groups.length} group(s) of ≤${groupSize}; md ${Math.min(...sizes)}–${Math.max(...sizes)} bytes -> ${huntDir}`);
-  console.log(`workflow args: ${JSON.stringify({ version: man.version, huntDir, groupCount: groups.length, activeSet: c.activeSet })}`);
+  // model and effort have no default: the caller adds them.
+  console.log(`workflow args: ${JSON.stringify({ version: man.version, huntDir, groupCount: groups.length, activeSet: c.activeSet, repoDir, ...(c.remindersDir ? { remindersDir: c.remindersDir } : {}) })}`);
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main();
