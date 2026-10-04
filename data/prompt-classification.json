@@ -91216,7 +91216,12 @@
   "9cbfc4ec91c623d9d2ca2a8e9f272fce9d3f125d": { "facing": "internal" },
   "60391d12f5978391c95131e864cd4fb50198a6f0": { "facing": "ui" },
   "eaee67f24875636eba713b607248da97e417c1c8": { "facing": "internal" },
-  "46a9644ccbced9a115559e095f2d952dd5608052": { "facing": "ui" },
+  "46a9644ccbced9a115559e095f2d952dd5608052": {
+    "facing": "model",
+    "id": "slash-command-plugin-marketplace-refresh-source-blocked-by-policy",
+    "name": "Plugin marketplace refresh: source blocked by enterprise policy",
+    "desc": "Error when refreshing a marketplace whose recorded source is blocked by enterprise policy; embedded in the update result"
+  },
   "22da2a333a1f038ee8d0d203c34e722dec75bebb": { "facing": "internal" },
   "09a941fe67ea038cd3727c1f0610eb518398378b": {
     "facing": "model",
@@ -91746,24 +91751,9 @@
   "0bcc79f0a7658f718b75433a5e1b3887a885a309": { "facing": "ui" },
   "63d538d964eac34197438e0b18382959fd70d8b1": { "facing": "ui" },
   "b37407c9a063a13cad021efd09f20de2c41443f6": { "facing": "ui" },
-  "3cba95e36eb432bc156f817bd65b5099b25cdd92": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-already-installed-from-other-marketplace-reenabled",
-    "name": "Slash Command: Plugin Install — Already Installed From Other Marketplace, Re-Enabled",
-    "desc": "Success result for installing a plugin already installed from another marketplace's copy, saying whether it was re-enabled or nothing was needed, and whether it is now marked as manually installed."
-  },
-  "b78b59a354e916e9f9e3cf840c3ba0013019a022": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-was-disabled-enabled-again",
-    "name": "Slash Command: Plugin Install — Was Disabled, Enabled Again",
-    "desc": "Sentence saying the already-installed plugin was disabled and has been enabled again."
-  },
-  "4061d02f1813f8a6b57c077d167a1b0ad2ab2842": {
-    "facing": "model",
-    "id": "slash-command-plugin-install-marked-manually-installed-note",
-    "name": "Slash Command: Plugin Install — Marked Manually Installed Note",
-    "desc": "Sentence saying the already-installed plugin is now marked as manually installed."
-  },
+  "3cba95e36eb432bc156f817bd65b5099b25cdd92": { "facing": "ui" },
+  "b78b59a354e916e9f9e3cf840c3ba0013019a022": { "facing": "ui" },
+  "4061d02f1813f8a6b57c077d167a1b0ad2ab2842": { "facing": "ui" },
   "7ccf62c155625c34f31208ed0f5350644b45c34c": { "facing": "ui" },
   "3e8fd97ba21d6de06f9759789338f44298a51366": { "facing": "ui" },
   "e4a4f06958d5614e30478fe4bbb53fff313d27f5": { "facing": "ui" },
@@ -92123,7 +92113,12 @@
     "name": "Slash Command: /autocompact — auto set but overridden",
     "desc": "Reports that the auto-compact window was set to auto in settings but a higher-priority override is still in effect, with its token size."
   },
-  "66621d68b49663055ce2716b987f545eef9f3a04": { "facing": "ui" },
+  "66621d68b49663055ce2716b987f545eef9f3a04": {
+    "facing": "model",
+    "id": "slash-command-plugin-install-directory-policy-not-checked-yet",
+    "name": "Slash Command: Plugin directory policy not checked yet",
+    "desc": "Reason that the plugin directory policy could not be checked yet, shown in 'Cannot install ...: the plugin directory is unavailable' when installing"
+  },
   "e60cd0ad96f44eb09c4418cdc1804781677ae0f4": { "facing": "ui" },
   "acef0e198417a401bad8a948dad7522e17915054": { "facing": "ui" },
   "b84a365a229b5672cb40daf6d625433fb116f0af": { "facing": "ui" },

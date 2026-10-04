@@ -92,7 +92,7 @@ describe('packFamilies', () => {
 });
 
 describe('needsVerify', () => {
-  it('scopes model verdicts, continuity and piebald ids, hedges and drafts against a proven model route', () => {
+  it('scopes model verdicts, continuity and piebald ids, hedges and drafts against the traced model route', () => {
     const settled = { verdict: 'ui', resolved: true };
     const open = { verdict: null, resolved: false };
     const v = (facing, evidence) => ({ facing, evidence });
