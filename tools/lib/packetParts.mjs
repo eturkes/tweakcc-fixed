@@ -1,9 +1,12 @@
 // Markdown packets larger than one Read call.
 //
 // Claude Code's Read tool caps a file at 25,000 tokens of content (FileRead
-// maxTokens: `P4r=25000` in the CC 2.1.288 bundle, overridable with
-// CLAUDE_CODE_FILE_READ_MAX_OUTPUT_TOKENS), counted with the API token
-// counter for the session's model. Over the cap a whole-file Read fails or, in
+// maxTokens: `P4r=25000` in the CC 2.1.288 bundle), counted with the API token
+// counter for the session's model. CLAUDE_CODE_FILE_READ_MAX_OUTPUT_TOKENS
+// overrides it per session; here it can only LOWER the cap, because the shell
+// that builds the packets need not be the session whose agents read them (a
+// session launched with a raised cap builds parts another session cannot
+// read). Over the cap a whole-file Read fails or, in
 // 2.1.288, returns only a first page. A packet bigger than that is therefore
 // written as part files, each safely under the cap, and an agent reads every
 // part in ONE message of parallel Read calls: the size of a packet no longer
@@ -32,7 +35,7 @@ export const HEADROOM = 0.9;
 
 export const readCapTokens = (env = process.env) => {
   const v = Number(env.CLAUDE_CODE_FILE_READ_MAX_OUTPUT_TOKENS);
-  return Number.isFinite(v) && v > 0 ? Math.floor(v) : READ_CAP_TOKENS;
+  return Number.isFinite(v) && v > 0 ? Math.min(READ_CAP_TOKENS, Math.floor(v)) : READ_CAP_TOKENS;
 };
 
 export const partByteCap = ({ tokens = readCapTokens() } = {}) =>

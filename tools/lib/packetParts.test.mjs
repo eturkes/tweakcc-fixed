@@ -20,6 +20,8 @@ describe('part byte cap', () => {
     expect(READ_CAP_TOKENS).toBe(25000);
     expect(partByteCap({ tokens: 25000 })).toBe(37125);
     expect(readCapTokens({ CLAUDE_CODE_FILE_READ_MAX_OUTPUT_TOKENS: '10000' })).toBe(10000);
+    // A raised session cap is not trusted: the agents may run without it.
+    expect(readCapTokens({ CLAUDE_CODE_FILE_READ_MAX_OUTPUT_TOKENS: '100000' })).toBe(25000);
     expect(readCapTokens({})).toBe(25000);
   });
 });
