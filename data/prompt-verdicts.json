@@ -52851,5 +52851,100 @@
     "verdict": "wipe-merge",
     "version": "2.1.288",
     "why": "The lead is set in the same branch as the JSON single-line note, which always renders with it and carries the jq probe-then-slice advice, gated correctly on a shell tool. Stage 3 confirmed co-rendering."
+  },
+  "data-settings-auto-compact-window-description": {
+    "verdict": "pristine-keep",
+    "version": "2.1.288",
+    "why": "The sole description the model sees for autoCompactWindow in the settings JSON schema; wiping leaves the key undocumented and saves nothing, since it is conditional and 24 chars."
+  },
+  "slash-command-config-save-to-config-file-failed": {
+    "verdict": "pristine-keep",
+    "version": "2.1.288",
+    "why": "Unique error for /config key=value write failure; tells the model nothing was saved and what to do. Conditional, zero cost when off."
+  },
+  "slash-command-plugin-directory-blocked-reason-allowlist": {
+    "verdict": "pristine-keep",
+    "version": "2.1.288",
+    "why": "Unique allowlist reason with the exact setting name strictKnownMarketplaces; it is the only text explaining that cause."
+  },
+  "slash-command-plugin-directory-blocked-reason-blocklist": {
+    "verdict": "pristine-keep",
+    "version": "2.1.288",
+    "why": "Unique blocklist reason in the directory-blocked switch; carries the setting name blockedMarketplaces."
+  },
+  "slash-command-plugin-directory-blocked-reason-managed-setting": {
+    "verdict": "pristine-keep",
+    "version": "2.1.288",
+    "why": "Unique reason for the managed_setting case with the exact setting name disablePluginDirectory."
+  },
+  "slash-command-plugin-directory-blocked-reason-policy-limit": {
+    "verdict": "pristine-keep",
+    "version": "2.1.288",
+    "why": "Unique policy_limit reason in the directory-blocked switch; costs nothing when off and gives the model the only explanation for this case."
+  },
+  "slash-command-plugin-marketplace-built-in-turned-on": {
+    "verdict": "pristine-keep",
+    "version": "2.1.288",
+    "why": "Opens with slot VAR_0 (the marketplace name), so a wipe would remove words from the rendered sentence rather than a prompt; it also tells the model where the plugins reappeared (/plugin → Discover)."
+  },
+  "slash-command-plugin-marketplace-directory-refused-recorded-location": {
+    "verdict": "pristine-keep",
+    "version": "2.1.288",
+    "why": "Unique plugin load error that prefixes the refusal cause and recovery slots; the slot structure is bundle-bound, so the body stays pristine."
+  },
+  "slash-command-plugin-marketplace-location-network-drive-reason": {
+    "verdict": "pristine-keep",
+    "version": "2.1.288",
+    "why": "Unique error-detail phrase naming the three refusal causes (network drive, '.'/'..' dot segments, unchecked). It is spliced mid-sentence into other messages, so it must stay a clause that completes them; wiping would break the host sentence. Frozen text (enumeration, path-segment literals) kept verbatim."
+  },
+  "slash-command-plugin-marketplace-location-refused-reason": {
+    "verdict": "pristine-keep",
+    "version": "2.1.288",
+    "why": "It is the spliced reason fragment of a plugin-install refusal (function v); the slot carries the network-drive reason. Cutting it would leave the host sentence broken. Unique mechanics, minimal size."
+  },
+  "slash-command-plugin-marketplace-remove-entry-removed-built-in-unchanged": {
+    "verdict": "pristine-keep",
+    "version": "2.1.288",
+    "why": "Result line telling the model a known_marketplaces.json entry was removed, that it was not the built-in marketplace, and that the built-in is untouched. Contains a filename and a state fact the model cannot infer. Tool result, conditionally rendered, so no always-on token cost."
+  },
+  "slash-command-plugin-marketplace-remove-entry-removed-name-reserved": {
+    "verdict": "pristine-keep",
+    "version": "2.1.288",
+    "why": "Result line stating the known_marketplaces.json entry was removed and that the name is reserved. Unique outcome signal in a conditionally-rendered tool result; no savings from cutting."
+  },
+  "slash-command-plugin-marketplace-remove-other-projects-settings-not-checked": {
+    "verdict": "pristine-keep",
+    "version": "2.1.288",
+    "why": "Unique caveat that other projects' settings are not checked and a plugin another project's own settings enable stays on there; it cannot be inferred and prevents a wrong 'fully disabled' belief. Appended (leading space) to the turned-off notes when not insideFailure; kept verbatim."
+  },
+  "slash-command-plugin-marketplace-remove-plugins-turned-off-catalog-unreadable": {
+    "verdict": "pristine-keep",
+    "version": "2.1.288",
+    "why": "Names why plugins were turned off (could not be checked against the listed commit) and gives the exact recovery commands 'claude plugin update <id>, then claude plugin enable <id>' in order. Frozen: ordering word, command names, placeholder. Unique mechanics in a conditional tool result."
+  },
+  "slash-command-plugin-marketplace-remove-plugins-turned-off-commit-mismatch": {
+    "verdict": "pristine-keep",
+    "version": "2.1.288",
+    "why": "States the plugins are not at the commit the built-in marketplace lists and gives the ordered recovery commands (claude plugin update <id>, then claude plugin enable <id>). Frozen command names and ordering; unique, conditionally rendered result."
+  },
+  "system-reminder-git-attribution-none-applies-over-claude-md-clause": {
+    "verdict": "pristine-keep",
+    "version": "2.1.288",
+    "why": "Tail of the no-attribution reminder: the instruction applies even if a CLAUDE.md or memory rule asks for attribution lines. It resolves a conflict with user instructions; without it the model would follow a CLAUDE.md attribution rule against the policy. The body opens with a slot and is part of a template-concatenated sentence, so it is kept verbatim."
+  },
+  "tool-result-mcp-call-connection-closed-unparseable-message": {
+    "verdict": "pristine-keep",
+    "version": "2.1.288",
+    "why": "Unique error contract: tells the model the connection was closed, the mcp_call returned no result, and that the tool may have run so effect must be checked before retrying. Frozen (mcp_call name, before ordering). Conditional error result, nothing to save by cutting."
+  },
+  "tool-result-remote-host-approval-undated-channel-age-clause": {
+    "verdict": "pristine-keep",
+    "version": "2.1.288",
+    "why": "The bundle builds r = a ? dated-clause : this clause and splices it into 'This approval reached ${e} ${r} is honoured for (...)'. Blanking it would delete words from the middle of that sentence, leaving 'reached X is honoured for', so it cannot be wiped; it carries the unique fact that the channel has no delivery time and the 'after the request was raised' ordering, so it is frozen verbatim. NOTE: the deployed override file for tool-result-remote-host-approval-undated-channel-expired currently holds exactly this clause text (id/content swap), which is a realignment item for that id, not a reason to touch this one."
+  },
+  "tool-result-write-permission-ask-plan-mode": {
+    "verdict": "pristine-keep",
+    "version": "2.1.288",
+    "why": "checkPermissions ask message for a file write in plan mode; it is the whole message the model and user see (behavior ask, decisionReason mode plan). Wiping would yield an empty ask message, and there is nothing to trim in one short sentence."
   }
 }
