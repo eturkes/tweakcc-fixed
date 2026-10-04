@@ -3640,7 +3640,11 @@ function loadSlotLiterals() {
 // Dump the candidates and key against what the extractor actually hashes.
 const CANDIDATE_DUMP_PATH = process.env.TWEAKCC_DUMP_CANDIDATES || null;
 let _candidateDumpFd = null;
+// In-memory twin of the dump, used by collectLiteralSites (classify evidence).
+let _siteCollector = null;
+let _collectComposites = false;
 function dumpCandidate(rec) {
+  if (_siteCollector) _siteCollector.push(rec);
   if (!CANDIDATE_DUMP_PATH) return;
   if (_candidateDumpFd === null)
     _candidateDumpFd = fs.openSync(CANDIDATE_DUMP_PATH, 'w');
@@ -3778,17 +3782,21 @@ function rawCacheForms(body) {
   return forms;
 }
 
-function classifyByCache(body) {
-  const cache = loadClassificationCache();
+// Every form classifyByCache hashes, lazily and in lookup order: the raw forms,
+// then their bracket-index-normalized twins.
+function* cacheLookupForms(body) {
   const raw = rawCacheForms(body);
-  for (const form of raw) {
-    const hit = cache[sha1Hex(form)];
-    if (hit) return hit;
-  }
+  yield* raw;
   for (const form of raw) {
     const nf = normalizeBracketIndexes(form);
-    if (nf === form) continue;
-    const hit = cache[sha1Hex(nf)];
+    if (nf !== form) yield nf;
+  }
+}
+
+function classifyByCache(body) {
+  const cache = loadClassificationCache();
+  for (const form of cacheLookupForms(body)) {
+    const hit = cache[sha1Hex(form)];
     if (hit) return hit;
   }
   return null;
@@ -4720,7 +4728,7 @@ function backfillIdenticalSites(stringData, ast, code) {
   }
 }
 
-function extractStrings(filepath, minLength = 500) {
+function extractStrings(filepath, minLength = 500, opts = {}) {
   _gateCandidates.clear(); // idempotent across calls
   const code = fs.readFileSync(filepath, 'utf-8');
   const settingsIndex = buildSettingsIndex(code);
@@ -4748,6 +4756,18 @@ function extractStrings(filepath, minLength = 500) {
     {
       const composite = assembleComposite(node);
       if (composite !== null) {
+        if (_siteCollector && _collectComposites)
+          _siteCollector.push({
+            start: node.start,
+            end: node.end,
+            kind: 'composite',
+            cacheBody: composite.text,
+            fragments: composite.nodes.map(n => ({
+              start: n.start,
+              end: n.end,
+              body: literalOf(n),
+            })),
+          });
         const fragCaptured = composite.nodes.map(frag => {
           const v = literalOf(frag);
           const fragLead = code.slice(
@@ -5062,6 +5082,7 @@ function extractStrings(filepath, minLength = 500) {
     console.log(
       `extractStrings: parsed ${parsed}/${segments.length} bundle modules`
     );
+    if (opts.sitesOnly) return null;
     for (const seg of segments) {
       const segAst = parseModuleSegment(seg);
       if (!segAst) continue;
@@ -5069,6 +5090,7 @@ function extractStrings(filepath, minLength = 500) {
     }
   } else {
     traverse(ast);
+    if (opts.sitesOnly) return null;
     backfillIdenticalSites(stringData, ast, code);
   }
 
@@ -5965,7 +5987,27 @@ if (require.main === module) {
   );
 }
 
+// Every string/template literal the extractor visits, with the exact body it
+// hashes (`cacheBody`) and its absolute range. This is the extractor's own AST
+// view, so a candidate hash maps to its emission sites without re-deriving the
+// template-piece encoding. Runs the traversal pass only. `composites: true`
+// also records each multi-node composite (kind 'composite', the joined text
+// classifyByCache hashes, and its fragments with the body each one is looked
+// up under).
+function collectLiteralSites(filepath, { composites = false } = {}) {
+  _siteCollector = [];
+  _collectComposites = composites;
+  try {
+    extractStrings(filepath, 500, { sitesOnly: true });
+    return _siteCollector;
+  } finally {
+    _siteCollector = null;
+    _collectComposites = false;
+  }
+}
+
 module.exports = extractStrings;
+module.exports.collectLiteralSites = collectLiteralSites;
 module.exports.normalizeIdGroups = normalizeIdGroups;
 // Exported for the test suite (below-floor capture rules — battleproof guarantee).
 module.exports.leadShowsModelFacingContext = leadShowsModelFacingContext;
@@ -5987,6 +6029,9 @@ module.exports._setClassificationCacheForTests =
 // genuinely-ambiguous cross-id) is behavior worth locking down.
 module.exports.mergeWithExisting = mergeWithExisting;
 module.exports.classifyByCache = classifyByCache;
+module.exports.rawCacheForms = rawCacheForms;
+module.exports.cacheLookupForms = cacheLookupForms;
+module.exports.sha1Hex = sha1Hex;
 module.exports.normalizeBracketIndexes = normalizeBracketIndexes;
 module.exports.withBracketAliases = withBracketAliases;
 module.exports.backfillCacheAliases = backfillCacheAliases;
