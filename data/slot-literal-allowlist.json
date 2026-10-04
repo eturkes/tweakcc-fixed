@@ -2167,5 +2167,15 @@
     "name": "Tool Result: PreToolUse hook gave no verdict",
     "desc": "Reason a served-call PreToolUse hook refused the call: it ended in a non-blocking error without having run by contract, so it gave no verdict.",
     "reason": "2.1.288 rewording of \"could not render a verdict\" (r in Kzo() @10359203); same role, so the id is kept"
+  },
+  "1aec4e97e2f50cbc": {
+    "desc": "Conditional tail of the nothing-fetched git stderr note explaining that a url.<base>.insteadOf rule or a second promisor URL accounts for the transport mismatch.",
+    "id": "tool-result-git-lazy-fetch-transport-mismatch-insteadof-note",
+    "label": "TOOL_RESULT_GIT_LAZY_FETCH_TRANSPORT_MISMATCH_NOTHING_FETCHED_VAR_3",
+    "name": "Tool Result: Git Lazy Fetch Transport Mismatch InsteadOf Note",
+    "promptId": "tool-result-git-lazy-fetch-transport-mismatch-nothing-fetched",
+    "reason": "ternary arm rendered into the model-facing nothing-fetched git stderr note; explains the transport mismatch",
+    "text": ", not the transport that URL spells — a url.<base>.insteadOf rule in your git configuration, or a second promisor URL in the repository's, would account for that",
+    "verdict": "catalogue"
   }
 }
