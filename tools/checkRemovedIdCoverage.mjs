@@ -324,6 +324,46 @@ for (const id of [...prevById.keys()].filter(i => !curIds.has(i)).sort()) {
   buckets[bucket].push(id);
   if (to) renamedTo[id] = to;
 }
+// A catalogue correction that rules a shipped id NOT model-facing leaves its
+// text in the bundle, so it reads as IN-BUNDLE forever. The resolution is the
+// classify verdict itself: an `archived` row naming the `facing` it was ruled
+// and the cache `hash` it was recorded under settles the id only while the
+// classification cache still holds that verdict. A row whose verdict was later
+// flipped back to model, or never merged, keeps failing.
+const CLASSIFICATION_CACHE =
+  process.env.TWEAKCC_CLASSIFICATION_CACHE ||
+  path.join(
+    path.dirname(new URL(import.meta.url).pathname),
+    '..',
+    'data',
+    'prompt-classification.json'
+  );
+const classificationCache = fs.existsSync(CLASSIFICATION_CACHE)
+  ? JSON.parse(fs.readFileSync(CLASSIFICATION_CACHE, 'utf8'))
+  : {};
+const NON_MODEL = new Set(['ui', 'internal']);
+const reclassifiedProblem = id => {
+  const row = allowlist[id];
+  if (row?.verdict !== 'archived' || !NON_MODEL.has(row.facing)) return null;
+  if (!/^[0-9a-f]{40}$/.test(row.hash || '')) return 'no 40-hex cache hash';
+  const cached = classificationCache[row.hash]?.facing;
+  if (cached !== row.facing) {
+    return `cache holds ${cached ?? 'no verdict'} for ${row.hash.slice(0, 10)}, row says ${row.facing}`;
+  }
+  return '';
+};
+const reclassified = [];
+const reclassifiedMismatch = [];
+buckets['IN-BUNDLE'] = buckets['IN-BUNDLE'].filter(id => {
+  const problem = reclassifiedProblem(id);
+  if (problem === '') {
+    reclassified.push(id);
+    return false;
+  }
+  if (problem) reclassifiedMismatch.push(`${id}: ${problem}`);
+  return true;
+});
+
 // A no-probe id can only be settled by reading its emission site by hand, so an
 // `archived` verdict recorded after that read is the resolution. Without this
 // the gate had no way to record one and failed every run after the review.
@@ -354,6 +394,7 @@ console.log(
     `${buckets['in-catalogue'].length} renamed/reshuffled, ` +
     `${buckets['in-sidecar'].length} pending classify, ` +
     `${buckets['IN-BUNDLE'].length} STILL IN BUNDLE, ` +
+    `${reclassified.length} ruled non-model, ` +
     `${buckets['no-probe-surface'].length} no probe surface, ` +
     `${buckets.gone.length} truly removed (${removed} need a decision)`
 );
@@ -389,11 +430,17 @@ if (updateAllowlist) {
 // until the text is actually catalogued again, exactly like a `model` verdict
 // in the detection-coverage allowlist: the whole point of the gate is that the
 // prompt is still reaching the model with no id, and writing that down in a
-// file does not change it.
+// file does not change it. The one exception is above: text the classification
+// cache rules non-model is not reaching the model, and the row must name that
+// verdict exactly.
 const unreviewedGone = buckets.gone.filter(
   id => allowlist[id]?.verdict !== 'archived'
 );
 
+if (reclassifiedMismatch.length) {
+  console.log('\nARCHIVED AS NON-MODEL BUT THE CACHE DISAGREES:');
+  for (const line of reclassifiedMismatch) console.log(`  ${line}`);
+}
 if (buckets['IN-BUNDLE'].length) {
   console.log('\nSTILL IN BUNDLE — model-facing text that lost its id:');
   for (const id of buckets['IN-BUNDLE']) console.log(`  ${id}`);

@@ -33,13 +33,14 @@ const write = (name, value) => {
 
 // TWEAKCC_CLASSIFY_DIR points the sidecar scan at an empty directory: reading
 // the real /tmp would let whatever bump is in flight decide the answer.
-const run = (cli, prev, cur, allowlist) => {
+const run = (cli, prev, cur, allowlist, cache) => {
   const opts = {
     encoding: 'utf8',
     env: {
       ...process.env,
       TWEAKCC_CLASSIFY_DIR: path.join(dir, 'empty'),
       ...(allowlist && { TWEAKCC_REMOVED_ID_ALLOWLIST: allowlist }),
+      ...(cache && { TWEAKCC_CLASSIFICATION_CACHE: cache }),
     },
   };
   try {
@@ -174,5 +175,50 @@ describe('checkRemovedIdCoverage: prompts with little literal text', () => {
     expect(out).toMatch(
       /resolved by hand \(archived\): tool-result-fixture-slotless-archived/
     );
+  });
+});
+
+// A shipped id later ruled ui/internal keeps its text in the bundle, so without
+// a resolution it reads as IN-BUNDLE on every run after the correction.
+describe('checkRemovedIdCoverage: ids ruled non-model by a catalogue correction', () => {
+  const ruledUi = {
+    id: 'slash-command-fixture-ruled-ui',
+    version: '2.1.288',
+    pieces: [
+      'The data folder of this plugin was kept because another installed plugin still uses it.',
+    ],
+    identifiers: [],
+    identifierMap: {},
+  };
+  const hash = 'a'.repeat(40);
+  const bundle =
+    'x="The data folder of this plugin was kept because another installed plugin still uses it."';
+
+  it('settles an IN-BUNDLE id whose archived row matches the cached verdict', () => {
+    const out = run(
+      write('cli-ui.js', bundle),
+      write('prev-ui.json', { prompts: [ruledUi] }),
+      write('cur-ui.json', { prompts: [] }),
+      write('allow-ui.json', {
+        'slash-command-fixture-ruled-ui': { verdict: 'archived', facing: 'ui', hash },
+      }),
+      write('cache-ui.json', { [hash]: { facing: 'ui' } })
+    );
+    expect(out).toMatch(/0 STILL IN BUNDLE, 1 ruled non-model/);
+    expect(out).toMatch(/removed-id coverage: PASS/);
+  });
+
+  it('keeps failing when the cache no longer holds the non-model verdict', () => {
+    const out = run(
+      write('cli-ui2.js', bundle),
+      write('prev-ui2.json', { prompts: [ruledUi] }),
+      write('cur-ui2.json', { prompts: [] }),
+      write('allow-ui2.json', {
+        'slash-command-fixture-ruled-ui': { verdict: 'archived', facing: 'ui', hash },
+      }),
+      write('cache-ui2.json', { [hash]: { facing: 'model', id: 'x' } })
+    );
+    expect(out).toMatch(/CACHE DISAGREES[\s\S]*slash-command-fixture-ruled-ui/);
+    expect(out).toMatch(/removed-id coverage: FAIL/);
   });
 });
