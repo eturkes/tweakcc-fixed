@@ -38,7 +38,7 @@ export function scopeReasons(v, cand) {
   if (cand && cand.piebaldExact) why.push('piebald id');
   if (HEDGE.test(v.evidence || '')) why.push('hedged evidence');
   const r = (cand && cand.route) || {};
-  if (r.verdict === 'model' && v.facing !== 'model') why.push('draft contradicts a proven model route');
+  if (r.verdict === 'model' && v.facing !== 'model') why.push('draft contradicts the traced model route');
   return why;
 }
 

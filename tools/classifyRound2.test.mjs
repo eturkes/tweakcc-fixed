@@ -263,7 +263,7 @@ describe('writeClassifyVerdicts', () => {
     expect(file.verdicts[0].id).toBeNull();
     const md = fs.readFileSync(path.join(dir, 'verify-00.md'), 'utf8');
     expect(md).toContain('### k02 body b');
-    expect(md).toContain('draft contradicts a proven model route');
+    expect(md).toContain('draft contradicts the traced model route');
     expect(md).not.toContain('### k01');
   });
 
