@@ -116,20 +116,47 @@ const O = byId(OURS),
   P = byId(PIEB);
 
 const core = await loadMatcherCore();
+// Both catalogues store the version and build stamp as placeholders; the
+// pattern fills upstream's, so ours must carry the same values to match.
+const BUILD_TIME_PROBE = '2000-01-01T00:00:00Z';
+const fillStamps = piece =>
+  piece
+    .replace(/<<CCVERSION>>/g, OURS.version)
+    .replace(/<<BUILD_TIME>>/g, BUILD_TIME_PROBE);
+const sameIdentifiers = (ours, upstream) =>
+  JSON.stringify(ours.identifiers || []) ===
+  JSON.stringify(upstream.identifiers || []);
+// Upstream slot -> our slot, read by matching upstream's pieces against our
+// body. When the text differs (upstream published for another build, or we
+// cut the prompt differently) but the identifiers arrays are equal, the slots
+// are compared label for label, as before slot alignment existed. `how` says
+// which; null means neither applies.
 const alignedSlots = (ours, upstream) => {
   if (!ours) return null;
   const prefix = '__TWEAKCC_AUDIT_SLOT_';
   const content = ours.pieces
     .map(
       (piece, i) =>
-        piece +
+        fillStamps(piece) +
         (i < ours.identifiers.length ? `${prefix}${ours.identifiers[i]}__` : '')
     )
     .join('');
   const { names, marked } = bakedPositions(core, upstream.pieces);
-  const { pattern, roles } = scannerPattern(core, marked, names, OURS.version);
+  const { pattern, roles } = scannerPattern(
+    core,
+    marked,
+    names,
+    OURS.version,
+    BUILD_TIME_PROBE
+  );
   const match = new RegExp(pattern, 's').exec(content);
-  if (!match) return null;
+  if (!match) {
+    if (!sameIdentifiers(ours, upstream)) return null;
+    const slots = {};
+    for (const label of upstream.identifiers || [])
+      slots[String(label)] = String(label);
+    return { slots, how: 'identifiers' };
+  }
   const links = new Map();
   let occurrence = 0;
   roles.forEach((role, group) => {
@@ -149,10 +176,13 @@ const alignedSlots = (ours, upstream) => {
     counts.set(target, (counts.get(target) || 0) + 1);
   for (const [slot, target] of Object.entries(slots))
     if (counts.get(target) > 1) delete slots[slot];
-  return slots;
+  return { slots, how: 'aligned' };
 };
 
 const misbinds = [];
+const skipped = [];
+let compared = 0;
+let byIdentifiers = 0;
 for (const f of fs.readdirSync(overridesDir)) {
   if (!f.endsWith('.md')) continue;
   const id = f.slice(0, -3);
@@ -177,13 +207,17 @@ for (const f of fs.readdirSync(overridesDir)) {
   // version. That is a false positive on a gate whose whole value is that a hit
   // means something, so skip the prompt and say so, rather than adding a
   // permanent per-id silencer that would also hide a real regression later.
-  const slots = alignedSlots(O[id], P[id]);
-  if (!slots) {
+  const aligned = alignedSlots(O[id], P[id]);
+  if (!aligned) {
+    skipped.push(id);
     console.log(
       `mis-bind audit: slot layout differs from upstream (${(O[id]?.identifiers || []).length} vs ${(P[id]?.identifiers || []).length} slots) — not comparable: ${id}`
     );
     continue;
   }
+  const { slots, how } = aligned;
+  compared++;
+  if (how === 'identifiers') byIdentifiers++;
   const our = invert(O[id]?.identifierMap);
   const pieb = invert(P[id]?.identifierMap);
   for (const name of used) {
@@ -203,9 +237,24 @@ for (const f of fs.readdirSync(overridesDir)) {
   }
 }
 
+// A skipped prompt is not audited at all, so a mass skip would read as a clean
+// pass. Measured on the 2.1.296 catalogue: 2 skips of 258 against upstream's
+// 2.1.296 and 2.1.295, 7 of 242 against its 2.1.294 (the driver falls back to
+// upstream's newest release), 10 of 5251 against our own 2.1.295 and 54 of
+// 4952 against 2.1.292. The floor covers the handful of prompts the two
+// extractors cut differently; 2% leaves headroom over the worst real ratio
+// while any broken matcher or wrong reference skips far more.
+const skipLimit = Math.max(10, Math.ceil(compared * 0.02));
+const coverage = `${compared} compared (${byIdentifiers} by identifiers), ${skipped.length} not comparable (limit ${skipLimit})`;
+if (skipped.length > skipLimit) {
+  console.error(
+    `mis-bind audit: ${skipped.length} prompts not comparable to the upstream slot layout, over the limit of ${skipLimit} (${coverage}). Check the upstream reference version and the matcher before trusting this gate.`
+  );
+  process.exit(1);
+}
 if (misbinds.length) {
   console.error(
-    `MIS-BINDS: ${misbinds.length} (override placeholder at wrong slot)`
+    `MIS-BINDS: ${misbinds.length} (override placeholder at wrong slot; ${coverage})`
   );
   for (const m of misbinds) console.error('  ' + m);
   console.error(
@@ -214,5 +263,5 @@ if (misbinds.length) {
   process.exit(1);
 }
 console.log(
-  'mis-bind audit: 0 (every used placeholder sits at the upstream slot)'
+  `mis-bind audit: 0 (every used placeholder sits at the upstream slot; ${coverage})`
 );

@@ -15,19 +15,25 @@ beforeEach(() => {
   fs.mkdirSync(path.join(dir, 'set'));
 });
 afterEach(() => fs.rmSync(dir, { recursive: true, force: true }));
+// `ours` and `upstream` are one fixture prompt, or arrays of prompts with ids
+// and `body` maps each id to its override.
 const run = (ours, upstream, body) => {
-  const write = (name, prompt) => {
+  const write = (name, prompts) => {
     const file = path.join(dir, name);
     fs.writeFileSync(
       file,
       JSON.stringify({
         version: '2.1.296',
-        prompts: [{ id: 'fixture', ...prompt }],
+        prompts: Array.isArray(prompts)
+          ? prompts
+          : [{ id: 'fixture', ...prompts }],
       })
     );
     return file;
   };
-  fs.writeFileSync(path.join(dir, 'set', 'fixture.md'), body);
+  const bodies = typeof body === 'string' ? { fixture: body } : body;
+  for (const [id, text] of Object.entries(bodies))
+    fs.writeFileSync(path.join(dir, 'set', `${id}.md`), text);
   return spawnSync(
     process.execPath,
     [
@@ -55,7 +61,7 @@ describe('auditMisbinds', () => {
     const r = run(promoted, before, '${TABLE} ${TAIL} ${CONVERT}');
     expect(r.status).toBe(0);
     expect(r.stdout).toContain('mis-bind audit: 0');
-    expect(r.stdout).not.toContain('not comparable');
+    expect(r.stdout).not.toContain('— not comparable:');
   });
 
   it('catches a carried label at a promoted slot instead of its old slot', () => {
@@ -117,17 +123,89 @@ describe('auditMisbinds', () => {
       '${KEY} ours=slot1 upstream=slot1 has no unique current expression slot'
     );
     expect(r.stderr).toContain('removed or ambiguous binding');
-    expect(r.stdout).not.toContain('not comparable');
+    expect(r.stdout).not.toContain('— not comparable:');
   });
 
-  it('skips prompt text that belongs to a different release', () => {
+  it('compares changed text label for label when the identifiers agree', () => {
+    const changed = {
+      ...before,
+      pieces: ['Changed text ${', '} finish ${', '}'],
+    };
+    const ok = run(changed, before, '${TABLE}');
+    expect(ok.status).toBe(0);
+    expect(ok.stdout).not.toContain('— not comparable:');
+    expect(ok.stdout).toContain('1 compared (1 by identifiers)');
+    const bad = run(
+      { ...changed, identifierMap: { 0: 'TAIL', 1: 'TABLE' } },
+      before,
+      '${TABLE}'
+    );
+    expect(bad.status).toBe(1);
+    expect(bad.stderr).toContain('${TABLE} ours=slot1 upstream=slot0');
+  });
+
+  it('skips changed text whose identifiers differ, and counts it', () => {
     const r = run(
-      { ...before, pieces: ['Changed text ${', '} finish ${', '}'] },
+      {
+        pieces: ['Changed text ${', '} finish ${', '} and ${', '}'],
+        identifiers: [0, 1, 2],
+        identifierMap: { 0: 'TABLE', 1: 'TAIL', 2: 'NEW' },
+      },
       before,
       '${TABLE}'
     );
     expect(r.status).toBe(0);
-    expect(r.stdout).toContain('not comparable');
+    expect(r.stdout).toContain('not comparable: fixture');
+    expect(r.stdout).toContain(
+      '0 compared (0 by identifiers), 1 not comparable'
+    );
+  });
+
+  it('matches a body that carries the version and build placeholders', () => {
+    const stamped = {
+      pieces: [
+        'VERSION:"<<CCVERSION>>",BUILD_TIME:"<<BUILD_TIME>>" ${',
+        '} then ${',
+        '} done',
+      ],
+      identifiers: [1, 0],
+      identifierMap: { 0: 'TAIL', 1: 'TABLE' },
+    };
+    const r = run(
+      stamped,
+      {
+        ...stamped,
+        identifiers: [0, 1],
+        identifierMap: { 0: 'TABLE', 1: 'TAIL' },
+      },
+      '${TABLE}'
+    );
+    expect(r.status).toBe(0);
+    expect(r.stdout).toContain('1 compared (0 by identifiers)');
+  });
+
+  it('fails when too many prompts are not comparable', () => {
+    const prompts = n =>
+      Array.from({ length: n }, (_, i) => ({
+        id: `p${i}`,
+        pieces: [`Prompt ${i} ours \${`, '} end'],
+        identifiers: [0],
+        identifierMap: { 0: 'TABLE' },
+      }));
+    const ours = prompts(11);
+    const upstream = ours.map(p => ({
+      ...p,
+      pieces: [`Prompt upstream ${p.id} \${`, '} mid ${', '} end'],
+      identifiers: [0, 1],
+      identifierMap: { 0: 'TABLE', 1: 'TAIL' },
+    }));
+    const bodies = Object.fromEntries(ours.map(p => [p.id, '${TABLE}']));
+    const r = run(ours, upstream, bodies);
+    expect(r.status).toBe(1);
+    expect(r.stderr).toContain('11 prompts not comparable');
+    expect(r.stderr).toContain('limit of 10');
+    const under = run(ours.slice(0, 10), upstream.slice(0, 10), bodies);
+    expect(under.status).toBe(0);
   });
 
   it('does not mistake an escaped placeholder for a live binding', () => {
@@ -147,6 +225,6 @@ describe('auditMisbinds', () => {
     );
     expect(r.status).toBe(1);
     expect(r.stderr).toContain('removed or ambiguous binding');
-    expect(r.stdout).not.toContain('not comparable');
+    expect(r.stdout).not.toContain('— not comparable:');
   });
 });

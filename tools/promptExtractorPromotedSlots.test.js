@@ -396,6 +396,107 @@ describe('slot identity across extractor shapes', () => {
     expect(got.id).toBe('tool-result-fixture-inserted-slot');
     expect(got.identifierMap).toEqual({ 1: 'A', 2: 'B' });
   });
+
+  it('leaves names unnamed when an edit could have removed any of several identical slots', () => {
+    const F = ' and then the same filler sentence follows here ';
+    const got = merge(
+      itemFrom('x=`' + LONG + F + '${b}' + F + '${c}' + F + 'end`'),
+      {
+        id: 'tool-result-fixture-identical-slots',
+        name: 'Tool Result: fixture identical slots',
+        description: 'fixture',
+        pieces: [
+          LONG + F + '${',
+          '}' + F + '${',
+          '}' + F + '${',
+          '}' + F + 'end',
+        ],
+        identifiers: [0, 1, 2],
+        identifierMap: { 0: 'FIRST', 1: 'SECOND', 2: 'THIRD' },
+        version: '2.1.200',
+      }
+    );
+    expect(got.id).toBe('tool-result-fixture-identical-slots');
+    for (const name of ['FIRST', 'SECOND', 'THIRD'])
+      expect(Object.values(got.identifierMap)).not.toContain(name);
+  });
+});
+
+describe('alignedIdentifierMap', () => {
+  const F = ' and then the same filler sentence follows here ';
+  const item = (parts, map) => ({
+    pieces: parts,
+    identifiers: parts.slice(1).map((_, i) => i),
+    ...(map ? { identifierMap: map } : {}),
+  });
+
+  it('carries no name along a pairing that another equally good one contradicts', () => {
+    const old = item(
+      ['Start' + F + '${', '}' + F + '${', '}' + F + '${', '}' + F],
+      {
+        0: 'FIRST',
+        1: 'SECOND',
+        2: 'THIRD',
+      }
+    );
+    const fresh = item(['Start' + F + '${', '}' + F + '${', '}' + F]);
+    expect(ex.alignedIdentifierMap(old, fresh)).toEqual({
+      map: {},
+      complete: false,
+    });
+  });
+
+  it('still names the slot whose own surroundings tell it apart', () => {
+    const old = item(
+      ['Start' + F + '${', '}' + F + '${', '}' + F + '${', '} end.'],
+      {
+        0: 'FIRST',
+        1: 'SECOND',
+        2: 'THIRD',
+      }
+    );
+    const fresh = item(['Start' + F + '${', '}' + F + '${', '} end.']);
+    expect(ex.alignedIdentifierMap(old, fresh).map).toEqual({ 1: 'THIRD' });
+  });
+
+  it('pairs a lone slot whose text changed on both sides between paired neighbours', () => {
+    const old = item(
+      [
+        'Run the tool named ${',
+        '} before you edit any file, then ${',
+        '} after.',
+      ],
+      { 0: 'TOOL_NAME', 1: 'OTHER' }
+    );
+    const fresh = item([
+      'Always invoke the tool called ${',
+      '} prior to touching files, then ${',
+      '} after.',
+    ]);
+    expect(ex.alignedIdentifierMap(old, fresh)).toEqual({
+      map: { 0: 'TOOL_NAME', 1: 'OTHER' },
+      complete: false,
+    });
+  });
+
+  it('does not guess across a rewritten gap holding more than one slot', () => {
+    const old = item(
+      [
+        'Alpha one ${',
+        '} beta two, written out at some length, ${',
+        '} gamma three, also written out at length, ${',
+        '} and the same closing tail.',
+      ],
+      { 0: 'A', 1: 'B', 2: 'C' }
+    );
+    const fresh = item([
+      'Delta four ${',
+      '} epsilon five, now phrased quite differently, ${',
+      '} zeta six, phrased differently as well, ${',
+      '} and the same closing tail.',
+    ]);
+    expect(ex.alignedIdentifierMap(old, fresh).map).toEqual({ 2: 'C' });
+  });
 });
 
 // 2.8.40 shipped tool-description-projects with one slot, the memory flag, as

@@ -5594,6 +5594,16 @@ function slotAnchors(pieces, sep, norm) {
 
 // Order-preserving pairing of `oldItem`'s slots with `shape`'s, maximizing the
 // number of matching surroundings (a pair needs at least one side equal).
+//
+// A name moves only along a pair that every optimal pairing makes. Repeated
+// surroundings tie several pairings (three slots in identical sentences, one
+// deleted, leave no way to tell which went), and picking one of them binds
+// names to the wrong variables with nothing to show for it; an unnamed slot is
+// caught by the orphan check instead. Between two such pairs (or a pair and an
+// end of the text), a lone old slot facing a lone new slot is the same slot
+// with its text rewritten on both sides, so it pairs too. A wider gap could be
+// one slot deleted and another inserted, so it stays unnamed. `complete`
+// counts only the evidenced pairs.
 function alignSlots(oldItem, shape, norm) {
   const all = [...(oldItem.pieces || []), ...shape.pieces];
   let sep = '\u0000';
@@ -5604,27 +5614,59 @@ function alignSlots(oldItem, shape, norm) {
   const w = (i, j) => (A[i][0] === B[j][0]) + (A[i][1] === B[j][1]);
   const m = A.length;
   const n = B.length;
-  const dp = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+  const table = () =>
+    Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+  // suffix[i][j]: best score of old i.. against shape j..; prefix[i][j]: best
+  // of old ..i-1 against shape ..j-1.
+  const suffix = table();
   for (let i = m - 1; i >= 0; i--)
     for (let j = n - 1; j >= 0; j--) {
       const wij = w(i, j);
-      dp[i][j] = Math.max(
-        dp[i + 1][j],
-        dp[i][j + 1],
-        wij ? wij + dp[i + 1][j + 1] : 0
+      suffix[i][j] = Math.max(
+        suffix[i + 1][j],
+        suffix[i][j + 1],
+        wij ? wij + suffix[i + 1][j + 1] : 0
       );
     }
-  const pairs = [];
-  for (let i = 0, j = 0; i < m && j < n; ) {
-    const wij = w(i, j);
-    if (wij && dp[i][j] === wij + dp[i + 1][j + 1]) {
-      pairs.push([i, j]);
-      i++;
-      j++;
-    } else if (dp[i][j] === dp[i + 1][j]) i++;
-    else j++;
+  const prefix = table();
+  for (let i = 1; i <= m; i++)
+    for (let j = 1; j <= n; j++) {
+      const wij = w(i - 1, j - 1);
+      prefix[i][j] = Math.max(
+        prefix[i - 1][j],
+        prefix[i][j - 1],
+        wij ? wij + prefix[i - 1][j - 1] : 0
+      );
+    }
+  const best = suffix[0][0];
+  const certain = [];
+  for (let i = 0; i < m; i++) {
+    // Some optimal pairing leaves old slot i unpaired: it splits at a column.
+    let canSkip = false;
+    for (let j = 0; j <= n && !canSkip; j++)
+      canSkip = prefix[i][j] + suffix[i + 1][j] === best;
+    if (canSkip) continue;
+    const partners = [];
+    for (let j = 0; j < n; j++) {
+      const wij = w(i, j);
+      if (wij && prefix[i][j] + wij + suffix[i + 1][j + 1] === best)
+        partners.push(j);
+    }
+    if (partners.length === 1) certain.push([i, partners[0]]);
   }
-  return { pairs, score: dp[0][0], complete: pairs.length === m && m === n };
+  const pairs = [];
+  const bounds = [[-1, -1], ...certain, [m, n]];
+  for (let k = 1; k < bounds.length; k++) {
+    const [pi, pj] = bounds[k - 1];
+    const [qi, qj] = bounds[k];
+    if (qi - pi === 2 && qj - pj === 2) pairs.push([pi + 1, pj + 1]);
+    if (k < bounds.length - 1) pairs.push(bounds[k]);
+  }
+  return {
+    pairs,
+    score: best,
+    complete: certain.length === m && m === n,
+  };
 }
 
 // `oldItem`'s identifierMap for `newItem`'s slots when the bodies differ (a
@@ -5632,7 +5674,8 @@ function alignSlots(oldItem, shape, norm) {
 // their surroundings in whichever shape fits the old entry best, and names
 // move only along those pairs. Shapes that fit equally well keep only the
 // names they agree on. `complete` is whether every old slot and every slot of
-// the chosen shape paired.
+// the chosen shape paired on matching surroundings, so a partial map names
+// only slots it is sure of and the rest are left for the synthetic fill.
 function alignedIdentifierMap(oldItem, newItem, norm = x => x) {
   const shapes = itemShapes(newItem);
   const fits = shapes.map(sh => ({ sh, ...alignSlots(oldItem, sh, norm) }));
