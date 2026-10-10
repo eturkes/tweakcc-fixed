@@ -456,6 +456,13 @@ function flowGroups(nodes, parents, base) {
     }
     return null;
   };
+  // Scope nodes keyed by identity: offsets collide (a function at 0 and its
+  // Program both start at 0).
+  const scopeIds = new Map();
+  const scopeId = scope => {
+    if (!scopeIds.has(scope)) scopeIds.set(scope, scopeIds.size);
+    return scopeIds.get(scope);
+  };
   const add = (map, scope, name, expr) => {
     if (!scope) return;
     if (!map.has(scope)) map.set(scope, new Map());
@@ -473,6 +480,8 @@ function flowGroups(nodes, parents, base) {
         declare(n.type === 'FunctionDeclaration' ? blockOf(n) : n, n.id);
     } else if (n.type === 'CatchClause') declare(n, n.param);
     else if (n.type === 'ClassDeclaration') declare(blockOf(n), n.id);
+    else if (n.type === 'ImportDeclaration')
+      for (const s of n.specifiers) declare(parents.get(n), s.local);
   }
   const roots = [];
   const returns = new Map();
@@ -520,38 +529,34 @@ function flowGroups(nodes, parents, base) {
   // Call groups: the arguments at one position across every call of one
   // function binding (`p("Clicked.")`, `p("text must be a string")`). Bounded
   // by design: the callee resolves lexically within this module, by name, and
-  // calls are never followed.
-  const topLevel = new Set();
-  for (const n of nodes)
-    if (
-      (n.type === 'FunctionDeclaration' || n.type === 'ClassDeclaration') &&
-      n.id &&
-      !blockOf(n)
-    )
-      topLevel.add(n.id.name);
-    else if (n.type === 'VariableDeclaration' && !blockOf(n))
-      for (const d of n.declarations)
-        if (d.id.type === 'Identifier') topLevel.add(d.id.name);
-  const program = nodes[0];
+  // calls are never followed. An imported binding is a module-scope name too
+  // (the code-split bundle imports its emitters from sibling chunks); grouping
+  // its calls needs only the local name, never the implementation.
   const calleeScope = (from, name) => {
     for (let p = parents.get(from); p; p = parents.get(p))
       if (declarations.get(p)?.has(name)) return p;
-    return topLevel.has(name) ? program : null;
+    return null;
   };
   const calls = new Map();
   for (const n of nodes) {
-    if (n.type !== 'CallExpression' || n.callee.type !== 'Identifier') continue;
+    if (
+      (n.type !== 'CallExpression' && n.type !== 'NewExpression') ||
+      n.callee.type !== 'Identifier'
+    )
+      continue;
     const scope = calleeScope(n, n.callee.name);
     if (!scope) continue;
-    n.arguments.forEach((a, i) => {
-      if (a.type === 'SpreadElement') return;
-      const key = `${scope.start}:${n.callee.name}:${i}`;
-      if (!calls.has(key)) calls.set(key, { node: n, args: [] });
+    for (const [i, a] of n.arguments.entries()) {
+      // Past a spread the position of every later argument is unknown.
+      if (a.type === 'SpreadElement') break;
+      const key = `${scopeId(scope)}:${n.callee.name}:${i}`;
+      if (!calls.has(key)) calls.set(key, { node: n, args: [], sites: [] });
       calls.get(key).args.push(a);
-    });
+      calls.get(key).sites.push(n);
+    }
   }
-  for (const { node, args } of calls.values())
-    if (args.length > 1) roots.push({ node, kind: 'calls', args });
+  for (const { node, args, sites } of calls.values())
+    if (args.length > 1) roots.push({ node, kind: 'calls', args, sites });
 
   const flow = (n, out, seen, depth, via = 'direct') => {
     if (!n || depth > 6) return;
@@ -590,7 +595,7 @@ function flowGroups(nodes, parents, base) {
     } else if (n.type === 'Identifier') {
       const scope = bindingScope(n, n.name);
       if (!scope) return;
-      const key = `${n.name}@${scope.start}`;
+      const key = `${n.name}@${scopeId(scope)}`;
       if (seen.has(key)) return;
       seen.add(key);
       for (const expr of bindings.get(scope)?.get(n.name) || [])
@@ -626,6 +631,12 @@ function flowGroups(nodes, parents, base) {
       kind: root.kind,
       at: base + root.node.start,
       end: base + root.node.end,
+      ...(root.sites && {
+        callSites: root.sites.map(c => ({
+          start: base + c.start,
+          end: base + c.end,
+        })),
+      }),
       arms: [...out].map(([n, via]) => ({
         start: base + n.start,
         end: base + n.end,
@@ -738,6 +749,9 @@ const cook = s =>
     (_m, c) => ({ n: '\n', r: '\r', t: '\t' })[c] ?? c
   );
 
+const neverCatalogued = body =>
+  ex.isBareToken(cook(body)) || ex.isHardExcluded(body);
+
 function quietly(fn) {
   const { log, warn } = console;
   console.log = () => {};
@@ -773,8 +787,13 @@ export function scanSiblingArms(cliPath, { catalogue, cache, version } = {}) {
   const composites = new Map();
   const templates = [];
   const rank = e => (e.kind === 'string' || e.kind === 'template' ? 0 : 1);
+  const sitesByBody = new Map();
   for (const e of buildEntries(records)) {
     const k = `${e.start}:${e.end}`;
+    if (typeof e.cacheBody === 'string') {
+      if (!sitesByBody.has(e.cacheBody)) sitesByBody.set(e.cacheBody, []);
+      sitesByBody.get(e.cacheBody).push(e);
+    }
     if (e.kind === 'composite') {
       if (!composites.has(k)) composites.set(k, e);
       continue;
@@ -816,9 +835,10 @@ export function scanSiblingArms(cliPath, { catalogue, cache, version } = {}) {
       verdict: verdict
         ? { facing: verdict.facing, ...(verdict.id && { id: verdict.id }) }
         : null,
-      // A bare word is never catalogued (the extractor hard-excludes it), so a
-      // `model` verdict on one anchors nothing; it still counts as ruled.
-      modelId: ex.isBareToken(cook(e.cacheBody ?? ''))
+      // A bare word or a template with no prose outside its slots is never
+      // catalogued (the extractor hard-excludes both), so a `model` verdict on
+      // one anchors nothing; it still counts as ruled.
+      modelId: neverCatalogued(e.cacheBody ?? '')
         ? null
         : verdict?.facing === 'model'
           ? verdict.id || catId || '(unnamed)'
@@ -875,15 +895,36 @@ export function scanSiblingArms(cliPath, { catalogue, cache, version } = {}) {
   const seen = new Map();
   let anchored = 0;
   let trivial = 0;
+  let unearnedCallGroups = 0;
+  // A call group spans every call of one callee in a module, so a model arm
+  // proves the callee emits model text only when that text is model-facing
+  // because of these calls: the literal is written in a call's argument (not
+  // reached through a variable that may have other uses) and every literal
+  // carrying the same body sits inside one of the group's calls (a telemetry
+  // copy in the next argument is fine). Otherwise its verdict, keyed on
+  // content, may have been earned at the other use (CC 2.1.296:
+  // `let s=\`…\`;t(s,{level:"warn"});return {message:s}` logged tool results
+  // through the imported debug logger, whose group would have raised 1,510
+  // log lines).
+  const earnedIn = (a, g) =>
+    a.via === 'direct' &&
+    (sitesByBody.get(a.body) || [{ start: a.start, end: a.end }]).every(e =>
+      g.callSites.some(c => c.start <= e.start && e.end <= c.end)
+    );
   for (const g of groups) {
     const arms = g.arms.flatMap(resolve);
     const flowGroup = FLOW_KINDS.has(g.kind);
-    const anchorSites = arms.filter(a => a.modelId);
+    const anchorSites = arms.filter(
+      a => a.modelId && (g.kind !== 'calls' || earnedIn(a, g))
+    );
     const anchors =
       g.kind === 'respelling'
         ? hostsOf(g.needle)
-        : arms.filter(a => a.modelId).map(a => a.modelId);
-    if (!anchors.length) continue;
+        : anchorSites.map(a => a.modelId);
+    if (!anchors.length) {
+      if (g.kind === 'calls' && arms.some(a => a.modelId)) unearnedCallGroups++;
+      continue;
+    }
     anchored++;
     for (const a of arms) {
       if (a.modelId || a.verdict) continue;
@@ -930,7 +971,14 @@ export function scanSiblingArms(cliPath, { catalogue, cache, version } = {}) {
       findings.push(finding);
     }
   }
-  return { groups: groups.length, anchored, trivial, unparsed, findings };
+  return {
+    groups: groups.length,
+    anchored,
+    trivial,
+    unearnedCallGroups,
+    unparsed,
+    findings,
+  };
 }
 
 export function appendSiblingCandidates(candidates, result) {
@@ -1021,7 +1069,7 @@ function main() {
   for (const u of r.unparsed)
     say(`UNPARSED segment ${u.name || '(bundle)'}@${u.start}: ${u.error}`);
   say(
-    `sibling arms: ${r.findings.length} uncatalogued unclassified arm(s) in ${r.anchored} group(s) with a catalogued arm (${r.groups} switch/ternary groups scanned, ${r.trivial} non-prose arm(s) skipped, ${r.unparsed.length} unparseable segment(s))`
+    `sibling arms: ${r.findings.length} uncatalogued unclassified arm(s) in ${r.anchored} group(s) with a catalogued arm (${r.groups} switch/ternary groups scanned, ${r.trivial} non-prose arm(s) skipped, ${r.unearnedCallGroups} call group(s) with no model arm earned at their own calls skipped, ${r.unparsed.length} unparseable segment(s))`
   );
   process.exit(r.unparsed.length ? 2 : r.findings.length ? 1 : 0);
 }

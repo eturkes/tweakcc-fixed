@@ -344,6 +344,7 @@ describe('checkSiblingArms: fall-out returns, spread lists and respellings', () 
   it('reads the return a switch falls out to as its default arm', () => {
     const f = find(scan(), 'fixture are not valid');
     expect(f?.anchors).toEqual(['tool-result-fixture-must-be-a-type']);
+    expect(f?.siblingRelations.some(r => r.kind === 'switch')).toBe(true);
   });
 
   it('reads a list built from spread map callbacks as one group', () => {
@@ -401,15 +402,20 @@ describe('checkSiblingArms: switch completion', () => {
     fs.writeFileSync(cli5, FIXTURE5);
     r = scanSiblingArms(cli5, { catalogue: CATALOGUE5, cache: {} });
   });
-  const bodies = () => r.findings.map(f => f.body);
+  // The returns union reports the same tails, so only the switch relation
+  // proves the fall-out arm was read.
+  const switchBodies = () =>
+    r.findings
+      .filter(f => f.siblingRelations.some(x => x.kind === 'switch'))
+      .map(f => f.body);
 
   it('reads the return after a default clause that completes normally', () => {
-    expect(bodies()).toContain('Fixture fallback after a plain default');
+    expect(switchBodies()).toContain('Fixture fallback after a plain default');
   });
 
   it('reads the return after a labelled break out of the switch', () => {
-    expect(bodies()).toContain('Fixture labelled tail arm');
-    expect(bodies()).toContain('Fixture labelled default arm');
+    expect(switchBodies()).toContain('Fixture labelled tail arm');
+    expect(switchBodies()).toContain('Fixture labelled default arm');
   });
 
   it('ignores a tail no clause can reach', () => {
@@ -550,6 +556,89 @@ describe('checkSiblingArms: bounded assembled strings', () => {
       'Waited.',
       'text must be a string',
     ]);
+  });
+
+  // CC 2.1.246+ is code-split: an emitter often lives in a sibling chunk and
+  // reaches its callers as an import, so a local-only callee table saw none.
+  it('groups calls of an imported function binding', () => {
+    for (const imp of [
+      'import{p}from"./emit.js";',
+      'import{q as p}from"./emit.js";',
+      'import p from"./emit.js";',
+    ]) {
+      const r = scan(
+        imp +
+          'function a(x){if(x)return p("Flow anchor");return p("Imported sibling text")}'
+      );
+      expect(finding(r, 'Imported sibling text')?.group).toBe('calls');
+    }
+    const shadowed = scan(
+      'import{p}from"./emit.js";function a(p){p("Flow anchor");return p("Shadowed import text")}function b(){return p("Other module call")}'
+    );
+    expect(finding(shadowed, 'Other module call')).toBeUndefined();
+  });
+
+  it('groups constructor arguments like call arguments', () => {
+    const r = scan(
+      'import{E}from"./err.js";function a(x){if(x)throw new E("Flow anchor");throw new E("Constructed sibling text")}'
+    );
+    expect(finding(r, 'Constructed sibling text')?.group).toBe('calls');
+  });
+
+  it('stops grouping at the first spread argument', () => {
+    const r = scan(
+      'function p(){}function a(xs){p(...xs,"After a spread");p("First position","Flow anchor")}'
+    );
+    expect(finding(r, 'After a spread')).toBeUndefined();
+  });
+
+  it('keeps a call group in a scope at offset 0 apart from the module scope', () => {
+    const r = scan(
+      'function a(q){q("Flow anchor");q("Inner param call")}\nfunction q(s){}\nq("Outer decl call")'
+    );
+    expect(finding(r, 'Inner param call')?.group).toBe('calls');
+    expect(finding(r, 'Outer decl call')).toBeUndefined();
+  });
+
+  // CC 2.1.296: the imported debug logger logged two strings that are tool
+  // results elsewhere; their content verdicts anchored 1,510 log lines.
+  it('anchors a call group only on model text earned at its own calls', () => {
+    const logger = scan(
+      'function log(){}function tool(){return {content:"Flow anchor"}}log("Flow anchor");log("Unruled log line")'
+    );
+    expect(logger.findings).toEqual([]);
+    expect(logger.unearnedCallGroups).toBe(1);
+    const bound = scan(
+      'function log(){}function f(){let s="Flow anchor";log(s);log("Unruled log line");return {message:s}}'
+    );
+    expect(bound.findings).toEqual([]);
+    // The same text again in another argument of the call is a telemetry
+    // copy, not another use.
+    const telemetry = scan(
+      'function E(){}function f(x){if(x)throw new E("Flow anchor","Flow anchor");throw new E("Thrown sibling text","Thrown sibling text")}'
+    );
+    expect(finding(telemetry, 'Thrown sibling text')?.group).toBe('calls');
+    // A mixed callee keeps its anchor however many of its arms are ruled
+    // non-model, when the model text exists only at its calls.
+    const cache = {
+      [key('Ruled line one here')]: { facing: 'internal' },
+      [key('Ruled line two here')]: { facing: 'internal' },
+    };
+    const mixed = scan(
+      'function err(){}err("Flow anchor");err("Ruled line one here");err("Ruled line two here");err("Unruled error line")',
+      [anchor],
+      cache
+    );
+    expect(mixed.findings.map(f => f.body)).toEqual(['Unruled error line']);
+    expect(mixed.unearnedCallGroups).toBe(0);
+  });
+
+  it('does not anchor on a template with no prose outside its slots', () => {
+    const r = scan(
+      'function f(a,b){return [`${a}: ${b}`,"Slot sibling text"].join("\\n")}',
+      [prompt('tool-result-slots-only', ['${', '}: ${', '}'])]
+    );
+    expect(r.anchored).toBe(0);
   });
 
   it('excludes no-letter glue while keeping a word-bearing arm', () => {
