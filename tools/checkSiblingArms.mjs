@@ -50,7 +50,6 @@ import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import {
   buildEntries,
-  describe,
   detectVersion,
   entryKeys,
   keyVariants,
@@ -393,6 +392,210 @@ function isReturned(node, parents) {
   return p.type === 'ArrowFunctionExpression' && p.body === cur;
 }
 
+const BLOCK_TYPES = new Set([
+  'BlockStatement',
+  'ForStatement',
+  'ForInStatement',
+  'ForOfStatement',
+  'SwitchStatement',
+  'Program',
+  'StaticBlock',
+  'CatchClause',
+]);
+
+function flowGroups(nodes, parents, base) {
+  const declarations = new Map();
+  const bindings = new Map();
+  const pushes = new Map();
+  const functions = new Map();
+  const functionOf = n => {
+    if (functions.has(n)) return functions.get(n);
+    const p = parents.get(n);
+    const fn =
+      !p || FN_TYPES.has(p.type) || p.type === 'Program' ? p : functionOf(p);
+    functions.set(n, fn);
+    return fn;
+  };
+  const blockOf = n => {
+    let p = parents.get(n);
+    while (p && !BLOCK_TYPES.has(p.type) && !FN_TYPES.has(p.type))
+      p = parents.get(p);
+    return p;
+  };
+  const declare = (scope, pattern) => {
+    if (!scope || !pattern) return;
+    if (pattern.type === 'Identifier') {
+      if (!declarations.has(scope)) declarations.set(scope, new Set());
+      declarations.get(scope).add(pattern.name);
+    } else if (pattern.type === 'RestElement') declare(scope, pattern.argument);
+    else if (pattern.type === 'AssignmentPattern') declare(scope, pattern.left);
+    else if (pattern.type === 'ArrayPattern')
+      for (const el of pattern.elements) declare(scope, el);
+    else if (pattern.type === 'ObjectPattern')
+      for (const prop of pattern.properties)
+        declare(
+          scope,
+          prop.type === 'RestElement' ? prop.argument : prop.value
+        );
+  };
+  const bindingScope = (from, name) => {
+    const fn = functionOf(from);
+    let p = parents.get(from);
+    while (p) {
+      if (declarations.get(p)?.has(name)) return p;
+      if (p === fn) break;
+      p = parents.get(p);
+    }
+    return null;
+  };
+  const add = (map, scope, name, expr) => {
+    if (!scope) return;
+    if (!map.has(scope)) map.set(scope, new Map());
+    const byName = map.get(scope);
+    if (!byName.has(name)) byName.set(name, []);
+    byName.get(name).push(expr);
+  };
+  for (const n of nodes) {
+    if (n.type === 'VariableDeclaration') {
+      const scope = n.kind === 'var' ? functionOf(n) : blockOf(n);
+      for (const d of n.declarations) declare(scope, d.id);
+    } else if (FN_TYPES.has(n.type)) {
+      for (const p of n.params) declare(n, p);
+      if (n.id)
+        declare(n.type === 'FunctionDeclaration' ? blockOf(n) : n, n.id);
+    } else if (n.type === 'CatchClause') declare(n, n.param);
+    else if (n.type === 'ClassDeclaration') declare(blockOf(n), n.id);
+  }
+  const roots = [];
+  const returns = new Map();
+  for (const n of nodes) {
+    if (n.type === 'VariableDeclarator' && n.id.type === 'Identifier' && n.init)
+      add(bindings, bindingScope(n, n.id.name), n.id.name, n.init);
+    else if (
+      n.type === 'AssignmentExpression' &&
+      n.left.type === 'Identifier' &&
+      (n.operator === '=' || n.operator === '+=')
+    )
+      add(bindings, bindingScope(n, n.left.name), n.left.name, n.right);
+    else if (
+      n.type === 'CallExpression' &&
+      n.callee.type === 'MemberExpression' &&
+      !n.callee.computed &&
+      n.callee.object.type === 'Identifier' &&
+      ['push', 'unshift'].includes(n.callee.property.name)
+    )
+      for (const a of n.arguments)
+        add(
+          pushes,
+          bindingScope(n, n.callee.object.name),
+          n.callee.object.name,
+          a.type === 'SpreadElement' ? a.argument : a
+        );
+    if (
+      (n.type === 'CallExpression' &&
+        n.callee.type === 'MemberExpression' &&
+        !n.callee.computed &&
+        n.callee.property.name === 'join') ||
+      (isConcat(n) && !isConcat(parents.get(n) || {}))
+    )
+      roots.push({ node: n, kind: 'join', args: [n] });
+    if (n.type === 'ReturnStatement' && n.argument) {
+      const fn = functionOf(n);
+      if (!fn || fn.type === 'Program') continue;
+      if (!returns.has(fn)) returns.set(fn, []);
+      returns.get(fn).push(n.argument);
+    }
+  }
+  for (const [fn, args] of returns)
+    if (args.length > 1) roots.push({ node: fn, kind: 'returns', args });
+
+  const flow = (n, out, seen, depth, via = 'direct') => {
+    if (!n || depth > 6) return;
+    if (isLiteralLeaf(n)) {
+      if (!out.has(n)) out.set(n, via);
+    } else if (n.type === 'ConditionalExpression') {
+      flow(n.consequent, out, seen, depth, via);
+      flow(n.alternate, out, seen, depth, via);
+    } else if (n.type === 'LogicalExpression') {
+      if (n.operator !== '&&') flow(n.left, out, seen, depth, via);
+      flow(n.right, out, seen, depth, via);
+    } else if (isConcat(n)) {
+      flow(n.left, out, seen, depth, via);
+      flow(n.right, out, seen, depth, via);
+    } else if (n.type === 'SequenceExpression') {
+      flow(n.expressions.at(-1), out, seen, depth, via);
+    } else if (n.type === 'ArrayExpression') {
+      for (const el of n.elements) {
+        if (!el) continue;
+        if (el.type !== 'SpreadElement') flow(el, out, seen, depth, via);
+        else {
+          const fn = spreadCallback(el);
+          if (fn) {
+            if (fn.body.type !== 'BlockStatement')
+              flow(fn.body, out, seen, depth + 1, via);
+          } else
+            flow(
+              el.argument,
+              out,
+              seen,
+              depth + 1,
+              via === 'direct' ? 'spread' : via
+            );
+        }
+      }
+    } else if (n.type === 'Identifier') {
+      const scope = bindingScope(n, n.name);
+      if (!scope) return;
+      const key = `${n.name}@${scope.start}`;
+      if (seen.has(key)) return;
+      seen.add(key);
+      for (const expr of bindings.get(scope)?.get(n.name) || [])
+        if (functionOf(expr) === functionOf(n))
+          flow(expr, out, seen, depth + 1, 'ident');
+      for (const expr of pushes.get(scope)?.get(n.name) || [])
+        if (functionOf(expr) === functionOf(n))
+          flow(expr, out, seen, depth + 1, 'push');
+    } else if (n.type === 'CallExpression') {
+      const c = n.callee;
+      if (
+        c.type === 'MemberExpression' &&
+        !c.computed &&
+        ['join', 'filter', 'concat', 'trim', 'slice', 'flat'].includes(
+          c.property.name
+        )
+      ) {
+        flow(c.object, out, seen, depth, via);
+        if (c.property.name === 'concat')
+          for (const a of n.arguments) flow(a, out, seen, depth, via);
+      }
+    } else if (n.type === 'ParenthesizedExpression') {
+      flow(n.expression, out, seen, depth, via);
+    }
+  };
+  const groups = [];
+  for (const root of roots) {
+    const out = new Map();
+    const seen = new Set();
+    for (const arg of root.args) flow(arg, out, seen, 0);
+    if (out.size < 2) continue;
+    groups.push({
+      kind: root.kind,
+      at: base + root.node.start,
+      end: base + root.node.end,
+      arms: [...out].map(([n, via]) => ({
+        start: base + n.start,
+        end: base + n.end,
+        text:
+          n.type === 'Literal'
+            ? n.value
+            : n.quasis.map(q => q.value.cooked ?? q.value.raw).join(' '),
+        via,
+      })),
+    });
+  }
+  return groups;
+}
+
 // Every switch / returned-ternary group in `code`, its arms as absolute
 // ranges (see armOf), and the bundle segments acorn could not parse.
 export function armGroups(code) {
@@ -414,9 +617,11 @@ export function armGroups(code) {
       continue;
     }
     const parents = new Map();
+    const nodes = [];
     const stack = [ast];
     while (stack.length) {
       const n = stack.pop();
+      nodes.push(n);
       let arms = null;
       let kind = null;
       if (n.type === 'SwitchStatement') {
@@ -455,6 +660,7 @@ export function armGroups(code) {
         stack.push(c);
       }
     }
+    groups.push(...flowGroups(nodes, parents, seg.start));
   }
   return { groups, unparsed };
 }
@@ -505,6 +711,14 @@ function quietly(fn) {
 export function scanSiblingArms(cliPath, { catalogue, cache, version } = {}) {
   const code = fs.readFileSync(cliPath, 'utf8');
   ex.setCcVersionForCacheLookups(version || detectVersion(cliPath, code));
+  const { groups, unparsed } = armGroups(code);
+  const required = new Set();
+  const pending = groups.flatMap(g => g.arms);
+  while (pending.length) {
+    const arm = pending.pop();
+    required.add(`${arm.start}:${arm.end}`);
+    if (arm.parts) pending.push(...arm.parts);
+  }
   const records = quietly(() =>
     ex.collectLiteralSites(cliPath, { composites: true })
   );
@@ -513,6 +727,7 @@ export function scanSiblingArms(cliPath, { catalogue, cache, version } = {}) {
   // site; where a range has more than one, string/template wins.
   const literals = new Map();
   const composites = new Map();
+  const templates = [];
   const rank = e => (e.kind === 'string' || e.kind === 'template' ? 0 : 1);
   for (const e of buildEntries(records)) {
     const k = `${e.start}:${e.end}`;
@@ -520,6 +735,8 @@ export function scanSiblingArms(cliPath, { catalogue, cache, version } = {}) {
       if (!composites.has(k)) composites.set(k, e);
       continue;
     }
+    if (e.kind === 'template') templates.push(e);
+    if (!required.has(k)) continue;
     if (!literals.has(k)) literals.set(k, []);
     literals.get(k).push(e);
   }
@@ -543,8 +760,8 @@ export function scanSiblingArms(cliPath, { catalogue, cache, version } = {}) {
       ? hosts.filter(h => h.text.includes(needle)).map(h => h.id)
       : [];
   const ruling = e => {
-    const d = describe(e, cache || {});
     const keys = entryKeys(e);
+    const verdict = keys.map(k => cache?.[k.key]).find(Boolean) || null;
     const catId = keys.map(k => catalogued.get(k.key)).find(Boolean) || null;
     return {
       start: e.start,
@@ -552,10 +769,12 @@ export function scanSiblingArms(cliPath, { catalogue, cache, version } = {}) {
       kind: e.kind,
       body: e.cacheBody,
       key: keys[0]?.key,
-      verdict: d.verdict,
+      verdict: verdict
+        ? { facing: verdict.facing, ...(verdict.id && { id: verdict.id }) }
+        : null,
       modelId:
-        d.verdict?.facing === 'model'
-          ? d.verdict.id || catId || '(unnamed)'
+        verdict?.facing === 'model'
+          ? verdict.id || catId || '(unnamed)'
           : catId,
     };
   };
@@ -578,20 +797,41 @@ export function scanSiblingArms(cliPath, { catalogue, cache, version } = {}) {
   const resolve = arm => {
     if (!arm.parts) {
       const r = lookup(literals, arm.start, arm.end);
-      return r ? [{ ...r, text: arm.text }] : [];
+      return r ? [{ ...r, text: arm.text, via: arm.via }] : [];
     }
     const c = lookup(composites, arm.start, arm.end);
     if (c && (c.verdict || c.modelId)) return [c];
     return arm.parts.flatMap(resolve);
   };
 
-  const { groups, unparsed } = armGroups(code);
+  const modelSpans = [];
+  for (const entry of templates)
+    if (ruling(entry).modelId) modelSpans.push([entry.start, entry.end]);
+  for (const entry of composites.values())
+    if (ruling(entry).modelId) modelSpans.push([entry.start, entry.end]);
+  modelSpans.sort((a, b) => a[0] - b[0]);
+  const coveringSpan = (start, end) => {
+    let lo = 0;
+    let hi = modelSpans.length;
+    while (lo < hi) {
+      const mid = (lo + hi) >> 1;
+      if (modelSpans[mid][0] <= start) lo = mid + 1;
+      else hi = mid;
+    }
+    for (let i = lo - 1; i >= 0 && i > lo - 400; i--) {
+      const [s, e] = modelSpans[i];
+      if (s <= start && e >= end && e - s > end - start) return true;
+    }
+    return false;
+  };
   const findings = [];
-  const seen = new Set();
+  const seen = new Map();
   let anchored = 0;
   let trivial = 0;
   for (const g of groups) {
     const arms = g.arms.flatMap(resolve);
+    const flowGroup = g.kind === 'join' || g.kind === 'returns';
+    const anchorSites = arms.filter(a => a.modelId);
     const anchors =
       g.kind === 'respelling'
         ? hostsOf(g.needle)
@@ -599,25 +839,93 @@ export function scanSiblingArms(cliPath, { catalogue, cache, version } = {}) {
     if (!anchors.length) continue;
     anchored++;
     for (const a of arms) {
-      if (a.modelId || a.verdict || seen.has(`${a.start}:${a.end}`)) continue;
-      if (!readsAsWords(a.text ?? a.body)) {
+      if (a.modelId || a.verdict) continue;
+      if (flowGroup && coveringSpan(a.start, a.end)) continue;
+      const siteKey = `${a.start}:${a.end}`;
+      if (
+        !seen.has(siteKey) &&
+        !(flowGroup
+          ? /\p{L}/u.test(cook(a.body))
+          : readsAsWords(a.text ?? a.body))
+      ) {
         trivial++;
         continue;
       }
-      seen.add(`${a.start}:${a.end}`);
-      findings.push({
+      const relations = [...new Set(anchors)].map(anchor => ({
+        kind: g.kind,
+        anchor,
+        anchorAt: anchorSites.find(s => s.modelId === anchor)?.start ?? g.at,
+        start: g.at,
+        end: g.end ?? g.at,
+        site: { start: a.start, end: a.end },
+        via: a.via ?? 'direct',
+        anchors: [anchor],
+      }));
+      const previous = seen.get(siteKey);
+      if (previous) {
+        previous.anchors = [...new Set([...previous.anchors, ...anchors])];
+        previous.siblingRelations.push(...relations);
+        continue;
+      }
+      const finding = {
         start: a.start,
         end: a.end,
-        kind: a.kind,
+        kind: g.kind === 'returns' ? 'returns' : a.kind,
         key: a.key,
         body: a.body,
         group: g.kind,
         groupAt: g.at,
         anchors: [...new Set(anchors)],
-      });
+        siblingRelations: relations,
+      };
+      seen.set(siteKey, finding);
+      findings.push(finding);
     }
   }
   return { groups: groups.length, anchored, trivial, unparsed, findings };
+}
+
+export function appendSiblingCandidates(candidates, result) {
+  const byHash = new Map(candidates.map(c => [c.hash, c]));
+  let appended = 0;
+  const appendUnique = (target, values) => {
+    const seen = new Set(target.map(v => JSON.stringify(v)));
+    for (const value of values) {
+      const key = JSON.stringify(value);
+      if (seen.has(key)) continue;
+      seen.add(key);
+      target.push(value);
+    }
+  };
+  for (const f of result.findings) {
+    let candidate = byHash.get(f.key);
+    if (!candidate) {
+      candidate = {
+        hash: f.key,
+        body: f.body,
+        len: f.body.length,
+        lead: '',
+        hint: null,
+        source: 'sibling-arm',
+      };
+      byHash.set(f.key, candidate);
+      candidates.push(candidate);
+      appended++;
+    }
+    candidate.sourceSites ??= [];
+    candidate.siblingRelations ??= [];
+    appendUnique(candidate.sourceSites, [{ start: f.start, end: f.end }]);
+    appendUnique(
+      candidate.siblingRelations,
+      f.siblingRelations ||
+        (f.anchors || []).map(anchor => ({
+          kind: f.group,
+          anchor,
+          anchorAt: f.groupAt,
+        }))
+    );
+  }
+  return appended;
 }
 
 function parseArgs(argv) {

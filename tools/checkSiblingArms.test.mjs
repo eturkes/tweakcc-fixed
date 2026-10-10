@@ -12,6 +12,7 @@ import {
   scanSiblingArms,
 } from './checkSiblingArms.mjs';
 import { keyVariants } from './probeCacheKey.mjs';
+import * as siblingGate from './checkSiblingArms.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const TOOL = path.join(HERE, 'checkSiblingArms.mjs');
@@ -83,7 +84,10 @@ describe('checkSiblingArms: groups', () => {
     expect(unparsed).toEqual([]);
     const flat = arms => arms.flatMap(a => (a.parts ? flat(a.parts) : [a]));
     const text = g => flat(g.arms).map(a => FIXTURE.slice(a.start, a.end));
-    const kinds = groups.map(g => g.kind).sort();
+    const kinds = groups
+      .filter(g => g.kind !== 'returns' && g.kind !== 'join')
+      .map(g => g.kind)
+      .sort();
     expect(kinds).toEqual(['switch', 'switch', 'switch', 'ternary', 'ternary']);
     const q = groups.find(g =>
       text(g).some(t => t.includes('Fixture arm one'))
@@ -114,7 +118,10 @@ describe('checkSiblingArms: groups', () => {
 describe('checkSiblingArms: scan', () => {
   it('reports exactly the unruled, uncatalogued prose arms beside a catalogued arm', () => {
     const r = scanSiblingArms(cli, { catalogue: CATALOGUE, cache: CACHE });
-    const bodies = r.findings.map(f => f.body).sort();
+    const bodies = r.findings
+      .filter(f => f.group !== 'returns')
+      .map(f => f.body)
+      .sort();
     expect(bodies).toEqual([
       'Fixture arm three sits in an if block',
       'Fixture arm two asks about ${} later?',
@@ -129,7 +136,8 @@ describe('checkSiblingArms: scan', () => {
       'tool-result-fixture-ternary-yes',
     ]);
     expect(r.trivial).toBe(1);
-    expect(r.anchored).toBe(4);
+    expect(r.anchored).toBe(6);
+    expect(r.findings.find(f => f.body === 'none')?.kind).toBe('returns');
   });
 
   it('exits 1 with findings and 0 once every arm is ruled', () => {
@@ -140,7 +148,7 @@ describe('checkSiblingArms: scan', () => {
     const first = run();
     expect(first.status).toBe(1);
     expect(first.stdout).toMatch(
-      /sibling arms: 5 uncatalogued unclassified arm\(s\)/
+      /sibling arms: 6 uncatalogued unclassified arm\(s\)/
     );
     const ruled = { ...CACHE };
     for (const b of [
@@ -149,6 +157,7 @@ describe('checkSiblingArms: scan', () => {
       'Fixture array arm about cats',
       'Fixture arrow arm ${} left out',
       'Fixture ternary no branch here',
+      'none',
     ])
       ruled[key(b)] = { facing: 'internal' };
     fs.writeFileSync(cachePath, JSON.stringify(ruled));
@@ -208,7 +217,12 @@ describe('checkSiblingArms: composite, concat, legacy and word arms', () => {
 
   it('reports exactly the unruled arms', () => {
     const r = scanSiblingArms(cli2, { catalogue: CATALOGUE2, cache: CACHE2 });
-    expect(r.findings.map(f => f.body).sort()).toEqual(
+    expect(
+      r.findings
+        .filter(f => f.group !== 'returns')
+        .map(f => f.body)
+        .sort()
+    ).toEqual(
       [
         ' (the fixture key is ${(.k)})',
         '${("{")} Please confirm',
@@ -260,7 +274,14 @@ describe('checkSiblingArms: composite, concat, legacy and word arms', () => {
     expect(r.findings.find(f => f.body === 'I agree')?.anchors).toEqual([
       'tool-result-fixture-agree',
     ]);
-    expect(r.findings.some(f => f.body === 'own_calls say_so')).toBe(false);
+    expect(r.findings.find(f => f.body === 'own_calls say_so')?.kind).toBe(
+      'returns'
+    );
+    expect(
+      r.findings.some(
+        f => f.body === 'own_calls say_so' && f.group === 'switch'
+      )
+    ).toBe(false);
   });
 
   it('prints valid JSON on stdout with --json and the summary on stderr', () => {
@@ -276,8 +297,8 @@ describe('checkSiblingArms: composite, concat, legacy and word arms', () => {
       }
     );
     expect(r.status).toBe(1);
-    expect(JSON.parse(r.stdout).findings).toHaveLength(7);
-    expect(r.stderr).toMatch(/sibling arms: 7 uncatalogued/);
+    expect(JSON.parse(r.stdout).findings).toHaveLength(8);
+    expect(r.stderr).toMatch(/sibling arms: 8 uncatalogued/);
   });
 });
 
@@ -338,7 +359,8 @@ describe('checkSiblingArms: fall-out returns, spread lists and respellings', () 
 
   it('reports nothing unreachable, unanchored, keyed or outside a catalogued host', () => {
     const bodies = scan()
-      .findings.map(f => f.body)
+      .findings.filter(f => f.group !== 'returns')
+      .map(f => f.body)
       .sort();
     expect(bodies).toHaveLength(5);
     for (const quiet of [
@@ -390,8 +412,17 @@ describe('checkSiblingArms: switch completion', () => {
   });
 
   it('ignores a tail no clause can reach', () => {
-    expect(bodies()).not.toContain('Fixture loop dead tail');
-    expect(bodies()).not.toContain('Fixture try dead tail');
+    const switchBodies = r.findings
+      .filter(f => f.group === 'switch')
+      .map(f => f.body);
+    expect(switchBodies).not.toContain('Fixture loop dead tail');
+    expect(switchBodies).not.toContain('Fixture try dead tail');
+    expect(
+      r.findings.find(f => f.body === 'Fixture loop dead tail')?.kind
+    ).toBe('returns');
+    expect(r.findings.find(f => f.body === 'Fixture try dead tail')?.kind).toBe(
+      'returns'
+    );
   });
 });
 
@@ -417,5 +448,182 @@ describe('checkSiblingArms: unparseable segments', () => {
     expect(r.status).toBe(2);
     expect(r.stdout).toMatch(/UNPARSED segment broken\.js/);
     expect(r.stdout).toMatch(/1 unparseable segment/);
+  });
+});
+
+describe('checkSiblingArms: bounded assembled strings', () => {
+  const anchor = prompt('tool-result-flow-anchor', ['Flow anchor']);
+  const scan = (code, catalogue = [anchor], cache = {}) => {
+    const file = path.join(dir, 'cli-9.9.5.js');
+    fs.writeFileSync(file, code);
+    return scanSiblingArms(file, { catalogue, cache });
+  };
+  const finding = (result, body) => result.findings.find(f => f.body === body);
+
+  it('flows conditional spreads into a joined array', () => {
+    const r = scan(
+      'function f(x){return ["Flow anchor",...(x?["Spread label"]:[])].join("\\n")}'
+    );
+    expect(finding(r, 'Spread label')?.group).toBe('join');
+  });
+
+  it('resolves a let ternary binding used in a join', () => {
+    const r = scan(
+      'function f(x){let label=x?"Bound label":"Other label";return ["Flow anchor",label].join("\\n")}'
+    );
+    expect(finding(r, 'Bound label')?.group).toBe('join');
+    expect(finding(r, 'Other label')?.group).toBe('join');
+  });
+
+  it('includes push and unshift arguments on a joined binding', () => {
+    const r = scan(
+      'function f(){const a=["Flow anchor"];a.push("Pushed label");a.unshift("First label");return a.join("\\n")}'
+    );
+    expect(finding(r, 'Pushed label')?.group).toBe('join');
+    expect(finding(r, 'First label')?.group).toBe('join');
+  });
+
+  it('groups a plain array join without map callbacks', () => {
+    const r = scan(
+      'function f(){return ["Flow anchor","Plain label"].join("\\n")}'
+    );
+    expect(finding(r, 'Plain label')?.group).toBe('join');
+  });
+
+  it('unions if/return paths and parallel return arrays as returns', () => {
+    const r = scan(
+      'function f(x){if(x===1)return ["Flow anchor"];if(x===2)return ["Return label"];return "Fallback label"}'
+    );
+    expect(finding(r, 'Return label')?.group).toBe('returns');
+    expect(finding(r, 'Return label')?.kind).toBe('returns');
+    expect(finding(r, 'Fallback label')?.kind).toBe('returns');
+  });
+
+  it('accepts one-word headings and markup beside an anchor', () => {
+    const r = scan(
+      'function f(){return ["Flow anchor","Status:","# Heading","|Column|","**Bold**","```code```","<tag>"].join("\\n")}'
+    );
+    for (const body of [
+      'Status:',
+      '# Heading',
+      '|Column|',
+      '**Bold**',
+      '```code```',
+      '<tag>',
+    ])
+      expect(finding(r, body)?.group).toBe('join');
+  });
+
+  it('excludes no-letter glue while keeping a word-bearing arm', () => {
+    const r = scan(
+      'function f(){return ["Flow anchor","Status:"," | ** ","\\n","123"].join("\\n")}'
+    );
+    expect(r.findings.map(f => f.body)).toEqual(['Status:']);
+  });
+
+  it('excludes literals inside a larger anchored template', () => {
+    const outer =
+      'Larger anchored template ${"Flow anchor"+"nested missing"} tail text';
+    const r = scan(
+      'function f(){const t=`Larger anchored template ${"Flow anchor"+"nested missing"} tail text`;return ["Flow anchor","Status:"].join("\\n")}',
+      [anchor, prompt('tool-result-outer-template', [outer])]
+    );
+    expect(r.findings.map(f => f.body)).toEqual(['Status:']);
+  });
+
+  it('tracks assignments, logical arms, sequence tails and supported receivers', () => {
+    const r = scan(
+      'function f(x){var a="Initial label";a=x&&"Logical label";a+="Added label";return ["Flow anchor",(ignored(),a)].concat(["Concat label"]).filter(Boolean).flat().slice(0).join(" ").trim()}'
+    );
+    expect(r.findings.map(f => f.body).sort()).toEqual(
+      ['Initial label', 'Logical label', 'Added label', 'Concat label'].sort()
+    );
+    const cached = scan(
+      'function f(){const a=["Cached anchor"];return "Status:"+a.join(" ").trim()}',
+      [],
+      {
+        [key('Cached anchor')]: {
+          facing: 'model',
+          id: 'tool-result-cached-anchor',
+        },
+      }
+    );
+    expect(cached.findings).toEqual([
+      expect.objectContaining({
+        body: 'Status:',
+        group: 'join',
+        anchors: ['tool-result-cached-anchor'],
+      }),
+    ]);
+  });
+
+  it('collects expression map and flatMap spreads without following arbitrary calls', () => {
+    const r = scan(
+      'function helper(){return "Callee label"}function f(xs,x){return ["Flow anchor",...xs.map(y=>y?"Mapped label":"Alternate label"),...xs.flatMap(y=>["Flat label"]),...(x&&["Spread label"]),helper()].join(" ")}'
+    );
+    expect(r.findings.map(f => f.body).sort()).toEqual(
+      ['Mapped label', 'Alternate label', 'Flat label', 'Spread label'].sort()
+    );
+  });
+
+  it('honors block shadowing and excludes closure and module bindings', () => {
+    const r = scan(
+      'var outer="Module label";function f(){let a="Outer label";const xs=["Flow anchor",outer];{let a="Inner label";xs.push(a)}function g(){xs.push("Closure label");return ["Flow anchor",a].join(" ")}return xs.join(" ")}'
+    );
+    expect(r.findings.map(f => f.body)).toEqual(['Inner label']);
+  });
+
+  it('bounds identifier hops at six and terminates binding cycles', () => {
+    const r = scan(
+      'function f(){let a="Cycle label";a=b;let b=a;const h="Deep label",g=h,e=g,d=e,c=d,z=c,y=z;return ["Flow anchor",a,y,"Status:"].join(" ")}'
+    );
+    expect(r.findings.map(f => f.body).sort()).toEqual(
+      ['Cycle label', 'Status:'].sort()
+    );
+  });
+
+  it('keeps nested function returns and template slots out of a return union', () => {
+    const r = scan(
+      'function f(x){function nested(){return "Nested label"}if(x)return "Flow anchor";return `Return label ${x?"Slot label":"Other slot"}`}'
+    );
+    expect(r.findings.map(f => f.body)).toEqual([
+      'Return label ${?"Slot label":"Other slot"}',
+    ]);
+    expect(r.findings[0].kind).toBe('returns');
+  });
+
+  it('appends sibling candidates once per hash with all source sites and relations', () => {
+    const r = scan(
+      'function f(){return ["Flow anchor","Status:","Status:"].join("\\n")}'
+    );
+    const candidates = [{ hash: 'existing', body: 'Existing candidate' }];
+    expect(siblingGate.appendSiblingCandidates(candidates, r)).toBe(1);
+    expect(siblingGate.appendSiblingCandidates(candidates, r)).toBe(0);
+    expect(candidates).toHaveLength(2);
+    expect(candidates[1]).toMatchObject({
+      hash: key('Status:'),
+      body: 'Status:',
+      source: 'sibling-arm',
+      len: 7,
+      hint: null,
+    });
+    expect(candidates[1].sourceSites).toEqual(
+      r.findings.map(f => ({ start: f.start, end: f.end }))
+    );
+    expect(candidates[1].siblingRelations).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          kind: 'join',
+          anchor: 'tool-result-flow-anchor',
+          anchorAt: expect.any(Number),
+        }),
+      ])
+    );
+    const existing = [
+      { hash: key('Status:'), body: 'Status:', source: 'prose-gate' },
+    ];
+    expect(siblingGate.appendSiblingCandidates(existing, r)).toBe(0);
+    expect(existing).toHaveLength(1);
+    expect(existing[0].sourceSites).toHaveLength(2);
   });
 });
