@@ -17,17 +17,26 @@
 // A group is
 //   - a `switch`: the literals returned from each of its cases (through `if`
 //     blocks inside the case, ternary arms, array elements, `+` chains and
-//     `||`/`??`), or
+//     `||`/`??`), plus the return it falls out to (the statements after it,
+//     when it has no `default` or a case `break`s) as its default arm,
 //   - a returned ternary: the literal leaves of a conditional that is a
-//     `return` argument or an arrow body.
+//     `return` argument or an arrow body,
+//   - a list: an array literal holding a `...xs.map(cb)` / `...xs.flatMap(cb)`
+//     spread, whose arms are its plain elements and every return of those
+//     callbacks (nested switches included), or
+//   - a respelling row: `[needle, replacement]` in a table of such pairs. Its
+//     anchor is not an arm but the catalogued prompt whose text contains the
+//     needle, since the replacement renders into that prompt at runtime; a
+//     needle that is a bare key token marks a lookup table and anchors nothing.
 // An array or `+` chain is one arm when the extractor ruled its joined text (a
 // composite verdict); otherwise its own literal leaves are the arms, each under
 // the body the extractor looks it up by (a composite element is a fragment).
 // A group is checked only when one of its arms is catalogued (a `model` cache
 // verdict or a catalogue body). Each other arm that has no verdict at all
 // (current or pre-promotion key), is not catalogued, and reads as words (two
-// or more outside `${}`) is a finding. Arms that already carry a
-// `ui`/`internal` verdict were ruled on and are not re-reported.
+// or more outside `${}`, counting the literals a slot falls back to) is a
+// finding. Arms that already carry a `ui`/`internal` verdict were ruled on and
+// are not re-reported.
 //
 // Usage:
 //   node tools/checkSiblingArms.mjs <cli.js> <prompts.json>
@@ -118,11 +127,19 @@ function leaves(n, out = []) {
 }
 
 // The prose of a literal, from the AST: a template's cooked quasis, so a `{`
-// inside a slot (`${e("{")} Please confirm`) cannot swallow the text after it.
+// inside a slot (`${e("{")} Please confirm`) cannot swallow the text after it,
+// plus the literals a slot can render by itself: its ternary arms and `??`/`||`
+// fallbacks. `${p??"the arguments"} ${d.message??"are not valid"}` has no word
+// outside its slots.
 const proseOf = n =>
   n.type === 'Literal'
     ? n.value
-    : n.quasis.map(q => q.value.cooked ?? q.value.raw).join(' ');
+    : [
+        ...n.quasis.map(q => q.value.cooked ?? q.value.raw),
+        ...n.expressions.flatMap(e =>
+          leaves(e).filter(isLiteralLeaf).map(proseOf)
+        ),
+      ].join(' ');
 
 // An arm as absolute ranges: a literal carries its prose; an array or `+`
 // chain carries `parts`, the arms of its elements / operands, used when the
@@ -141,8 +158,9 @@ function armOf(n, base) {
 }
 
 // Return arguments reachable from a case body without entering a nested
-// function or a nested switch (which forms its own group).
-function caseReturns(stmts) {
+// function or, unless `intoSwitches`, a nested switch (which forms its own
+// group).
+function caseReturns(stmts, { intoSwitches = false } = {}) {
   const out = [];
   const stack = [...stmts];
   while (stack.length) {
@@ -150,7 +168,7 @@ function caseReturns(stmts) {
     if (
       !n ||
       FN_TYPES.has(n.type) ||
-      n.type === 'SwitchStatement' ||
+      (n.type === 'SwitchStatement' && !intoSwitches) ||
       n.type === 'ClassBody'
     )
       continue;
@@ -162,6 +180,102 @@ function caseReturns(stmts) {
     stack.push(...childNodes(n));
   }
   return out;
+}
+
+const LOOP_TYPES = new Set([
+  'ForStatement',
+  'ForInStatement',
+  'ForOfStatement',
+  'WhileStatement',
+  'DoWhileStatement',
+]);
+
+// Can control leave the switch other than by `return`? With no `default`
+// every unmatched value does; otherwise only a `break` that binds to this
+// switch (not to a nested loop or switch) does.
+function fallsOut(sw) {
+  if (!sw.cases.some(c => c.test === null)) return true;
+  const stack = sw.cases.flatMap(c => c.consequent);
+  while (stack.length) {
+    const n = stack.pop();
+    if (
+      !n ||
+      FN_TYPES.has(n.type) ||
+      LOOP_TYPES.has(n.type) ||
+      n.type === 'SwitchStatement' ||
+      /Expression$/.test(n.type)
+    )
+      continue;
+    if (n.type === 'BreakStatement' && !n.label) return true;
+    stack.push(...childNodes(n));
+  }
+  return false;
+}
+
+// The statements that run after a switch falls out: its later siblings in the
+// enclosing statement list. Their return is the switch's default arm.
+function fallOutStatements(sw, parents) {
+  if (!fallsOut(sw)) return [];
+  const p = parents.get(sw);
+  const list = p && (Array.isArray(p.body) ? p.body : p.consequent);
+  if (!Array.isArray(list)) return [];
+  const i = list.indexOf(sw);
+  return i < 0 ? [] : list.slice(i + 1);
+}
+
+// Return arguments of a callback, through nested switches but not nested
+// functions; an expression-bodied arrow returns its body.
+const callbackReturns = fn =>
+  fn.body.type === 'BlockStatement'
+    ? caseReturns(fn.body.body, { intoSwitches: true })
+    : [fn.body];
+
+// `...xs.map(cb)` / `...xs.flatMap(cb)`: the callback whose returns become
+// elements of the enclosing array. `map` and `flatMap` are built-in names.
+function spreadCallback(el) {
+  if (el?.type !== 'SpreadElement') return null;
+  const call = el.argument;
+  if (call.type !== 'CallExpression' || call.callee.type !== 'MemberExpression')
+    return null;
+  const name = call.callee.property?.name;
+  if (name !== 'map' && name !== 'flatMap') return null;
+  const fn = call.arguments[0];
+  return fn && FN_TYPES.has(fn.type) ? fn : null;
+}
+
+// A list assembled from spread callbacks has no composite of its own (its
+// elements are not all literals), so its clauses are only ever seen one by
+// one. Arms: the plain elements and every callback return.
+function listArms(arr) {
+  const callbacks = arr.elements.map(spreadCallback);
+  if (!callbacks.some(Boolean)) return null;
+  return arr.elements.flatMap((el, i) => {
+    if (!el) return [];
+    if (callbacks[i])
+      return callbackReturns(callbacks[i]).flatMap(r => leaves(r));
+    return el.type === 'SpreadElement' ? [] : leaves(el);
+  });
+}
+
+const plainString = n =>
+  (n?.type === 'Literal' && typeof n.value === 'string') ||
+  (n?.type === 'TemplateLiteral' && n.expressions.length === 0);
+const isPair = n =>
+  n?.type === 'ArrayExpression' &&
+  n.elements.length === 2 &&
+  n.elements.every(plainString);
+
+// The cooked value of a plain string node.
+const stringValue = n =>
+  n.type === 'Literal' ? n.value : (n.quasis[0].value.cooked ?? '');
+
+// Is `n` one row of a respelling table, `[[needle, replacement], …]`? The
+// replacement is substituted for the needle in some host text at runtime, so
+// it renders wherever that host does.
+function isRespellingRow(n, parents) {
+  if (!isPair(n)) return false;
+  const table = parents.get(n);
+  return table?.type === 'ArrayExpression' && table.elements.every(isPair);
 }
 
 // Is the top of a ternary chain returned? Climbs through the wrappers leaves()
@@ -212,9 +326,21 @@ export function armGroups(code) {
       let kind = null;
       if (n.type === 'SwitchStatement') {
         kind = 'switch';
-        arms = n.cases.flatMap(c =>
-          caseReturns(c.consequent).flatMap(r => leaves(r))
-        );
+        arms = n.cases
+          .map(c => c.consequent)
+          .concat([fallOutStatements(n, parents)])
+          .flatMap(stmts => caseReturns(stmts).flatMap(r => leaves(r)));
+      } else if (n.type === 'ArrayExpression' && isRespellingRow(n, parents)) {
+        const [needle, replacement] = n.elements;
+        groups.push({
+          kind: 'respelling',
+          at: seg.start + n.start,
+          needle: stringValue(needle),
+          arms: [armOf(replacement, seg.start)],
+        });
+      } else if (n.type === 'ArrayExpression') {
+        kind = 'list';
+        arms = listArms(n);
       } else if (
         n.type === 'ConditionalExpression' &&
         parents.get(n)?.type !== 'ConditionalExpression' &&
@@ -260,6 +386,13 @@ export function readsAsWords(text) {
   return false;
 }
 
+// Catalogue pieces keep a template's source escapes; a needle is cooked.
+const cook = s =>
+  s.replace(
+    /\\([nrt`$\\'"])/g,
+    (_m, c) => ({ n: '\n', r: '\r', t: '\t' })[c] ?? c
+  );
+
 function quietly(fn) {
   const { log, warn } = console;
   console.log = () => {};
@@ -298,11 +431,22 @@ export function scanSiblingArms(cliPath, { catalogue, cache, version } = {}) {
   for (const list of literals.values()) list.sort((a, b) => rank(a) - rank(b));
 
   const catalogued = new Map();
+  const hosts = [];
   for (const p of catalogue || []) {
     const body = (p.pieces || []).filter(x => typeof x === 'string').join('');
     for (const v of keyVariants(body))
       if (!catalogued.has(v.key)) catalogued.set(v.key, p.id);
+    if (p.id) hosts.push({ id: p.id, text: cook(body) });
   }
+  // The catalogued prompts whose text holds a respelling needle: the host the
+  // replacement renders into. A needle that is a bare key token ("teammate",
+  // "ECONNRESET", "claude-3-5-sonnet") makes the table a key-to-label lookup
+  // whose key merely turns up in unrelated prompts; a reworded phrase carries
+  // a space or punctuation ("upload_asset:", "clearer than terminal text").
+  const hostsOf = needle =>
+    needle.trim() && !/^[$\w.-]+$/.test(needle.trim())
+      ? hosts.filter(h => h.text.includes(needle)).map(h => h.id)
+      : [];
   const ruling = e => {
     const d = describe(e, cache || {});
     const keys = entryKeys(e);
@@ -353,7 +497,10 @@ export function scanSiblingArms(cliPath, { catalogue, cache, version } = {}) {
   let trivial = 0;
   for (const g of groups) {
     const arms = g.arms.flatMap(resolve);
-    const anchors = arms.filter(a => a.modelId);
+    const anchors =
+      g.kind === 'respelling'
+        ? hostsOf(g.needle)
+        : arms.filter(a => a.modelId).map(a => a.modelId);
     if (!anchors.length) continue;
     anchored++;
     for (const a of arms) {
@@ -371,7 +518,7 @@ export function scanSiblingArms(cliPath, { catalogue, cache, version } = {}) {
         body: a.body,
         group: g.kind,
         groupAt: g.at,
-        anchors: [...new Set(anchors.map(x => x.modelId))],
+        anchors: [...new Set(anchors)],
       });
     }
   }

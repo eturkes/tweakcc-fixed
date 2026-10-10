@@ -281,6 +281,81 @@ describe('checkSiblingArms: composite, concat, legacy and word arms', () => {
   });
 });
 
+// Shapes the gate missed on CC 2.1.296: the start_task refusal builder (a
+// switch whose `break` falls out to a shared return, inside a flatMap callback
+// spread into one list beside a map callback's own clause) and the Artifact
+// tool's respelling tables (the needle is catalogued prompt text, the
+// replacement renders in its place on another host).
+const FIXTURE4 = [
+  'function r(c,u){return D([...c.map((d)=>{let p=g(d);return`fixture it has no argument ${d}`}),...u.flatMap((d)=>{let p=d.path;switch(d.keyword){case"type":return[`${p} fixture must be a type`];case"enum":if(d.ok)return[`${p} fixture must be one of`];break}return[`${p??"the fixture arguments"} ${d.message??"fixture are not valid"}`]})])}',
+  'var t=[["fixture clearer than terminal text","fixture clearer than the conversation"]],h="The fixture page is fixture clearer than terminal text for readers.";function o(e){return e?Oq(h,t):h}',
+  'function s(e){switch(e){case 1:return"Fixture closed switch catalogued";default:return"Fixture closed default arm"}return"Fixture unreachable tail here"}',
+  'var nope=[["fixture needle nowhere catalogued","fixture replacement stays quiet"]];',
+  'var codes=new Map([["EFIXTURE","Fixture lookup label for a code"],["fixture-key","Fixture lookup label for a key"]]);',
+  'function l(c){return[...c.map((d)=>`fixture unanchored clause ${d}`),"fixture plain element here"]}',
+].join('\n');
+const CATALOGUE4 = [
+  prompt('tool-description-fixture-host', [
+    'The fixture page is fixture clearer than terminal text for readers. EFIXTURE and fixture-key are named here.',
+  ]),
+  prompt('tool-result-fixture-closed', ['Fixture closed switch catalogued']),
+];
+const CACHE4 = {
+  [key('${} fixture must be a type')]: {
+    facing: 'model',
+    id: 'tool-result-fixture-must-be-a-type',
+    name: 'Fixture',
+    desc: 'Fixture',
+  },
+};
+
+describe('checkSiblingArms: fall-out returns, spread lists and respellings', () => {
+  let cli4;
+  beforeAll(() => {
+    cli4 = path.join(dir, 'cli-9.9.6.js');
+    fs.writeFileSync(cli4, FIXTURE4);
+  });
+  const scan = () =>
+    scanSiblingArms(cli4, { catalogue: CATALOGUE4, cache: CACHE4 });
+  const find = (r, text) => r.findings.find(f => f.body.includes(text));
+
+  it('reads the return a switch falls out to as its default arm', () => {
+    const f = find(scan(), 'fixture are not valid');
+    expect(f?.anchors).toEqual(['tool-result-fixture-must-be-a-type']);
+  });
+
+  it('reads a list built from spread map callbacks as one group', () => {
+    const f = find(scan(), 'fixture it has no argument');
+    expect(f?.group).toBe('list');
+    expect(f?.anchors).toEqual(['tool-result-fixture-must-be-a-type']);
+  });
+
+  it('reports a respelling replacement whose needle is catalogued text', () => {
+    const f = find(scan(), 'fixture clearer than the conversation');
+    expect(f?.group).toBe('respelling');
+    expect(f?.anchors).toEqual(['tool-description-fixture-host']);
+  });
+
+  it('reports nothing unreachable, unanchored, keyed or outside a catalogued host', () => {
+    const bodies = scan()
+      .findings.map(f => f.body)
+      .sort();
+    expect(bodies).toHaveLength(5);
+    for (const quiet of [
+      'unreachable tail',
+      'replacement stays quiet',
+      'needle nowhere',
+      'unanchored clause',
+      'plain element',
+      'lookup label',
+      'fixture clearer than terminal text',
+    ])
+      expect(bodies.some(b => b.includes(quiet))).toBe(false);
+    expect(bodies.some(b => b === 'Fixture closed default arm')).toBe(true);
+    expect(bodies.some(b => b.includes('fixture must be one of'))).toBe(true);
+  });
+});
+
 describe('checkSiblingArms: unparseable segments', () => {
   it('counts a segment acorn cannot parse and exits 2', () => {
     const bundle = [
