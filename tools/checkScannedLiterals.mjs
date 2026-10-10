@@ -42,6 +42,17 @@ import { createRequire } from 'node:module';
 import fs from 'node:fs';
 import path from 'node:path';
 
+import {
+  containsNeedle,
+  cookedForms,
+  decodeJsString,
+  unescapeOverride,
+} from './lib/searchNeedles.mjs';
+import {
+  analyzeThrowingRewriters,
+  checkThrowingNeedles,
+} from './lib/throwingRewriters.mjs';
+
 const require = createRequire(import.meta.url);
 const {
   parseOverrideArgs,
@@ -227,23 +238,54 @@ export const matchEvidence = (src, lit) =>
 // rewrite a no-op and ships the un-restated wording to the other surface. No
 // other gate sees it: the literal is still in the bundle, the prompt still
 // applies, and nothing errors.
+// A quoted or template string token at `i`: [cooked value, index past it].
+// The value is null for a template carrying `${}` (not a fixed spelling) and
+// undefined when the token never closes.
 const jsString = (src, i) => {
-  const out = [];
   const q = src[i];
-  i += 1;
-  while (i < src.length) {
-    const c = src[i];
+  let k = i + 1;
+  let interpolated = false;
+  while (k < src.length) {
+    const c = src[k];
     if (c === '\\') {
-      out.push(src[i + 1]);
-      i += 2;
+      k += 2;
       continue;
     }
-    if (c === q) return [out.join(''), i + 1];
-    out.push(c);
-    i += 1;
+    if (c === q) {
+      const raw = src.slice(i, k + 1);
+      return [interpolated ? null : decodeJsString(raw), k + 1];
+    }
+    if (q === '`' && c === '$' && src[k + 1] === '{') {
+      interpolated = true;
+      k = skipBraces(src, k + 1);
+      continue;
+    }
+    if (q !== '`' && c === '\n') break;
+    k += 1;
   }
-  return [null, i];
+  return [undefined, k];
 };
+
+// Past the `{...}` opening at `k`, stepping over strings nested inside it.
+const skipBraces = (src, k) => {
+  let depth = 0;
+  for (; k < src.length; k += 1) {
+    const c = src[k];
+    if (c === '"' || c === "'" || c === '`') {
+      [, k] = jsString(src, k);
+      k -= 1;
+      continue;
+    }
+    if (c === '{') depth += 1;
+    else if (c === '}') {
+      depth -= 1;
+      if (depth === 0) return k + 1;
+    }
+  }
+  return k;
+};
+
+const isQuote = c => c === '"' || c === "'" || c === '`';
 
 // Every `[[ "needle", "replacement" ], ...]` table passed as a call argument.
 // A needle missing from an override is only a broken rewrite when the sentence
@@ -282,7 +324,7 @@ export const rewriteTablePairs = src => {
     let k = open;
     for (; k < src.length; k += 1) {
       const c = src[k];
-      if (c === '"' || c === "'") {
+      if (isQuote(c)) {
         [, k] = jsString(src, k);
         k -= 1;
         continue;
@@ -297,15 +339,16 @@ export const rewriteTablePairs = src => {
     const seg = src.slice(open, k + 1);
     const strings = [];
     for (let p = 0; p < seg.length; p += 1) {
-      if (seg[p] === '"' || seg[p] === "'") {
+      if (isQuote(seg[p])) {
         const [v, next] = jsString(seg, p);
-        if (v === null) break;
+        if (v === undefined) break;
         strings.push(v);
         p = next - 1;
       }
     }
     if (strings.length < 2 || strings.length % 2 !== 0) continue;
     for (let a = 0; a < strings.length; a += 2) {
+      if (strings[a] === null) continue;
       pairs.push({ needle: strings[a], replacement: strings[a + 1] });
     }
   }
@@ -385,23 +428,49 @@ const main = () => {
     }
   }
 
+  // Needles a THROWING rewriter requires (see lib/throwingRewriters.mjs). Any
+  // override that drops one — reworded, sentence deleted, or wiped empty —
+  // makes tool.prompt() throw on every turn, so each is a hard failure.
+  const throwing = analyzeThrowingRewriters(src, prompts);
+  const throwingNeedles = new Set(throwing.needles.map(n => n.needle));
+  const throwingFailures = [];
+  const throwingNotes = new Set();
+  for (const set of sets) {
+    const overrideOf = id => {
+      const file = path.join(set, `${id}.md`);
+      return fs.existsSync(file) ? bodyOf(fs.readFileSync(file, 'utf8')) : null;
+    };
+    const { failures, notes } = checkThrowingNeedles(
+      throwing,
+      prompts,
+      overrideOf
+    );
+    for (const f of failures)
+      throwingFailures.push({ ...f, set: path.basename(set) });
+    for (const n of notes) throwingNotes.add(n);
+  }
+  const unresolvedTables = throwing.problems;
+
   // Rewrite-table needles: the override must still CONTAIN the needle, because
   // the binary matches it against the override's own text (see rewriteTableNeedles).
+  // Pieces and overrides are template-literal source, so both are compared
+  // cooked: a needle spelled with a backtick never matches the raw `\``.
   const brokenRewrites = [];
   const sentenceDeleted = [];
-  const needles = rewriteTableNeedles(src);
+  const needles = rewriteTableNeedles(src).filter(n => !throwingNeedles.has(n));
   for (const needle of needles) {
     for (const p of prompts) {
       if (!p.id) continue;
-      const body = (p.pieces || []).filter(x => typeof x === 'string').join('');
-      if (!body.includes(needle)) continue;
+      const raw = (p.pieces || []).filter(x => typeof x === 'string').join('');
+      const body = cookedForms(raw).find(f => f.includes(needle));
+      if (body === undefined) continue;
       for (const set of sets) {
         const file = path.join(set, `${p.id}.md`);
         if (!fs.existsSync(file)) continue;
         const ov = bodyOf(fs.readFileSync(file, 'utf8'));
         if (!ov.trim()) continue; // a deliberate suppression emits nothing at all
-        if (ov.includes(needle)) continue;
-        if (!sentenceSurvives(body, needle, ov)) {
+        if (containsNeedle(ov, needle)) continue;
+        if (!sentenceSurvives(body, needle, unescapeOverride(ov))) {
           sentenceDeleted.push({ id: p.id, set: path.basename(set), needle });
           continue;
         }
@@ -425,6 +494,35 @@ const main = () => {
     );
   }
 
+  for (const n of throwingNotes) console.log(`note: ${n}`);
+  for (const d of throwing.dead) {
+    console.log(
+      `note: throwing rewrite table at ${d.where} is dead in this build ` +
+        `(${d.reason}): ${d.call.slice(0, 80)}`
+    );
+  }
+  for (const u of unresolvedTables) {
+    console.error(
+      `UNRESOLVED REWRITE TABLE  ${u.where}\n` +
+        `   reason  : ${u.reason}\n` +
+        (u.call ? `   call    : ${u.call.slice(0, 120)}\n` : '') +
+        `   effect  : a rewriter that throws on a missing needle is fed a table ` +
+        `the gate cannot read, so no override is checked against it`
+    );
+  }
+  for (const r of throwingFailures) {
+    console.error(
+      `THROWING REWRITE   ${r.set}/${r.id}\n` +
+        `   needle  : ${JSON.stringify(r.needle.slice(0, 100))}\n` +
+        (r.pristineNeedle && r.pristineNeedle !== r.needle
+          ? `   pristine: ${JSON.stringify(r.pristineNeedle.slice(0, 100))}\n`
+          : '') +
+        `   call    : ${r.calls.map(c => c.slice(0, 70)).join(' | ')}\n` +
+        `   effect  : ${r.detail}; the rewriter throws when its text lacks a ` +
+        `needle, so tool.prompt() fails and every turn ends in model_error`
+    );
+  }
+
   for (const r of blanked) {
     console.error(
       `BLANKED PREDICATE  ${r.set}/${r.id}\n` +
@@ -441,20 +539,42 @@ const main = () => {
   }
 
   if (jsonOut) {
-    fs.writeFileSync(jsonOut, JSON.stringify({ blanked, edited }, null, 2));
+    fs.writeFileSync(
+      jsonOut,
+      JSON.stringify(
+        {
+          blanked,
+          edited,
+          brokenRewrites,
+          throwingRewrites: throwingFailures,
+          unresolvedTables,
+        },
+        null,
+        2
+      )
+    );
   }
 
-  if (blanked.length || brokenRewrites.length) {
+  const failed =
+    blanked.length +
+    brokenRewrites.length +
+    throwingFailures.length +
+    unresolvedTables.length;
+  if (failed) {
     console.error(
       `\nscanned literals: ${blanked.length} blanked predicate(s), ` +
-        `${brokenRewrites.length} broken rewrite(s), ${edited.length} rewritten`
+        `${brokenRewrites.length} broken rewrite(s), ` +
+        `${throwingFailures.length} throwing rewrite(s), ` +
+        `${unresolvedTables.length} unresolved table(s), ${edited.length} rewritten`
     );
     process.exit(1);
   }
   console.log(
-    `✓ scanned literals: 0 blanked predicates, 0 broken rewrites ` +
-      `(${edited.length} rewritten, ${seen.size} literals examined, ` +
-      `${needles.length} rewrite-table needle(s))`
+    `✓ scanned literals: 0 blanked predicates, 0 broken rewrites, ` +
+      `0 throwing rewrites (${edited.length} rewritten, ${seen.size} literals examined, ` +
+      `${needles.length} rewrite-table needle(s), ` +
+      `${throwingNeedles.size} throwing-rewriter needle(s) across ` +
+      `${throwing.sites.length} call site(s))`
   );
 };
 

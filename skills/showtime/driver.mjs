@@ -319,7 +319,7 @@ function cmdCheck() {
       try { out = execSync(`node tools/checkScannedLiterals.mjs ${ORIG_JS} ${jsonPath} --set=${set} 2>&1`, { cwd: REPO, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 }); }
       catch (e) { out = (e.stdout || '') + (e.stderr || ''); code = e.status || 1; }
       if (code === 0) console.log(C.ok(out.split('\n').filter((l) => /^✓/.test(l)).join(' ').replace(/^✓\s*/, '')));
-      else fail(`predicate literals: ${out.split('\n').filter((l) => /BLANKED PREDICATE/.test(l)).slice(0, 4).join(' | ').slice(0, 240)}`);
+      else fail(`predicate literals: ${out.split('\n').filter((l) => /BLANKED PREDICATE|BROKEN REWRITE|THROWING REWRITE|UNRESOLVED REWRITE TABLE/.test(l)).slice(0, 4).join(' | ').slice(0, 240) || `checkScannedLiterals exited ${code}: ${out.trim().split('\n').slice(-3).join(' | ').slice(0, 240)}`}`);
     }
   }
   console.log('');

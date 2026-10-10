@@ -278,6 +278,7 @@ export const probesOf = p => {
       out.add(uEsc(form, true));
     }
     out.add(w.replace(/`/g, '\\`'));
+    if (w.includes("'")) out.add(w.replace(/'/g, "\\'"));
   }
   return [...out];
 };
