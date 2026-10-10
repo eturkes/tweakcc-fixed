@@ -135,9 +135,11 @@ describe('checkSiblingArms: scan', () => {
     expect(r.findings.find(f => f.body.includes('no branch')).anchors).toEqual([
       'tool-result-fixture-ternary-yes',
     ]);
-    expect(r.trivial).toBe(1);
+    // `none` is a bare word: the fall-out return union reaches it, but a
+    // content-keyed verdict on it would catalogue every comparison of it.
+    expect(r.findings.find(f => f.body === 'none')).toBeUndefined();
+    expect(r.trivial).toBe(2);
     expect(r.anchored).toBe(6);
-    expect(r.findings.find(f => f.body === 'none')?.kind).toBe('returns');
   });
 
   it('exits 1 with findings and 0 once every arm is ruled', () => {
@@ -148,7 +150,7 @@ describe('checkSiblingArms: scan', () => {
     const first = run();
     expect(first.status).toBe(1);
     expect(first.stdout).toMatch(
-      /sibling arms: 6 uncatalogued unclassified arm\(s\)/
+      /sibling arms: 5 uncatalogued unclassified arm\(s\)/
     );
     const ruled = { ...CACHE };
     for (const b of [
@@ -157,7 +159,6 @@ describe('checkSiblingArms: scan', () => {
       'Fixture array arm about cats',
       'Fixture arrow arm ${} left out',
       'Fixture ternary no branch here',
-      'none',
     ])
       ruled[key(b)] = { facing: 'internal' };
     fs.writeFileSync(cachePath, JSON.stringify(ruled));
@@ -512,6 +513,23 @@ describe('checkSiblingArms: bounded assembled strings', () => {
       '<tag>',
     ])
       expect(finding(r, body)?.group).toBe('join');
+  });
+
+  // CC 2.1.296: `error` and `read` arms got `model` verdicts, then anchored
+  // every join they sat in, and each re-extract raised more siblings.
+  it('neither reports nor anchors on a bare word', () => {
+    const r = scan(
+      'function f(){return ["Flow anchor","pending","Two words"].join("\\n")}'
+    );
+    expect(r.findings.map(f => f.body)).toEqual(['Two words']);
+    const cache = { [key('error')]: { facing: 'model' } };
+    const g = scan(
+      'function g(){return ["error","Other line here"].join("\\n")}',
+      [],
+      cache
+    );
+    expect(g.anchored).toBe(0);
+    expect(g.findings).toEqual([]);
   });
 
   it('excludes no-letter glue while keeping a word-bearing arm', () => {

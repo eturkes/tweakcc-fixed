@@ -205,6 +205,25 @@ describe('promptExtractor below-floor capture', () => {
         }
       });
 
+      // CC 2.1.296: `model` verdicts on sibling arms such as `error` and
+      // `read_file` catalogued every string node of that word, 11,357 entries.
+      it('never captures a bare word on a model verdict', () => {
+        _setClassificationCacheForTests({
+          [sha1Hex('error')]: { facing: 'model' },
+          [sha1Hex('read_file')]: { facing: 'model' },
+          [sha1Hex('3 errors found')]: { facing: 'model' },
+        });
+        const { bodies } = extract(
+          'function f(e,n){if(e.kind==="error")return n?"read_file":"error";return {content:"3 errors found"}}'
+        );
+        expect(bodies).not.toContain('error');
+        expect(bodies).not.toContain('read_file');
+        expect(bodies).toContain('3 errors found');
+        expect(extractStrings.isBareToken(' error ')).toBe(true);
+        expect(extractStrings.isBareToken('/model')).toBe(false);
+        expect(extractStrings.isBareToken('Status:')).toBe(false);
+      });
+
       // CC 2.1.294: two arms of one ternary share their first 89 chars. The
       // relaunch arm was catalogued, and the sidecar filter dropped the
       // resume-only arm because a captured prompt contained its 80-char opening.

@@ -4046,7 +4046,19 @@ function proseOutsideSlots(text) {
   return out;
 }
 
+// One bare word: an enum value, key or pluralised noun (`error`, `read_file`).
+// Model-facing only as a value inside a catalogued prompt's slot, which the
+// slot-literal gate covers. Never a catalogue entry of its own: the cache is
+// keyed on content, so a `model` verdict earned at one site catalogues every
+// `e==="error"` comparison in the bundle (3,837 entries on CC 2.1.296), and an
+// override would rewrite all of them.
+const BARE_TOKEN = /^[A-Za-z_$][\w$-]*$/;
+function isBareToken(text) {
+  return BARE_TOKEN.test(text.trim());
+}
+
 function isHardExcluded(text) {
+  if (isBareToken(text)) return true;
   // No prose at all — a template that is only interpolation scaffolding
   // (`${x}\n\n${y()}`, `${a}, ${b}`). Nothing model-facing is authored here,
   // so an override can only ever be "unchanged", while the regex built from
@@ -6300,7 +6312,12 @@ if (require.main === module) {
   // these into the chunk files the classification workflow consumes;
   // classify-merge writes the verdicts and the next extraction acts on them.
   const gateCandidates = result.gateCandidates || [];
-  const sidecarPath = process.env.TWEAKCC_GATE_CANDIDATES || path.join(process.env.SHOWTIME_TMP || '/tmp', 'tweakcc-gate-candidates.json');
+  const sidecarPath =
+    process.env.TWEAKCC_GATE_CANDIDATES ||
+    path.join(
+      process.env.SHOWTIME_TMP || '/tmp',
+      'tweakcc-gate-candidates.json'
+    );
   fs.writeFileSync(
     sidecarPath,
     JSON.stringify(
@@ -6344,6 +6361,7 @@ module.exports.leadShowsExceptionContext = leadShowsExceptionContext;
 module.exports.contentIsModelFacingShortPrompt =
   contentIsModelFacingShortPrompt;
 module.exports.validateInput = validateInput;
+module.exports.isBareToken = isBareToken;
 module.exports.ADMIT_FLOOR = ADMIT_FLOOR;
 module.exports.shouldCapture = shouldCapture;
 module.exports.looksLikeEnglishProse = looksLikeEnglishProse;

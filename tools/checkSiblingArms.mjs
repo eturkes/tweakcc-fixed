@@ -34,9 +34,12 @@
 // A group is checked only when one of its arms is catalogued (a `model` cache
 // verdict or a catalogue body). Each other arm that has no verdict at all
 // (current or pre-promotion key), is not catalogued, and reads as words (two
-// or more outside `${}`, counting the literals a slot falls back to) is a
-// finding. Arms that already carry a `ui`/`internal` verdict were ruled on and
-// are not re-reported.
+// or more outside `${}`, counting the literals a slot falls back to; in a join
+// or return union any letter, so a one-word heading line counts) is a finding.
+// A bare word (`error`, `read_file`) never is: the extractor hard-excludes it,
+// since a content-keyed verdict on it would catalogue every code comparison of
+// that word. Arms that already carry a `ui`/`internal` verdict were ruled on
+// and are not re-reported.
 //
 // Usage:
 //   node tools/checkSiblingArms.mjs <cli.js> <prompts.json>
@@ -391,6 +394,8 @@ function isReturned(node, parents) {
   if (p.type === 'ReturnStatement') return true;
   return p.type === 'ArrowFunctionExpression' && p.body === cur;
 }
+
+const FLOW_KINDS = new Set(['join', 'returns']);
 
 const BLOCK_TYPES = new Set([
   'BlockStatement',
@@ -772,8 +777,11 @@ export function scanSiblingArms(cliPath, { catalogue, cache, version } = {}) {
       verdict: verdict
         ? { facing: verdict.facing, ...(verdict.id && { id: verdict.id }) }
         : null,
-      modelId:
-        verdict?.facing === 'model'
+      // A bare word is never catalogued (the extractor hard-excludes it), so a
+      // `model` verdict on one anchors nothing; it still counts as ruled.
+      modelId: ex.isBareToken(cook(e.cacheBody ?? ''))
+        ? null
+        : verdict?.facing === 'model'
           ? verdict.id || catId || '(unnamed)'
           : catId,
     };
@@ -830,7 +838,7 @@ export function scanSiblingArms(cliPath, { catalogue, cache, version } = {}) {
   let trivial = 0;
   for (const g of groups) {
     const arms = g.arms.flatMap(resolve);
-    const flowGroup = g.kind === 'join' || g.kind === 'returns';
+    const flowGroup = FLOW_KINDS.has(g.kind);
     const anchorSites = arms.filter(a => a.modelId);
     const anchors =
       g.kind === 'respelling'
@@ -844,9 +852,10 @@ export function scanSiblingArms(cliPath, { catalogue, cache, version } = {}) {
       const siteKey = `${a.start}:${a.end}`;
       if (
         !seen.has(siteKey) &&
-        !(flowGroup
-          ? /\p{L}/u.test(cook(a.body))
-          : readsAsWords(a.text ?? a.body))
+        (ex.isBareToken(cook(a.body)) ||
+          !(flowGroup
+            ? /\p{L}/u.test(cook(a.body))
+            : readsAsWords(a.text ?? a.body)))
       ) {
         trivial++;
         continue;
