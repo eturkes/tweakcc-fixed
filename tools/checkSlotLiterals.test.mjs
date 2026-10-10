@@ -195,3 +195,37 @@ function c(e){let r=e?"the session is not in auto mode":"the request was empty";
     expect(hit?.label).toBe('REASON');
   });
 });
+
+// The extractor's pieces decode a printable escape but keep a control-character
+// escape raw, so a literal holding one of each is stored in a fourth form: not
+// cooked, not raw, not fully decoded. Comparing only those three reported an
+// already-catalogued literal as a finding.
+describe('checkSlotLiterals: the extractor piece form counts as catalogued', () => {
+  const host = {
+    id: 'tool-result-fixture-refused',
+    identifiers: [0, 1],
+    identifierMap: { 0: 'SUBJECT', 1: 'REASON' },
+    pieces: ['${', '.name} was refused: ${', '}'],
+  };
+  const source =
+    'function c(e,x){let r=x?"Stop here\\u0008 and wait \\u2014 then retry later":"";return `${e.name} was refused: ${r}`}\n';
+
+  it('reports the literal while it is uncatalogued', () => {
+    const f = findSlotLiterals(source, { prompts: [host] });
+    expect(f.map(x => x.label)).toEqual(['REASON']);
+  });
+
+  it('skips it once a prompt holds it in piece form', () => {
+    const catalogue = {
+      prompts: [
+        host,
+        {
+          id: 'tool-result-fixture-stop',
+          pieces: ['Stop here\\u0008 and wait — then retry later'],
+          identifiers: [],
+        },
+      ],
+    };
+    expect(findSlotLiterals(source, catalogue)).toEqual([]);
+  });
+});

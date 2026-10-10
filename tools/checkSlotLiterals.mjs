@@ -77,6 +77,7 @@ const require = createRequire(import.meta.url);
 const parser = require('@babel/parser');
 const {
   EARLIER_SHAPES,
+  decodeUnicodeEscapesInPiece,
   splitAroundIdentifiers,
   templateIdentifierNodes,
 } = require('./lib/bundleSites.cjs');
@@ -173,8 +174,18 @@ const decodeUnicodeEscapes = s =>
       String.fromCharCode(parseInt(h, 16))
     );
 
-/** The three shapes a catalogued `pieces` entry can be compared against. */
-const forms = lit => [lit.text, lit.raw, decodeUnicodeEscapes(lit.raw)];
+/**
+ * The shapes a catalogued `pieces` entry can be compared against: cooked, raw,
+ * fully \u-decoded, and the extractor's own piece form, which decodes printable
+ * escapes but keeps control and line-terminator escapes raw. A literal holding
+ * one of each matches only the last.
+ */
+export const literalForms = lit => [
+  lit.text,
+  lit.raw,
+  decodeUnicodeEscapes(lit.raw),
+  decodeUnicodeEscapesInPiece(lit.raw),
+];
 
 // The extractor's own decompositions of a template, current shape first, then
 // the shapes earlier extractors cut it into (a catalogue may hold either), each
@@ -307,16 +318,16 @@ export function findSlotLiterals(source, catalogue) {
         for (const sub of subtrees) {
           for (const lit of collectLiterals(sub)) {
             if (!isCandidateText(lit.text)) continue;
-            // Already catalogued in any of three forms. `pieces` are not raw and
+            // Already catalogued in any of its forms. `pieces` are not raw and
             // not cooked but a MIX: raw source with unicode escapes decoded
             // (decodeUnicodeEscapesInPiece in the extractor). A string carrying
             // both an escaped backtick and a `—` em dash therefore matches
             // neither pure form — the cooked one differs at the backtick, the raw
             // one at the dash — which is how the MCP remote-auth suffix and the
             // SendMessage cross-session guidance read as uncatalogued.
-            if (forms(lit).some(f => catalogued.has(norm(f)))) continue;
-            if (forms(lit).some(f => cataloguedBlob.includes(f.trim())))
-              continue;
+            const forms = literalForms(lit);
+            if (forms.some(f => catalogued.has(norm(f)))) continue;
+            if (forms.some(f => cataloguedBlob.includes(f.trim()))) continue;
             findings.push({
               promptId: prompt.id,
               slot,
@@ -324,10 +335,14 @@ export function findSlotLiterals(source, catalogue) {
               resolvedVia,
               offset: lit.start,
               hash: hash(lit.text),
+              // `text` is a display preview; `fullText` (cooked) and `raw` are
+              // what any comparison against other bodies must use.
               text:
                 lit.text.length > 300
                   ? lit.text.slice(0, 300) + '...'
                   : lit.text,
+              fullText: lit.text,
+              raw: lit.raw,
             });
           }
         }
