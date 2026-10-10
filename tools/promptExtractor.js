@@ -3748,8 +3748,8 @@ function loadSlotLiterals() {
 }
 // Debug seam: `TWEAKCC_DUMP_CANDIDATES=<path>` writes one JSON line per string
 // node the extractor considers, as {start, end, kind, cacheBody}, plus
-// `legacyCacheBody` for a template whose slot was promoted (the second body
-// classifyByCache looks it up under).
+// `legacyCacheBodies` for a template an earlier extractor cut differently (the
+// further bodies classifyByCache looks it up under).
 //
 // It exists because the cache key for a TEMPLATE literal is not the text anyone
 // reading the binary would write down. `cacheBody` is `pieces.join('')` — the
@@ -3914,11 +3914,13 @@ function* cacheLookupForms(body) {
   }
 }
 
-// `legacyBody` is the body a template had before slot promotion
-// (tools/lib/bundleSites.cjs); verdicts recorded against that form still bind.
-function classifyByCache(body, legacyBody) {
+// `legacyBodies` are the bodies a template had in an earlier extractor's slot
+// shape (tools/lib/bundleSites.cjs); verdicts recorded against them still bind.
+// A single body string is accepted too.
+function classifyByCache(body, legacyBodies) {
   const cache = loadClassificationCache();
-  for (const b of legacyBody ? [body, legacyBody] : [body]) {
+  const bodies = [body, ...[].concat(legacyBodies || []).filter(Boolean)];
+  for (const b of bodies) {
     for (const form of cacheLookupForms(b)) {
       const hit = cache[sha1Hex(form)];
       if (hit) return hit;
@@ -3927,8 +3929,10 @@ function classifyByCache(body, legacyBody) {
   return null;
 }
 
-const legacyBodyOf = p =>
-  p.legacy ? p.legacy.pieces.filter(x => typeof x === 'string').join('') : '';
+const legacyBodiesOf = p =>
+  (p.legacyShapes || []).map(l =>
+    l.pieces.filter(x => typeof x === 'string').join('')
+  );
 
 // Serialize the cache in the repo's canonical one-entry-per-line format (the
 // showtime driver's classify-merge writes the same bytes).
@@ -4285,7 +4289,7 @@ function shouldCapture(text, cacheBody, lead, minLength, opts = {}) {
   // whole schema via /update-config and settings validation errors), which
   // survives a reword that would orphan any per-string cache row.
   if (opts.settingsDescription) return !isHardExcluded(text);
-  const cls = classifyByCache(cacheBody, opts.legacyCacheBody);
+  const cls = classifyByCache(cacheBody, opts.legacyCacheBodies);
   if (cls) {
     if (isHardExcluded(text)) return false;
     if (cls.facing === 'model') return true;
@@ -4808,7 +4812,7 @@ function backfillIdenticalSites(stringData, sites, code) {
       identifierMap: { ...(template.identifierMap || {}) },
       start: site.start,
       end: site.end,
-      ...(template.legacy && { legacy: template.legacy }),
+      ...(template.legacyShapes && { legacyShapes: template.legacyShapes }),
     });
   };
 
@@ -5001,13 +5005,16 @@ function extractStrings(filepath, minLength = 500, opts = {}) {
       end: site.end,
       kind: 'template',
       cacheBody: tbody,
-      ...(site.legacy && { legacyCacheBody: site.legacy.pieces.join('') }),
+      ...(site.legacyShapes && {
+        legacyCacheBodies: site.legacyShapes.map(l => l.pieces.join('')),
+      }),
     });
     if (
       shouldCapture(fullContent, tbody, lead, minLength, {
         slotLiteral,
         settingsDescription: Boolean(settings),
-        legacyCacheBody: site.legacy && site.legacy.pieces.join(''),
+        legacyCacheBodies:
+          site.legacyShapes && site.legacyShapes.map(l => l.pieces.join('')),
         range: site,
       })
     ) {
@@ -5025,7 +5032,7 @@ function extractStrings(filepath, minLength = 500, opts = {}) {
         end: site.end,
         slotLiteral,
         ...(settings && { settings }),
-        ...(site.legacy && { legacy: site.legacy }),
+        ...(site.legacyShapes && { legacyShapes: site.legacyShapes }),
       });
     }
   };
@@ -5131,7 +5138,7 @@ function applyCacheNames(prompts) {
     (p.pieces || []).filter(x => typeof x === 'string').join('');
   for (const p of prompts) {
     if (p.id) continue; // established/fuzzy-carried name wins
-    const cls = classifyByCache(body(p), legacyBodyOf(p));
+    const cls = classifyByCache(body(p), legacyBodiesOf(p));
     if (cls && cls.facing === 'model' && cls.id) {
       p.id = cls.id;
       p.name = cls.name || '';
@@ -5155,7 +5162,7 @@ function applySlotLiteralNames(prompts) {
     const pieces = (p.pieces || []).filter(x => typeof x === 'string');
     // Whole body first (a StringLiteral capture IS the literal), then each
     // piece, longest first, so a template naming from its most specific quasi.
-    const legacyPieces = p.legacy ? p.legacy.pieces : [];
+    const legacyPieces = (p.legacyShapes || []).flatMap(l => l.pieces);
     const probes = [pieces.join('')].concat(
       pieces.slice().sort((a, b) => b.length - a.length),
       legacyPieces.slice().sort((a, b) => b.length - a.length)
@@ -5489,46 +5496,168 @@ function normalizeIdGroups(prompts) {
   return prompts.filter(p => !dropped.has(p));
 }
 
-// The old item's identifierMap, relabelled for the new item's slots. When the
-// old item is in the new item's pre-promotion shape its labels index the legacy
-// slots, so each name moves to the label its slot holds now; carrying it by
-// label would bind it to whichever slot was promoted ahead of it. Promoted
-// slots are left unnamed for the synthetic fill; names of slots that are no
-// longer slots (destructuring keys) are dropped.
-function carriedIdentifierMap(oldItem, newItem) {
-  const legacy = newItem.legacy;
-  const same = (a, b) => JSON.stringify(a || []) === JSON.stringify(b || []);
-  if (
-    !legacy ||
-    same(oldItem.identifiers, newItem.identifiers) ||
-    !same(oldItem.identifiers, legacy.identifiers)
-  ) {
-    return oldItem.identifierMap;
+// Slot identity across catalogues. A catalogue entry's labels name slots only
+// within the slot shape its extractor cut: two shapes of one template can hold
+// equal `identifiers` arrays over different slots (drop a destructuring key and
+// promote a later name, and [0,1,2] still reads [0,1,2]). So a name never moves
+// label-to-label between entries; it moves slot-to-slot, through the shape the
+// old entry was cut in and that shape's `occurrences` into the current slots.
+//
+// The shapes a fresh item can be matched in: its own, then each earlier
+// extractor's (tools/lib/bundleSites.cjs `legacyShapes`).
+function itemShapes(item) {
+  const ids = item.identifiers || [];
+  return [
+    {
+      pieces: item.pieces || [],
+      identifiers: ids,
+      occurrences: ids.map((_, i) => i),
+    },
+    ...(item.legacyShapes || []),
+  ];
+}
+
+// `oldItem`'s names for the slots `pairs` ([oldSlot, shapeSlot], …) aligns
+// with `shape`, keyed by the new item's labels. A shape slot that is no longer
+// a slot drops its name; a pairing that is not one-to-one between old and new
+// labels drops both rather than guess.
+function remapThroughShape(oldItem, newItem, shape, pairs) {
+  const oldMap = oldItem.identifierMap || {};
+  const links = [];
+  for (const [oi, si] of pairs) {
+    const slot = shape.occurrences[si];
+    if (slot === undefined || slot < 0) continue;
+    links.push([
+      String(oldItem.identifiers[oi]),
+      String(newItem.identifiers[slot]),
+    ]);
   }
+  const fan = (from, to) => {
+    const m = new Map();
+    for (const l of links) {
+      if (!m.has(l[from])) m.set(l[from], new Set());
+      m.get(l[from]).add(l[to]);
+    }
+    return m;
+  };
+  const outOf = fan(0, 1);
+  const into = fan(1, 0);
   const map = {};
-  legacy.occurrences.forEach((slot, i) => {
-    const name = (oldItem.identifierMap || {})[legacy.identifiers[i]];
-    if (name && slot >= 0) map[newItem.identifiers[slot]] = name;
-  });
+  for (const [o, n] of links) {
+    if (outOf.get(o).size !== 1 || into.get(n).size !== 1) continue;
+    if (oldMap[o]) map[n] = oldMap[o];
+  }
   return map;
 }
 
-// Upstream's extractor does not promote slots (tools/lib/bundleSites.cjs), so
-// its map for a prompt we promoted is in our legacy shape. Its names then move
-// to the slots they named, and the promoted slots keep theirs.
+// The shape among `shapes` that `oldItem` was cut in, when its pieces and
+// labels are exactly that shape's (`norm` folds formatting the two pipelines
+// disagree on). Index into `shapes`, or -1.
+function exactShapeIndex(oldItem, shapes, norm = x => x) {
+  const key = item =>
+    JSON.stringify([(item.pieces || []).map(norm), item.identifiers || []]);
+  const k = key(oldItem);
+  return shapes.findIndex(sh => key(sh) === k);
+}
+
+const ALL_SLOTS = item => (item.identifiers || []).map((_, i) => [i, i]);
+
+// Each slot's surroundings: the text up to ANCHOR chars either side, with every
+// other slot written as `sep`. Two shapes of one template differ exactly there
+// (a name is slot or text), so equal surroundings mean the same slot, and an
+// edit elsewhere in a long prompt leaves them alone.
+const ANCHOR = 24;
+function slotAnchors(pieces, sep, norm) {
+  let text = '';
+  const at = [];
+  pieces.forEach((p, i) => {
+    text += norm(p);
+    if (i < pieces.length - 1) {
+      at.push(text.length);
+      text += sep;
+    }
+  });
+  return at.map(q => [
+    text.slice(Math.max(0, q - ANCHOR), q),
+    text.slice(q + 1, q + 1 + ANCHOR),
+  ]);
+}
+
+// Order-preserving pairing of `oldItem`'s slots with `shape`'s, maximizing the
+// number of matching surroundings (a pair needs at least one side equal).
+function alignSlots(oldItem, shape, norm) {
+  const all = [...(oldItem.pieces || []), ...shape.pieces];
+  let sep = '\u0000';
+  for (let c = 0xe000; all.some(p => p.includes(sep)); c++)
+    sep = String.fromCharCode(c);
+  const A = slotAnchors(oldItem.pieces || [], sep, norm);
+  const B = slotAnchors(shape.pieces, sep, norm);
+  const w = (i, j) => (A[i][0] === B[j][0]) + (A[i][1] === B[j][1]);
+  const m = A.length;
+  const n = B.length;
+  const dp = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+  for (let i = m - 1; i >= 0; i--)
+    for (let j = n - 1; j >= 0; j--) {
+      const wij = w(i, j);
+      dp[i][j] = Math.max(
+        dp[i + 1][j],
+        dp[i][j + 1],
+        wij ? wij + dp[i + 1][j + 1] : 0
+      );
+    }
+  const pairs = [];
+  for (let i = 0, j = 0; i < m && j < n; ) {
+    const wij = w(i, j);
+    if (wij && dp[i][j] === wij + dp[i + 1][j + 1]) {
+      pairs.push([i, j]);
+      i++;
+      j++;
+    } else if (dp[i][j] === dp[i + 1][j]) i++;
+    else j++;
+  }
+  return { pairs, score: dp[0][0], complete: pairs.length === m && m === n };
+}
+
+// `oldItem`'s identifierMap for `newItem`'s slots when the bodies differ (a
+// fuzzy carry, or upstream's entry for another build): the slots are paired by
+// their surroundings in whichever shape fits the old entry best, and names
+// move only along those pairs. Shapes that fit equally well keep only the
+// names they agree on. `complete` is whether every old slot and every slot of
+// the chosen shape paired.
+function alignedIdentifierMap(oldItem, newItem, norm = x => x) {
+  const shapes = itemShapes(newItem);
+  const fits = shapes.map(sh => ({ sh, ...alignSlots(oldItem, sh, norm) }));
+  const best = Math.max(...fits.map(f => f.score));
+  const top = fits.filter(f => f.score === best);
+  const maps = top.map(f => remapThroughShape(oldItem, newItem, f.sh, f.pairs));
+  const map = {};
+  for (const [k, v] of Object.entries(maps[0]))
+    if (maps.every(m => m[k] === v)) map[k] = v;
+  return { map, complete: top.length === 1 && top[0].complete };
+}
+
+// Upstream's extractor cuts slots in our 'base' shape (no promotion, keys as
+// slots). Its names move to the slots they named; slots upstream does not
+// name keep ours unless the name is taken by an adopted one.
 function adoptUpstreamIdentifierMap(p, u) {
   if (!u || !u.identifierMap) return false;
-  const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
-  if (same(u.identifiers, p.identifiers)) {
-    p.identifierMap = { ...u.identifierMap };
-    return true;
+  const shapes = itemShapes(p);
+  const norm = x => x.replace(/\\(['"`\\])/g, '$1');
+  const exact = exactShapeIndex(u, shapes, norm);
+  let adopted;
+  if (exact >= 0) {
+    adopted = remapThroughShape(u, p, shapes[exact], ALL_SLOTS(u));
+  } else {
+    const { map, complete } = alignedIdentifierMap(u, p, norm);
+    if (!complete) return false;
+    adopted = map;
   }
-  if (!p.legacy || !same(u.identifiers, p.legacy.identifiers)) return false;
-  const promoted = { ...p.identifierMap };
-  p.legacy.occurrences.forEach(slot => {
-    if (slot >= 0) delete promoted[p.identifiers[slot]];
-  });
-  p.identifierMap = { ...promoted, ...carriedIdentifierMap(u, p) };
+  const taken = new Set(Object.values(adopted));
+  const live = new Set((p.identifiers || []).map(String));
+  const kept = {};
+  for (const [k, v] of Object.entries(p.identifierMap || {}))
+    if (live.has(k) && !(k in adopted) && v && !taken.has(v)) kept[k] = v;
+  p.identifierMap = { ...kept, ...adopted };
   return true;
 }
 
@@ -5565,18 +5694,20 @@ function fillSlotNames(p) {
     if (!live.has(String(k))) delete p.identifierMap[k];
   }
   // A promoted slot must not renumber the others: each unpromoted slot is
-  // named from its pre-promotion label, so an override written before
-  // promotion keeps binding, and promoted slots take the next unused index.
+  // named from its label in the newest earlier shape, so an override written
+  // before promotion keeps binding, and promoted slots take the next unused
+  // index.
+  const legacy = (p.legacyShapes || [])[0];
   const legacyLabel = new Map();
-  if (p.legacy) {
-    p.legacy.occurrences.forEach((slot, i) => {
+  if (legacy) {
+    legacy.occurrences.forEach((slot, i) => {
       if (slot >= 0)
-        legacyLabel.set(String(p.identifiers[slot]), p.legacy.identifiers[i]);
+        legacyLabel.set(String(p.identifiers[slot]), legacy.identifiers[i]);
     });
   }
   const used = new Set(Object.values(p.identifierMap).filter(Boolean));
-  let spare = p.legacy
-    ? new Set(p.legacy.identifiers).size
+  let spare = legacy
+    ? new Set(legacy.identifiers).size
     : Object.keys(p.identifierMap).length;
   for (const k of Object.keys(p.identifierMap)) {
     if (p.identifierMap[k] || !legacyLabel.has(k)) continue;
@@ -5587,7 +5718,7 @@ function fillSlotNames(p) {
   }
   for (const k of Object.keys(p.identifierMap)) {
     if (p.identifierMap[k]) continue;
-    let name = `${slug}_VAR_${p.legacy ? spare++ : k}`;
+    let name = `${slug}_VAR_${legacy ? spare++ : k}`;
     while (used.has(name)) name = `${slug}_VAR_${spare++}`;
     used.add(name);
     p.identifierMap[k] = name;
@@ -5657,14 +5788,16 @@ function mergeWithExisting(newData, oldData, currentVersion) {
     }
   }
 
-  // Exact-match index: the FIRST old item per (content, label-encoded
+  // Exact-match index: the FIRST old item per (pieces, label-encoded
   // identifiers), the same item a linear find over oldData.prompts returns.
-  const exactKey = (content, identifiers) =>
-    `${content}\0${JSON.stringify(identifiers)}`;
+  // Pieces, not their joined text: the split is where the slots are, and
+  // labels only mean the same slots when it is identical.
+  const exactKey = item =>
+    JSON.stringify([item.pieces || [], item.identifiers || []]);
   const exactOld = new Map();
   const oldKeysById = new Map();
   for (const oldItem of oldData.prompts) {
-    const key = exactKey(reconstructContent(oldItem), oldItem.identifiers);
+    const key = exactKey(oldItem);
     if (!exactOld.has(key)) exactOld.set(key, oldItem);
     if (!oldItem.id) continue;
     if (!oldKeysById.has(oldItem.id)) oldKeysById.set(oldItem.id, new Set());
@@ -5675,28 +5808,26 @@ function mergeWithExisting(newData, oldData, currentVersion) {
   // sharing its opening, and the previous owner keeps the id.
   const currentKeys = new Set();
   for (const item of newData.prompts) {
-    currentKeys.add(exactKey(reconstructContent(item), item.identifiers));
-    if (item.legacy) {
-      currentKeys.add(
-        exactKey(item.legacy.pieces.join(''), item.legacy.identifiers)
-      );
-    }
+    for (const shape of itemShapes(item)) currentKeys.add(exactKey(shape));
   }
   const ownerStillPresent = id =>
     [...(oldKeysById.get(id) || [])].some(k => currentKeys.has(k));
 
   const newPrompts = newData.prompts.map((newItem, idx) => {
     const newContent = reconstructContent(newItem);
-    const legacy = newItem.legacy;
+    const shapes = itemShapes(newItem);
 
-    // Try to find a matching old item by content and label-encoded identifiers.
-    // A prompt that gained promoted slots is matched in its pre-promotion shape
-    // as well, since the old catalogue may predate promotion.
-    const currentOld = exactOld.get(exactKey(newContent, newItem.identifiers));
-    const legacyOld =
-      !currentOld && legacy
-        ? exactOld.get(exactKey(legacy.pieces.join(''), legacy.identifiers))
-        : undefined;
+    // Try to find a matching old item by pieces and label-encoded identifiers,
+    // in the current shape and then in each earlier extractor's, since the old
+    // catalogue may have been cut by one of them.
+    let shapeIndex = -1;
+    let exactHit;
+    for (let k = 0; k < shapes.length && !exactHit; k++) {
+      exactHit = exactOld.get(exactKey(shapes[k]));
+      if (exactHit) shapeIndex = k;
+    }
+    const currentOld = shapeIndex === 0 ? exactHit : undefined;
+    const legacyOld = shapeIndex > 0 ? exactHit : undefined;
 
     if (legacyOld) {
       // The prompt text is unchanged, but its pristine body now names a slot
@@ -5704,13 +5835,18 @@ function mergeWithExisting(newData, oldData, currentVersion) {
       // the override is flagged for realignment rather than passing as current.
       const assignedFromMap = lookupNewPromptAssignment(newContent);
       const overlaidIdentifierMap = overlayAssignmentMap(
-        carriedIdentifierMap(legacyOld, newItem),
+        remapThroughShape(
+          legacyOld,
+          newItem,
+          shapes[shapeIndex],
+          ALL_SLOTS(legacyOld)
+        ),
         assignedFromMap && assignedFromMap.identifierMap,
         newItem.identifiers,
         (assignedFromMap && assignedFromMap.id) || legacyOld.id
       );
       console.log(
-        `Promoted slot(s) in "${legacyOld.id || legacyOld.name}": identifiers ${JSON.stringify(legacyOld.identifiers)} → ${JSON.stringify(newItem.identifiers)}`
+        `Re-cut slot(s) in "${legacyOld.id || legacyOld.name}": identifiers ${JSON.stringify(legacyOld.identifiers)} → ${JSON.stringify(newItem.identifiers)}`
       );
       return {
         ...newItem,
@@ -5772,14 +5908,15 @@ function mergeWithExisting(newData, oldData, currentVersion) {
       const fp = fpNormalize(content).slice(0, FUZZY_PREFIX);
       return fp.length >= FUZZY_MIN ? fpToOld.get(fp) : undefined;
     };
-    const fuzzyCandidate =
-      fuzzyFor(newContent) || (legacy && fuzzyFor(legacy.pieces.join('')));
+    let fuzzyCandidate;
+    for (const shape of shapes) {
+      fuzzyCandidate = fuzzyCandidate || fuzzyFor(shape.pieces.join(''));
+    }
     // A body the classifier already named is a prompt of its own; applyCacheNames
     // gives it that name. Carrying a sibling's id onto it would leave its
     // verdict unused and hand it a positional suffix of the sibling.
     const cached =
-      fuzzyCandidate &&
-      classifyByCache(newContent, legacy ? legacy.pieces.join('') : '');
+      fuzzyCandidate && classifyByCache(newContent, legacyBodiesOf(newItem));
     const cachedId =
       cached && cached.facing === 'model' && cached.id ? cached.id : null;
     let fuzzyOld = fuzzyCandidate;
@@ -5801,7 +5938,7 @@ function mergeWithExisting(newData, oldData, currentVersion) {
       );
       const assignedFromMap = lookupNewPromptAssignment(newContent);
       const overlaidIdentifierMap = overlayAssignmentMap(
-        carriedIdentifierMap(fuzzyOld, newItem),
+        alignedIdentifierMap(fuzzyOld, newItem).map,
         assignedFromMap && assignedFromMap.identifierMap,
         newItem.identifiers,
         (assignedFromMap && assignedFromMap.id) || fuzzyOld.id
@@ -5985,11 +6122,11 @@ if (require.main === module) {
       prompts: data.prompts.map(prompt => ({
         ...prompt,
         pieces: replaceVersionInPieces(prompt.pieces, versionStr),
-        ...(prompt.legacy && {
-          legacy: {
-            ...prompt.legacy,
-            pieces: replaceVersionInPieces(prompt.legacy.pieces, versionStr),
-          },
+        ...(prompt.legacyShapes && {
+          legacyShapes: prompt.legacyShapes.map(l => ({
+            ...l,
+            pieces: replaceVersionInPieces(l.pieces, versionStr),
+          })),
         }),
       })),
     };
@@ -6138,7 +6275,7 @@ if (require.main === module) {
 
   // Remove extraction bookkeeping before writing
   mergedResult.prompts = mergedResult.prompts.map(
-    ({ start, end, settings, legacy, ...rest }) => rest
+    ({ start, end, settings, legacyShapes, ...rest }) => rest
   );
 
   // Add version as top-level field
@@ -6218,6 +6355,7 @@ module.exports._setClassificationCacheForTests =
 module.exports.mergeWithExisting = mergeWithExisting;
 module.exports.fillSlotNames = fillSlotNames;
 module.exports.adoptUpstreamIdentifierMap = adoptUpstreamIdentifierMap;
+module.exports.alignedIdentifierMap = alignedIdentifierMap;
 module.exports.classifyByCache = classifyByCache;
 module.exports.rawCacheForms = rawCacheForms;
 module.exports.cacheLookupForms = cacheLookupForms;

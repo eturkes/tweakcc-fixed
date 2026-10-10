@@ -159,18 +159,21 @@ function assembleComposite(node) {
 // source order, as { node, parent }. This is the slot order a catalogue entry's
 // `identifiers` array follows, so tools that need the AST node behind slot N
 // (tools/lib/slotValues.mjs) read it from here rather than re-deriving it.
-// `withDropped` adds, marked `dropped`, the destructuring keys the traversal
-// captured before it skipped them, so templateShape can describe the shape a
-// catalogue extracted then holds.
-function templateIdentifierNodes(node, { withDropped = false } = {}) {
+//
+// `shape` picks which extractor's slots to return. 'current' is this one.
+// 'main' and 'base' reproduce what earlier extractors emitted, so the merge can
+// line up a catalogue they wrote: 'base' is the plain traversal with
+// destructuring keys as slots (every catalogue through CC 2.1.292, and
+// upstream's extractor), 'main' adds the leading promotion of 666d0545
+// (catalogues from CC 2.1.294 on, until this extractor).
+function templateIdentifierNodes(node, { shape = 'current' } = {}) {
   const out = [];
-  let out0 = out;
-  let keysAsSlots = false;
+  const keysAsSlots = shape !== 'current';
   const traverseExpr = (exprNode, isTopLevel, parent) => {
     if (!exprNode || typeof exprNode !== 'object') return;
 
     if (exprNode.type === 'Identifier' && isTopLevel) {
-      out0.push({ node: exprNode, parent });
+      out.push({ node: exprNode, parent });
     }
 
     if (exprNode.type === 'CallExpression') {
@@ -233,16 +236,10 @@ function templateIdentifierNodes(node, { withDropped = false } = {}) {
   for (const expr of node.expressions) {
     const before = out.length;
     traverseExpr(expr, true, node);
-    promoteUncapturedReferences(expr, node, out, before);
-  }
-  if (withDropped) {
-    const kept = new Set(out.map(e => e.node));
-    const before = [];
-    out0 = before;
-    keysAsSlots = true;
-    for (const expr of node.expressions) traverseExpr(expr, true, node);
-    for (const e of before)
-      if (!kept.has(e.node)) out.push({ ...e, dropped: true });
+    if (shape === 'current')
+      promoteUncapturedReferences(expr, node, out, before);
+    else if (shape === 'main')
+      promoteLeadingReferences(expr, node, out, before);
   }
   out.sort((a, b) => a.node.start - b.node.start);
   return out;
@@ -269,6 +266,24 @@ function promoteUncapturedReferences(expr, parent, out, from) {
   collectReferences(expr, parent, refs);
   for (const ref of refs) {
     if (!captured.has(ref.node)) out.push({ ...ref, promoted: true });
+  }
+}
+
+// The 'main' shape's promotion (666d0545): only the value-position names ahead
+// of the expression's first capture.
+function promoteLeadingReferences(expr, parent, out, from) {
+  const captured = new Set();
+  let first = Infinity;
+  for (let i = from; i < out.length; i++) {
+    captured.add(out[i].node);
+    first = Math.min(first, out[i].node.start);
+  }
+  const refs = [];
+  collectReferences(expr, parent, refs);
+  for (const ref of refs) {
+    if (ref.node.start < first && !captured.has(ref.node)) {
+      out.push({ ...ref, promoted: true });
+    }
   }
 }
 
@@ -362,39 +377,45 @@ function splitAroundIdentifiers(fullContent, ids) {
   };
 }
 
-// `legacy`, present only when the slots differ from what the extractor
-// captured before promotion and before destructuring keys stopped being slots,
-// is that earlier shape — what an older catalogue holds — and `occurrences[i]`
-// is the index into `identifiers` of its i-th slot, or -1 for a slot that is
-// no longer one.
+// The shapes earlier extractors cut this template into (see
+// templateIdentifierNodes), newest first and only those that differ from the
+// current one, as `legacyShapes`: each `{ pieces, identifiers, occurrences }`,
+// where `occurrences[i]` is the index into the current `identifiers` of its
+// i-th slot, or -1 for a slot that is no longer one. A catalogue written by an
+// earlier extractor holds one of them; its slot labels mean nothing in the
+// current shape until mapped through `occurrences`.
+const EARLIER_SHAPES = ['main', 'base'];
+
 function templateShape(node, code) {
   const contentStart = node.start + 1;
   const fullContent = code.substring(contentStart, node.end - 1);
+  const slotsOf = shape =>
+    templateIdentifierNodes(node, { shape }).map(({ node: n }) => ({
+      name: n.name,
+      start: n.start - contentStart,
+      end: n.end - contentStart,
+    }));
+  const key = ids => ids.map(id => id.start).join(',');
 
-  const allIdentifiers = templateIdentifierNodes(node, {
-    withDropped: true,
-  }).map(({ node: n, promoted, dropped }) => ({
-    name: n.name,
-    start: n.start - contentStart,
-    end: n.end - contentStart,
-    promoted: Boolean(promoted),
-    dropped: Boolean(dropped),
-  }));
-
-  const current = allIdentifiers.filter(id => !id.dropped);
+  const current = slotsOf('current');
   const shape = splitAroundIdentifiers(fullContent, current);
-  if (!allIdentifiers.some(id => id.promoted || id.dropped)) return shape;
-  const earlier = allIdentifiers.filter(id => !id.promoted);
-  const occurrences = earlier.map(id => current.indexOf(id));
-  const legacy = splitAroundIdentifiers(fullContent, earlier);
-  return {
-    ...shape,
-    legacy: {
-      pieces: legacy.pieces,
-      identifiers: legacy.identifiers,
-      occurrences,
-    },
-  };
+  const index = new Map(current.map((id, i) => [id.start, i]));
+  const seen = new Set([key(current)]);
+  const legacyShapes = [];
+  for (const kind of EARLIER_SHAPES) {
+    const ids = slotsOf(kind);
+    if (seen.has(key(ids))) continue;
+    seen.add(key(ids));
+    const earlier = splitAroundIdentifiers(fullContent, ids);
+    legacyShapes.push({
+      pieces: earlier.pieces,
+      identifiers: earlier.identifiers,
+      occurrences: ids.map(id =>
+        index.has(id.start) ? index.get(id.start) : -1
+      ),
+    });
+  }
+  return legacyShapes.length ? { ...shape, legacyShapes } : shape;
 }
 
 // One site record per literal-bearing node, in the order the extractor's
@@ -402,7 +423,7 @@ function templateShape(node, code) {
 //   { kind: 'composite', start, end, text, fragments: [{ start, end, value }] }
 //   { kind: 'string', start, end, value }
 //   { kind: 'template', start, end, pieces, identifiers, labels, quasis,
-//     expressions: [start, end, start, end, …], legacy? }
+//     expressions: [start, end, start, end, …], legacyShapes? }
 // `quasis` holds each quasi's cooked value (raw when cooking failed), which is
 // what the slot-literal lookup hashes; `expressions` holds each interpolation's
 // source range, which the identical-site backfill compares across sites.
@@ -447,7 +468,7 @@ function collectNodeSites(ast, code, sites) {
         labels: shape.labels,
         quasis: (node.quasis || []).map(q => q.value.cooked ?? q.value.raw),
         expressions,
-        ...(shape.legacy && { legacy: shape.legacy }),
+        ...(shape.legacyShapes && { legacyShapes: shape.legacyShapes }),
       });
     }
 

@@ -30,13 +30,15 @@ describe('slot promotion in templateShape', () => {
       ']} then write.',
     ]);
     expect(shape.identifiers).toEqual([0]);
-    expect(shape.legacy).toEqual({
-      pieces: [
-        '${{here:"Pass `path` here",none:"Pass `content`"}[e]} then write.',
-      ],
-      identifiers: [],
-      occurrences: [],
-    });
+    expect(shape.legacyShapes).toEqual([
+      {
+        pieces: [
+          '${{here:"Pass `path` here",none:"Pass `content`"}[e]} then write.',
+        ],
+        identifiers: [],
+        occurrences: [],
+      },
+    ]);
   });
 
   it('promotes ahead of a later slot and keeps the legacy alignment', () => {
@@ -50,8 +52,8 @@ describe('slot promotion in templateShape', () => {
       '}',
     ]);
     expect(shape.identifiers).toEqual([0, 1, 2]);
-    expect(shape.legacy.identifiers).toEqual([0, 1]);
-    expect(shape.legacy.occurrences).toEqual([0, 2]);
+    expect(shape.legacyShapes[0].identifiers).toEqual([0, 1]);
+    expect(shape.legacyShapes[0].occurrences).toEqual([0, 2]);
   });
 
   it('promotes bare object values and computed keys ahead of the index', () => {
@@ -72,11 +74,13 @@ describe('slot promotion in templateShape', () => {
       ']} end',
     ]);
     expect(shape.identifiers).toEqual([0, 1, 2, 3]);
-    expect(shape.legacy).toEqual({
-      pieces: ['pick ${', '[k]} and ${{a:`t ${', '}`}[j]} end'],
-      identifiers: [0, 1],
-      occurrences: [0, 2],
-    });
+    expect(shape.legacyShapes).toEqual([
+      {
+        pieces: ['pick ${', '[k]} and ${{a:`t ${', '}`}[j]} end'],
+        identifiers: [0, 1],
+        occurrences: [0, 2],
+      },
+    ]);
   });
 
   it('promotes object values and spreads that follow a call', () => {
@@ -103,8 +107,9 @@ describe('slot promotion in templateShape', () => {
     ]);
     expect(shape.identifiers).toEqual([0, 1, 2, 1, 2]);
     // The earlier shape captured both keys; they map to no slot now.
-    expect(shape.legacy.identifiers).toEqual([0, 1, 2, 3, 4]);
-    expect(shape.legacy.occurrences).toEqual([0, -1, 1, -1, 2]);
+    expect(shape.legacyShapes).toHaveLength(1);
+    expect(shape.legacyShapes[0].identifiers).toEqual([0, 1, 2, 3, 4]);
+    expect(shape.legacyShapes[0].occurrences).toEqual([0, -1, 1, -1, 2]);
   });
 
   it('keeps a shorthand property literal', () => {
@@ -116,7 +121,7 @@ describe('slot promotion in templateShape', () => {
   it('does not promote property names or string contents', () => {
     const shape = shapeOf('x=`${{k:"v"}.k} ${{m:"n"}["m"]} end`');
     expect(shape.identifiers).toEqual([]);
-    expect(shape.legacy).toBeUndefined();
+    expect(shape.legacyShapes).toBeUndefined();
   });
 });
 
@@ -145,7 +150,9 @@ describe('carryover across slot promotion', () => {
     ],
     identifiers: [0, 1],
     identifierMap: { 0: '', 1: '' },
-    legacy: { pieces: legacyPieces, identifiers: [0], occurrences: [1] },
+    legacyShapes: [
+      { pieces: legacyPieces, identifiers: [0], occurrences: [1] },
+    ],
   };
 
   it('moves each carried name to the slot it named', () => {
@@ -202,7 +209,7 @@ describe('carryover across slot promotion', () => {
       pieces: ['Usage ${', '.map(({group:', '})=>', ')} end'],
       identifiers: [0, 1, 1],
       identifierMap: { 0: '', 1: '' },
-      legacy,
+      legacyShapes: [legacy],
     };
     const { prompts } = ex.mergeWithExisting(
       { prompts: [fresh] },
@@ -233,18 +240,18 @@ describe('carryover across slot promotion', () => {
 
 describe('upstream identifierMap adoption across slot promotion', () => {
   // Upstream's extractor does not promote, so its map is in the legacy shape.
+  const legacyPieces = ['If a ${', '} is armed, ${', '({a:t})} then ${', '}.'];
   const p = () => ({
     id: 'system-prompt-fixture-heartbeat',
     pieces: ['If a ${', '} is armed, ${', '({a:', '})} then ${', '}.'],
     identifiers: [0, 1, 2, 3],
     identifierMap: { 0: 'MONITOR', 1: 'FN', 2: 'FIXTURE_VAR_3', 3: 'STOP' },
-    legacy: {
-      pieces: ['If a ${', '} is armed, ${', '({a:t})} then ${', '}.'],
-      identifiers: [0, 1, 2],
-      occurrences: [0, 1, 3],
-    },
+    legacyShapes: [
+      { pieces: legacyPieces, identifiers: [0, 1, 2], occurrences: [0, 1, 3] },
+    ],
   });
   const upstream = {
+    pieces: legacyPieces,
     identifiers: [0, 1, 2],
     identifierMap: { 0: 'MONITOR_TOOL_NAME', 1: 'STATUS_FN', 2: 'STOP_TOOL' },
   };
@@ -261,7 +268,12 @@ describe('upstream identifierMap adoption across slot promotion', () => {
   });
 
   it('takes the map whole when the shapes already agree', () => {
-    const q = { ...p(), identifiers: [0, 1, 2], legacy: undefined };
+    const q = {
+      ...p(),
+      pieces: legacyPieces,
+      identifiers: [0, 1, 2],
+      legacyShapes: undefined,
+    };
     expect(ex.adoptUpstreamIdentifierMap(q, upstream)).toBe(true);
     expect(q.identifierMap).toEqual(upstream.identifierMap);
   });
@@ -269,9 +281,120 @@ describe('upstream identifierMap adoption across slot promotion', () => {
   it('leaves a prompt whose layout matches neither shape alone', () => {
     const q = p();
     const before = { ...q.identifierMap };
-    const other = { identifiers: [0, 1], identifierMap: { 0: 'A', 1: 'B' } };
+    const other = {
+      pieces: ['Something ${', '} else ${', '}'],
+      identifiers: [0, 1],
+      identifierMap: { 0: 'A', 1: 'B' },
+    };
     expect(ex.adoptUpstreamIdentifierMap(q, other)).toBe(false);
     expect(q.identifierMap).toEqual(before);
+  });
+});
+
+// A catalogue entry's labels mean nothing outside the shape its extractor cut:
+// dropping a destructuring key and promoting a later name leaves the
+// `identifiers` array unchanged over different slots, and the 'main' shape
+// (666d0545's leading promotion) is the one catalogues 2.1.294 to 2.1.296 hold.
+describe('slot identity across extractor shapes', () => {
+  const itemFrom = src => {
+    const shape = shapeOf(src);
+    delete shape.labels;
+    return {
+      name: '',
+      id: '',
+      description: '',
+      ...shape,
+      identifierMap: Object.fromEntries(
+        [...new Set(shape.identifiers)].map(l => [l, ''])
+      ),
+    };
+  };
+  const merge = (fresh, old) => {
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+    return ex.mergeWithExisting(
+      { prompts: [fresh] },
+      { prompts: [old] },
+      '2.1.300'
+    ).prompts[0];
+  };
+  const LONG =
+    'Fixture opening sentence that runs well past the fuzzy fingerprint so the carry is decided by the text after it: ';
+
+  it('does not rebind names across equal identifiers arrays over other slots', () => {
+    const got = merge(itemFrom('x=`Usage ${xs.map(({key:v})=>({a:w}))} end`'), {
+      id: 'skill-fixture-usage-rebind',
+      name: 'Skill: fixture usage rebind',
+      description: 'fixture',
+      pieces: ['Usage ${', '.map(({', ':', '})=>({a:w}))} end'],
+      identifiers: [0, 1, 2],
+      identifierMap: { 0: 'LIST', 1: 'PROPERTY_KEY', 2: 'VALUE' },
+      version: '2.1.200',
+    });
+    expect(got.id).toBe('skill-fixture-usage-rebind');
+    expect(got.identifierMap).toEqual({ 0: 'LIST', 1: 'VALUE' });
+  });
+
+  it('adopts upstream names slot by slot when the arrays are equal but the slots are not', () => {
+    const q = {
+      ...itemFrom('x=`Run ${f(({k:y})=>1)[p]} now.`'),
+      id: 'tool-result-fixture-run',
+    };
+    expect(q.identifiers).toEqual([0, 1, 2]);
+    const u = {
+      pieces: ['Run ${', '(({', ':', '})=>1)[p]} now.'],
+      identifiers: [0, 1, 2],
+      identifierMap: { 0: 'F', 1: 'K', 2: 'Y' },
+    };
+    expect(ex.adoptUpstreamIdentifierMap(q, u)).toBe(true);
+    expect(q.identifierMap).toEqual({ 0: 'F', 1: 'Y' });
+  });
+
+  it("carries a catalogue cut in main's shape by its slots", () => {
+    const got = merge(itemFrom('x=`${{a:p}[q]} ${fn({x:r})} ${s}`'), {
+      id: 'tool-result-fixture-main-shape',
+      name: 'Tool Result: fixture main shape',
+      description: 'fixture',
+      pieces: ['${{a:', '}[', ']} ${', '({x:r})} ${', '}'],
+      identifiers: [0, 1, 2, 3],
+      identifierMap: { 0: 'P', 1: 'Q', 2: 'FN', 3: 'S' },
+      version: '2.1.200',
+    });
+    expect(got.id).toBe('tool-result-fixture-main-shape');
+    expect(got.identifierMap).toEqual({ 0: 'P', 1: 'Q', 2: 'FN', 4: 'S' });
+  });
+
+  it('fuzzy-carries a main-shape catalogue by its slots, not its labels', () => {
+    const got = merge(
+      itemFrom('x=`' + LONG + '${{a:p}[q]} ${fn({x:r})} ${s} tail now`'),
+      {
+        id: 'tool-result-fixture-main-shape-edited',
+        name: 'Tool Result: fixture main shape edited',
+        description: 'fixture',
+        pieces: [LONG + '${{a:', '}[', ']} ${', '({x:r})} ${', '} tail before'],
+        identifiers: [0, 1, 2, 3],
+        identifierMap: { 0: 'P', 1: 'Q', 2: 'FN', 3: 'S' },
+        version: '2.1.200',
+      }
+    );
+    expect(got.id).toBe('tool-result-fixture-main-shape-edited');
+    expect(got.identifierMap).toEqual({ 0: 'P', 1: 'Q', 2: 'FN', 4: 'S' });
+  });
+
+  it('fuzzy-carries past a slot an edit inserted ahead of the others', () => {
+    const got = merge(
+      itemFrom('x=`' + LONG + 'Hi ${z}. Hello ${a} and ${b} bye`'),
+      {
+        id: 'tool-result-fixture-inserted-slot',
+        name: 'Tool Result: fixture inserted slot',
+        description: 'fixture',
+        pieces: [LONG + 'Hello ${', '} and ${', '} bye'],
+        identifiers: [0, 1],
+        identifierMap: { 0: 'A', 1: 'B' },
+        version: '2.1.200',
+      }
+    );
+    expect(got.id).toBe('tool-result-fixture-inserted-slot');
+    expect(got.identifierMap).toEqual({ 1: 'A', 2: 'B' });
   });
 });
 
