@@ -35,6 +35,7 @@ import { BundleIndex } from './lib/bundleQuery.mjs';
 import { partitionContiguous, agentsFor } from './lib/packByWeight.mjs';
 import { writeMarkdownParts, partByteCap } from './lib/packetParts.mjs';
 import { attachContinuity } from './lib/continuity.mjs';
+import { catalogueIndex } from './lib/classifyVerdicts.mjs';
 import { rewriteTablePairs } from './checkScannedLiterals.mjs';
 import {
   catalogueNeighbourIndex,
@@ -168,13 +169,7 @@ async function main() {
   // Catalogue: every live id, and the bodies each one names (the collision
   // check lets an id stay only on its own body).
   const current = readPrompts(promptsJson);
-  const catalogue = {};
-  for (const p of current) {
-    if (!p.id) continue;
-    (catalogue[p.id] ||= []);
-    const h = sha1(bodyOf(p));
-    if (!catalogue[p.id].includes(h)) catalogue[p.id].push(h);
-  }
+  const catalogue = catalogueIndex(current);
   const prevById = new Map();
   const prevPrompts = readPrompts(opt.prev);
   for (const p of prevPrompts) if (p.id && !prevById.has(p.id)) prevById.set(p.id, bodyOf(p));

@@ -73,8 +73,11 @@ export function normalizeChunk(m, arg) {
   return hit.chunk;
 }
 
-// Bundle and corpus must be the ones the packets were built from; a verdict
-// produced against another bundle is not evidence for this one.
+// The bundle must be the one the packets were built from; a verdict produced
+// against another bundle is not evidence for this one. The catalogue is not
+// pinned the same way: every re-extract rewrites it during a run, and what it
+// guards, an id landing on two bodies, is checked against the live catalogue
+// (loadCatalogue), which also catches ids added after the evidence was built.
 export function digestProblems(m, { checkFiles = true } = {}) {
   const out = [];
   if (!checkFiles) return out;
@@ -82,11 +85,20 @@ export function digestProblems(m, { checkFiles = true } = {}) {
     const now = sha256(fs.readFileSync(m.bundle.path));
     if (now !== m.bundle.sha256) out.push(`bundle ${m.bundle.path} changed since the evidence was built (sha256 ${now.slice(0, 12)} != ${m.bundle.sha256.slice(0, 12)}); rebuild the evidence`);
   }
-  if (m.corpus && m.corpus.promptsJson && fs.existsSync(m.corpus.promptsJson)) {
-    const now = sha256(fs.readFileSync(m.corpus.promptsJson)).slice(0, 16);
-    if (now !== m.corpus.digest) out.push(`catalogue ${m.corpus.promptsJson} changed since the evidence was built (digest ${now} != ${m.corpus.digest}); rebuild the evidence`);
-  }
   return out;
+}
+
+// Every live id and the sha1 of each body it names.
+export function catalogueIndex(prompts) {
+  const index = {};
+  for (const p of prompts) {
+    if (!p.id) continue;
+    const body = (p.pieces || []).filter(x => typeof x === 'string').join('') || p.content || '';
+    const h = crypto.createHash('sha1').update(body).digest('hex');
+    (index[p.id] ||= []);
+    if (!index[p.id].includes(h)) index[p.id].push(h);
+  }
+  return index;
 }
 
 export function fieldProblems(v, cand, where) {
@@ -177,7 +189,11 @@ export function loadChunk(dir, m, nn) {
   return { packet, cands };
 }
 
+// The live catalogue when its file is there, else the snapshot the evidence
+// was built with.
 export function loadCatalogue(dir, m) {
+  const live = m.corpus && m.corpus.promptsJson;
+  if (live && fs.existsSync(live)) return catalogueIndex(readJson(live).prompts || []);
   const f = path.join(dir, m.catalogueIndex || 'catalogue-index.json');
   return fs.existsSync(f) ? readJson(f) : {};
 }
