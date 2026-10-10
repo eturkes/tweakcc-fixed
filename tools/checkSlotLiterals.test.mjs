@@ -83,7 +83,9 @@ describe('checkSlotLiterals: findings', () => {
 
   it('matches a template to its prompt despite pieces splitting on the identifier', () => {
     expect(findings.length).toBeGreaterThan(0);
-    expect(findings.every(f => f.promptId === 'system-reminder-team-coordination')).toBe(true);
+    expect(
+      findings.every(f => f.promptId === 'system-reminder-team-coordination')
+    ).toBe(true);
   });
 
   it('finds the uncatalogued task-list resource line', () => {
@@ -104,27 +106,92 @@ describe('checkSlotLiterals: findings', () => {
   it('does not attribute a same-named declarator from another block', () => {
     // `n` is declared in both `if` bodies. Function-scoped resolution merges
     // them and pins the unrelated string onto this prompt.
-    expect(findings.some(f => f.text.includes('unrelated block-scoped'))).toBe(false);
+    expect(findings.some(f => f.text.includes('unrelated block-scoped'))).toBe(
+      false
+    );
   });
 
   it('skips slot text that IS catalogued', () => {
     const withUpkeep = {
       prompts: [
+        ...CATALOGUE.prompts,
         {
-          ...CATALOGUE.prompts[0],
+          id: 'system-reminder-team-coordination-task-list-upkeep',
           pieces: [
-            ...CATALOGUE.prompts[0].pieces,
             ' Check the task list periodically and mark tasks resolved.',
           ],
+          identifiers: [],
         },
       ],
     };
     const f = findSlotLiterals(SOURCE, withUpkeep);
+    expect(f.some(x => x.text.includes('Task list'))).toBe(true);
     expect(f.some(x => x.text.includes('Check the task list'))).toBe(false);
   });
 
   it('reports one row per prompt and content, not per emission site', () => {
     const keys = findings.map(f => f.promptId + f.hash);
     expect(new Set(keys).size).toBe(keys.length);
+  });
+});
+
+// CC 2.1.296: the first cut matched a template to a prompt on its leading text
+// alone, so every `Warning: ${…}` template in the bundle was read as a site of
+// the one prompt opening "Warning: ", and prompts opening with a substitution
+// were never matched at all.
+describe('checkSlotLiterals: a template is a site only when its shape matches', () => {
+  const catalogue = {
+    prompts: [
+      {
+        id: 'tool-result-workflow-warning',
+        identifiers: [0],
+        identifierMap: { 0: 'WORKFLOW' },
+        pieces: ['Warning: ${', '.warning}\n'],
+      },
+      {
+        id: 'tool-result-leading-slot',
+        identifiers: [0, 1],
+        identifierMap: { 0: 'SUBJECT', 1: 'REASON' },
+        pieces: ['${', '.name} was refused: ${', '}'],
+      },
+    ],
+  };
+  const source = `
+function a(h){let m=h?"Claude in Chrome is disabled by your organization":"other text here";log(\`Warning: \${m}\`)}
+function b(w){return \`Warning: \${w.warning}\n\`}
+function c(e){let r=e?"the session is not in auto mode":"the request was empty";return \`\${e.name} was refused: \${r}\`}
+`;
+  const findings = findSlotLiterals(source, catalogue);
+
+  it('does not attribute a template that only shares the leading text', () => {
+    expect(findings.some(f => f.text.includes('Claude in Chrome'))).toBe(false);
+  });
+
+  it('matches a prompt that opens with a substitution', () => {
+    const hit = findings.find(f => f.text.includes('not in auto mode'));
+    expect(hit?.promptId).toBe('tool-result-leading-slot');
+    expect(hit?.label).toBe('REASON');
+  });
+
+  it('labels a slot by its identifier occurrence, not its substitution index', () => {
+    // `${f(a,b)}` holds three slot identifiers, so the second substitution is
+    // the fourth occurrence: identifiers[3], where identifiers[1] names `a`.
+    const cat = {
+      prompts: [
+        {
+          id: 'tool-result-two-in-one',
+          identifiers: [0, 1, 2, 3],
+          identifierMap: { 0: 'FORMAT', 1: 'DONE', 2: 'TOTAL', 3: 'REASON' },
+          pieces: ['Stopped after ${', '(', ',', ')} steps because ${', '}'],
+        },
+      ],
+    };
+    const src =
+      'function g(f,a,b,x){let r=x?"the user interrupted the run":"no step was left";return `Stopped after ${f(a,b)} steps because ${r}`}';
+    const hit = findSlotLiterals(src, cat).find(f =>
+      f.text.includes('interrupted')
+    );
+    expect(hit?.slot).toBe(1);
+    expect(hit?.label).toBe('REASON');
   });
 });

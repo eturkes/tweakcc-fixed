@@ -76,6 +76,11 @@ import { walk, resolveIdentifier } from './lib/slotScope.mjs';
 const require = createRequire(import.meta.url);
 const parser = require('@babel/parser');
 const {
+  EARLIER_SHAPES,
+  splitAroundIdentifiers,
+  templateIdentifierNodes,
+} = require('./lib/bundleSites.cjs');
+const {
   splitModuleBundle,
   parseModuleSegment,
 } = require('./lib/moduleBundle.cjs');
@@ -138,7 +143,8 @@ function collectLiterals(node, acc = []) {
   if (node.type === 'StringLiteral') {
     acc.push({
       text: node.value,
-      raw: node.extra && node.extra.raw ? node.extra.raw.slice(1, -1) : node.value,
+      raw:
+        node.extra && node.extra.raw ? node.extra.raw.slice(1, -1) : node.value,
       start: node.start,
     });
   } else if (node.type === 'TemplateLiteral') {
@@ -170,38 +176,93 @@ const decodeUnicodeEscapes = s =>
 /** The three shapes a catalogued `pieces` entry can be compared against. */
 const forms = lit => [lit.text, lit.raw, decodeUnicodeEscapes(lit.raw)];
 
+// The extractor's own decompositions of a template, current shape first, then
+// the shapes earlier extractors cut it into (a catalogue may hold either), each
+// with the source offset of every slot identifier.
+const shapesOf = (node, source) => {
+  const contentStart = node.start + 1;
+  const content = source.substring(contentStart, node.end - 1);
+  const seen = new Set();
+  const out = [];
+  for (const kind of ['current', ...EARLIER_SHAPES]) {
+    const ids = templateIdentifierNodes(node, { shape: kind }).map(
+      ({ node: n }) => ({
+        name: n.name,
+        start: n.start - contentStart,
+        end: n.end - contentStart,
+      })
+    );
+    const key = ids.map(id => id.start).join(',');
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push({
+      pieces: splitAroundIdentifiers(content, ids).pieces,
+      starts: ids.map(id => id.start + contentStart),
+    });
+  }
+  return out;
+};
+
+const piecesKey = pieces => pieces.join('\u0000');
+
+// Tests a template's pieces against one prompt's. Version and build-time
+// placeholders stand for the text the extractor normalised away.
+function piecesMatcher(pieces, version) {
+  const key = piecesKey(pieces);
+  if (!/<<(?:CCVERSION|BUILD_TIME)>>/.test(key)) return k => k === key;
+  const esc = t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const body = key
+    .split(/(<<CCVERSION>>|<<BUILD_TIME>>)/)
+    .map(part => {
+      if (part === '<<CCVERSION>>' && version) return esc(version);
+      if (part === '<<CCVERSION>>' || part === '<<BUILD_TIME>>')
+        return '[^\\u0000]+?';
+      return esc(part);
+    })
+    .join('');
+  const re = new RegExp('^' + body + '$');
+  return k => re.test(k);
+}
+
 export function findSlotLiterals(source, catalogue) {
-  // A prompt's `pieces` do NOT split on the substitution expression — they
-  // split on the IDENTIFIER inside it, so `${e.agentName}` leaves `${` at the
-  // end of one piece and `.agentName}` at the start of the next. Quasi text is
-  // therefore a strict subset of piece text, and the two can never be compared
-  // by equality (the first cut of this gate did, and reported 0 on a bundle
-  // that has a real finding). Index on the leading quasi — the first piece
-  // minus its trailing `${` — and disambiguate collisions by containment.
+  // A template is a prompt's site only when the extractor's decomposition of it
+  // reproduces the prompt's `pieces`. Pieces split on the IDENTIFIER inside a
+  // substitution, not on the substitution, so they can never be compared with
+  // quasis directly; and matching on the leading text alone attributed every
+  // `Warning: ${…}` template in the bundle to the one prompt starting so.
+  // Index on the first piece, then confirm on the whole shape.
   const byLead = new Map();
   for (const p of catalogue.prompts) {
     if (!p.pieces || p.pieces.length < 2) continue;
-    const lead = p.pieces[0].replace(/\$\{$/, '');
-    if (lead.length < 8) continue;
+    const lead = p.pieces[0];
     if (!byLead.has(lead)) byLead.set(lead, []);
-    byLead.get(lead).push({ prompt: p, blob: p.pieces.join('') });
+    byLead
+      .get(lead)
+      .push({ prompt: p, matches: piecesMatcher(p.pieces, catalogue.version) });
   }
-  const matchPrompt = quasiRaws => {
-    const cands = byLead.get(quasiRaws[0]);
-    if (!cands) return null;
-    if (cands.length === 1) return cands[0].prompt;
-    const hit = cands.find(c =>
-      quasiRaws.every(q => q.length < 12 || c.blob.includes(q))
-    );
-    return hit ? hit.prompt : null;
+  const placeheld = [...byLead.values()]
+    .flat()
+    .filter(c => /<<(?:CCVERSION|BUILD_TIME)>>/.test(c.prompt.pieces[0]));
+  const matchPrompt = node => {
+    for (const shape of shapesOf(node, source)) {
+      const key = piecesKey(shape.pieces);
+      const cands = [...(byLead.get(shape.pieces[0]) || []), ...placeheld];
+      const hit = cands.find(c => c.matches(key));
+      if (hit) return { prompt: hit.prompt, shape };
+    }
+    return null;
   };
 
-  // A slot's label lives at identifierMap[identifiers[slotIndex]] — the
-  // `identifiers` array is the positional binding, and reading identifierMap by
-  // the raw slot index is the mis-binding bug `auditMisbinds` exists to catch.
-  const labelFor = (p, slot) => {
-    if (!p.identifierMap) return null;
-    const idx = Array.isArray(p.identifiers) ? p.identifiers[slot] : slot;
+  // A slot's label lives at identifierMap[identifiers[occurrence]], where the
+  // occurrence is the identifier's position among the template's slot
+  // identifiers — not the substitution's index, which differs as soon as one
+  // substitution holds two identifiers. Reading identifierMap by the raw index
+  // is the mis-binding bug `auditMisbinds` exists to catch.
+  const labelFor = (p, occurrence) => {
+    if (!p.identifierMap || occurrence < 0) return null;
+    const idx = Array.isArray(p.identifiers)
+      ? p.identifiers[occurrence]
+      : occurrence;
     if (idx === undefined) return null;
     return p.identifierMap[String(idx)] ?? null;
   };
@@ -223,8 +284,13 @@ export function findSlotLiterals(source, catalogue) {
   const visitProgram = program => {
     walk(program, [], (node, fnStack) => {
       if (node.type !== 'TemplateLiteral' || !node.expressions.length) return;
-      const prompt = matchPrompt(node.quasis.map(q => q.value.raw));
-      if (!prompt) return;
+      const matched = matchPrompt(node);
+      if (!matched) return;
+      const { prompt, shape } = matched;
+      // The slot identifier a substitution is labelled by: itself when it is a
+      // bare identifier, else the first slot identifier inside it.
+      const occurrenceOf = expr =>
+        shape.starts.findIndex(at => at >= expr.start && at < expr.end);
 
       node.expressions.forEach((expr, slot) => {
         let subtrees;
@@ -249,16 +315,19 @@ export function findSlotLiterals(source, catalogue) {
             // one at the dash — which is how the MCP remote-auth suffix and the
             // SendMessage cross-session guidance read as uncatalogued.
             if (forms(lit).some(f => catalogued.has(norm(f)))) continue;
-            if (forms(lit).some(f => cataloguedBlob.includes(f.trim()))) continue;
+            if (forms(lit).some(f => cataloguedBlob.includes(f.trim())))
+              continue;
             findings.push({
               promptId: prompt.id,
               slot,
-              label: labelFor(prompt, slot),
+              label: labelFor(prompt, occurrenceOf(expr)),
               resolvedVia,
               offset: lit.start,
               hash: hash(lit.text),
               text:
-                lit.text.length > 300 ? lit.text.slice(0, 300) + '...' : lit.text,
+                lit.text.length > 300
+                  ? lit.text.slice(0, 300) + '...'
+                  : lit.text,
             });
           }
         }
