@@ -190,36 +190,131 @@ const LOOP_TYPES = new Set([
   'DoWhileStatement',
 ]);
 
-// Can control leave the switch other than by `return`? With no `default`
-// every unmatched value does; otherwise only a `break` that binds to this
-// switch (not to a nested loop or switch) does.
-function fallsOut(sw) {
-  if (!sw.cases.some(c => c.test === null)) return true;
-  const stack = sw.cases.flatMap(c => c.consequent);
-  while (stack.length) {
-    const n = stack.pop();
-    if (
-      !n ||
-      FN_TYPES.has(n.type) ||
-      LOOP_TYPES.has(n.type) ||
-      n.type === 'SwitchStatement' ||
-      /Expression$/.test(n.type)
-    )
-      continue;
-    if (n.type === 'BreakStatement' && !n.label) return true;
-    stack.push(...childNodes(n));
+// `true`, `!0` and `1`-style constant tests never let a loop exit on its own.
+const alwaysTrue = t =>
+  !t ||
+  (t.type === 'Literal' && Boolean(t.value)) ||
+  (t.type === 'UnaryExpression' &&
+    t.operator === '!' &&
+    t.argument.type === 'Literal' &&
+    !t.argument.value);
+
+const union = (...sets) => new Set(sets.flatMap(s => [...s]));
+const without = (set, ...drop) => {
+  const out = new Set(set);
+  for (const d of drop) out.delete(d);
+  return out;
+};
+
+// How a statement can complete: 'normal', 'return', 'throw', 'break' and
+// 'continue' (unlabelled), 'break:L' and 'continue:L'. Expressions are never
+// entered, so a nested function's returns are not this statement's.
+function completions(n) {
+  if (!n) return new Set(['normal']);
+  if (Array.isArray(n)) return listCompletions(n);
+  switch (n.type) {
+    case 'BlockStatement':
+    case 'StaticBlock':
+      return listCompletions(n.body);
+    case 'ReturnStatement':
+      return new Set(['return']);
+    case 'ThrowStatement':
+      return new Set(['throw']);
+    case 'BreakStatement':
+      return new Set([n.label ? `break:${n.label.name}` : 'break']);
+    case 'ContinueStatement':
+      return new Set([n.label ? `continue:${n.label.name}` : 'continue']);
+    case 'IfStatement':
+      return union(completions(n.consequent), completions(n.alternate));
+    case 'LabeledStatement': {
+      const c = completions(n.body);
+      const out = without(
+        c,
+        `break:${n.label.name}`,
+        `continue:${n.label.name}`
+      );
+      if (c.has(`break:${n.label.name}`)) out.add('normal');
+      return out;
+    }
+    case 'SwitchStatement':
+      return switchCompletions(n);
+    case 'TryStatement': {
+      let c = completions(n.block);
+      if (n.handler)
+        c = union(without(c, 'throw'), completions(n.handler.body));
+      if (!n.finalizer) return c;
+      const f = completions(n.finalizer);
+      return f.has('normal') ? union(c, without(f, 'normal')) : f;
+    }
+    case 'WithStatement':
+      return completions(n.body);
+    default:
+      if (LOOP_TYPES.has(n.type)) {
+        const body = completions(n.body);
+        const out = without(body, 'break', 'continue', 'normal');
+        const each = n.type === 'ForInStatement' || n.type === 'ForOfStatement';
+        const testRuns =
+          n.type !== 'DoWhileStatement' ||
+          body.has('normal') ||
+          body.has('continue');
+        if (body.has('break') || (testRuns && (each || !alwaysTrue(n.test))))
+          out.add('normal');
+        return out;
+      }
+      return new Set(['normal']);
   }
-  return false;
+}
+
+function listCompletions(stmts) {
+  const out = new Set();
+  for (const s of stmts) {
+    const c = completions(s);
+    for (const k of c) if (k !== 'normal') out.add(k);
+    if (!c.has('normal')) return out;
+  }
+  out.add('normal');
+  return out;
+}
+
+// A switch completes normally when no clause matches (no `default`), when a
+// `break` binds to it, or when the last clause runs off its end (every clause
+// that runs off its end falls through into the next).
+function switchCompletions(sw) {
+  const out = new Set();
+  if (!sw.cases.some(c => c.test === null)) out.add('normal');
+  sw.cases.forEach((c, i) => {
+    const cc = completions(c.consequent);
+    for (const k of cc) {
+      if (k === 'break') out.add('normal');
+      else if (k !== 'normal' || i === sw.cases.length - 1) out.add(k);
+    }
+  });
+  if (!sw.cases.length) out.add('normal');
+  return out;
+}
+
+// Can control leave the switch to the statements after it? A labelled
+// `break` to the switch's own label leaves it too.
+function fallsOut(sw, parents) {
+  const c = switchCompletions(sw);
+  if (c.has('normal')) return true;
+  const p = parents && parents.get(sw);
+  return p?.type === 'LabeledStatement' && c.has(`break:${p.label.name}`);
 }
 
 // The statements that run after a switch falls out: its later siblings in the
 // enclosing statement list. Their return is the switch's default arm.
 function fallOutStatements(sw, parents) {
-  if (!fallsOut(sw)) return [];
-  const p = parents.get(sw);
+  if (!fallsOut(sw, parents)) return [];
+  let node = sw;
+  let p = parents.get(node);
+  while (p?.type === 'LabeledStatement') {
+    node = p;
+    p = parents.get(node);
+  }
   const list = p && (Array.isArray(p.body) ? p.body : p.consequent);
   if (!Array.isArray(list)) return [];
-  const i = list.indexOf(sw);
+  const i = list.indexOf(node);
   return i < 0 ? [] : list.slice(i + 1);
 }
 

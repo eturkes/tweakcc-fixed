@@ -356,6 +356,45 @@ describe('checkSiblingArms: fall-out returns, spread lists and respellings', () 
   });
 });
 
+// A switch also falls out when its last clause runs off its end, or through a
+// labelled break to its own label; a clause that loops forever never does.
+const FIXTURE5 = [
+  'function f(x){switch(x){case 1:return "Fixture known clause here";default:x=0;}return "Fixture fallback after a plain default";}',
+  'function g(x){a:switch(x){case 1:return "Fixture labelled known arm";default:if(x)break a;return "Fixture labelled default arm"}return "Fixture labelled tail arm"}',
+  'function h(x){switch(x){case 1:return "Fixture loop known arm";default:for(;;){if(x)return "Fixture loop inner arm"}}return "Fixture loop dead tail"}',
+  'function k(x){switch(x){default:try{return "Fixture try known arm"}finally{x=1}}return "Fixture try dead tail"}',
+].join('\n');
+const CATALOGUE5 = [
+  prompt('tool-result-fixture-known-clause', ['Fixture known clause here']),
+  prompt('tool-result-fixture-labelled-known', ['Fixture labelled known arm']),
+  prompt('tool-result-fixture-loop-known', ['Fixture loop known arm']),
+  prompt('tool-result-fixture-try-known', ['Fixture try known arm']),
+];
+
+describe('checkSiblingArms: switch completion', () => {
+  let r;
+  beforeAll(() => {
+    const cli5 = path.join(dir, 'cli-9.9.8.js');
+    fs.writeFileSync(cli5, FIXTURE5);
+    r = scanSiblingArms(cli5, { catalogue: CATALOGUE5, cache: {} });
+  });
+  const bodies = () => r.findings.map(f => f.body);
+
+  it('reads the return after a default clause that completes normally', () => {
+    expect(bodies()).toContain('Fixture fallback after a plain default');
+  });
+
+  it('reads the return after a labelled break out of the switch', () => {
+    expect(bodies()).toContain('Fixture labelled tail arm');
+    expect(bodies()).toContain('Fixture labelled default arm');
+  });
+
+  it('ignores a tail no clause can reach', () => {
+    expect(bodies()).not.toContain('Fixture loop dead tail');
+    expect(bodies()).not.toContain('Fixture try dead tail');
+  });
+});
+
 describe('checkSiblingArms: unparseable segments', () => {
   it('counts a segment acorn cannot parse and exits 2', () => {
     const bundle = [
