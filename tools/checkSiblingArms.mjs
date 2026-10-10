@@ -23,7 +23,10 @@
 //     `return` argument or an arrow body,
 //   - a list: an array literal holding a `...xs.map(cb)` / `...xs.flatMap(cb)`
 //     spread, whose arms are its plain elements and every return of those
-//     callbacks (nested switches included), or
+//     callbacks (nested switches included),
+//   - a call group: the arguments at one position across every call of one
+//     function binding in a module (`p("Clicked.")`, `p("text must be a
+//     string")`), the callee resolved lexically by name and never followed, or
 //   - a respelling row: `[needle, replacement]` in a table of such pairs. Its
 //     anchor is not an arm but the catalogued prompt whose text contains the
 //     needle, since the replacement renders into that prompt at runtime; a
@@ -395,7 +398,7 @@ function isReturned(node, parents) {
   return p.type === 'ArrowFunctionExpression' && p.body === cur;
 }
 
-const FLOW_KINDS = new Set(['join', 'returns']);
+const FLOW_KINDS = new Set(['join', 'returns', 'calls']);
 
 const BLOCK_TYPES = new Set([
   'BlockStatement',
@@ -513,6 +516,42 @@ function flowGroups(nodes, parents, base) {
   }
   for (const [fn, args] of returns)
     if (args.length > 1) roots.push({ node: fn, kind: 'returns', args });
+
+  // Call groups: the arguments at one position across every call of one
+  // function binding (`p("Clicked.")`, `p("text must be a string")`). Bounded
+  // by design: the callee resolves lexically within this module, by name, and
+  // calls are never followed.
+  const topLevel = new Set();
+  for (const n of nodes)
+    if (
+      (n.type === 'FunctionDeclaration' || n.type === 'ClassDeclaration') &&
+      n.id &&
+      !blockOf(n)
+    )
+      topLevel.add(n.id.name);
+    else if (n.type === 'VariableDeclaration' && !blockOf(n))
+      for (const d of n.declarations)
+        if (d.id.type === 'Identifier') topLevel.add(d.id.name);
+  const program = nodes[0];
+  const calleeScope = (from, name) => {
+    for (let p = parents.get(from); p; p = parents.get(p))
+      if (declarations.get(p)?.has(name)) return p;
+    return topLevel.has(name) ? program : null;
+  };
+  const calls = new Map();
+  for (const n of nodes) {
+    if (n.type !== 'CallExpression' || n.callee.type !== 'Identifier') continue;
+    const scope = calleeScope(n, n.callee.name);
+    if (!scope) continue;
+    n.arguments.forEach((a, i) => {
+      if (a.type === 'SpreadElement') return;
+      const key = `${scope.start}:${n.callee.name}:${i}`;
+      if (!calls.has(key)) calls.set(key, { node: n, args: [] });
+      calls.get(key).args.push(a);
+    });
+  }
+  for (const { node, args } of calls.values())
+    if (args.length > 1) roots.push({ node, kind: 'calls', args });
 
   const flow = (n, out, seen, depth, via = 'direct') => {
     if (!n || depth > 6) return;

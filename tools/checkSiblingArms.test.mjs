@@ -532,6 +532,26 @@ describe('checkSiblingArms: bounded assembled strings', () => {
     expect(g.findings).toEqual([]);
   });
 
+  // CC 2.1.296: the computer-use helper p(message, code) returns most of its
+  // errors as tool results; "Clicked." and "text must be a string" went out
+  // through it beside catalogued siblings and no gate ever raised them.
+  it('groups the arguments at one position across calls of one function', () => {
+    const r = scan(
+      [
+        'function p(m,c){return {error:m,code:c}}',
+        'function a(x){if(x)return p("Flow anchor","bad_args");return p("text must be a string","bad_args")}',
+        'function b(){let m=1>0?"Wait aborted (user interrupt).":"Waited.";return p(m,"other_code")}',
+        'function c(p){return p("Shadowed call text here")}',
+      ].join('\n')
+    );
+    const calls = r.findings.filter(f => f.group === 'calls');
+    expect(calls.map(f => f.body).sort()).toEqual([
+      'Wait aborted (user interrupt).',
+      'Waited.',
+      'text must be a string',
+    ]);
+  });
+
   it('excludes no-letter glue while keeping a word-bearing arm', () => {
     const r = scan(
       'function f(){return ["Flow anchor","Status:"," | ** ","\\n","123"].join("\\n")}'
