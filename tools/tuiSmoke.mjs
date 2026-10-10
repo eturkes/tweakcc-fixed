@@ -19,6 +19,7 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { probeModelEnvironmentArgs } from './lib/probeEnvironment.mjs';
 
 const args = process.argv.slice(2);
 const argOf = f => {
@@ -116,7 +117,7 @@ const main = () => {
     `echo "[EXIT=$?]"; sleep 600`;
   const started = tmux(
     'new-session', '-d', '-s', SESSION, '-x', '200', '-y', '50',
-    '-c', scratch, cmd
+    '-c', scratch, ...probeModelEnvironmentArgs(), cmd
   );
   if (started.status !== 0) {
     console.log(`tuiSmoke: FAIL — tmux new-session: ${started.stderr?.trim()}`);

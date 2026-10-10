@@ -69,7 +69,7 @@ const jsonVersion = (() => {
 const cliPath = (() => {
   if (fs.existsSync(CLI)) return CLI;
   if (!jsonVersion) return CLI;
-  const tmp = `/tmp/cli-${jsonVersion}.js`;
+  const tmp = path.join(process.env.SHOWTIME_TMP || '/tmp', `cli-${jsonVersion}.js`);
   if (fs.existsSync(tmp)) {
     console.error(`substitution-tags: ${CLI} absent — using ${tmp}`);
     return tmp;

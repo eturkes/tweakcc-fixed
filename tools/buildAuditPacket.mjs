@@ -129,7 +129,7 @@ if (!(Number.isInteger(idsPerAgent) && idsPerAgent > 0)) {
   console.error('buildAuditPacket: --ids-per-agent must be a positive integer');
   process.exit(2);
 }
-const outDir = outDirArg || '/tmp';
+const outDir = outDirArg || process.env.SHOWTIME_TMP || '/tmp';
 // Namespacing the packets per version is what keeps a previous bump's leftovers
 // from being harvested as this one's result, so the tool has to be able to
 // create the directory it was pointed at rather than failing at the first write.

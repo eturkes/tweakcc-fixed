@@ -70,7 +70,7 @@ const version = path.basename(jsonPath).replace(/^prompts-|\.json$/g, '');
 const cliCandidates = [
   arg('--cli'),
   pristineCliPath(),
-  `/tmp/cli-${version}.js`,
+  path.join(process.env.SHOWTIME_TMP || '/tmp', `cli-${version}.js`),
 ].filter(Boolean);
 const cliPath = cliCandidates.find(p => {
   if (!fs.existsSync(p)) return false;

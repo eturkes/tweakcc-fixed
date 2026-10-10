@@ -38,6 +38,9 @@ const harness = (replies, { file = FILE } = {}) => {
   const logs = [];
   let call = 0;
   const ctx = {
+    receiptFor: () => null,
+    startCmd: () => '',
+    args: {},
     agent: async prompt => {
       prompts.push(prompt);
       return replies[call++];

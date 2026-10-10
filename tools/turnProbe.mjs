@@ -30,6 +30,7 @@ import http from 'node:http';
 import https from 'node:https';
 import os from 'node:os';
 import path from 'node:path';
+import { probeModelEnvironmentArgs } from './lib/probeEnvironment.mjs';
 
 const args = process.argv.slice(2);
 const argOf = f => {
@@ -218,6 +219,7 @@ const main = async () => {
     '50',
     '-c',
     scratch,
+    ...probeModelEnvironmentArgs(),
     cmd
   );
   if (started.status !== 0) {
