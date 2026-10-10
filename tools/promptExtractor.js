@@ -4111,14 +4111,6 @@ function isHardExcluded(text) {
     return true;
   // Runtime-hardening IIFEs the bundler emits (executable code).
   if (text.startsWith('(() => {')) return true;
-  // claude-in-chrome file_upload tool description (kept out of the catalogue
-  // for baseline consistency — no sibling browser tool is catalogued).
-  if (
-    text.startsWith(
-      'Upload one or multiple files to a file input element on the page'
-    )
-  )
-    return true;
   // A general-purpose-agent fragment with no working override target (a
   // nested/clobbered span; see the inline notes in validateInput's history).
   if (
