@@ -507,5 +507,60 @@
     "text": "db.getToolUseSummary",
     "verdict": "glue",
     "reason": "glue: routing-arm label passed as e to vi(e,n), which throws P(`Artifact ${e}: no arm for ${r} (routing table and handler disagree)`) (tool-result-artifact-action-routing-no-arm) only when the Artifact tool routing table and a handler disagree. An internal dotted handler path, no instruction (call @32886666, db.getToolUseSummary fallthrough)"
+  },
+  "879b63794906a1ed": {
+    "builder": "fe",
+    "param": "n",
+    "text": "Click chord aborted before delivery",
+    "verdict": "catalogue",
+    "id": "tool-result-computer-delivery-aborted-click-chord",
+    "why": "fe(e,o,n) call-site argument rendering as the headline of the catalogued delivery_focus_check_failed tool_result (`${n}: ${i}. Keystrokes follow key focus, so the remaining input was NOT delivered…`); it names which action was cut off and how much of it landed, which decides what the model retypes. Catalogued via a classification-cache model verdict."
+  },
+  "796f2c1f1a487c47": {
+    "builder": "fe",
+    "param": "n",
+    "text": "Paste aborted before delivery",
+    "verdict": "catalogue",
+    "id": "tool-result-computer-delivery-aborted-paste",
+    "why": "fe(e,o,n) call-site argument rendering as the headline of the catalogued delivery_focus_check_failed tool_result (`${n}: ${i}. Keystrokes follow key focus, so the remaining input was NOT delivered…`); it names which action was cut off and how much of it landed, which decides what the model retypes. Catalogued via a classification-cache model verdict."
+  },
+  "bd3bbf7353680423": {
+    "builder": "fe",
+    "param": "n",
+    "text": "Typing aborted before delivery",
+    "verdict": "catalogue",
+    "id": "tool-result-computer-delivery-aborted-typing",
+    "why": "fe(e,o,n) call-site argument rendering as the headline of the catalogued delivery_focus_check_failed tool_result (`${n}: ${i}. Keystrokes follow key focus, so the remaining input was NOT delivered…`); it names which action was cut off and how much of it landed, which decides what the model retypes. Catalogued via a classification-cache model verdict."
+  },
+  "b27b6656c25a27ed": {
+    "builder": "fe",
+    "param": "n",
+    "text": "Typing aborted after ${} of ${} graphemes",
+    "verdict": "catalogue",
+    "id": "tool-result-computer-delivery-aborted-typing-partial",
+    "why": "fe(e,o,n) call-site argument rendering as the headline of the catalogued delivery_focus_check_failed tool_result (`${n}: ${i}. Keystrokes follow key focus, so the remaining input was NOT delivered…`); it names which action was cut off and how much of it landed, which decides what the model retypes. Catalogued via a classification-cache model verdict."
+  },
+  "515d5dcfa39c07b2": {
+    "builder": "fe",
+    "param": "n",
+    "text": "Key repeat aborted after ${} of ${} presses",
+    "verdict": "catalogue",
+    "id": "tool-result-computer-delivery-aborted-key-repeat-partial",
+    "why": "fe(e,o,n) call-site argument rendering as the headline of the catalogued delivery_focus_check_failed tool_result (`${n}: ${i}. Keystrokes follow key focus, so the remaining input was NOT delivered…`); it names which action was cut off and how much of it landed, which decides what the model retypes. Catalogued via a classification-cache model verdict."
+  },
+  "042689d6c65e4334": {
+    "builder": "fe",
+    "param": "n",
+    "text": "Hold-key aborted before delivery",
+    "verdict": "catalogue",
+    "id": "tool-result-computer-delivery-aborted-hold-key",
+    "why": "fe(e,o,n) call-site argument rendering as the headline of the catalogued delivery_focus_check_failed tool_result (`${n}: ${i}. Keystrokes follow key focus, so the remaining input was NOT delivered…`); it names which action was cut off and how much of it landed, which decides what the model retypes. Catalogued via a classification-cache model verdict."
+  },
+  "74bd22dcd645ef7e": {
+    "builder": "a",
+    "param": "b",
+    "text": "The file is past the size cap and was not read",
+    "verdict": "catalogue",
+    "why": "a(b) call-site argument in the plugin validator ft(): G(n,\"mcp\",`${b} — MCP server files are read without following symlinks and are capped at …`) (slash-command-plugin-mcp-server-files-are-read-without). Its sibling reason \"The file is not a regular file … and was not read\" is catalogued as slash-command-plugin-validate-mcp-file-not-regular-file; this one is named by the 2.1.296 classify pass, which raised it as a call-group candidate."
   }
 }

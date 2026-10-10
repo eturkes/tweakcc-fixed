@@ -4548,5 +4548,23 @@
     "facing": "ui",
     "hash": "935c787a6ef907ceadc73846e00830d7b4aa9059",
     "why": "Survives as the 'The cloud session was created, but' template, reached only when options.builtinTools is non-empty, which only the CLI --tools flag sets (stderr or a headless host error); no model-bound caller passes it. Ruled ui."
+  },
+  "tool-result-cloud-session-first-prompt-not-sent-archive-failed": {
+    "verdict": "archived",
+    "facing": "ui",
+    "hash": "eac22969db0e72178cb1d1a8e2b234a5aa6950ca",
+    "why": "Read the 2.1.296 emission path: F$t builds the first-prompt delivery failure, then V.kind !== sent in createCloudSession routes it solely to n.onCreateFail(..., first_prompt_not_sent, ...), returning {ok:false}. This literal is CLI failure output rather than model input; the exact extractor-probed key currently holds facing=ui."
+  },
+  "tool-result-cloud-session-first-prompt-not-sent-debug-hint": {
+    "verdict": "archived",
+    "facing": "ui",
+    "hash": "99df6df581bf7b978459174f76432cb27a261efd",
+    "why": "Read the 2.1.296 emission path: F$t builds the first-prompt delivery failure, then V.kind !== sent in createCloudSession routes it solely to n.onCreateFail(..., first_prompt_not_sent, ...), returning {ok:false}. This literal is CLI failure output rather than model input; the exact extractor-probed key currently holds facing=ui."
+  },
+  "data-artifact-read-page-data-tool-use-summary-unattended": {
+    "verdict": "archived",
+    "facing": "ui",
+    "hash": "61094fbdf70c60e10f8ce98bdc765aa5bd5bf70b",
+    "why": "Read the 2.1.296 emission path: the text is the Artifact tool's getToolUseSummary, whose three consumers are human-facing (agent-progress row, remote permission request, push notification); the narration side-query reads getActivityDescription, which the Artifact tool does not define, so no model route exists."
   }
 }
