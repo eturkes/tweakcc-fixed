@@ -31,6 +31,13 @@ const PARSE_OPTIONS = { sourceType: 'module', plugins: ['jsx', 'typescript'] };
 // `\\uHHHH` source (= backslash + u + four hex chars at runtime) isn't
 // accidentally interpreted as an escape. Other escapes (\n, \t, \", \`)
 // are kept raw to match the storage format Piebald's published JSONs use.
+// An escape that decodes to a control character or a line terminator also stays
+// raw: the bundle writes `\x08` or `\u2028` in that form, the search regex has
+// no alternation for raw control characters, and a raw U+2028 spliced back into
+// a regex literal is a syntax error.
+const KEEP_ESCAPED = cp =>
+  cp < 0x20 || (cp >= 0x7f && cp <= 0x9f) || cp === 0x2028 || cp === 0x2029;
+
 function decodeUnicodeEscapesInPiece(s) {
   let out = '';
   let i = 0;
@@ -47,7 +54,10 @@ function decodeUnicodeEscapesInPiece(s) {
           const close = s.indexOf('}', i + 3);
           if (close > -1) {
             const hex = s.substring(i + 3, close);
-            if (/^[0-9a-fA-F]+$/.test(hex)) {
+            if (
+              /^[0-9a-fA-F]+$/.test(hex) &&
+              !KEEP_ESCAPED(parseInt(hex, 16))
+            ) {
               out += String.fromCodePoint(parseInt(hex, 16));
               i = close + 1;
               continue;
@@ -55,7 +65,10 @@ function decodeUnicodeEscapesInPiece(s) {
           }
         } else if (i + 6 <= s.length) {
           const hex = s.substring(i + 2, i + 6);
-          if (/^[0-9a-fA-F]{4}$/.test(hex)) {
+          if (
+            /^[0-9a-fA-F]{4}$/.test(hex) &&
+            !KEEP_ESCAPED(parseInt(hex, 16))
+          ) {
             out += String.fromCharCode(parseInt(hex, 16));
             i += 6;
             continue;
@@ -64,7 +77,7 @@ function decodeUnicodeEscapesInPiece(s) {
       }
       if (s[i + 1] === 'x' && i + 4 <= s.length) {
         const hex = s.substring(i + 2, i + 4);
-        if (/^[0-9a-fA-F]{2}$/.test(hex)) {
+        if (/^[0-9a-fA-F]{2}$/.test(hex) && !KEEP_ESCAPED(parseInt(hex, 16))) {
           out += String.fromCharCode(parseInt(hex, 16));
           i += 4;
           continue;
@@ -683,6 +696,8 @@ module.exports = {
   decodeUnicodeEscapesInPiece,
   literalOf,
   assembleComposite,
+  EARLIER_SHAPES,
+  splitAroundIdentifiers,
   templateShape,
   templateIdentifierNodes,
   collectBundleSites,
