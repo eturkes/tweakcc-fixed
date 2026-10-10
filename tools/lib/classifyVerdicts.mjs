@@ -101,6 +101,14 @@ export function catalogueIndex(prompts) {
   return index;
 }
 
+// A body in the form the catalogue stores it: the extractor writes pieces with
+// the build stamp and the CC version replaced by placeholders, while a
+// candidate's hash is the sha1 of its raw body.
+export function catalogueForm(body, version) {
+  const stamped = body.replace(/BUILD_TIME:"(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z)"/g, 'BUILD_TIME:"<<BUILD_TIME>>"');
+  return version ? stamped.split(version).join('<<CCVERSION>>') : stamped;
+}
+
 export function fieldProblems(v, cand, where) {
   const out = [];
   const h = v.hash;
@@ -164,7 +172,7 @@ export function checkVerdictSet(file, { m, nn, expected, cands, label }) {
 // One id = one body. An id already in the catalogue may be kept only by the
 // candidate whose own body carries it, or the one licensed to reuse it
 // (reusedFrom / possibleSuccessorOf / piebaldExact).
-export function collisionProblems(merged, { cands, catalogue, label }) {
+export function collisionProblems(merged, { cands, catalogue, label, version }) {
   const out = [];
   const byId = new Map();
   for (const v of merged) {
@@ -173,8 +181,8 @@ export function collisionProblems(merged, { cands, catalogue, label }) {
     if (prev && prev !== v.hash) out.push(`${label}: id ${v.id} is given to two different hashes (${prev.slice(0, 10)}, ${v.hash.slice(0, 10)}) — keep it on the body the previous one opens with and name the other for what distinguishes it`);
     else byId.set(v.id, v.hash);
     const live = catalogue[v.id];
-    if (live && !live.includes(v.hash)) {
-      const cand = cands.get(v.hash) || {};
+    const cand = cands.get(v.hash) || {};
+    if (live && !live.includes(v.hash) && !(typeof cand.body === 'string' && live.includes(sha1(catalogueForm(cand.body, version))))) {
       if (!(cand.allowedIds || []).includes(v.id)) {
         out.push(`${label}: ${v.hash.slice(0, 10)} reuses catalogue id ${v.id}, which is live on a different body and is not this candidate's reusedFrom/possibleSuccessorOf/piebaldExact id — text that reads like an existing prompt but interpolates different expressions is a DIFFERENT prompt; mint a sibling id`);
       }
@@ -221,7 +229,7 @@ export function evaluateChunk(dir, m, nn, { stage = 'classify', checkFiles = tru
       merged = merged.map(v => audited.get(v.hash) || v);
     }
   }
-  problems.push(...collisionProblems(merged, { cands, catalogue, label: stage }));
+  problems.push(...collisionProblems(merged, { cands, catalogue, label: stage, version: m.version }));
   problems.push(...identityProblems(merged, { cands, label: stage, fragmentVerdicts: fragmentVerdictsFor(dir, m, nn, cands, merged) }));
   if (otherChunks) problems.push(...crossChunkProblems(dir, m, nn, merged));
   result.merged = merged;

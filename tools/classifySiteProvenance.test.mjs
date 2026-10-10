@@ -94,25 +94,74 @@ describe('classification source provenance', () => {
       ).toEqual(first.siteIndex.get(sha1('Existing prose remains indexed')));
     }));
 
-  it('rejects stale source ranges instead of routing them as the candidate body', async () =>
+  it('leaves a stale source range open instead of routing it as the candidate body', async () =>
     temporary(async dir => {
       const cli = path.join(dir, 'cli-9.9.9.js');
       const code = 'function first(){return"#"}function other(){return"wrong"}';
       fs.writeFileSync(cli, code);
       const at = code.indexOf('"wrong"');
-      await expect(
-        routesForCandidates({
-          cliPath: cli,
-          cacheDir: dir,
-          cands: [
-            {
-              hash: sha1('#'),
-              body: '#',
-              sourceSites: [{ start: at, end: at + 7 }],
-            },
-          ],
-        })
-      ).rejects.toThrow(/does not match its canonical literal body/);
+      const logs = [];
+      const result = await routesForCandidates({
+        cliPath: cli,
+        cacheDir: dir,
+        log: s => logs.push(s),
+        cands: [
+          {
+            hash: sha1('#'),
+            body: '#',
+            sourceSites: [{ start: at, end: at + 7 }],
+          },
+        ],
+      });
+      const entry = result.routesByHash.get(sha1('#'));
+      expect(entry.route).toMatchObject({
+        verdict: null,
+        resolved: false,
+        sinks: [],
+      });
+      expect(entry.route.unresolved[0]).toMatchObject({ at });
+      expect(entry.sites.every(s => s.route === null)).toBe(true);
+      expect(entry.problems).toHaveLength(1);
+      expect(result.problems[0]).toMatch(
+        /does not match its canonical literal body/
+      );
+      expect(logs.some(s => s.includes(`source range ${at}-${at + 7}`))).toBe(
+        true
+      );
+    }));
+  // A text-located candidate with source ranges used to abort route building
+  // for every candidate in the run.
+  it('routes the other candidates when one source range is only text-matched', async () =>
+    temporary(async dir => {
+      const cli = path.join(dir, 'cli-9.9.9.js');
+      const code =
+        'function first(id){return{type:"tool_result",tool_use_id:id,content:"Healthy candidate text"}}function other(){return"prefix: a long text-matched run of candidate words"}';
+      fs.writeFileSync(cli, code);
+      const body = 'a long text-matched run of candidate words';
+      const at = code.indexOf(body);
+      const result = await routesForCandidates({
+        cliPath: cli,
+        cacheDir: dir,
+        cands: [
+          {
+            hash: sha1('Healthy candidate text'),
+            body: 'Healthy candidate text',
+          },
+          {
+            hash: sha1(body),
+            body,
+            sourceSites: [{ start: at, end: at + body.length }],
+          },
+        ],
+      });
+      expect(result.routesByHash.get(sha1(body))).toMatchObject({
+        method: 'text-search',
+        route: { verdict: null, resolved: false },
+      });
+      expect(
+        result.routesByHash.get(sha1('Healthy candidate text')).route.verdict
+      ).toBe('model');
+      expect(result.problems).toHaveLength(1);
     }));
   it('traces interleaved candidates and shared variant sites once in source order', async () =>
     temporary(async dir => {
@@ -182,32 +231,45 @@ describe('classification source provenance', () => {
         result.routesByHash.get(sha1('Later candidate text')).sites
       ).toHaveLength(2);
     }));
-  it('rejects missing bodies before tracing any previously valid candidate', async () =>
+  it('never traces the located sites of a candidate whose source range mismatches', async () =>
     temporary(async dir => {
       const cli = path.join(dir, 'cli-9.9.9.js');
-      const code = 'function first(){return"Existing candidate text"}';
+      const code =
+        'function first(){return"Existing candidate text"}function second(){return"Other candidate text here"}';
       fs.writeFileSync(cli, code);
       const at = code.indexOf('"Existing candidate text"');
-      const spy = vi.spyOn(RouteProgram.prototype, 'trace');
+      const stale = code.indexOf('second');
+      const seen = [];
+      const original = RouteProgram.prototype.trace;
+      const spy = vi
+        .spyOn(RouteProgram.prototype, 'trace')
+        .mockImplementation(function (offset, options) {
+          seen.push(offset);
+          return original.call(this, offset, options);
+        });
       try {
-        await expect(
-          routesForCandidates({
-            cliPath: cli,
-            cacheDir: dir,
-            cands: [
-              {
-                hash: sha1('Existing candidate text'),
-                body: 'Existing candidate text',
-              },
-              {
-                hash: sha1('Missing body'),
-                body: 'Missing body',
-                sourceSites: [{ start: at, end: at + 25 }],
-              },
-            ],
-          })
-        ).rejects.toThrow(/does not match its canonical literal body/);
-        expect(spy).not.toHaveBeenCalled();
+        const result = await routesForCandidates({
+          cliPath: cli,
+          cacheDir: dir,
+          cands: [
+            {
+              hash: sha1('Existing candidate text'),
+              body: 'Existing candidate text',
+            },
+            {
+              hash: sha1('Other candidate text here'),
+              body: 'Other candidate text here',
+              sourceSites: [{ start: stale, end: stale + 6 }],
+            },
+          ],
+        });
+        expect(seen).toEqual([at]);
+        const other = result.routesByHash.get(
+          sha1('Other candidate text here')
+        );
+        expect(other.method).toBe('ast-exact');
+        expect(other.route.verdict).toBeNull();
+        expect(other.sites.map(s => s.route)).toEqual([null]);
       } finally {
         spy.mockRestore();
       }
