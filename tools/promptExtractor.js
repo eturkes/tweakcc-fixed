@@ -4850,6 +4850,28 @@ function templateExprNode(site) {
   return { expressions };
 }
 
+function literalSiteRecord(site) {
+  const range = { start: site.start, end: site.end, kind: site.kind };
+  if (site.kind === 'composite')
+    return {
+      ...range,
+      cacheBody: site.text,
+      fragments: site.fragments.map(f => ({
+        start: f.start,
+        end: f.end,
+        body: f.value,
+      })),
+    };
+  if (site.kind === 'string') return { ...range, cacheBody: site.value };
+  return {
+    ...range,
+    cacheBody: site.pieces.join(''),
+    ...(site.legacyShapes && {
+      legacyCacheBodies: site.legacyShapes.map(l => l.pieces.join('')),
+    }),
+  };
+}
+
 // `opts.cache` reuses the bundle-only site collection from the on-disk cache
 // (tools/lib/bundleSites.cjs). The CLI and collectLiteralSites turn it on;
 // TWEAKCC_EXTRACT_NO_CACHE=1 forces a cold collection either way.
@@ -4863,6 +4885,13 @@ function extractStrings(filepath, minLength = 500, opts = {}) {
         ? `extractStrings: site cache hit (${bundle.file})`
         : `extractStrings: site cache miss, collected and stored (${bundle.file})`
     );
+  }
+  if (opts.sitesOnly) {
+    for (const site of bundle.sites) {
+      if (site.kind === 'composite' && !_collectComposites) continue;
+      dumpCandidate(literalSiteRecord(site));
+    }
+    return null;
   }
   const settingsIndex = new Map(bundle.settings);
   const settingsAt = site => {
@@ -4878,17 +4907,7 @@ function extractStrings(filepath, minLength = 500, opts = {}) {
   // already captured is enclosed or retired.
   const decideComposite = site => {
     if (_siteCollector && _collectComposites)
-      _siteCollector.push({
-        start: site.start,
-        end: site.end,
-        kind: 'composite',
-        cacheBody: site.text,
-        fragments: site.fragments.map(f => ({
-          start: f.start,
-          end: f.end,
-          body: f.value,
-        })),
-      });
+      dumpCandidate(literalSiteRecord(site));
     const fragCaptured = site.fragments.map(frag => {
       const v = frag.value;
       return shouldCapture(v, v, leadOf(frag.start), minLength, {
@@ -4958,12 +4977,7 @@ function extractStrings(filepath, minLength = 500, opts = {}) {
     const lead = leadOf(site.start);
     const slotLiteral = Boolean(slotLiteralVerdict(site.value));
     const settings = settingsAt(site);
-    dumpCandidate({
-      start: site.start,
-      end: site.end,
-      kind: 'string',
-      cacheBody: site.value,
-    });
+    dumpCandidate(literalSiteRecord(site));
     if (
       shouldCapture(site.value, site.value, lead, minLength, {
         slotLiteral,
@@ -5000,15 +5014,7 @@ function extractStrings(filepath, minLength = 500, opts = {}) {
     // because the template is the unit that can be overridden.
     const slotLiteral = site.quasis.some(q => Boolean(slotLiteralVerdict(q)));
     const settings = settingsAt(site);
-    dumpCandidate({
-      start: site.start,
-      end: site.end,
-      kind: 'template',
-      cacheBody: tbody,
-      ...(site.legacyShapes && {
-        legacyCacheBodies: site.legacyShapes.map(l => l.pieces.join('')),
-      }),
-    });
+    dumpCandidate(literalSiteRecord(site));
     if (
       shouldCapture(fullContent, tbody, lead, minLength, {
         slotLiteral,
@@ -5047,7 +5053,6 @@ function extractStrings(filepath, minLength = 500, opts = {}) {
       `extractStrings: parsed ${bundle.modules.parsed}/${bundle.modules.total} bundle modules`
     );
   }
-  if (opts.sitesOnly) return null;
   backfillIdenticalSites(stringData, bundle.sites, code);
 
   // Filter out strings that are subsets of other strings
@@ -6295,7 +6300,7 @@ if (require.main === module) {
   // these into the chunk files the classification workflow consumes;
   // classify-merge writes the verdicts and the next extraction acts on them.
   const gateCandidates = result.gateCandidates || [];
-  const sidecarPath = '/tmp/tweakcc-gate-candidates.json';
+  const sidecarPath = process.env.TWEAKCC_GATE_CANDIDATES || path.join(process.env.SHOWTIME_TMP || '/tmp', 'tweakcc-gate-candidates.json');
   fs.writeFileSync(
     sidecarPath,
     JSON.stringify(

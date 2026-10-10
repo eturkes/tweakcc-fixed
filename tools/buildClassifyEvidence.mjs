@@ -72,11 +72,12 @@ export function loadCandidates(file) {
     const doc = JSON.parse(fs.readFileSync(file, 'utf8'));
     return Array.isArray(doc) ? doc : doc.candidates || [];
   }
-  const files = fs.readdirSync('/tmp').filter(f => /^classify-chunk-\d+\.json$/.test(f)).sort();
+  const candidateDir = process.env.TWEAKCC_CLASSIFY_DIR || process.env.SHOWTIME_TMP || '/tmp';
+  const files = fs.readdirSync(candidateDir).filter(f => /^classify-chunk-\d+\.json$/.test(f)).sort();
   if (!files.length) throw new Error('no candidates: pass --candidates or run `driver classify-candidates` first (/tmp/classify-chunk-NN.json)');
   const out = [];
   const seen = new Set();
-  for (const f of files) for (const c of JSON.parse(fs.readFileSync(path.join('/tmp', f), 'utf8'))) {
+  for (const f of files) for (const c of JSON.parse(fs.readFileSync(path.join(candidateDir, f), 'utf8'))) {
     if (seen.has(c.hash)) continue;
     seen.add(c.hash);
     out.push(c);
@@ -237,6 +238,8 @@ async function main() {
       hash: c.hash,
       len: c.body.length,
       source: c.source || 'captured',
+      ...(c.sourceSites ? { sourceSites: c.sourceSites } : {}),
+      ...(c.siblingRelations ? { siblingRelations: c.siblingRelations } : {}),
       ...(c.hint ? { cachedFacing: c.hint } : {}),
       family: fam.key,
       lead: c.lead || '',
