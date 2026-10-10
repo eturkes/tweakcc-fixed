@@ -47,7 +47,7 @@ const specs = specArgs.map(s => {
 const data = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
 for (const s of specs) {
   try {
-    readBundle(s.file, data.version, s.platform);
+    readBundle(s.file, s.platform);
   } catch (err) {
     usage(err.message);
   }
@@ -56,7 +56,6 @@ for (const s of specs) {
 const perFile = await scanInWorkers(
   data.prompts,
   specs,
-  data.version,
   workerLimit,
   'presence'
 );

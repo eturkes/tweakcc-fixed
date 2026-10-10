@@ -491,6 +491,28 @@ describe('checkScannedLiterals: throwing rewriters', () => {
     expect(r.out).toContain('BROKEN REWRITE');
   });
 
+  it('fails a rewriter written as a forEach, and one it cannot read', () => {
+    const tail = `var P=${JSON.stringify(PARA)},T=[["clearer than terminal text","clearer"]];export function g(){return Oq(P,T)}`;
+    const forEach =
+      'function Oq(e,a){let t=e;a.forEach(([n,r])=>{if(!t.includes(n))throw Error("x");t=t.replaceAll(n,r)});return t}';
+    const r = run({
+      bundle: forEach + tail,
+      prompts: [para()],
+      overrides: { [ID]: reworded },
+    });
+    expect(r.status).toBe(1);
+    expect(r.out).toContain(`THROWING REWRITE   system-prompts-test/${ID}`);
+    const indexed =
+      'function Oq(e,a){let t=e;for(let i=0;i<a.length;i++){let n=a[i][0];if(!t.includes(n))throw Error("x");t=t.replaceAll(n,a[i][1])}return t}';
+    const u = run({
+      bundle: indexed + tail,
+      prompts: [para()],
+      overrides: { [ID]: PARA },
+    });
+    expect(u.status).toBe(1);
+    expect(u.out).toContain('UNRECOGNISED REWRITER');
+  });
+
   it('keeps a non-throwing rewriter on the old rules', () => {
     const bundle = `function m(e,s){let t=e.description??"";for(let[n,f]of s)t=t.replace(n,f);return e.describe(t)}var P=${JSON.stringify(PARA)};export function z(n){return{a:m(n.a,[["clearer than terminal text","clearer"]])}}`;
     // An empty override is a deliberate suppression for a rewrite that only

@@ -22,9 +22,10 @@ afterEach(() => fs.rmSync(dir, { recursive: true, force: true }));
 
 const write = prompts =>
   fs.writeFileSync(json, JSON.stringify({ version: '9.9.9', prompts }));
-const bundle = (name, content) => {
+// A real bundle stamps its version; an empty one stays empty.
+const bundle = (name, content, stamp = 'VERSION:"9.9.9";') => {
   const file = path.join(dir, name);
-  fs.writeFileSync(file, content);
+  fs.writeFileSync(file, content && stamp + content);
   return file;
 };
 const tag = (...specs) =>
@@ -118,6 +119,10 @@ describe('tagPlatforms', () => {
     const linux = bundle('linux.js', '');
     expect(tag(`darwin=${darwin}`, `linux=${linux}`).status).toBe(2);
     expect(tag(`darwin=${darwin}`, `linux=${dir}/nope.js`).status).toBe(2);
+    const unstamped = bundle('unstamped.js', 'a="Mac 1.2.3 text";', '');
+    const r = tag(`darwin=${darwin}`, `linux=${unstamped}`);
+    expect(r.status).toBe(2);
+    expect(r.stderr).toContain('no VERSION');
     expect(fs.readFileSync(json, 'utf8')).toBe(before);
   });
 

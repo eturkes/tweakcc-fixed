@@ -501,13 +501,30 @@ const main = () => {
         `(${d.reason}): ${d.call.slice(0, 80)}`
     );
   }
+  const PROBLEM_HEAD = {
+    unparsed: [
+      'UNPARSED MODULE',
+      'the gate cannot see what this module does, so a rewriter or a ' +
+        'table in it goes unchecked',
+    ],
+    unrecognised: [
+      'UNRECOGNISED REWRITER',
+      'code throws when its text lacks a value it then rewrites, but its ' +
+        'shape is not one the gate reads, so its needles go unchecked',
+    ],
+    unresolved: [
+      'UNRESOLVED REWRITE TABLE',
+      'a rewriter that throws on a missing needle is fed a table the gate ' +
+        'cannot read, so no override is checked against it',
+    ],
+  };
   for (const u of unresolvedTables) {
+    const [head, effect] = PROBLEM_HEAD[u.kind] || PROBLEM_HEAD.unresolved;
     console.error(
-      `UNRESOLVED REWRITE TABLE  ${u.where}\n` +
+      `${head.padEnd(25)} ${u.where}\n` +
         `   reason  : ${u.reason}\n` +
         (u.call ? `   call    : ${u.call.slice(0, 120)}\n` : '') +
-        `   effect  : a rewriter that throws on a missing needle is fed a table ` +
-        `the gate cannot read, so no override is checked against it`
+        `   effect  : ${effect}`
     );
   }
   for (const r of throwingFailures) {
@@ -565,7 +582,7 @@ const main = () => {
       `\nscanned literals: ${blanked.length} blanked predicate(s), ` +
         `${brokenRewrites.length} broken rewrite(s), ` +
         `${throwingFailures.length} throwing rewrite(s), ` +
-        `${unresolvedTables.length} unresolved table(s), ${edited.length} rewritten`
+        `${unresolvedTables.length} unresolved rewriter problem(s), ${edited.length} rewritten`
     );
     process.exit(1);
   }

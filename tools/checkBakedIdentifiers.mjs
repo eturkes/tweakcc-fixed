@@ -31,6 +31,7 @@ import {
   Worker,
   isMainThread,
   parentPort,
+  threadId,
   workerData,
 } from 'node:worker_threads';
 import * as esbuild from 'esbuild';
@@ -38,8 +39,9 @@ import * as esbuild from 'esbuild';
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 // One self-contained module exporting the apply's own generalization and regex
-// builder, so the scanner cannot drift from what the apply matches.
-export const loadMatcherCore = async () => {
+// builder, so the scanner cannot drift from what the apply matches. Returns the
+// file; workers import it rather than building their own copy.
+export const buildMatcherCore = async () => {
   const built = await esbuild.build({
     absWorkingDir: REPO,
     stdin: {
@@ -63,13 +65,23 @@ export const loadMatcherCore = async () => {
   fs.mkdirSync(dir, { recursive: true });
   const hash = crypto.createHash('sha1').update(code).digest('hex');
   const file = path.join(dir, `baked-${hash}.mjs`);
-  if (!fs.existsSync(file)) {
-    const tmp = `${file}.${process.pid}.tmp`;
-    fs.writeFileSync(tmp, code);
-    fs.renameSync(tmp, file);
-  }
-  return import(pathToFileURL(file).href);
+  publishOnce(file, code);
+  return file;
 };
+
+// Writes `file` unless it exists. Only the rename publishes it, so no importer
+// sees it half written; the temp name is unique per thread, since worker
+// threads share the pid.
+export const publishOnce = (file, code) => {
+  if (fs.existsSync(file)) return;
+  const tmp = `${file}.${process.pid}.${threadId}.${crypto.randomUUID()}.tmp`;
+  fs.writeFileSync(tmp, code);
+  fs.renameSync(tmp, file);
+};
+
+const importCore = file => import(pathToFileURL(file).href);
+
+export const loadMatcherCore = async () => importCore(await buildMatcherCore());
 
 // Each generalized name becomes `\x01{k}\x01`, k its index in the entry. The
 // braces keep a name that sits in a complete `${…}` inside one piece from being
@@ -261,19 +273,36 @@ export const scanEntry = (core, entry, bundles) => {
 
 const PLATFORMS = ['darwin', 'linux', 'win32'];
 
+const PLATFORM_TOKEN = new RegExp(
+  `(?:^|[_.-])(${PLATFORMS.join('|')})(?=[_.-]|$)`,
+  'g'
+);
+
 // `<platform>=<path>`, or a bare path whose directories or file name name the
 // platform (`…/linux-arm64/cli.js`); anything else is this host's own build.
+// The component nearest the file wins: `/srv/darwin-ci/linux-x64/cli.js` is a
+// linux build kept on a darwin box.
 export const parseBundleSpec = spec => {
   const eq = spec.indexOf('=');
   if (eq > 0 && PLATFORMS.includes(spec.slice(0, eq)))
     return { platform: spec.slice(0, eq), file: spec.slice(eq + 1) };
-  const named = PLATFORMS.find(p =>
-    new RegExp(`(^|[/\\\\_.-])${p}([/\\\\_.-]|$)`).test(spec)
-  );
-  return { platform: named || process.platform, file: spec };
+  for (const part of spec.split(/[/\\]/).reverse()) {
+    const named = [...part.matchAll(PLATFORM_TOKEN)].at(-1);
+    if (named) return { platform: named[1], file: spec };
+  }
+  return { platform: process.platform, file: spec };
 };
 
-export const readBundle = (file, fallbackVersion, platform) => {
+// The CC version a bundle stamps on itself. Vendored packages carry their own
+// `VERSION:"…"`, so the most frequent stamp is the bundle's.
+export const bundleVersion = content => {
+  const counts = new Map();
+  for (const m of content.matchAll(/VERSION:"(\d+\.\d+\.\d+)"/g))
+    counts.set(m[1], (counts.get(m[1]) || 0) + 1);
+  return [...counts].sort((a, b) => b[1] - a[1])[0]?.[0] ?? null;
+};
+
+export const readBundle = (file, platform) => {
   let content;
   try {
     content = fs.readFileSync(file, 'utf8');
@@ -281,18 +310,18 @@ export const readBundle = (file, fallbackVersion, platform) => {
     throw new Error(`cannot read bundle ${file}: ${err.message}`);
   }
   if (!content.trim()) throw new Error(`bundle ${file} is empty`);
-  const version =
-    (content.match(/"(\d+\.\d+\.\d+)"/) || [])[1] || fallbackVersion;
+  const version = bundleVersion(content);
+  if (!version)
+    throw new Error(`bundle ${file} carries no VERSION:"X.Y.Z" stamp`);
   const buildTime = (content.match(/BUILD_TIME:"([^"]+)"/) || [])[1];
   return { label: file, platform, content, version, buildTime };
 };
 
 // Each worker matches a slice of the catalogue against one bundle.
 const runWorker = async () => {
-  const { file, platform, fallbackVersion, entries, mode } =
-    workerData.bakedScan;
-  const core = await loadMatcherCore();
-  const bundle = readBundle(file, fallbackVersion, platform);
+  const { coreFile, file, platform, entries, mode } = workerData.bakedScan;
+  const core = await importCore(coreFile);
+  const bundle = readBundle(file, platform);
   const out = entries.map(e => {
     try {
       return (mode === 'presence' ? presenceInBundle : matchInBundle)(
@@ -310,7 +339,6 @@ const runWorker = async () => {
 export const scanInWorkers = async (
   entries,
   specs,
-  fallbackVersion,
   workerLimit = os.availableParallelism?.() || os.cpus().length,
   mode = 'baked'
 ) => {
@@ -325,6 +353,7 @@ export const scanInWorkers = async (
     for (let from = 0; from < entries.length; from += size)
       jobs.push({ spec, from, slice: entries.slice(from, from + size) });
   const results = new Map(specs.map(s => [s.file, new Array(entries.length)]));
+  const coreFile = await buildMatcherCore();
   let nextJob = 0;
   await Promise.all(
     Array.from({ length: Math.min(workerLimit, jobs.length) }, async () => {
@@ -334,9 +363,9 @@ export const scanInWorkers = async (
           const w = new Worker(fileURLToPath(import.meta.url), {
             workerData: {
               bakedScan: {
+                coreFile,
                 file: spec.file,
                 platform: spec.platform,
-                fallbackVersion,
                 mode,
                 entries: slice.map(e => ({ pieces: e.pieces })),
               },
@@ -385,7 +414,7 @@ const main = async () => {
   const specs = bundleArgs.map(parseBundleSpec);
   let bundles;
   try {
-    bundles = specs.map(s => readBundle(s.file, data.version, s.platform));
+    bundles = specs.map(s => readBundle(s.file, s.platform));
   } catch (err) {
     usage(err.message);
   }
@@ -393,7 +422,7 @@ const main = async () => {
     usage('every bundle given has the same content; nothing to compare');
   for (const b of bundles) b.content = null;
   const entries = data.prompts;
-  const perFile = await scanInWorkers(entries, specs, data.version);
+  const perFile = await scanInWorkers(entries, specs);
   const scanned = [];
   const errors = [];
   entries.forEach((entry, i) => {
