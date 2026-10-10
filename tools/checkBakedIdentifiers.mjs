@@ -151,11 +151,22 @@ export const scannerPattern = (core, marked, names, version, buildTime) => {
   return { pattern, roles };
 };
 
-// One bundle's matches for one entry: how many, and per baked name every
-// spelling that differs from the catalogue's. An entry with no baked name only
-// needs to be found once.
-export const matchInBundle = (core, entry, bundle) => {
+export const presenceInBundle = (core, entry, bundle) => {
+  const pattern = core.buildSearchRegexFromPieces(
+    entry.pieces,
+    bundle.version,
+    bundle.buildTime
+  );
+  return {
+    names: [],
+    count: new RegExp(pattern, 's').test(bundle.content) ? 1 : 0,
+    seen: [],
+  };
+};
+
+const inspectBakedInBundle = (core, entry, bundle, presence) => {
   const { names, marked } = bakedPositions(core, entry.pieces);
+  if (!names.flat().length) return presence;
   const { pattern, roles } = scannerPattern(
     core,
     marked,
@@ -164,9 +175,8 @@ export const matchInBundle = (core, entry, bundle) => {
     bundle.buildTime
   );
   const hasNames = roles.some(Boolean);
+  if (!hasNames) return presence;
   const re = new RegExp(pattern, hasNames ? 'sg' : 's');
-  if (!hasNames)
-    return { names: [], count: re.test(bundle.content) ? 1 : 0, seen: [] };
   const seen = new Map();
   let count = 0;
   let m;
@@ -184,12 +194,31 @@ export const matchInBundle = (core, entry, bundle) => {
   }
   return {
     names: names.flat(),
-    count,
+    count: presence.count ? count || 1 : 0,
+    ...(presence.count && !count
+      ? {
+          error:
+            'apply matcher found the entry, but baked-name inspection could not match its expression structure',
+        }
+      : {}),
     seen: [...seen.values()].map(({ got, ...role }) => ({
       ...role,
       got: [...got],
     })),
   };
+};
+
+// One bundle's matches for one entry: how many, and per baked name every
+// spelling that differs from the catalogue's. An entry with no baked name only
+// needs to be found once.
+export const matchInBundle = (core, entry, bundle) => {
+  const presence = presenceInBundle(core, entry, bundle);
+  if (!presence.count) return presence;
+  try {
+    return inspectBakedInBundle(core, entry, bundle, presence);
+  } catch (err) {
+    return { ...presence, error: err.message };
+  }
 };
 
 // Whether a bundle of this platform should carry the entry: untagged entries
@@ -260,12 +289,17 @@ export const readBundle = (file, fallbackVersion, platform) => {
 
 // Each worker matches a slice of the catalogue against one bundle.
 const runWorker = async () => {
-  const { file, platform, fallbackVersion, entries } = workerData.bakedScan;
+  const { file, platform, fallbackVersion, entries, mode } =
+    workerData.bakedScan;
   const core = await loadMatcherCore();
   const bundle = readBundle(file, fallbackVersion, platform);
   const out = entries.map(e => {
     try {
-      return matchInBundle(core, e, bundle);
+      return (mode === 'presence' ? presenceInBundle : matchInBundle)(
+        core,
+        e,
+        bundle
+      );
     } catch (err) {
       return { error: err.message };
     }
@@ -273,41 +307,56 @@ const runWorker = async () => {
   parentPort.postMessage(out);
 };
 
-const scanInWorkers = async (entries, specs, fallbackVersion) => {
-  const shards = Math.max(
-    1,
-    Math.ceil((os.availableParallelism?.() || os.cpus().length) / specs.length)
-  );
+export const scanInWorkers = async (
+  entries,
+  specs,
+  fallbackVersion,
+  workerLimit = os.availableParallelism?.() || os.cpus().length,
+  mode = 'baked'
+) => {
+  if (!Number.isInteger(workerLimit) || workerLimit < 1)
+    throw new Error('worker limit must be a positive integer');
+  if (!['baked', 'presence'].includes(mode))
+    throw new Error('scan mode must be baked or presence');
+  const shards = Math.max(1, Math.ceil(workerLimit / specs.length));
   const size = Math.ceil(entries.length / shards) || 1;
   const jobs = [];
   for (const spec of specs)
     for (let from = 0; from < entries.length; from += size)
       jobs.push({ spec, from, slice: entries.slice(from, from + size) });
   const results = new Map(specs.map(s => [s.file, new Array(entries.length)]));
+  let nextJob = 0;
   await Promise.all(
-    jobs.map(
-      ({ spec, from, slice }) =>
-        new Promise((resolve, reject) => {
+    Array.from({ length: Math.min(workerLimit, jobs.length) }, async () => {
+      while (nextJob < jobs.length) {
+        const { spec, from, slice } = jobs[nextJob++];
+        await new Promise((resolve, reject) => {
           const w = new Worker(fileURLToPath(import.meta.url), {
             workerData: {
               bakedScan: {
                 file: spec.file,
                 platform: spec.platform,
                 fallbackVersion,
+                mode,
                 entries: slice.map(e => ({ pieces: e.pieces })),
               },
             },
           });
+          let reported = false;
           w.once('message', out => {
             out.forEach((r, i) => (results.get(spec.file)[from + i] = r));
-            resolve();
+            reported = true;
           });
           w.once('error', reject);
           w.once('exit', code => {
             if (code !== 0) reject(new Error(`worker exited ${code}`));
+            else if (!reported)
+              reject(new Error('worker exited without results'));
+            else resolve();
           });
-        })
-    )
+        });
+      }
+    })
   );
   return results;
 };
@@ -352,7 +401,7 @@ const main = async () => {
     for (const b of bundles) {
       const r = perFile.get(b.label)[i];
       if (r.error) errors.push(`${entry.id || '(anonymous)'}: ${r.error}`);
-      perBundle[b.label] = r.error ? { names: [], count: 0, seen: [] } : r;
+      perBundle[b.label] = { names: [], count: 0, seen: [], ...r };
     }
     scanned.push(combineEntry(entry, perBundle, bundles));
   });

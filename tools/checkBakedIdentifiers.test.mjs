@@ -7,7 +7,9 @@ import { fileURLToPath } from 'node:url';
 
 import {
   loadMatcherCore,
+  matchInBundle,
   parseBundleSpec,
+  presenceInBundle,
   scanEntry,
 } from './checkBakedIdentifiers.mjs';
 
@@ -120,6 +122,26 @@ describe('checkBakedIdentifiers', () => {
     ]);
   });
 
+  it('preserves apply presence while failing closed on an uninspectable baked expression', () => {
+    const entry = { pieces: ['Pick ${', '[`${k.foo()}`]} done'] };
+    const builds = [
+      bundle('darwin', 'x=`Pick ${p[`${k.foo()}`]} done`'),
+      bundle('linux', 'x=`Pick ${q[`${m.bar()}`]} done`'),
+    ];
+    for (const b of builds) {
+      const direct = new RegExp(
+        core.buildSearchRegexFromPieces(entry.pieces, b.version, b.buildTime),
+        's'
+      ).test(b.content);
+      expect(direct).toBe(true);
+      expect(presenceInBundle(core, entry, b).count).toBe(Number(direct));
+    }
+    const r = matchInBundle(core, entry, builds[1]);
+    expect(r.count).toBe(1);
+    expect(r.error).toContain('baked-name inspection could not match');
+    expect(scanEntry(core, entry, builds).missing).toEqual([]);
+  });
+
   it('matches an entry with no baked name for presence', () => {
     const entry = {
       id: 'fixture-promoted-missing',
@@ -215,5 +237,35 @@ describe('checkBakedIdentifiers CLI fails closed', () => {
     expect(run(`darwin=${mac}`, path.join(dir, 'nope.js')).status).toBe(2);
     expect(run(`darwin=${mac}`).status).toBe(2);
     expect(run(`darwin=${mac}`, `linux=${mac}`).status).toBe(2);
+  });
+
+  it('reports an inspection failure without reporting false platform absence', () => {
+    const fixture = path.join(dir, 'inline-prompts.json');
+    const macFixture = path.join(dir, 'inline-mac.js');
+    const linFixture = path.join(dir, 'inline-linux.js');
+    fs.writeFileSync(
+      fixture,
+      JSON.stringify({
+        version: '2.1.300',
+        prompts: [
+          {
+            id: 'inline',
+            pieces: ['Pick ${', '[`${k.foo()}`]} done'],
+          },
+        ],
+      })
+    );
+    fs.writeFileSync(macFixture, 'x=`Pick ${p[`${k.foo()}`]} done`;');
+    fs.writeFileSync(linFixture, 'x=`Pick ${q[`${m.bar()}`]} done`;');
+    const r = spawnSync(
+      process.execPath,
+      [TOOL, fixture, `darwin=${macFixture}`, `linux=${linFixture}`, '--json'],
+      { encoding: 'utf8' }
+    );
+    expect(r.status).toBe(1);
+    const result = JSON.parse(r.stdout);
+    expect(result.missing).toEqual([]);
+    expect(result.errors).toHaveLength(1);
+    expect(result.errors[0]).toContain('inspection could not match');
   });
 });
