@@ -60,16 +60,51 @@ describe('slot promotion in templateShape', () => {
     expect(shape.identifiers).toEqual([0, 1, 2]);
   });
 
-  it('leaves identifiers after the first capture to the apply side', () => {
-    // `o` is captured; `k` follows it and the search regex generalizes it.
+  it('promotes identifiers after the first capture too', () => {
+    // `o` and `y` are captured; `k` and `j` follow them. Left in the pieces,
+    // they would pin this build's names in the cache key and the write-back.
     const shape = shapeOf('x=`pick ${o[k]} and ${{a:`t ${y}`}[j]} end`');
     expect(shape.pieces).toEqual([
       'pick ${',
-      '[k]} and ${{a:`t ${',
-      '}`}[j]} end',
+      '[',
+      ']} and ${{a:`t ${',
+      '}`}[',
+      ']} end',
     ]);
-    expect(shape.identifiers).toEqual([0, 1]);
-    expect(shape.legacy).toBeUndefined();
+    expect(shape.identifiers).toEqual([0, 1, 2, 3]);
+    expect(shape.legacy).toEqual({
+      pieces: ['pick ${', '[k]} and ${{a:`t ${', '}`}[j]} end'],
+      identifiers: [0, 1],
+      occurrences: [0, 2],
+    });
+  });
+
+  it('promotes object values and spreads that follow a call', () => {
+    const shape = shapeOf(
+      'x=`${f.line(s.file,{edits:s.edits,...c.copy!==void 0&&{copy:c.copy}})} end`'
+    );
+    expect(shape.pieces.join('')).toBe(
+      '${.line(.file,{edits:.edits,....copy!==void 0&&{copy:.copy}})} end'
+    );
+    expect(shape.identifiers).toEqual([0, 1, 1, 2, 2]);
+  });
+
+  it('does not make a destructuring key a slot', () => {
+    const shape = shapeOf(
+      'x=`${e.g.map(({group:a,calls:p})=>({group:a,calls:p}))} end`'
+    );
+    expect(shape.pieces).toEqual([
+      '${',
+      '.g.map(({group:',
+      ',calls:',
+      '})=>({group:',
+      ',calls:',
+      '}))} end',
+    ]);
+    expect(shape.identifiers).toEqual([0, 1, 2, 1, 2]);
+    // The earlier shape captured both keys; they map to no slot now.
+    expect(shape.legacy.identifiers).toEqual([0, 1, 2, 3, 4]);
+    expect(shape.legacy.occurrences).toEqual([0, -1, 1, -1, 2]);
   });
 
   it('keeps a shorthand property literal', () => {
@@ -144,6 +179,40 @@ describe('carryover across slot promotion', () => {
     });
   });
 
+  it('drops the names of keys that stopped being slots', () => {
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+    const legacy = {
+      pieces: ['Usage ${', '.map(({', ':', '})=>', ')} end'],
+      identifiers: [0, 1, 2, 2],
+      occurrences: [0, -1, 1, 2],
+    };
+    const old = {
+      id: 'skill-fixture-usage',
+      name: 'Skill: fixture usage',
+      description: 'fixture',
+      pieces: legacy.pieces,
+      identifiers: legacy.identifiers,
+      identifierMap: { 0: 'GROUPS', 1: 'KEY_NAME', 2: 'GROUP' },
+      version: '2.1.200',
+    };
+    const fresh = {
+      name: '',
+      id: '',
+      description: '',
+      pieces: ['Usage ${', '.map(({group:', '})=>', ')} end'],
+      identifiers: [0, 1, 1],
+      identifierMap: { 0: '', 1: '' },
+      legacy,
+    };
+    const { prompts } = ex.mergeWithExisting(
+      { prompts: [fresh] },
+      { prompts: [old] },
+      '2.1.300'
+    );
+    expect(prompts[0].id).toBe(old.id);
+    expect(prompts[0].identifierMap).toEqual({ 0: 'GROUPS', 1: 'GROUP' });
+  });
+
   it('carries a map already in the promoted shape unchanged', () => {
     vi.spyOn(console, 'log').mockImplementation(() => {});
     const current = {
@@ -159,6 +228,50 @@ describe('carryover across slot promotion', () => {
     );
     expect(prompts[0].identifierMap).toEqual(current.identifierMap);
     expect(prompts[0].version).toBe(oldItem.version);
+  });
+});
+
+describe('upstream identifierMap adoption across slot promotion', () => {
+  // Upstream's extractor does not promote, so its map is in the legacy shape.
+  const p = () => ({
+    id: 'system-prompt-fixture-heartbeat',
+    pieces: ['If a ${', '} is armed, ${', '({a:', '})} then ${', '}.'],
+    identifiers: [0, 1, 2, 3],
+    identifierMap: { 0: 'MONITOR', 1: 'FN', 2: 'FIXTURE_VAR_3', 3: 'STOP' },
+    legacy: {
+      pieces: ['If a ${', '} is armed, ${', '({a:t})} then ${', '}.'],
+      identifiers: [0, 1, 2],
+      occurrences: [0, 1, 3],
+    },
+  });
+  const upstream = {
+    identifiers: [0, 1, 2],
+    identifierMap: { 0: 'MONITOR_TOOL_NAME', 1: 'STATUS_FN', 2: 'STOP_TOOL' },
+  };
+
+  it('moves upstream names onto the slots they named', () => {
+    const q = p();
+    expect(ex.adoptUpstreamIdentifierMap(q, upstream)).toBe(true);
+    expect(q.identifierMap).toEqual({
+      0: 'MONITOR_TOOL_NAME',
+      1: 'STATUS_FN',
+      2: 'FIXTURE_VAR_3',
+      3: 'STOP_TOOL',
+    });
+  });
+
+  it('takes the map whole when the shapes already agree', () => {
+    const q = { ...p(), identifiers: [0, 1, 2], legacy: undefined };
+    expect(ex.adoptUpstreamIdentifierMap(q, upstream)).toBe(true);
+    expect(q.identifierMap).toEqual(upstream.identifierMap);
+  });
+
+  it('leaves a prompt whose layout matches neither shape alone', () => {
+    const q = p();
+    const before = { ...q.identifierMap };
+    const other = { identifiers: [0, 1], identifierMap: { 0: 'A', 1: 'B' } };
+    expect(ex.adoptUpstreamIdentifierMap(q, other)).toBe(false);
+    expect(q.identifierMap).toEqual(before);
   });
 });
 

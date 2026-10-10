@@ -242,7 +242,9 @@ describe('promptExtractor below-floor capture', () => {
         }
         _setClassificationCacheForTests({ _: {} });
         expect(extract(code).candidates).toContain(inner);
-        _setClassificationCacheForTests({ [sha1Hex(outer)]: { facing: 'model' } });
+        _setClassificationCacheForTests({
+          [sha1Hex(outer)]: { facing: 'model' },
+        });
         const { bodies, candidates } = extract(code);
         expect(bodies).toContain(outer);
         expect(candidates).not.toContain(inner);
@@ -378,6 +380,35 @@ describe('promptExtractor below-floor capture', () => {
         `var e=X.createElement(B,{color:"red"},${JSON.stringify(ui)});`
       );
       expect(bodies).not.toContain(ui);
+    });
+
+    // CC 2.1.296 renamed the arrow parameter `O` to `M` inside this slot of
+    // the start_task refusal; the catalogue held `String(O)` as piece text, so
+    // the body, its cache key and its id all changed with a minifier rename.
+    it('keeps no minified name from inside a slot expression in its pieces', () => {
+      const build = (table, param) =>
+        `var Ymn={type:"string",description:\`\${p??"the arguments"} must be \${R.map((${param})=>${table}[String(${param})]??String(${param})).join(" or ")}\`};`;
+      const shape = code => {
+        const f = path.join(
+          os.tmpdir(),
+          `pe-test-${process.pid}-${Math.random().toString(36).slice(2)}.js`
+        );
+        fs.writeFileSync(f, code);
+        try {
+          const hit = extractStrings(f).prompts.find(p =>
+            p.pieces.join('').includes('must be')
+          );
+          return { pieces: hit.pieces, identifiers: hit.identifiers };
+        } finally {
+          fs.unlinkSync(f);
+        }
+      };
+      const darwin = shape(build('br', 'O'));
+      const linux = shape(build('Qx', 'M'));
+      expect(linux).toEqual(darwin);
+      expect(darwin.pieces.join('')).toBe(
+        '${??"the arguments"} must be ${.map(()=>[()]??()).join(" or ")}'
+      );
     });
 
     it('still captures an above-floor prose prompt (no baseline regression)', () => {

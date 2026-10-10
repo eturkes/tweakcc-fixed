@@ -5493,7 +5493,8 @@ function normalizeIdGroups(prompts) {
 // old item is in the new item's pre-promotion shape its labels index the legacy
 // slots, so each name moves to the label its slot holds now; carrying it by
 // label would bind it to whichever slot was promoted ahead of it. Promoted
-// slots are left unnamed for the synthetic fill.
+// slots are left unnamed for the synthetic fill; names of slots that are no
+// longer slots (destructuring keys) are dropped.
 function carriedIdentifierMap(oldItem, newItem) {
   const legacy = newItem.legacy;
   const same = (a, b) => JSON.stringify(a || []) === JSON.stringify(b || []);
@@ -5507,9 +5508,28 @@ function carriedIdentifierMap(oldItem, newItem) {
   const map = {};
   legacy.occurrences.forEach((slot, i) => {
     const name = (oldItem.identifierMap || {})[legacy.identifiers[i]];
-    if (name) map[newItem.identifiers[slot]] = name;
+    if (name && slot >= 0) map[newItem.identifiers[slot]] = name;
   });
   return map;
+}
+
+// Upstream's extractor does not promote slots (tools/lib/bundleSites.cjs), so
+// its map for a prompt we promoted is in our legacy shape. Its names then move
+// to the slots they named, and the promoted slots keep theirs.
+function adoptUpstreamIdentifierMap(p, u) {
+  if (!u || !u.identifierMap) return false;
+  const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+  if (same(u.identifiers, p.identifiers)) {
+    p.identifierMap = { ...u.identifierMap };
+    return true;
+  }
+  if (!p.legacy || !same(u.identifiers, p.legacy.identifiers)) return false;
+  const promoted = { ...p.identifierMap };
+  p.legacy.occurrences.forEach(slot => {
+    if (slot >= 0) delete promoted[p.identifiers[slot]];
+  });
+  p.identifierMap = { ...promoted, ...carriedIdentifierMap(u, p) };
+  return true;
 }
 
 // Fills every blank identifierMap name of one prompt with a stable synthetic
@@ -5550,7 +5570,8 @@ function fillSlotNames(p) {
   const legacyLabel = new Map();
   if (p.legacy) {
     p.legacy.occurrences.forEach((slot, i) => {
-      legacyLabel.set(String(p.identifiers[slot]), p.legacy.identifiers[i]);
+      if (slot >= 0)
+        legacyLabel.set(String(p.identifiers[slot]), p.legacy.identifiers[i]);
     });
   }
   const used = new Set(Object.values(p.identifierMap).filter(Boolean));
@@ -6040,15 +6061,7 @@ if (require.main === module) {
       for (const p of up.prompts || []) if (p.id) upById.set(p.id, p);
       let adopted = 0;
       for (const p of mergedResult.prompts) {
-        const u = p.id && upById.get(p.id);
-        if (
-          u &&
-          u.identifierMap &&
-          JSON.stringify(u.identifiers) === JSON.stringify(p.identifiers)
-        ) {
-          p.identifierMap = { ...u.identifierMap };
-          adopted++;
-        }
+        if (adoptUpstreamIdentifierMap(p, p.id && upById.get(p.id))) adopted++;
       }
       console.log(
         `Adopted upstream identifierMap for ${adopted} shared prompt(s)`
@@ -6204,6 +6217,7 @@ module.exports._setClassificationCacheForTests =
 // genuinely-ambiguous cross-id) is behavior worth locking down.
 module.exports.mergeWithExisting = mergeWithExisting;
 module.exports.fillSlotNames = fillSlotNames;
+module.exports.adoptUpstreamIdentifierMap = adoptUpstreamIdentifierMap;
 module.exports.classifyByCache = classifyByCache;
 module.exports.rawCacheForms = rawCacheForms;
 module.exports.cacheLookupForms = cacheLookupForms;

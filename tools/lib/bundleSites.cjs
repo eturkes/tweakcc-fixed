@@ -159,13 +159,18 @@ function assembleComposite(node) {
 // source order, as { node, parent }. This is the slot order a catalogue entry's
 // `identifiers` array follows, so tools that need the AST node behind slot N
 // (tools/lib/slotValues.mjs) read it from here rather than re-deriving it.
-function templateIdentifierNodes(node) {
+// `withDropped` adds, marked `dropped`, the destructuring keys the traversal
+// captured before it skipped them, so templateShape can describe the shape a
+// catalogue extracted then holds.
+function templateIdentifierNodes(node, { withDropped = false } = {}) {
   const out = [];
+  let out0 = out;
+  let keysAsSlots = false;
   const traverseExpr = (exprNode, isTopLevel, parent) => {
     if (!exprNode || typeof exprNode !== 'object') return;
 
     if (exprNode.type === 'Identifier' && isTopLevel) {
-      out.push({ node: exprNode, parent });
+      out0.push({ node: exprNode, parent });
     }
 
     if (exprNode.type === 'CallExpression') {
@@ -187,6 +192,20 @@ function templateIdentifierNodes(node) {
           traverseExpr(nestedExpr, true, exprNode)
         );
       }
+      return;
+    }
+
+    // Reached only inside a destructuring pattern (object literals return
+    // above). A non-computed key is the source property name, not a binding:
+    // captured as a slot, an override's write-back leaves the slot's label in
+    // key position (keys are never substituted), so the pattern reads a
+    // property that does not exist.
+    if (exprNode.type === 'ObjectProperty' && !keysAsSlots) {
+      if (exprNode.computed) traverseExpr(exprNode.key, true, exprNode);
+      const { value } = exprNode;
+      if (!exprNode.shorthand) traverseExpr(value, true, exprNode);
+      else if (value && value.type === 'AssignmentPattern')
+        traverseExpr(value.right, true, value);
       return;
     }
 
@@ -214,36 +233,42 @@ function templateIdentifierNodes(node) {
   for (const expr of node.expressions) {
     const before = out.length;
     traverseExpr(expr, true, node);
-    promoteLeadingReferences(expr, node, out, before);
+    promoteUncapturedReferences(expr, node, out, before);
+  }
+  if (withDropped) {
+    const kept = new Set(out.map(e => e.node));
+    const before = [];
+    out0 = before;
+    keysAsSlots = true;
+    for (const expr of node.expressions) traverseExpr(expr, true, node);
+    for (const e of before)
+      if (!kept.has(e.node)) out.push({ ...e, dropped: true });
   }
   out.sort((a, b) => a.node.start - b.node.start);
   return out;
 }
 
-// The traversal above captures the LEADING identifiers of a slot expression,
-// and the apply side generalizes every identifier after the first capture
-// (src/systemPromptExpressionIdentifiers.ts). It never reaches the index of a
-// computed member access or a bare object value, so in
-// `${{here:"…",none:"…"}[e]}` nothing is captured: the whole slot lands in a
-// piece, the minified `e` is pinned in the search regex, and an override
-// writes it back verbatim. Every value-position identifier ahead of the
-// expression's first capture becomes a slot of its own, marked `promoted` so
-// the merge can line the shape up with a catalogue extracted without them.
-// Shorthand properties stay literal: `{x}` splits into `{` + `}`, and an
-// override renaming the slot would rename the key with it.
-function promoteLeadingReferences(expr, parent, out, from) {
+// The traversal above captures the LEADING identifiers of a slot expression.
+// It never reaches the index of a computed member access, an object-literal
+// value or an object spread, so in `${{here:"…",none:"…"}[e]}` or
+// `${s.map((M)=>br[String(M)])}` those names would stay in a piece as one
+// build's text. The apply's matchers accept any name there
+// (src/systemPromptExpressionIdentifiers.ts), but the cache key, the id
+// carryover and an override's write-back read the piece literally: CC 2.1.296
+// renamed `String(O)` to `String(M)` and the prompt lost its id, and an
+// override writes the extracting build's name back on every other build. So
+// every value-position identifier the traversal left out becomes a slot of
+// its own, marked `promoted` so the merge can line the shape up with a
+// catalogue extracted without them. Shorthand properties stay literal: a
+// shorthand survives minification only where the local kept its source name,
+// and `{x}` split into `{` + `}` would let an override rename the key.
+function promoteUncapturedReferences(expr, parent, out, from) {
   const captured = new Set();
-  let first = Infinity;
-  for (let i = from; i < out.length; i++) {
-    captured.add(out[i].node);
-    first = Math.min(first, out[i].node.start);
-  }
+  for (let i = from; i < out.length; i++) captured.add(out[i].node);
   const refs = [];
   collectReferences(expr, parent, refs);
   for (const ref of refs) {
-    if (ref.node.start < first && !captured.has(ref.node)) {
-      out.push({ ...ref, promoted: true });
-    }
+    if (!captured.has(ref.node)) out.push({ ...ref, promoted: true });
   }
 }
 
@@ -337,32 +362,31 @@ function splitAroundIdentifiers(fullContent, ids) {
   };
 }
 
-// `legacy`, present only when a slot was promoted, is the shape without the
-// promoted slots — what a catalogue extracted before promotion holds — and
-// `occurrences[i]` is the index into `identifiers` of its i-th slot.
+// `legacy`, present only when the slots differ from what the extractor
+// captured before promotion and before destructuring keys stopped being slots,
+// is that earlier shape — what an older catalogue holds — and `occurrences[i]`
+// is the index into `identifiers` of its i-th slot, or -1 for a slot that is
+// no longer one.
 function templateShape(node, code) {
   const contentStart = node.start + 1;
   const fullContent = code.substring(contentStart, node.end - 1);
 
-  const allIdentifiers = templateIdentifierNodes(node).map(
-    ({ node: n, promoted }) => ({
-      name: n.name,
-      start: n.start - contentStart,
-      end: n.end - contentStart,
-      promoted: Boolean(promoted),
-    })
-  );
+  const allIdentifiers = templateIdentifierNodes(node, {
+    withDropped: true,
+  }).map(({ node: n, promoted, dropped }) => ({
+    name: n.name,
+    start: n.start - contentStart,
+    end: n.end - contentStart,
+    promoted: Boolean(promoted),
+    dropped: Boolean(dropped),
+  }));
 
-  const shape = splitAroundIdentifiers(fullContent, allIdentifiers);
-  if (!allIdentifiers.some(id => id.promoted)) return shape;
-  const occurrences = [];
-  allIdentifiers.forEach((id, i) => {
-    if (!id.promoted) occurrences.push(i);
-  });
-  const legacy = splitAroundIdentifiers(
-    fullContent,
-    allIdentifiers.filter(id => !id.promoted)
-  );
+  const current = allIdentifiers.filter(id => !id.dropped);
+  const shape = splitAroundIdentifiers(fullContent, current);
+  if (!allIdentifiers.some(id => id.promoted || id.dropped)) return shape;
+  const earlier = allIdentifiers.filter(id => !id.promoted);
+  const occurrences = earlier.map(id => current.indexOf(id));
+  const legacy = splitAroundIdentifiers(fullContent, earlier);
   return {
     ...shape,
     legacy: {
