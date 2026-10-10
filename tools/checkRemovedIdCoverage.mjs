@@ -75,6 +75,8 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
+import { parseExpressionAt, tokenizer, tokTypes } from 'acorn';
+import { loadMatcherCore } from './checkBakedIdentifiers.mjs';
 
 const WINDOW = 25;
 const STRIDE = 5;
@@ -289,6 +291,40 @@ const countOf = (haystack, needle) => {
 const cli = fs.readFileSync(cliPath, 'utf8');
 const prev = readPrompts(prevPath);
 const cur = readPrompts(curPath);
+const core = await loadMatcherCore();
+const coverageBody = body => {
+  let out = '';
+  let cursor = 0;
+  for (let i = 0; i < body.length; i++) {
+    if (body[i] !== '$' || body[i + 1] !== '{') continue;
+    let backslashes = 0;
+    for (let j = i - 1; j >= 0 && body[j] === '\\'; j--) backslashes++;
+    if (backslashes % 2) continue;
+    try {
+      const expression = parseExpressionAt(body, i + 2, {
+        ecmaVersion: 'latest',
+        preserveParens: true,
+        allowAwaitOutsideFunction: true,
+        allowSuperOutsideMethod: true,
+        checkPrivateFields: false,
+      });
+      const close = tokenizer(body.slice(expression.end), {
+        ecmaVersion: 'latest',
+      }).getToken();
+      if (close.type !== tokTypes.braceR) continue;
+      const end = expression.end + close.end;
+      out += body.slice(cursor, i);
+      out += core
+        .generalizeExpressionIdentifiers(['${', body.slice(i + 2, end)])
+        .join('');
+      cursor = end;
+      i = end - 1;
+    } catch {
+      continue;
+    }
+  }
+  return out + body.slice(cursor);
+};
 
 const curIds = new Set(cur.map(p => p.id).filter(Boolean));
 const curBlob = cur.map(reconstruct).join('\n');
@@ -298,15 +334,28 @@ const curBlob = cur.map(reconstruct).join('\n');
 // answer wrong. Report the successor.
 const curBodies = cur
   .filter(p => p.id)
-  .map(p => ({ id: p.id, body: reconstruct(p) }));
-const namedSites = run => {
-  const holders = curBodies.map(b => b.body).filter(b => b.includes(run));
+  .map(p => ({
+    id: p.id,
+    body: reconstruct(p),
+    coverageBody: coverageBody(reconstruct(p)),
+  }));
+const namedSites = (run, lines) => {
+  const holders = curBodies.filter(b => b.body.includes(run));
   return holders
     .filter(
       (b, i) =>
-        !holders.some((o, j) => j !== i && o.length > b.length && o.includes(b))
+        !holders.some(
+          (o, j) =>
+            j !== i &&
+            o.coverageBody.length > b.coverageBody.length &&
+            o.coverageBody.includes(b.coverageBody)
+        )
     )
-    .reduce((n, b) => n + countOf(b, run), 0);
+    .reduce(
+      (n, b) =>
+        n + (lines ? countSites(b.body, run, lines) : countOf(b.body, run)),
+      0
+    );
 };
 // The current id carrying the largest share of `units`, and that share.
 const bestSuccessor = units => {
@@ -334,7 +383,7 @@ const successorOfAll = runs => {
 // The directory is overridable so a test can be hermetic — reading the real
 // `/tmp` would let whatever bump is in flight decide the answer.
 const sidecarBlob = (() => {
-  const dir = process.env.TWEAKCC_CLASSIFY_DIR || '/tmp';
+  const dir = process.env.TWEAKCC_CLASSIFY_DIR || process.env.SHOWTIME_TMP || '/tmp';
   let blob = '';
   let files = [];
   try {
@@ -491,9 +540,8 @@ const strayUnits = (probes, lines) =>
   probes.filter(
     u =>
       isAscii(u) &&
-      countOf(cli, u) > countOf(curBlob, u) + countOf(sidecarBlob, u) &&
       countSites(cli, u, lines) >
-        countSites(curBlob, u, lines) + countSites(sidecarBlob, u, lines)
+        namedSites(u, lines) + countSites(sidecarBlob, u, lines)
   );
 
 const share = (units, haystack) =>
