@@ -178,7 +178,15 @@ export const presenceInBundle = (core, entry, bundle) => {
   try {
     found = new RegExp(pattern, 's').test(bundle.content);
   } catch (err) {
-    if (!/stack overflow|too large/i.test(err.message)) throw err;
+    // Anchored on V8's suffix: the message embeds the whole pattern, so an
+    // unanchored test also matches any prompt that says "too large".
+    if (
+      !/(?:: (?:Stack overflow|Regular expression too large)|^Maximum call stack size exceeded)$/.test(
+        err.message
+      )
+    ) {
+      throw err;
+    }
     const byTokens = core.findPromptPieceMatchesByTokens(
       {
         regex: pattern,
