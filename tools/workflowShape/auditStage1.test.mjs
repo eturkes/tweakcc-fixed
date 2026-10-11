@@ -131,66 +131,41 @@ describe.skipIf(!has)('audit-new-prompts-stage1 contract', () => {
     expect(out.failed).toEqual(['g01']);
   });
 
-  it('carries every audit rule into the agent prompt', async () => {
+  it('carries the stage-1 rules into the agent prompt', async () => {
     const { prompts } = await run(ARGS);
     const p = prompts[0].prompt;
     for (const rule of [
-      'Read the complete packet, every assigned pristine body, all sites for repeated ids',
-      "Open every cited sibling's deployed body.",
-      'Tripwire: a pristine sentence is FROZEN verbatim-or-delete',
-      'Text something OUTSIDE the prompt depends on is FROZEN too',
-      'If externalRefs.rewriteReplacement is true, the whole prompt IS the replacement half of a rewrite pair',
-      "If the body opensWithSlot, find that slot's value in the bundle",
-      'an alternative arm (the other branch of a ternary, or a sibling constant chosen INSTEAD of this one) never co-renders and is never coverage',
-      "use carrierId MODEL_DEFAULT only for a claim verified in BOTH served models' digests",
-      'A conditional prompt costs zero when off, so feature disuse alone is not a wipe reason.',
-      'Return exactly one verdict for every assigned id.',
-      'prove from the bundle that whenever the target renders, the carrier renders too',
-      'A suppressed or shadowed carrier renders nothing and is never coverage.',
-      'The batched search tool IS that corpus-wide search',
-      'commands.check',
-      '/sets/system-prompts-lcc',
+      'Audit every Claude Code 2.1.288 prompt assigned in your packet: verdicts only.',
+      'Write nothing except /p/search-00.json',
       'Run every command from /work/tweakcc-fixed.',
-      '/work/tweakcc-fixed/data/prompts/prompts-2.1.288.json',
-      '/work/lcc/system-reminders. The batched search tool',
-      'Apply the LCC decision rule from /work/lcc/CLAUDE.md',
-      '(the file /work/lcc/system-reminders/<name>.md)',
-      'grep the bundle /tmp/cli-2.1.288.js for the literal AND for the const it is built from',
-      'if the carrier is stale AND the quote lives only in its stale text, the coverage is about to evaporate — never cite it',
-      'Never rewrite/compress/reorder frozen text.',
+      '(from /work/lcc/CLAUDE.md; do not re-read the file)',
+      '/sets/system-prompts-lcc (inline-*.md included) and /work/lcc/system-reminders',
+      'put every remaining claim of every id into ONE query file /p/search-00.json',
+      'node /work/tweakcc-fixed/tools/bundleQuery.mjs --cli /tmp/cli-2.1.288.js --catalogue /work/tweakcc-fixed/data/prompts/prompts-2.1.288.json',
+      '(1) slop check',
+      '(2) corpus-wide duplication check',
+      '(3) build the strongest LEGITIMATE cut',
+      '(4) rule honestly whether that cut holds',
+      'A cut that fails any rule is pristine-keep, and why names the rule that stopped it.',
+      'gets its own matching verdict here, and the trimPlan or why names the neighbour',
+      'wipe-merge (full coverage only)',
+      'system-reminders/<name> (the file /work/lcc/system-reminders/<name>.md)',
+      'MODEL_DEFAULT',
+      'exactly one object per assigned id',
+      'node /work/tweakcc-fixed/tools/writeAuditVerdicts.mjs /p/audit-packet-00.json',
+      'with --merge until its first line reads PASS',
     ]) {
       expect(p, rule).toContain(rule);
     }
-    expect(p).not.toMatch(
-      /\/Users\/batricperovic\/(dev\/tweakcc-fixed|\.tweakcc)/
-    );
+    expect(Buffer.byteLength(p)).toBeLessThanOrEqual(4096);
+    expect(p).not.toMatch(/\/Users\/batricperovic\/(dev\/tweakcc-fixed|\.tweakcc)/);
   });
 
-  it('points the agent at every part of the markdown packet and the batched tools', async () => {
+  it('points the agent at every part of the markdown packet', async () => {
     const { prompts } = await run(ARGS);
-    expect(prompts[0].prompt).toContain('Read the markdown packet, /p/audit-packet-00.md in full; do not read the JSON packet.');
-    const p = prompts[2].prompt;
-    for (const rule of [
-      'Audit every assigned Claude Code 2.1.288 prompt in your markdown packet (its JSON twin /p/audit-packet-02.json is for the tools)',
-      'Everything you need is in that markdown packet and this prompt.',
-      'Read the markdown packet, all 2 parts of it in full — /p/audit-packet-02.part1.md, /p/audit-packet-02.part2.md — with every Read call in ONE message; do not read the JSON packet.',
-      "IS that tool's output for every claim sentence",
-      'node /work/tweakcc-fixed/tools/bundleQuery.mjs --cli /tmp/cli-2.1.288.js --catalogue /work/tweakcc-fixed/data/prompts/prompts-2.1.288.json',
-      'send them in ONE bundleQuery call (two at most)',
-      'Never python, grep or slice the bundle /tmp/cli-2.1.288.js: ask bundleQuery.',
-      'node /work/tweakcc-fixed/tools/writeAuditVerdicts.mjs /p/audit-packet-02.json',
-      'resending only the failing ids with --merge',
-      '(the packet reproduces its decision sections verbatim; do not re-read the file)',
-      '(bundleQuery text/refs queries do both in one call',
-      'Frozen means verbatim-or-delete, NOT keep: a frozen sentence fully covered by a co-rendering carrier may be deleted whole',
-      'A sentence that crosses a fragment boundary is cut whole across both ids or not at all',
-      'name the neighbour id in trimPlan or why',
-      'give the neighbour its own matching verdict in this stage',
-      'PROVABLE co-render, not an unproven hint',
-      '/p/search-02.json',
-    ]) {
-      expect(p, rule).toContain(rule);
-    }
+    expect(prompts[0].prompt).toContain('Read the markdown packet, /p/audit-packet-00.md in full.');
+    expect(prompts[2].prompt).toContain('Read the markdown packet, all 2 parts of it in full — /p/audit-packet-02.part1.md, /p/audit-packet-02.part2.md — in one message.');
+    expect(prompts[2].prompt).toContain('/p/search-02.json');
   });
 
   it('resumes from the verdicts file through the merge write', async () => {

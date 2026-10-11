@@ -1,116 +1,13 @@
 {
-  "agent-prompt-managed-agents-onboarding-flow": {
-    "verdict": "archived",
-    "version": "2.1.246",
-    "why": "False-positive of the 25-char sliding-window gate: distinctive mid-body probes are absent from the 2.1.246 bundle and catalogue. The interview script left the binary; leftover hits are the command-name token managed-agents-onboard."
-  },
-  "data-artifact-decision-component-styles": {
-    "verdict": "archived",
-    "version": "2.1.246",
-    "why": "False-positive of the 25-char sliding-window gate: distinctive CSS (carved VERBATIM, ws-rot, .ws-banner[data-ws-state=ready]) is absent from the 2.1.246 bundle. Remaining data-ws-state hits are live workshop HTML, not this stylesheet."
-  },
   "data-artifact-spreadsheet-html-template": {
     "verdict": "archived",
     "version": "2.1.239",
     "why": "Absent from prompts-2.1.239.json; the override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.239/."
   },
-  "data-artifact-watch-auto-classifier-input": {
-    "verdict": "archived",
-    "version": "2.1.239",
-    "why": "Absent from prompts-2.1.239.json; the override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.239/."
-  },
-  "data-batches-api-reference-csharp": {
-    "verdict": "archived",
-    "why": "Text absent from the 2.1.246 bundle and catalogue on distinctive single-line mid-body probes; the override was archived to ~/.tweakcc/orphans-removed-for-2.1.246/."
-  },
-  "data-batches-api-reference-php": {
-    "verdict": "archived",
-    "why": "Text absent from the 2.1.246 bundle and catalogue on distinctive single-line mid-body probes; the override was archived to ~/.tweakcc/orphans-removed-for-2.1.246/."
-  },
-  "data-batches-api-reference-python": {
-    "verdict": "archived",
-    "why": "Text absent from the 2.1.246 bundle and catalogue on distinctive single-line mid-body probes; the override was archived to ~/.tweakcc/orphans-removed-for-2.1.246/."
-  },
-  "data-claude-api-reference-csharp": {
-    "verdict": "archived",
-    "version": "2.1.246",
-    "why": "False-positive of the 25-char sliding-window gate: distinctive C# SDK reference prose is absent from the 2.1.246 bundle. BetaToolRunner hits are SDK class identifiers, not this document."
-  },
-  "data-claude-api-reference-java": {
-    "verdict": "archived",
-    "version": "2.1.246",
-    "why": "False-positive of the 25-char sliding-window gate: distinctive Java SDK reference prose is absent from the 2.1.246 bundle and catalogue."
-  },
-  "data-files-api-reference-csharp": {
-    "verdict": "archived",
-    "why": "Text absent from the 2.1.246 bundle and catalogue on distinctive single-line mid-body probes; the override was archived to ~/.tweakcc/orphans-removed-for-2.1.246/."
-  },
-  "data-files-api-reference-go": {
-    "verdict": "archived",
-    "why": "Text absent from the 2.1.246 bundle and catalogue on distinctive single-line mid-body probes; the override was archived to ~/.tweakcc/orphans-removed-for-2.1.246/."
-  },
-  "data-files-api-reference-java": {
-    "verdict": "archived",
-    "why": "Text absent from the 2.1.246 bundle and catalogue on distinctive single-line mid-body probes; the override was archived to ~/.tweakcc/orphans-removed-for-2.1.246/."
-  },
-  "data-files-api-reference-python": {
-    "verdict": "archived",
-    "why": "Text absent from the 2.1.246 bundle and catalogue on distinctive single-line mid-body probes; the override was archived to ~/.tweakcc/orphans-removed-for-2.1.246/."
-  },
-  "data-files-api-reference-typescript": {
-    "verdict": "archived",
-    "version": "2.1.246",
-    "why": "False-positive of the 25-char sliding-window gate: distinctive Files API TypeScript reference prose is absent from the 2.1.246 bundle and catalogue."
-  },
-  "data-managed-agents-client-patterns": {
-    "verdict": "archived",
-    "version": "2.1.246",
-    "why": "False-positive of the 25-char sliding-window gate: distinctive client-patterns document prose is absent from the 2.1.246 bundle. Short tokens such as agent.custom_tool_use are SDK event names, not this guide."
-  },
-  "data-managed-agents-reference-ruby": {
-    "verdict": "archived",
-    "version": "2.1.246",
-    "why": "False-positive of the 25-char sliding-window gate: distinctive Ruby managed-agents reference prose is absent from the 2.1.246 bundle and catalogue."
-  },
-  "data-managed-agents-reference-typescript": {
-    "verdict": "archived",
-    "version": "2.1.246",
-    "why": "False-positive of the 25-char sliding-window gate: distinctive TypeScript managed-agents README prose is absent from the 2.1.246 bundle. client.beta.sessions.events.send( is SDK client code, not this document."
-  },
-  "data-message-batches-api-typescript": {
-    "verdict": "archived",
-    "why": "Text absent from the 2.1.246 bundle and catalogue on distinctive single-line mid-body probes; the override was archived to ~/.tweakcc/orphans-removed-for-2.1.246/."
-  },
-  "data-platform-availability": {
-    "verdict": "archived",
-    "version": "2.1.246",
-    "why": "False-positive of the 25-char sliding-window gate: distinctive Platform Availability table prose is absent from the 2.1.246 bundle and catalogue."
-  },
-  "data-streaming-reference-csharp": {
-    "verdict": "archived",
-    "why": "Text absent from the 2.1.246 bundle and catalogue on distinctive single-line mid-body probes; the override was archived to ~/.tweakcc/orphans-removed-for-2.1.246/."
-  },
-  "data-streaming-reference-go": {
-    "verdict": "archived",
-    "why": "Text absent from the 2.1.246 bundle and catalogue on distinctive single-line mid-body probes; the override was archived to ~/.tweakcc/orphans-removed-for-2.1.246/."
-  },
-  "data-streaming-reference-java": {
-    "verdict": "archived",
-    "why": "Text absent from the 2.1.246 bundle and catalogue on distinctive single-line mid-body probes; the override was archived to ~/.tweakcc/orphans-removed-for-2.1.246/."
-  },
-  "data-streaming-reference-php": {
-    "verdict": "archived",
-    "why": "Text absent from the 2.1.246 bundle and catalogue on distinctive single-line mid-body probes; the override was archived to ~/.tweakcc/orphans-removed-for-2.1.246/."
-  },
   "data-task-notification-artifact-auto-reply-interrupt-stop-disclosure": {
     "verdict": "archived",
     "version": "2.1.239",
     "why": "Absent from prompts-2.1.239.json; the override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.239/."
-  },
-  "data-tool-use-reference-php": {
-    "verdict": "archived",
-    "version": "2.1.246",
-    "why": "False-positive of the 25-char sliding-window gate: distinctive PHP tool-use reference prose is absent from the 2.1.246 bundle and catalogue."
   },
   "skill-artifact-editor-template-capabilities-with-commenting": {
     "verdict": "archived",
@@ -136,15 +33,6 @@
     "verdict": "archived",
     "why": "Text absent from the 2.1.246 bundle and catalogue on distinctive single-line mid-body probes; the override was archived to ~/.tweakcc/orphans-removed-for-2.1.246/."
   },
-  "skill-cowork-plugin-authoring-mcp-discovery": {
-    "verdict": "archived",
-    "version": "2.1.246",
-    "why": "False-positive of the 25-char sliding-window gate: distinctive MCP-discovery skill prose (search_mcp_registry) is absent from the 2.1.246 bundle and catalogue."
-  },
-  "skill-cowork-plugin-authoring-search-strategies": {
-    "verdict": "archived",
-    "why": "Text absent from the 2.1.246 bundle and catalogue on distinctive single-line mid-body probes; the override was archived to ~/.tweakcc/orphans-removed-for-2.1.246/."
-  },
   "skill-dataviz-anti-patterns": {
     "verdict": "archived",
     "why": "Text absent from the 2.1.246 bundle and catalogue on distinctive single-line mid-body probes; the override was archived to ~/.tweakcc/orphans-removed-for-2.1.246/."
@@ -152,11 +40,6 @@
   "skill-dataviz-choosing-a-form": {
     "verdict": "archived",
     "why": "Text absent from the 2.1.246 bundle and catalogue on distinctive single-line mid-body probes; the override was archived to ~/.tweakcc/orphans-removed-for-2.1.246/."
-  },
-  "skill-dataviz-color-formula": {
-    "verdict": "archived",
-    "version": "2.1.246",
-    "why": "False-positive of the 25-char sliding-window gate: distinctive color-formula skill prose (MachadoOliveiraFernandes, four color jobs) is absent from the 2.1.246 bundle and catalogue."
   },
   "skill-dataviz-components": {
     "verdict": "archived",
@@ -185,22 +68,6 @@
     "version": "2.1.246",
     "why": "False-positive of the 25-char sliding-window gate: distinctive Storybook source-adapter prose (__dsDecorate, reduceRight note) is absent from the 2.1.246 bundle and catalogue."
   },
-  "skill-run-example-browser-driven-web-app": {
-    "verdict": "archived",
-    "why": "Text absent from the 2.1.246 bundle and catalogue on distinctive single-line mid-body probes; the override was archived to ~/.tweakcc/orphans-removed-for-2.1.246/."
-  },
-  "skill-run-example-cli-tool": {
-    "verdict": "archived",
-    "why": "Text absent from the 2.1.246 bundle and catalogue on distinctive single-line mid-body probes; the override was archived to ~/.tweakcc/orphans-removed-for-2.1.246/."
-  },
-  "skill-run-example-library-sdk": {
-    "verdict": "archived",
-    "why": "Text absent from the 2.1.246 bundle and catalogue on distinctive single-line mid-body probes; the override was archived to ~/.tweakcc/orphans-removed-for-2.1.246/."
-  },
-  "skill-run-example-web-server-api": {
-    "verdict": "archived",
-    "why": "Text absent from the 2.1.246 bundle and catalogue on distinctive single-line mid-body probes; the override was archived to ~/.tweakcc/orphans-removed-for-2.1.246/."
-  },
   "skill-sheet": {
     "verdict": "archived",
     "version": "2.1.239",
@@ -210,14 +77,6 @@
     "verdict": "archived",
     "version": "2.1.239",
     "why": "Absent from prompts-2.1.239.json; the override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.239/."
-  },
-  "skill-verify-cli-changes-example-for-verify-skill": {
-    "verdict": "archived",
-    "why": "Text absent from the 2.1.246 bundle and catalogue on distinctive single-line mid-body probes; the override was archived to ~/.tweakcc/orphans-removed-for-2.1.246/."
-  },
-  "skill-verify-server-api-changes-example-for-verify-skill": {
-    "verdict": "archived",
-    "why": "Text absent from the 2.1.246 bundle and catalogue on distinctive single-line mid-body probes; the override was archived to ~/.tweakcc/orphans-removed-for-2.1.246/."
   },
   "slash-command-cd-already-in-directory": {
     "verdict": "archived",
@@ -532,16 +391,6 @@
     "version": "2.1.251",
     "why": "Removed in CC 2.1.251. Distinctive literal runs are absent from the 2.1.251 bundle, the new catalogue and the classify sidecar. The /mcp and /model command output and the cloud-session/served-file tool results were reworked wholesale alongside the new directory-sync subsystem. Archived to ~/.tweakcc/orphans-removed-for-2.1.251/."
   },
-  "slash-command-mcp-server-not-found": {
-    "verdict": "archived",
-    "version": "2.1.251",
-    "why": "Removed in CC 2.1.251. Distinctive literal runs are absent from the 2.1.251 bundle, the new catalogue and the classify sidecar. The /mcp and /model command output and the cloud-session/served-file tool results were reworked wholesale alongside the new directory-sync subsystem. Archived to ~/.tweakcc/orphans-removed-for-2.1.251/."
-  },
-  "slash-command-mcp-toggle-already-in-state": {
-    "verdict": "archived",
-    "version": "2.1.251",
-    "why": "Removed in CC 2.1.251. Distinctive literal runs are absent from the 2.1.251 bundle, the new catalogue and the classify sidecar. The /mcp and /model command output and the cloud-session/served-file tool results were reworked wholesale alongside the new directory-sync subsystem. Archived to ~/.tweakcc/orphans-removed-for-2.1.251/."
-  },
   "slash-command-mcp-toggle-result": {
     "verdict": "archived",
     "version": "2.1.251",
@@ -558,11 +407,6 @@
     "why": "Removed in CC 2.1.251. Distinctive literal runs are absent from the 2.1.251 bundle, the new catalogue and the classify sidecar. The /mcp and /model command output and the cloud-session/served-file tool results were reworked wholesale alongside the new directory-sync subsystem. Archived to ~/.tweakcc/orphans-removed-for-2.1.251/."
   },
   "slash-command-model-status-current": {
-    "verdict": "archived",
-    "version": "2.1.251",
-    "why": "Removed in CC 2.1.251. Distinctive literal runs are absent from the 2.1.251 bundle, the new catalogue and the classify sidecar. The /mcp and /model command output and the cloud-session/served-file tool results were reworked wholesale alongside the new directory-sync subsystem. Archived to ~/.tweakcc/orphans-removed-for-2.1.251/."
-  },
-  "slash-command-moved-to-config-redirect": {
     "verdict": "archived",
     "version": "2.1.251",
     "why": "Removed in CC 2.1.251. Distinctive literal runs are absent from the 2.1.251 bundle, the new catalogue and the classify sidecar. The /mcp and /model command output and the cloud-session/served-file tool results were reworked wholesale alongside the new directory-sync subsystem. Archived to ~/.tweakcc/orphans-removed-for-2.1.251/."
@@ -807,11 +651,6 @@
     "version": "2.1.261",
     "why": "Removed in CC 2.1.261. Every >=25-char literal run of the 2.1.259 body was swept at stride 5 against the pristine 2.1.261 bundle, the new catalogue and the classify sidecar with zero hits; the override in each set was a pristine stub, so nothing curated is lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.261/."
   },
-  "data-task-notification-background-agents-relaunch-all": {
-    "verdict": "archived",
-    "version": "2.1.265",
-    "why": "Absent from prompts-2.1.265.json. The gate's 25-char window pointed at \"data-task-notification-background-agents-aggregate-lost\", but full-body similarity does not support a rename, so the override was archived rather than re-pointed; the successor id is audited on its own. Archived to ~/.tweakcc/orphans-removed-for-2.1.265/."
-  },
   "data-task-notification-background-agents-resume-all-or-check": {
     "verdict": "archived",
     "version": "2.1.265",
@@ -871,11 +710,6 @@
     "verdict": "archived",
     "version": "2.1.265",
     "why": "Absent from prompts-2.1.265.json. The gate's 25-char window pointed at \"system-reminder-background-agents-stopped\", but full-body similarity does not support a rename, so the override was archived rather than re-pointed; the successor id is audited on its own. Archived to ~/.tweakcc/orphans-removed-for-2.1.265/."
-  },
-  "tool-description-artifact-list-assets": {
-    "verdict": "archived",
-    "version": "2.1.265",
-    "why": "Absent from prompts-2.1.265.json. The gate's 25-char window pointed at \"tool-description-artifact-delete-asset\", but full-body similarity does not support a rename, so the override was archived rather than re-pointed; the successor id is audited on its own. Archived to ~/.tweakcc/orphans-removed-for-2.1.265/."
   },
   "tool-description-artifact-list-files-dynamic": {
     "verdict": "archived",
@@ -1312,11 +1146,6 @@
     "version": "2.1.276",
     "why": "REPL tool removed from CC 2.1.276 (description, params, async dispatch and VM-state reminder all absent from the bundle)."
   },
-  "slash-command-mcp-reconnect-pending-approval": {
-    "verdict": "archived",
-    "version": "2.1.277",
-    "why": "No literal run survives in the 2.1.277 bundle; override archived to ~/.tweakcc/orphans-removed-for-2.1.277/."
-  },
   "tool-parameter-task-output-block": {
     "verdict": "archived",
     "version": "2.1.277",
@@ -1556,11 +1385,6 @@
     "verdict": "archived",
     "version": "2.1.284",
     "why": "artifact db single-write committed result removed in 2.1.284"
-  },
-  "tool-result-artifact-live-doc-shim-published": {
-    "verdict": "archived",
-    "version": "2.1.284",
-    "why": "slot-only live-doc shim publish result removed in 2.1.284"
   },
   "tool-result-skill-permission-rule-covers-old-name": {
     "verdict": "archived",
@@ -3972,13 +3796,6 @@
     "version": "2.1.288",
     "facing": "ui",
     "hash": "6efb71e3efecbc4e9bf8bb5403cbf30d63510901",
-    "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
-  },
-  "slash-command-plugin-marketplace-refresh-source-blocked-by-policy": {
-    "verdict": "archived",
-    "version": "2.1.288",
-    "facing": "ui",
-    "hash": "46a9644ccbced9a115559e095f2d952dd5608052",
     "why": "ruled ui in a 2.1.288 catalogue correction: plugin install and marketplace refresh results on this path reach only local view state, the CLI and logs"
   },
   "slash-command-plugin-install-already-installed-switch-command": {

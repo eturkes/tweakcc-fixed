@@ -119230,5 +119230,1114 @@
     "name": "Slash Command: /plugin — installed, run /reload-plugins to activate",
     "desc": "Appended to a /plugin install result when the plugin needs /reload-plugins to activate."
   },
-  "eaa1e4ea71b5297d72065e3cd095bb22a9b301e5": { "facing": "ui" }
+  "eaa1e4ea71b5297d72065e3cd095bb22a9b301e5": { "facing": "ui" },
+  "cc792e2de5da4feb7d78c23a5303591b9f40b9d9": { "facing": "internal" },
+  "65f579238ff0bccde2a1b87e6d182359602f1f5c": {
+    "facing": "model",
+    "id": "skill-artifact-pr-review",
+    "name": "Skill: artifact-pr-review",
+    "desc": "Prompt body of the artifact-pr-review skill, injected at skill invocation."
+  },
+  "712cc14efb2786d985c2986a94b0e086f7d0b3a8": {
+    "facing": "model",
+    "id": "skill-artifact-pr-review-2",
+    "name": "Skill: artifact-pr-review",
+    "desc": "Alternate (composed-lane) prompt body of the artifact-pr-review skill, used instead of SKILL.md when qNe() is on, injected at skill invocation."
+  },
+  "a2f914b5d69182c6fbde12b08399b32c3f9b81f0": {
+    "facing": "model",
+    "id": "skill-artifact-pr-review-html-template",
+    "name": "Skill: Artifact PR review HTML template",
+    "desc": "PR-review Artifact HTML template extracted with the artifact-pr-review skill; SKILL.md step \"Read template.html\" has the model read and fill it."
+  },
+  "22250a3308548b8ebac036be5c2380946dc5ca32": {
+    "facing": "model",
+    "id": "skill-workshop",
+    "name": "Skill: workshop",
+    "desc": "Prompt body of the workshop skill, injected at skill invocation."
+  },
+  "cc42c9e223c60c26b780ebadefb8ce069c39940c": { "facing": "ui" },
+  "616e6e40c967598a164e06f67c0df0ba1ac92246": {
+    "facing": "model",
+    "id": "data-workshop-page-html-template",
+    "name": "Data: Workshop page HTML template",
+    "desc": "Workshop page HTML template (templates/workshop-page.html) the workshop skill tells the model to copy, read and fill as its default authoring lane."
+  },
+  "347f47122ec01d89a9a0f7a04337033b7d75db74": {
+    "facing": "model",
+    "id": "system-reminder-appifactrepl-design-canvas-workflow",
+    "name": "System Reminder: AppifactRepl design canvas workflow",
+    "desc": "Design-canvas AppifactRepl workflow section (REPL_ROUTE_SECTION_BY_TYPE_KEY \"design\") appended to the artifact prompt when the REPL tool is present."
+  },
+  "5932505fd7eee78d325a2e86ac268c261cb3f992": {
+    "facing": "model",
+    "id": "system-reminder-new-design-canvas-parallel-appifactrepl-workflow",
+    "name": "System Reminder: New design canvas parallel AppifactRepl workflow",
+    "desc": "How-to text for building a new design canvas with parallel AppifactRepl calls (REPL_ROUTE_HOW_TO_BY_TYPE_KEY \"design\"), injected as a reminder."
+  },
+  "ed18a4477afe58cf342517ba3b98bbc697e1dfb3": {
+    "facing": "model",
+    "id": "system-reminder-new-design-canvas-two-step-appifactrepl-workflow",
+    "name": "System Reminder: New design canvas two-step AppifactRepl workflow",
+    "desc": "Two-step new-design-canvas AppifactRepl workflow (REPL_ROUTE_TWO_STEPS_BY_TYPE_KEY \"design\"), returned as reminder text when the REPL tool is present."
+  },
+  "396b4a25031afbd4e028b6b902fe4023b4771c8a": {
+    "facing": "model",
+    "id": "system-reminder-appifactrepl-slides-deck-workflow",
+    "name": "System Reminder: AppifactRepl Slides deck workflow",
+    "desc": "Slides-deck AppifactRepl workflow section (REPL_ROUTE_SECTION_BY_TYPE_KEY \"slides\") appended to the artifact prompt when the REPL tool is present."
+  },
+  "1e63cdb5643b04aea2015749d5509b8ce294fbc7": {
+    "facing": "model",
+    "id": "system-reminder-new-slides-deck-parallel-appifactrepl-workflow",
+    "name": "System Reminder: New Slides deck parallel AppifactRepl workflow",
+    "desc": "How-to text for building a new slide deck with parallel AppifactRepl calls (REPL_ROUTE_HOW_TO_BY_TYPE_KEY \"slides\"), injected as a reminder."
+  },
+  "d1649f65b83c22f24f646219e4c75a02d5278bb7": {
+    "facing": "model",
+    "id": "system-reminder-new-slides-deck-two-step-appifactrepl-workflow",
+    "name": "System Reminder: New Slides deck two-step AppifactRepl workflow",
+    "desc": "Two-step new-slides-deck AppifactRepl workflow (REPL_ROUTE_TWO_STEPS_BY_TYPE_KEY \"slides\"), returned as reminder text when the REPL tool is present."
+  },
+  "0e86a00eeb460f8ee1c55fb3736185943c44acd8": {
+    "facing": "model",
+    "id": "skill-claude-code-docs-plugin-eval-quickref",
+    "name": "Skill: Claude Code docs plugin-eval quick reference",
+    "desc": "Plugin-eval quick reference shipped as claude-code-docs skill file references/plugin-eval-quickref.md and imported by plugin-eval prompt builders; read by the model on demand."
+  },
+  "f340a3a1e4dd4ff3a6e340197084e2360c1bf8c5": {
+    "facing": "model",
+    "id": "agent-prompt-security-monitor-for-autonomous-agent-actions-second-part",
+    "name": "Agent Prompt: Security Monitor Environment (Part 2)",
+    "desc": "External auto-mode security-monitor classifier template (allow/soft_deny/hard_deny/environment rules) sent as the classifier model's prompt."
+  },
+  "6b83d27f02e7c3739e9d5993f177878feddb00ea": {
+    "facing": "model",
+    "id": "data-claude-code-d-ts",
+    "name": "Data: claude-code.d.ts",
+    "desc": "Claude Code plugin API declarations written as the plugin-authoring skill file types/claude-code.d.ts, which SKILL.md points the model to as the API reference (also used for type-checking)."
+  },
+  "7a258daac22ebf89ad8b6eed45ae252c3b1cd583": {
+    "facing": "model",
+    "id": "system-prompt-remote-planning-session",
+    "name": "System Prompt: Remote planning session",
+    "desc": "Ultraplan remote planning-session prompt (simple_plan variant, default of tengu_ultraplan_prompt_identifier) sent to the remote session."
+  },
+  "4a77ce8cd9b52a349692f44f0fe7482f68eb18a4": {
+    "facing": "model",
+    "id": "system-prompt-remote-plan-mode-ultraplan",
+    "name": "System Prompt: Remote plan mode (ultraplan)",
+    "desc": "Ultraplan remote planning prompt (visual_plan variant) sent to the remote session when selected by tengu_ultraplan_prompt_identifier."
+  },
+  "bfce9edf59afedc6b2ec8b225e12d8473232e29d": {
+    "facing": "model",
+    "id": "system-reminder-ultraplan-mode",
+    "name": "System Reminder: Ultraplan mode",
+    "desc": "Ultraplan remote planning prompt (three_subagents_with_critique variant) sent when selected by tengu_ultraplan_prompt_identifier."
+  },
+  "03fe5cb60090fd57b0a179ac317627b306a112ba": {
+    "facing": "model",
+    "id": "data-band-tsx",
+    "name": "Data: band.tsx",
+    "desc": "Example hooks-module file (band.tsx) extracted as examples/ with the plugin-authoring skill, which points the model at it per ask."
+  },
+  "b3679ce481a9d80a82a62bb28a03e2fcd6725ff7": {
+    "facing": "model",
+    "id": "data-band-state-d-ts",
+    "name": "Data: band-state.d.ts",
+    "desc": "Example hooks-module file (band-state.d.ts) extracted as examples/ with the plugin-authoring skill, which points the model at it per ask."
+  },
+  "074749221ddb6d1f8d4cce4afdc096b68b1a62d7": {
+    "facing": "model",
+    "id": "data-pane-tsx",
+    "name": "Data: pane.tsx",
+    "desc": "Example hooks-module file (pane.tsx) extracted as examples/ with the plugin-authoring skill, which points the model at it per ask."
+  },
+  "98d5d3ddcbb18101a61b2a0456751fe5a6e49a70": {
+    "facing": "model",
+    "id": "data-pane-state-d-ts",
+    "name": "Data: pane-state.d.ts",
+    "desc": "Example hooks-module file (pane-state.d.ts) extracted as examples/ with the plugin-authoring skill, which points the model at it per ask."
+  },
+  "109319ed2d553f9592dcda84df1e3f4c081f825b": {
+    "facing": "model",
+    "id": "data-tool-call-ts",
+    "name": "Data: tool-call.ts",
+    "desc": "Example hooks-module file (tool-call.ts) extracted as examples/ with the plugin-authoring skill, which points the model at it per ask."
+  },
+  "4217fc868cf48fad775af4fd2b6a2227db691963": {
+    "facing": "model",
+    "id": "data-reference",
+    "name": "Data: reference",
+    "desc": "Long-form plugin/mod API reference (reference.md) extracted with the plugin-authoring skill and pointed to by its SKILL.md."
+  },
+  "16792520fdd7437caf7066ee8da0f72be9c9dd82": {
+    "facing": "model",
+    "id": "skill-plugin-authoring",
+    "name": "Skill: plugin-authoring",
+    "desc": "Prompt body of the plugin-authoring (mods) skill, injected at skill invocation."
+  },
+  "8ac01675e5855e1d5f54715bd70336ed0cb5c8a3": { "facing": "internal" },
+  "7805432770b9a6064866a86505f9a72a68d05baf": {
+    "facing": "model",
+    "id": "data-onboarding",
+    "name": "Data: onboarding",
+    "desc": "claude-test run-skill reference onboarding.md that the run SKILL.md tells the model to Read for machine setup and first run."
+  },
+  "a10a2e5dba7c3cbdcf98709a66f83d891adc979d": { "facing": "internal" },
+  "cd1abb7d3c6d12a7ee652d0a0b91a2e906b83b21": { "facing": "internal" },
+  "a1cf40a4ae6e00da691403b3111389a69f513a5f": { "facing": "internal" },
+  "ee4ca3b7d890750d435c76d5080cb8356a8af103": { "facing": "internal" },
+  "0ade09236f9fff210d1cd2950e6742733b349a99": { "facing": "internal" },
+  "809fd89a64be7a638fc61d8c5ed0082f7ebadce5": { "facing": "internal" },
+  "61b87a2dd7979378c52de1d866a3e5d4b7eb0c08": { "facing": "internal" },
+  "11feb4ddd25dccc1062b4e9ad4c4d3f3f252db27": { "facing": "internal" },
+  "f0e10d8ceacddd8367cbce7f8a4edabbb1b25db6": { "facing": "internal" },
+  "f00a41c6a004684f5ed4e0a74b33ce7bbaef4ca8": { "facing": "internal" },
+  "42570e66ca27263125d6e41114d193af9801b8c8": { "facing": "internal" },
+  "a411d33847a5bdefa7c39223d6a100aa54c90551": { "facing": "internal" },
+  "fa045fb10819ed6faf11d380f89011839fc0e592": { "facing": "internal" },
+  "25b56bba06229b0a95a5d4b2b248da54cf8d6856": { "facing": "internal" },
+  "72fdec4535bc66a624fe4aa17c10303c5ec7d73a": { "facing": "internal" },
+  "dd6421ee6eb2af70ce1ab349c19f07a8eaa1e147": { "facing": "internal" },
+  "8794d8a7b58fd09174d64d53eabeb930ceaa99e9": { "facing": "internal" },
+  "9d2700df90e8a5d1c81d179bdb4c99d082ba0538": { "facing": "internal" },
+  "071b3d6643599f6c9f5d6835630a23bd580a3815": { "facing": "internal" },
+  "8648cc0d10d109b55a7e676946af1ef58f7db835": { "facing": "internal" },
+  "e12680fc96282017d65d890627d18cfe5601e3d5": { "facing": "internal" },
+  "874e8fa87c76230bd7162cfbef4320108de9fccd": {
+    "facing": "model",
+    "id": "data-claude-test-spec-file-format",
+    "name": "Data: Claude Test spec file format",
+    "desc": "claude-test spec file format reference (skills/run/spec-format.md) the run and draft skills tell the model to Read."
+  },
+  "57b29941b2d920fc37072082b64b6d3a954b77d0": {
+    "facing": "model",
+    "id": "skill-claude-test-sign-in",
+    "name": "Skill: Claude Test sign-in",
+    "desc": "Sign-in skill scaffold (templates/sign-in/SKILL.md) that ct-auth.mjs scaffold-sign-in copies into .claude-test/skills/sign-in for the model to edit for the project."
+  },
+  "7aa5c99cabaf513a764b56f960e7e35b9fa41b65": {
+    "facing": "model",
+    "id": "data-check-mjs",
+    "name": "Data: check.mjs",
+    "desc": "Sign-in scaffold script (templates/sign-in/scripts/check.mjs) copied into the project whose CHECK_PATH the model is told to edit, so it reads the text."
+  },
+  "060a935717b59227697af80c8459c2163ff73e60": {
+    "facing": "model",
+    "id": "data-sign-in-mjs",
+    "name": "Data: sign-in.mjs",
+    "desc": "Sign-in scaffold script (templates/sign-in/scripts/sign-in.mjs) copied into the project whose EDIT block the model is told to fill in, so it reads the text."
+  },
+  "01ef4e00587d7f3b9b733633826b3006e7e2f3a0": {
+    "facing": "model",
+    "id": "data-skill-claude-test-the-spec-author-background",
+    "name": "Data: SKILL (Claude Test — the spec author (background; nobody is watchin)",
+    "desc": "Prompt body of the claude-test \"draft\" skill (spec-author background), loaded as skill text by we()."
+  },
+  "3b61a5c5c6e46af5e8d2b9972437d5213e70608c": {
+    "facing": "model",
+    "id": "data-skill-claude-test-runner-drive-the-app",
+    "name": "Data: SKILL (Claude Test runner — drive the app in a browser, judge each )",
+    "desc": "Prompt body of the claude-test \"execute\" skill (runner that drives the app), loaded as skill text by we()."
+  },
+  "1036b409dd4321059b21ec2bc5171879db5d6985": {
+    "facing": "model",
+    "id": "data-skill-claude-test-the-conversation-side",
+    "name": "Data: SKILL (Claude Test — the conversation side)",
+    "desc": "Prompt body of the claude-test \"run\" skill (conversation side), loaded as skill text by we()."
+  },
+  "21eee8e6f8481e2f09c25539e92eaa68e696c5e7": {
+    "facing": "model",
+    "id": "skill-artifact-components",
+    "name": "Skill: Artifact components",
+    "desc": "Prompt body of the artifact-components skill, injected at skill invocation."
+  },
+  "bd9b1fffba4ed9faa8586096c2d1546139839d2b": {
+    "facing": "model",
+    "id": "data-artifact-decision-component-script",
+    "name": "Data: Artifact decision component script",
+    "desc": "Fixed decisions <script> block (decision/decisions-script.html) the artifact-components skill tells the model to read and copy byte-identical."
+  },
+  "99c2201afda5ce040e1dcd7e5ef97f31519d68ed": {
+    "facing": "model",
+    "id": "data-theme-script-html",
+    "name": "Data: theme-script.html",
+    "desc": "Fixed theme <script> block (decision/theme-script.html) the artifact-components skill tells the model to read and copy byte-identical."
+  },
+  "fd44baae7e7eb35bd091028efb3a065f677a699d": {
+    "facing": "model",
+    "id": "skill-artifact-design",
+    "name": "Skill: artifact-design",
+    "desc": "Prompt body of the artifact-design skill, injected at skill invocation."
+  },
+  "247df35a31d3edc6779cf6b0a004259df05bd3af": {
+    "facing": "model",
+    "id": "skill-artifact-diagramming",
+    "name": "Skill: Artifact diagramming",
+    "desc": "Prompt body of the artifact-diagramming skill, injected at skill invocation."
+  },
+  "62a13553bb35fd4c28b4fcc30b6f73a6eb5e8b05": {
+    "facing": "model",
+    "id": "skill-artifact-data-table",
+    "name": "Skill: Artifact data table",
+    "desc": "Prompt body of the data-table artifact-template skill, injected at skill invocation."
+  },
+  "73b8f559b029719d482496792c666caa0e707f45": {
+    "facing": "model",
+    "id": "skill-artifact-data-table-html-template",
+    "name": "Skill: Artifact data-table HTML template",
+    "desc": "HTML template extracted with the data-table skill; its SKILL.md step 1 has the model Read template.html and fill it."
+  },
+  "4d9eb09627e3108b73c80d7a00646f07f3528e82": {
+    "facing": "model",
+    "id": "skill-artifact-explainer",
+    "name": "Skill: Artifact explainer",
+    "desc": "Prompt body of the explainer artifact-template skill, injected at skill invocation."
+  },
+  "b3a7cab08031ab8290e1f6c41490a3a99452cbff": {
+    "facing": "model",
+    "id": "skill-artifact-explainer-html-template",
+    "name": "Skill: Artifact explainer HTML template",
+    "desc": "HTML template extracted with the explainer skill; its SKILL.md step 1 has the model Read template.html and fill it."
+  },
+  "e13ea41cd30bc27b1ee425af924c1e4ce722e622": {
+    "facing": "model",
+    "id": "skill-artifact-report",
+    "name": "Skill: Artifact report",
+    "desc": "Prompt body of the report artifact-template skill, injected at skill invocation."
+  },
+  "1d49a9d15aefa51963d4391ecd24026069602385": {
+    "facing": "model",
+    "id": "skill-artifact-report-html-template",
+    "name": "Skill: Artifact report HTML template",
+    "desc": "HTML template extracted with the report skill; its SKILL.md step 1 has the model Read template.html and fill it."
+  },
+  "9c724617c5023e44146d977b0594400968311599": {
+    "facing": "model",
+    "id": "skill-cowork-plugin-authoring-component-schemas",
+    "name": "Skill: Cowork Plugin Authoring — Component Schemas",
+    "desc": "cowork-plugin-authoring reference (references/component-schemas.md) the skill tells the model to Read."
+  },
+  "8a885a312e0449e5b47bf5e08dfd6c87f62f14c7": {
+    "facing": "model",
+    "id": "skill-cowork-plugin-authoring-example-plugins",
+    "name": "Skill: Cowork Plugin Authoring — Example Plugins",
+    "desc": "cowork-plugin-authoring reference (references/example-plugins.md) the skill tells the model to Read."
+  },
+  "41c4b97a380ea853e7a2bec52277e4bd56c8af22": {
+    "facing": "model",
+    "id": "skill-cowork-plugin-authoring-mcp-discovery",
+    "name": "Skill: Cowork Plugin Authoring — MCP Discovery and Connection",
+    "desc": "cowork-plugin-authoring reference (references/mcp-servers.md) the skill tells the model to Read."
+  },
+  "ad2ee751e9b862e1291d505bc8641be0b350085b": {
+    "facing": "model",
+    "id": "skill-cowork-plugin-authoring-search-strategies",
+    "name": "Skill: Cowork Plugin Authoring — Knowledge MCP Search Strategies",
+    "desc": "cowork-plugin-authoring reference (references/search-strategies.md) the skill tells the model to Read."
+  },
+  "4ffa3a7f6ce66dbbb0b10516f7a1e73943322f2e": {
+    "facing": "model",
+    "id": "skill-cowork-plugin-authoring",
+    "name": "Skill: Cowork Plugin Authoring",
+    "desc": "Prompt body of the cowork-plugin-authoring skill, injected at skill invocation."
+  },
+  "310d02652172d97900ca6725dee971db7b05a8c0": {
+    "facing": "model",
+    "id": "data-data-visualization-anti-patterns",
+    "name": "Data: Data visualization anti-patterns",
+    "desc": "data-visualization reference (references/anti-patterns.md) the skill tells the model to Read."
+  },
+  "27b3d3d4774d40e8a7820a181c0851b28572a733": {
+    "facing": "model",
+    "id": "data-data-visualization-choosing-a-form",
+    "name": "Data: Data visualization choosing a form",
+    "desc": "data-visualization reference (references/choosing-a-form.md) the skill tells the model to Read."
+  },
+  "da78341b97a087844c411573a1cf27be15d2f9d8": {
+    "facing": "model",
+    "id": "skill-dataviz-color-formula",
+    "name": "Skill Reference: Data-viz Color Formula",
+    "desc": "data-visualization reference (references/color-formula.md) the skill tells the model to Read."
+  },
+  "ee8914a76b66b521ef55976574f8a5efc4c199be": {
+    "facing": "model",
+    "id": "data-data-visualization-components",
+    "name": "Data: Data visualization components",
+    "desc": "data-visualization reference (references/components.md) the skill tells the model to Read."
+  },
+  "6a89e22e428a101371c2e6614ea0c2fc53204ec0": {
+    "facing": "model",
+    "id": "data-data-visualization-interaction",
+    "name": "Data: Data visualization interaction",
+    "desc": "data-visualization reference (references/interaction.md) the skill tells the model to Read."
+  },
+  "3ac7ddcebde867990ce36d13b3d07cb447b45ee2": {
+    "facing": "model",
+    "id": "data-data-visualization-marks-and-anatomy",
+    "name": "Data: Data visualization marks and anatomy",
+    "desc": "data-visualization reference (references/marks-and-anatomy.md) the skill tells the model to Read."
+  },
+  "81fbdc78582cbc5900da257814c32c15ed2b1911": {
+    "facing": "model",
+    "id": "skill-dataviz-palette",
+    "name": "Skill Reference: Data-viz Reference Palette",
+    "desc": "data-visualization reference (references/palette.md) the skill tells the model to Read."
+  },
+  "b5f75bcf962014617974cb23e462a4a33f1e660f": {
+    "facing": "model",
+    "id": "skill-data-visualization",
+    "name": "Skill: Data Visualization",
+    "desc": "Prompt body of the data-visualization skill, injected at skill invocation."
+  },
+  "fd7d1857db65c5428bc81441fbeeb2d7724671a0": { "facing": "internal" },
+  "e79d30ec7fdeceb8f4fe66e876b6ccc5a5325a90": { "facing": "internal" },
+  "e03c6d746952d945efd2d68f984120c2781da9ad": {
+    "facing": "model",
+    "id": "skill-design-sync-package-source-shape",
+    "name": "Skill: /design-sync package source shape",
+    "desc": "design-sync non-storybook (package) source-shape sub-skill (SKILL_FILES non-storybook/SKILL.md) that the main design-sync SKILL.md tells the model to Read."
+  },
+  "460948ff2555fe9ff0bd4adfd655dda06a8ee73e": {
+    "facing": "model",
+    "id": "skill-design-sync",
+    "name": "Skill: design-sync",
+    "desc": "Prompt body of the design-sync skill, injected at skill invocation."
+  },
+  "86d5198a6702165cf434da1e14de9e5dfe5822c3": {
+    "facing": "model",
+    "id": "skill-design-sync-storybook-source-shape",
+    "name": "Skill: /design-sync Storybook source shape",
+    "desc": "design-sync storybook source-shape sub-skill (SKILL_FILES storybook/SKILL.md) that the main design-sync SKILL.md tells the model to Read."
+  },
+  "3d3af650df6a66c3c24168bf29eaef86bdad0cd4": { "facing": "internal" },
+  "66fecf7d96f8b6f8722bace9f6072141d7d2d60c": { "facing": "internal" },
+  "f0fe6eb156bb9d7e972a9d4a91dfa3568477d78f": { "facing": "internal" },
+  "bd4d269154401ee3dab279cf11654f96f87f5b11": { "facing": "internal" },
+  "fb03f7d1deeee82bce86d49057c78c0b719615a1": { "facing": "internal" },
+  "7f2bcc43956697357eb4cbfd939ca5ad3ea80087": { "facing": "internal" },
+  "5d8b41b7af4e98f16561929a74b738329aa94874": { "facing": "internal" },
+  "e1062e0fa48e8258e6127aadef85b604998f0150": { "facing": "internal" },
+  "c9ef9360a0e5c3c1130c2650ccbf1bc84e29060a": { "facing": "internal" },
+  "1897c3bdff8a9198de9cd4102eab4ebfa980f0a8": { "facing": "internal" },
+  "4e8b46ee143eaebdc6442edab6139845aea7de5c": { "facing": "internal" },
+  "28bdcf24541de9154c5778008e891c5816bd79c5": { "facing": "internal" },
+  "4550b621e54f3245428bb7ed78bae96eb6def1ed": { "facing": "internal" },
+  "a12354fff2bcef95304996c79293494380caa900": { "facing": "internal" },
+  "9690686335875bdfc1582cb717de9cbe56bd34af": { "facing": "internal" },
+  "af5e8dafee749b030c388053c527f4a5676e16f4": { "facing": "internal" },
+  "dfced577b52e27cfeb01c86c6428f4aeeff09985": { "facing": "internal" },
+  "4e6a1376bad99842e826656828b272f9c1b6ad0c": { "facing": "internal" },
+  "8951bac2d6d3f3cf5b25a0bb41e0523bdd041f88": { "facing": "internal" },
+  "c45269411ee098505fa7fb9a2eb70697b0f8d69d": { "facing": "internal" },
+  "c3c1788d9560756eec40064ba86fbcc90cdecd6d": { "facing": "internal" },
+  "91fe72e40d2661a24ac3a40ab73ebcb435c03119": { "facing": "internal" },
+  "832df473313c3a20bd124582849df525d2aa017c": { "facing": "internal" },
+  "5cac3fb344e3b80e64b21dbc5bb40a2513f5370a": {
+    "facing": "model",
+    "id": "data-batches-api-reference-csharp",
+    "name": "Data: Message Batches API reference — C#",
+    "desc": "claude-api skill reference file (Message Batches API reference — C#) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "4a1bee1fc264c7d045a9dbc8a75a611048be95f3": {
+    "facing": "model",
+    "id": "data-files-api-reference-csharp",
+    "name": "Data: Files API reference — C#",
+    "desc": "claude-api skill reference file (Files API reference — C#) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "4a7d52e3f6cedbc72f0957ba470a9c035959f4c7": {
+    "facing": "model",
+    "id": "data-claude-api-reference-csharp",
+    "name": "Data: Claude API reference — C#",
+    "desc": "claude-api skill reference file (Claude API reference — C#) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "01a97cc15b21af20fe100a1c411adb720a84f990": {
+    "facing": "model",
+    "id": "data-streaming-reference-csharp",
+    "name": "Data: Streaming reference — C#",
+    "desc": "claude-api skill reference file (Streaming reference — C#) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "1138b2dacff5aad7c92ccc265cfdfa443fb2b16e": {
+    "facing": "model",
+    "id": "data-tool-use-reference-csharp",
+    "name": "Data: Tool use reference — C#",
+    "desc": "claude-api skill reference file (Tool use reference — C#) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "84d239abe71d41392498f0469b94c574b7d7c36a": {
+    "facing": "model",
+    "id": "data-claude-api-reference-curl",
+    "name": "Data: Claude API reference — cURL",
+    "desc": "claude-api skill reference file (Claude API reference — cURL) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "fc7dab646f47de2d8c8d42e34bd86dc4848156bd": {
+    "facing": "model",
+    "id": "data-managed-agents-reference-curl",
+    "name": "Data: Managed Agents reference — cURL",
+    "desc": "claude-api skill reference file (Managed Agents reference — cURL) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "c891d1f0158547df6d771404f7e6c88b4e32e73a": {
+    "facing": "model",
+    "id": "data-files-api-reference-go",
+    "name": "Data: Files API reference — Go",
+    "desc": "claude-api skill reference file (Files API reference — Go) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "cd2361fcd789aaae8d331378bfbf5ff268057d3b": {
+    "facing": "model",
+    "id": "data-claude-api-reference-go",
+    "name": "Data: Claude API reference — Go",
+    "desc": "claude-api skill reference file (Claude API reference — Go) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "988d962cc8a27a4877b3241566cc49ccd30dfda6": {
+    "facing": "model",
+    "id": "data-streaming-reference-go",
+    "name": "Data: Streaming reference — Go",
+    "desc": "claude-api skill reference file (Streaming reference — Go) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "a2c4445096acdb6e3a5db5b30a398c5f97b491d7": {
+    "facing": "model",
+    "id": "data-tool-use-reference-go",
+    "name": "Data: Tool use reference — Go",
+    "desc": "claude-api skill reference file (Tool use reference — Go) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "8d4575b0e39cd9f065cc3612f35cde76a6bc91f7": {
+    "facing": "model",
+    "id": "data-managed-agents-reference-go",
+    "name": "Data: Managed Agents reference — Go",
+    "desc": "claude-api skill reference file (Managed Agents reference — Go) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "345d4de92ab096e58860afd14b61ffd0be277534": {
+    "facing": "model",
+    "id": "data-files-api-reference-java",
+    "name": "Data: Files API reference — Java",
+    "desc": "claude-api skill reference file (Files API reference — Java) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "e6beda5671b0e32fa4787133ea8fc8745ca0c94f": {
+    "facing": "model",
+    "id": "data-claude-api-reference-java",
+    "name": "Data: Claude API reference — Java",
+    "desc": "claude-api skill reference file (Claude API reference — Java) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "eeb15b5ebea083ee5d8be79f7b4b883356d38907": {
+    "facing": "model",
+    "id": "data-streaming-reference-java",
+    "name": "Data: Streaming reference — Java",
+    "desc": "claude-api skill reference file (Streaming reference — Java) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "ec8c439fdfe33c80130f9829e7cc545acf569e4a": {
+    "facing": "model",
+    "id": "data-tool-use-reference-java",
+    "name": "Data: Tool use reference — Java",
+    "desc": "claude-api skill reference file (Tool use reference — Java) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "740a7c429af765100486ec29e1a826c1d92d0530": {
+    "facing": "model",
+    "id": "data-managed-agents-reference-java",
+    "name": "Data: Managed Agents reference — Java",
+    "desc": "claude-api skill reference file (Managed Agents reference — Java) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "d2c8d89c9f27c83af6e9861e5053930fbe17b87a": {
+    "facing": "model",
+    "id": "data-batches-api-reference-php",
+    "name": "Data: Message Batches API reference — PHP",
+    "desc": "claude-api skill reference file (Message Batches API reference — PHP) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "246f2c0cb515cbb939d4a8809cf5184f4616a13c": {
+    "facing": "model",
+    "id": "data-files-api-reference-php",
+    "name": "Data: Files API reference — PHP",
+    "desc": "claude-api skill reference file (Files API reference — PHP) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "5a6d3cbd9b472e0d454805753fbb559dd9cc8f5d": {
+    "facing": "model",
+    "id": "data-claude-api-reference-php",
+    "name": "Data: Claude API reference — PHP",
+    "desc": "claude-api skill reference file (Claude API reference — PHP) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "3054030d8e909c603b5a9945d52d12f2d6ff7bfc": {
+    "facing": "model",
+    "id": "data-streaming-reference-php",
+    "name": "Data: Streaming reference — PHP",
+    "desc": "claude-api skill reference file (Streaming reference — PHP) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "5d00c84e9829301dfb31e578b6064c0e237ec691": {
+    "facing": "model",
+    "id": "data-tool-use-reference-php",
+    "name": "Data: Tool use reference — PHP",
+    "desc": "claude-api skill reference file (Tool use reference — PHP) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "4126635c90426c0f3696dc74e242610fc95dde59": {
+    "facing": "model",
+    "id": "data-managed-agents-reference-php",
+    "name": "Data: Managed Agents reference — PHP",
+    "desc": "claude-api skill reference file (Managed Agents reference — PHP) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "0fb551631c417c937cee1a3308cebd5134e9b346": {
+    "facing": "model",
+    "id": "data-batches-api-reference-python",
+    "name": "Data: Message Batches API reference — Python",
+    "desc": "claude-api skill reference file (Message Batches API reference — Python) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "1d3e436408f8baf33a1c7b42615b0b9a5c9e82e9": {
+    "facing": "model",
+    "id": "data-files-api-reference-python",
+    "name": "Data: Files API reference — Python",
+    "desc": "claude-api skill reference file (Files API reference — Python) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "7dcd5c31574a0c2c60383567f757087908650675": {
+    "facing": "model",
+    "id": "data-claude-api-reference-python",
+    "name": "Data: Claude API reference — Python",
+    "desc": "claude-api skill reference file (Claude API reference — Python) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "ceb4aa61132b464c340ab1b62d79ee89499d001b": {
+    "facing": "model",
+    "id": "skill-claude-api-python-sdk-upgrade",
+    "name": "Skill: Claude API Python SDK Upgrade",
+    "desc": "claude-api skill reference file (Claude API Python SDK Upgrade) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "8c46a4024f572f72a042cc29813081a245d231c1": {
+    "facing": "model",
+    "id": "data-streaming-reference-python",
+    "name": "Data: Streaming reference — Python",
+    "desc": "claude-api skill reference file (Streaming reference — Python) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "de729b8b8bf6d170edbb997bee63b99d07afe09a": {
+    "facing": "model",
+    "id": "data-tool-use-reference-python",
+    "name": "Data: Tool use reference — Python",
+    "desc": "claude-api skill reference file (Tool use reference — Python) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "0e1c51f641622d7fb8e47a9f5424bb53c609107a": {
+    "facing": "model",
+    "id": "data-managed-agents-reference-python",
+    "name": "Data: Managed Agents reference — Python",
+    "desc": "claude-api skill reference file (Managed Agents reference — Python) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "b90255acfd588812b73b49fe53cc27154858333f": {
+    "facing": "model",
+    "id": "data-claude-api-reference-ruby",
+    "name": "Data: Claude API reference — Ruby",
+    "desc": "claude-api skill reference file (Claude API reference — Ruby) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "9269bec04bc4a6285a74e2a6a709aae5e9630051": {
+    "facing": "model",
+    "id": "data-streaming-reference-ruby",
+    "name": "Data: Streaming reference — Ruby",
+    "desc": "claude-api skill reference file (Streaming reference — Ruby) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "c9d41c5f83c4ca68bc09b1b7344de73fd18abf26": {
+    "facing": "model",
+    "id": "data-tool-use-reference-ruby",
+    "name": "Data: Tool use reference — Ruby",
+    "desc": "claude-api skill reference file (Tool use reference — Ruby) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "04d8806bbc9990ab6080dcff3a407a5fd72e77ea": {
+    "facing": "model",
+    "id": "data-managed-agents-reference-ruby",
+    "name": "Data: Managed Agents reference — Ruby",
+    "desc": "claude-api skill reference file (Managed Agents reference — Ruby) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "0d20184e4f466d9b4ddbd7135ea210527b5fef9c": {
+    "facing": "model",
+    "id": "skill-building-llm-powered-applications-with-claude",
+    "name": "Skill: Building LLM-powered applications with Claude",
+    "desc": "Main prompt body of the claude-api skill (building LLM-powered applications with Claude), injected at skill invocation."
+  },
+  "a13de3c85023e7ff66963cdc57834266a8526660": {
+    "facing": "model",
+    "id": "data-admin-api",
+    "name": "Data: admin-api",
+    "desc": "claude-api skill reference file (admin-api) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "d61912e4f1f5e2cb767d7e19c631afc88691b578": {
+    "facing": "model",
+    "id": "skill-agent-design-patterns",
+    "name": "Skill: Agent Design Patterns",
+    "desc": "claude-api skill reference file (Agent Design Patterns) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "2419fd751d4fbb86b04bd35be456da6c9c34440e": {
+    "facing": "model",
+    "id": "data-anthropic-cli",
+    "name": "Data: Anthropic CLI",
+    "desc": "claude-api skill reference file (Anthropic CLI) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "9f44ec8a070f7554c73d5a2d6267e019b0c2e78d": {
+    "facing": "model",
+    "id": "data-claude-platform-on-aws-reference",
+    "name": "Data: Claude Platform on AWS reference",
+    "desc": "claude-api skill reference file (Claude Platform on AWS reference) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "c55c20358f139f857e8fd9f81da8ba5e1c1f3172": {
+    "facing": "model",
+    "id": "data-cost-optimization",
+    "name": "Data: cost-optimization",
+    "desc": "claude-api skill reference file (cost-optimization) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "ad55b105abc5126eb67e4cde14b5432f78c818e8": {
+    "facing": "model",
+    "id": "data-http-error-codes-reference",
+    "name": "Data: HTTP error codes reference",
+    "desc": "claude-api skill reference file (HTTP error codes reference) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "35b4079fb0f5721fc47fb5b6d7a6414afee7d9df": {
+    "facing": "model",
+    "id": "data-build-eval",
+    "name": "Data: build-eval",
+    "desc": "claude-api skill reference file (build-eval) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "14d2b6a9f0e32762e6d707d3abade40f7d990eec": {
+    "facing": "model",
+    "id": "data-eval-audit",
+    "name": "Data: eval-audit",
+    "desc": "claude-api skill reference file (eval-audit) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "6d3885f8b44f81422f95ad964d94fe966ca6ab5f": {
+    "facing": "model",
+    "id": "data-cost-hillclimb",
+    "name": "Data: cost-hillclimb",
+    "desc": "claude-api skill reference file (cost-hillclimb) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "4e60d6da55849d77926b2b07c66c33517de0b6ed": {
+    "facing": "model",
+    "id": "data-eval-hillclimb",
+    "name": "Data: eval-hillclimb",
+    "desc": "claude-api skill reference file (eval-hillclimb) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "6b9ce5f54aa8f2f9c014dfc61fa2461b6af226b7": {
+    "facing": "model",
+    "id": "data-runner-scaffold-mjs",
+    "name": "Data: runner-scaffold.mjs",
+    "desc": "Eval runner scaffold (shared/evals/report/runner-scaffold.mjs) build-eval.md tells the model to copy into the repo and fill in, so it reads the text."
+  },
+  "b4d794790e35f061409ec2c084f3e387c67733dd": { "facing": "internal" },
+  "2a9e335545894ebc111923ac25b1a35c98947452": {
+    "facing": "model",
+    "id": "data-schema",
+    "name": "Data: SCHEMA",
+    "desc": "claude-api skill reference file (SCHEMA) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "3811db21c5e324c89a104458f176f9e6569fa0a1": {
+    "facing": "model",
+    "id": "data-live-documentation-sources",
+    "name": "Data: Live documentation sources",
+    "desc": "claude-api skill reference file (Live documentation sources) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "53c20828ae29f23024430a16324fe3e2a11e28f1": {
+    "facing": "model",
+    "id": "data-managed-agents-endpoint-reference",
+    "name": "Data: Managed Agents endpoint reference",
+    "desc": "claude-api skill reference file (Managed Agents endpoint reference) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "c59142861e7905e497dffd3ebd57186a6ac51d46": {
+    "facing": "model",
+    "id": "data-managed-agents-client-patterns",
+    "name": "Data: Managed Agents client patterns",
+    "desc": "claude-api skill reference file (Managed Agents client patterns) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "1defcc02ac8b527d959b3b2825dd90ec77a0513e": {
+    "facing": "model",
+    "id": "data-managed-agents-core-concepts",
+    "name": "Data: Managed Agents core concepts",
+    "desc": "claude-api skill reference file (Managed Agents core concepts) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "a5a175685940cc14419e61a48578d499fc8043ff": {
+    "facing": "model",
+    "id": "data-managed-agents-environments-and-resources",
+    "name": "Data: Managed Agents environments and resources",
+    "desc": "claude-api skill reference file (Managed Agents environments and resources) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "5955e3c62c53d2667b7fdd15d3b0df3b9bd8fd8a": {
+    "facing": "model",
+    "id": "data-managed-agents-events-and-steering",
+    "name": "Data: Managed Agents events and steering",
+    "desc": "claude-api skill reference file (Managed Agents events and steering) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "3c22f3780a9ad0768e98981b1432a5d6441950e1": {
+    "facing": "model",
+    "id": "data-managed-agents-memory-stores-reference",
+    "name": "Data: Managed Agents memory stores reference",
+    "desc": "claude-api skill reference file (Managed Agents memory stores reference) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "dca46cdb4b446fccd6f5da091ab526c5fb90776b": {
+    "facing": "model",
+    "id": "data-managed-agents-multiagent",
+    "name": "Data: managed-agents-multiagent",
+    "desc": "claude-api skill reference file (managed-agents-multiagent) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "aa38a9501218f7c061e1557c0d566701e2deae0d": {
+    "facing": "model",
+    "id": "agent-prompt-managed-agents-onboarding-flow",
+    "name": "Agent Prompt: Managed Agents onboarding flow",
+    "desc": "claude-api skill reference file (Agent Prompt: Managed Agents onboarding flow) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "797b30eb22a466aa69fc6795227d1b9ecfb17c4c": {
+    "facing": "model",
+    "id": "data-managed-agents-onboarding-from-quickstart",
+    "name": "Data: managed-agents-onboarding-from-quickstart",
+    "desc": "claude-api skill reference file (managed-agents-onboarding-from-quickstart) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "79eb5e3ba754eff86618ac2e12d3094890d51020": {
+    "facing": "model",
+    "id": "data-managed-agents-onboarding-from-url",
+    "name": "Data: managed-agents-onboarding-from-url",
+    "desc": "claude-api skill reference file (managed-agents-onboarding-from-url) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "69ffe63b921ddeaf3df0f326345e0db895e8e402": {
+    "facing": "model",
+    "id": "data-managed-agents-outcomes",
+    "name": "Data: Managed Agents outcomes",
+    "desc": "claude-api skill reference file (Managed Agents outcomes) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "9776f4b3c956f2cc699218dff40fb55aa03b4f33": {
+    "facing": "model",
+    "id": "data-managed-agents-overview",
+    "name": "Data: managed-agents-overview",
+    "desc": "claude-api skill reference file (managed-agents-overview) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "c27619f4813a0d7cf67f8ed607383cc96df3367d": {
+    "facing": "model",
+    "id": "data-managed-agents-scheduled-deployments",
+    "name": "Data: Managed Agents scheduled deployments",
+    "desc": "claude-api skill reference file (Managed Agents scheduled deployments) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "a3029da8b889c7828c3d23500b1786eb55889470": {
+    "facing": "model",
+    "id": "data-managed-agents-self-hosted-sandboxes",
+    "name": "Data: Managed Agents self-hosted sandboxes",
+    "desc": "claude-api skill reference file (Managed Agents self-hosted sandboxes) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "676a95aeb76117e330fc13729a704d71ef807e72": {
+    "facing": "model",
+    "id": "data-managed-agents-tools-and-skills",
+    "name": "Data: Managed Agents tools and skills",
+    "desc": "claude-api skill reference file (Managed Agents tools and skills) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "9b2369459f247a92db7fd5a65cada1f396ba3ebc": {
+    "facing": "model",
+    "id": "data-managed-agents-webhooks",
+    "name": "Data: Managed Agents webhooks",
+    "desc": "claude-api skill reference file (Managed Agents webhooks) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "988b6e331bcc6df6e11a38ee1a1464dd2496a3b2": {
+    "facing": "model",
+    "id": "skill-model-migration-guide",
+    "name": "Skill: Model migration guide",
+    "desc": "claude-api skill reference file (Model migration guide) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "1410575d4a4f7a1578633f8cc2323a80871660ac": {
+    "facing": "model",
+    "id": "data-claude-model-catalog",
+    "name": "Data: Claude model catalog",
+    "desc": "claude-api skill reference file (Claude model catalog) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "19ef1081742c26ce653372571aa28448766a74c6": {
+    "facing": "model",
+    "id": "data-platform-availability",
+    "name": "Data: platform-availability",
+    "desc": "claude-api skill reference file (platform-availability) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "ff81691aceffa9860c172300507a23bbc35d5e9a": {
+    "facing": "model",
+    "id": "data-preserved-thinking-migration",
+    "name": "Data: preserved-thinking-migration",
+    "desc": "claude-api skill reference file (preserved-thinking-migration) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "8a6b0e5223ef2b05114bd47b754dfa2273723248": {
+    "facing": "model",
+    "id": "data-causes",
+    "name": "Data: causes",
+    "desc": "claude-api skill reference file (causes) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "b983869844673f1815788ea33b4f02c43e24e365": { "facing": "internal" },
+  "ee464856ddb6d3366b6c8eda2e16f347e7ad6dc9": { "facing": "internal" },
+  "acf3d5d883f48a6db03d7f48d3607ef0c8340018": {
+    "facing": "model",
+    "id": "skill-prompt-audit",
+    "name": "Skill: Prompt audit",
+    "desc": "claude-api skill reference file (Prompt audit) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "45b0d06da94136e7c3b21f185c86026d82d39e33": {
+    "facing": "model",
+    "id": "data-prompt-caching",
+    "name": "Data: prompt-caching",
+    "desc": "claude-api skill reference file (prompt-caching) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "1ec43b7e16dfd7419bf69b6d93b57bbe9d4b893a": {
+    "facing": "model",
+    "id": "data-token-counting",
+    "name": "Data: Token counting",
+    "desc": "claude-api skill reference file (Token counting) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "1bb48945d802b9d1e524da864fd2b85be15d9fce": {
+    "facing": "model",
+    "id": "data-tool-use-concepts",
+    "name": "Data: Tool use concepts",
+    "desc": "claude-api skill reference file (Tool use concepts) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "aa685ca0a88ffc93a754339bdfe90d2af1f47730": {
+    "facing": "model",
+    "id": "data-message-batches-api-typescript",
+    "name": "Data: Message Batches API — TypeScript",
+    "desc": "claude-api skill reference file (Message Batches API — TypeScript) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "0882e895bf61405e614f60ca0229751041c89d4b": {
+    "facing": "model",
+    "id": "data-files-api-reference-typescript",
+    "name": "Data: Files API reference — TypeScript",
+    "desc": "claude-api skill reference file (Files API reference — TypeScript) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "ede9e2179a5b63a13d798290af4d446523a6a084": {
+    "facing": "model",
+    "id": "data-claude-api-reference-typescript",
+    "name": "Data: Claude API reference — TypeScript",
+    "desc": "claude-api skill reference file (Claude API reference — TypeScript) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "0832c228d25e08e152cfe1ff8707948fb21ffcf8": {
+    "facing": "model",
+    "id": "data-streaming-reference-typescript",
+    "name": "Data: Streaming reference — TypeScript",
+    "desc": "claude-api skill reference file (Streaming reference — TypeScript) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "b19506778e2edb42c5dc97ef30b3a55f018f1b0b": {
+    "facing": "model",
+    "id": "data-tool-use-reference-typescript",
+    "name": "Data: Tool use reference — TypeScript",
+    "desc": "claude-api skill reference file (Tool use reference — TypeScript) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "74e7fb72d4769ee3ff24ad3d31158e6d5a37f1de": {
+    "facing": "model",
+    "id": "data-managed-agents-reference-typescript",
+    "name": "Data: Managed Agents reference — TypeScript",
+    "desc": "claude-api skill reference file (Managed Agents reference — TypeScript) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "cc77184969e9bf90e78ea24793176f26fb6c27d6": {
+    "facing": "model",
+    "id": "data-managed-agents-quickstart-bug-hunter",
+    "name": "Data: Managed Agents quickstart — Bug hunter",
+    "desc": "claude-api skill reference file (Managed Agents quickstart — Bug hunter) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "262900fd4e39eba4b9b3842e30f3069ed548894c": {
+    "facing": "model",
+    "id": "data-managed-agents-quickstart-contract-tracker",
+    "name": "Data: Managed Agents quickstart — Contract tracker",
+    "desc": "claude-api skill reference file (Managed Agents quickstart — Contract tracker) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "357c62b427aa6e5d43fdd8e163ae8e668e8c2706": {
+    "facing": "model",
+    "id": "data-managed-agents-quickstart-data-analyst",
+    "name": "Data: Managed Agents quickstart — Data analyst",
+    "desc": "claude-api skill reference file (Managed Agents quickstart — Data analyst) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "c8b36162933d44262f66dbaaf1b0872e5e77fac6": {
+    "facing": "model",
+    "id": "data-managed-agents-quickstart-deep-researcher",
+    "name": "Data: Managed Agents quickstart — Deep researcher",
+    "desc": "claude-api skill reference file (Managed Agents quickstart — Deep researcher) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "a02ff8b71a0cf6832e10711301926d26e1d821a2": {
+    "facing": "model",
+    "id": "data-managed-agents-quickstart-explainer-video-maker",
+    "name": "Data: Managed Agents quickstart — Explainer video maker",
+    "desc": "claude-api skill reference file (Managed Agents quickstart — Explainer video maker) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "af71c06bba2217518f6179ab8debbdb512efb9ed": {
+    "facing": "model",
+    "id": "data-managed-agents-quickstart-field-monitor",
+    "name": "Data: Managed Agents quickstart — Field monitor",
+    "desc": "claude-api skill reference file (Managed Agents quickstart — Field monitor) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "cb6f1eabb4d13dced04c0c081cdd11b754a710ba": {
+    "facing": "model",
+    "id": "data-managed-agents-quickstart-incident-commander",
+    "name": "Data: Managed Agents quickstart — Incident commander",
+    "desc": "claude-api skill reference file (Managed Agents quickstart — Incident commander) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "414035d08553831df659e050217c2405665299c8": {
+    "facing": "model",
+    "id": "data-performance-tuner",
+    "name": "Data: performance-tuner",
+    "desc": "claude-api skill reference file (performance-tuner) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "96ac56c6beba6b57712a504098b96820fd1f97a4": {
+    "facing": "model",
+    "id": "data-managed-agents-quickstart-sprint-retro-facilitator",
+    "name": "Data: Managed Agents quickstart — Sprint retro facilitator",
+    "desc": "claude-api skill reference file (Managed Agents quickstart — Sprint retro facilitator) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "b370f13ee76e65a70f0344a75c3c78bcfddbca33": {
+    "facing": "model",
+    "id": "data-managed-agents-quickstart-structured-extractor",
+    "name": "Data: Managed Agents quickstart — Structured extractor",
+    "desc": "claude-api skill reference file (Managed Agents quickstart — Structured extractor) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "96c4b40e3cd1540cb948baee0c9782af628b21f6": {
+    "facing": "model",
+    "id": "data-managed-agents-quickstart-support-agent",
+    "name": "Data: Managed Agents quickstart — Support agent",
+    "desc": "claude-api skill reference file (Managed Agents quickstart — Support agent) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "b7b505a3917b37ccec35bc44d8e99ff88b1293d3": {
+    "facing": "model",
+    "id": "data-managed-agents-quickstart-support-to-eng-escalator",
+    "name": "Data: Managed Agents quickstart — Support-to-eng escalator",
+    "desc": "claude-api skill reference file (Managed Agents quickstart — Support-to-eng escalator) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "95b8e265b5d80e6c9fe4e5ba2cf9b24e59758fe6": {
+    "facing": "model",
+    "id": "data-managed-agents-quickstart-watchlist-scanner",
+    "name": "Data: Managed Agents quickstart — Watchlist scanner",
+    "desc": "claude-api skill reference file (Managed Agents quickstart — Watchlist scanner) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "555223c43a6bb60f66e95b1b0accf0debc48636c": {
+    "facing": "model",
+    "id": "skill-artifact-document",
+    "name": "Skill: Artifact document",
+    "desc": "Prompt body of the artifact-document (doc) skill, injected at skill invocation."
+  },
+  "55beab0bc37d3b89009e65dbd8e228d78e0c6946": {
+    "facing": "model",
+    "id": "data-artifact-document-html-template",
+    "name": "Data: Artifact document HTML template",
+    "desc": "HTML template extracted with the artifact-document skill; its SKILL.md step 1 has the model Read template.html and fill it."
+  },
+  "8ffa6c5c0b37d0d748533566aeb5ec82d9232ea3": {
+    "facing": "model",
+    "id": "skill-whiteboard-2",
+    "name": "Skill: whiteboard",
+    "desc": "Prompt body of the whiteboard skill (board.mjs variant), injected at skill invocation."
+  },
+  "678b5a34a5836dcfa6ea964c7265118fcb30dad7": { "facing": "ui" },
+  "73f1885ff45f5fae6c1ef89079b67608b0e247ff": { "facing": "internal" },
+  "e039402aa415414e557137321de534074b055539": {
+    "facing": "model",
+    "id": "skill-whiteboard",
+    "name": "Skill: whiteboard",
+    "desc": "Prompt body of the whiteboard skill (merge-state.mjs variant), injected at skill invocation."
+  },
+  "ec0628417514768f0de14e6286d851f5560aa742": { "facing": "ui" },
+  "f9417b23c0a6f4a7aa798e0d12e873885b5978be": { "facing": "internal" },
+  "e6ca179e629425fbd5ea58c0a094999e70ca44a7": {
+    "facing": "model",
+    "id": "skill-prototype",
+    "name": "Skill: prototype",
+    "desc": "Prompt body of the prototype skill, injected at skill invocation."
+  },
+  "87b12837f70eaa62185ea17c43d3a291aedf53df": {
+    "facing": "model",
+    "id": "skill-verify-cli-changes-example-for-verify-skill",
+    "name": "Skill: Verify CLI changes (example for Verify skill)",
+    "desc": "verify skill example file (examples/cli.md) extracted with the skill for the model to Read."
+  },
+  "c2627961eb051a6df82cad75642ff4aa566e22c9": {
+    "facing": "model",
+    "id": "skill-verify-server-api-changes-example-for-verify-skill",
+    "name": "Skill: Verify server/API changes (example for Verify skill)",
+    "desc": "verify skill example file (examples/server.md) extracted with the skill for the model to Read."
+  },
+  "abc75df9f57d96b70ab66f7b7a87efbbf8aecda6": {
+    "facing": "model",
+    "id": "skill-verify",
+    "name": "Skill: verify",
+    "desc": "Prompt body of the verify skill, injected at skill invocation."
+  },
+  "07096b436ec27233e1275d828fcc393d23117855": {
+    "facing": "model",
+    "id": "system-prompt-autonomous-loop-check",
+    "name": "System Prompt: Autonomous loop check",
+    "desc": "Autonomous /loop preamble injected on the first loop turn when the persistent variant is off."
+  },
+  "f2c0bf244a6572c3b4480ae7e5db17a1cfd4a1f6": {
+    "facing": "model",
+    "id": "system-prompt-autonomous-loop-persistence-guidance-CLAUDE_CODE_LOOP_PERSISTENT",
+    "name": "System Prompt: Autonomous loop persistence guidance (CLAUDE_CODE_LOOP_PERSISTENT)",
+    "desc": "Persistent autonomous /loop preamble injected on the first loop turn when CLAUDE_CODE_LOOP_PERSISTENT or tengu_kairos_loop_persistent is on."
+  },
+  "49bfaed6c54d34f7056d1ece6fa7d018f79a4adc": {
+    "facing": "model",
+    "id": "data-claude-tag-claude-in-slack-reference",
+    "name": "Data: Claude Tag (Claude in Slack) reference",
+    "desc": "claude-code-docs skill reference file (Claude Tag (Claude in Slack) reference) under references/, read by the model on demand."
+  },
+  "cfd270ff3c9f8d72dd8428488ea12f7c5a0c4534": {
+    "facing": "model",
+    "id": "data-claude-code-live-documentation-sources",
+    "name": "Data: Claude Code live documentation sources",
+    "desc": "claude-code-docs skill reference file (Claude Code live documentation sources) under references/, read by the model on demand."
+  },
+  "cf9fca13189591733b94a395592943dcb08e3321": {
+    "facing": "model",
+    "id": "data-plugin-eval",
+    "name": "Data: plugin-eval",
+    "desc": "claude-code-docs skill reference file (plugin-eval) under references/, read by the model on demand."
+  },
+  "93114fe7626b41757b5afce67509fe8c4e804643": {
+    "facing": "model",
+    "id": "data-claude-code-recent-changes-reference",
+    "name": "Data: Claude Code recent changes reference",
+    "desc": "claude-code-docs skill reference file (Claude Code recent changes reference) under references/, read by the model on demand."
+  },
+  "e41bacd64eae7e9de45488ff9c40591b7504c7a5": {
+    "facing": "model",
+    "id": "skill-claude-code-configuration-guide",
+    "name": "Skill: Claude Code configuration guide",
+    "desc": "Prompt body of the claude-code-docs skill, injected at skill invocation."
+  },
+  "fc1e5af41d8a7d60498ec7918053708963077e1d": {
+    "facing": "model",
+    "id": "skill-run-example-cli-tool",
+    "name": "Skill: run example — CLI tool",
+    "desc": "run skill example file (examples/cli.md) extracted with the run skill for the model to Read as a pattern."
+  },
+  "1b10fb2f79029e0ba3a62dadeed50a78349d1e65": {
+    "facing": "model",
+    "id": "skill-run-example-electron",
+    "name": "Skill: run example — Electron / desktop GUI app",
+    "desc": "run skill example file (examples/electron.md) extracted with the run skill for the model to Read as a pattern."
+  },
+  "fdf6d2db147a9a5e5f8f379db0f9005e0fdadc03": {
+    "facing": "model",
+    "id": "skill-run-example-library-sdk",
+    "name": "Skill: run example — Library / SDK",
+    "desc": "run skill example file (examples/library.md) extracted with the run skill for the model to Read as a pattern."
+  },
+  "029e0553b8337e5241889495c70a34afd79167f8": {
+    "facing": "model",
+    "id": "skill-run-example-browser-driven-web-app",
+    "name": "Skill: run example — Browser-driven web app",
+    "desc": "run skill example file (examples/playwright.md) extracted with the run skill for the model to Read as a pattern."
+  },
+  "d4c0d3e7b004d4f84731cd2a8b8029e270370187": {
+    "facing": "model",
+    "id": "skill-run-example-web-server-api",
+    "name": "Skill: run example — Web server / API",
+    "desc": "run skill example file (examples/server.md) extracted with the run skill for the model to Read as a pattern."
+  },
+  "fb03de7776bf060c7877e8a0cd6917a42f525861": {
+    "facing": "model",
+    "id": "skill-run-example-tui",
+    "name": "Skill: run example — TUI / interactive terminal app",
+    "desc": "run skill example file (examples/tui.md) extracted with the run skill for the model to Read as a pattern."
+  },
+  "0af7b62ba0008437ece58e1f87c5eaeee91356ff": {
+    "facing": "model",
+    "id": "skill-run-app",
+    "name": "Skill: Run app",
+    "desc": "Prompt body of the run skill, injected at skill invocation."
+  },
+  "ab59395a0a58ebf9a2f2084ab85c9b76f27a63b7": {
+    "facing": "model",
+    "id": "skill-run-skill-generator",
+    "name": "Skill: run-skill-generator",
+    "desc": "Prompt body of the run-skill-generator skill, injected at skill invocation."
+  },
+  "62d21bd04bba341a67bee37646ee25f9e9736474": {
+    "facing": "model",
+    "id": "skill-run-unit-name-template",
+    "name": "Skill: run-<unit-name> (template)",
+    "desc": "Run-skill unit template (template.md) extracted with the run-skill-generator skill for the model to fill in."
+  },
+  "d4b8a0ef598402d86638d90d2db99015df229485": { "facing": "ui" },
+  "a13246f3c0483a3b7149aabedcd29c5125e22f32": { "facing": "internal" },
+  "d3efba1bb34e28a9aa348a01c68c05171bcedaa9": { "facing": "internal" }
 }

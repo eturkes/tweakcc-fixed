@@ -21,4 +21,25 @@ describe('MutableText', () => {
     text.splice(1, 9, 'x');
     expect(text.toString()).toBe('0x9');
   });
+
+  it('reads characters in any order across splices', () => {
+    const text = new MutableText('abcdefghij');
+    text.splice(2, 3, 'XY');
+    text.splice(8, 9, 'Z');
+    const expected = 'abXYdefgZij';
+    for (const i of [10, 0, 5, 4, 9, 1, 7, 7, 3, -1, 11]) {
+      expect(text.charAt(i)).toBe(expected[i] ?? '');
+    }
+  });
+
+  it('joins once and stays correct after further splices', () => {
+    const text = new MutableText('one two three');
+    text.splice(4, 7, '2');
+    const joined = text.toString();
+    expect(text.toString()).toBe(joined);
+    expect(joined).toBe('one 2 three');
+    text.splice(0, 3, '1');
+    expect(text.toString()).toBe('1 2 three');
+    expect(text.charAt(4)).toBe('t');
+  });
 });
