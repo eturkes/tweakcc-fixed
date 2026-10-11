@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const { loadBundleSites } = require('./lib/bundleSites.cjs');
+const { splitModuleBundle } = require('./lib/moduleBundle.cjs');
 
 function slugify(text) {
   return text
@@ -4896,6 +4897,185 @@ function literalSiteRecord(site) {
 // `opts.cache` reuses the bundle-only site collection from the on-disk cache
 // (tools/lib/bundleSites.cjs). The CLI and collectLiteralSites turn it on;
 // TWEAKCC_EXTRACT_NO_CACHE=1 forces a cold collection either way.
+// Text-asset segments of a virtual bundle (src/nativeTextAssets.ts): a module
+// whose whole body is one template literal holding the asset's text. Keyed by
+// the literal's start offset.
+function textAssetSegments(code) {
+  const out = new Map();
+  for (const seg of splitModuleBundle(code) || []) {
+    if (!seg.source.startsWith('`')) continue;
+    out.set(seg.start, {
+      name: seg.name,
+      end: seg.start + seg.source.length,
+    });
+  }
+  return out;
+}
+
+// `/$bunfs/root/state-library.js-wy8y4843.txt` -> `state-library.js`: the
+// file name without the loader extension, `.zst`, or Bun's per-build content
+// hash, so the id survives a rebuild.
+function assetStem(modulePath) {
+  return modulePath
+    .split('/')
+    .pop()
+    .replace(/\.zst$/, '')
+    .replace(/\.(?:md|txt)$/, '')
+    .replace(/-[a-z0-9]{8}(?=\.[A-Za-z0-9]+$|$)/, '');
+}
+
+function assetHeading(text) {
+  const heading =
+    text.match(/^#{1,3}[ \t]+(.+)$/m) ||
+    text.match(/<title>([^<]+)<\/title>/i) ||
+    text.match(/^\s*(\S.*)$/m);
+  return heading ? heading[1].trim() : '';
+}
+
+// The catalogue before CC 2.1.246 moved these docs into text assets. Its ids
+// are the ones their overrides were written under, so a doc it holds keeps
+// its old id instead of getting a new one.
+const ASSET_HISTORY_CATALOGUE = path.join(
+  __dirname,
+  '..',
+  'data',
+  'prompts',
+  'prompts-2.1.241.json'
+);
+
+function loadAssetHistory() {
+  if (!fs.existsSync(ASSET_HISTORY_CATALOGUE)) return [];
+  try {
+    return (
+      JSON.parse(fs.readFileSync(ASSET_HISTORY_CATALOGUE, 'utf-8')).prompts ||
+      []
+    );
+  } catch {
+    return [];
+  }
+}
+
+// Name the captured text assets that are still anonymous, or only carry the
+// id inferPromptIdentity guessed from SKILL.md frontmatter. Order: the
+// reference catalogue's id for the same document (full body, then its
+// opening), the pre-split catalogue's id, the frontmatter skill name, and
+// finally `data-<file stem>`, with the document's heading added when several
+// assets share a stem (README, tool-use, template.html).
+function applyAssetNames(prompts, upstreamPrompts = [], historyPrompts = []) {
+  const norm = s =>
+    s
+      .replace(/\\([`$\\])/g, '$1')
+      .replace(/\s+/g, ' ')
+      .trim();
+  const body = p =>
+    (p.pieces || []).filter(x => typeof x === 'string').join('');
+  const PREFIX = 160;
+  const index = list => {
+    const full = new Map();
+    const prefix = new Map();
+    for (const u of list) {
+      if (!u.id) continue;
+      const b = norm(body(u));
+      if (!full.has(b)) full.set(b, u);
+      const k = b.slice(0, PREFIX);
+      if (k.length < PREFIX) continue;
+      const seen = prefix.get(k);
+      if (seen === undefined) prefix.set(k, u);
+      else if (seen && seen.id !== u.id) prefix.set(k, null);
+    }
+    return { full, prefix };
+  };
+  const up = index(upstreamPrompts);
+  const hist = index(historyPrompts);
+
+  const fresh = [];
+  const unmatched = [];
+  let adopted = 0;
+  let restored = 0;
+  for (const p of prompts) {
+    if (!p.asset) continue;
+    const text = body(p);
+    const inferred = inferPromptIdentity(text);
+    if (p.id && !(inferred && p.id === inferred.id)) continue;
+    const b = norm(text);
+    const k = b.slice(0, PREFIX);
+    const fromUp = up.full.get(b) || up.prefix.get(k);
+    const hit =
+      up.full.get(b) || hist.full.get(b) || fromUp || hist.prefix.get(k);
+    if (hit) {
+      p.id = hit.id;
+      p.name = hit.name || '';
+      p.description = hit.description || '';
+      if (hit === fromUp || hit === up.full.get(b)) adopted++;
+      else restored++;
+    } else {
+      unmatched.push({ p, b });
+    }
+  }
+
+  // A doc edited since the split no longer matches its old opening. Fall back
+  // to how much of the old body survives: evenly spaced 60-char windows of it,
+  // most of which must occur in the asset. Each old id goes to at most one
+  // asset, best score first, and a tie between two old ids names neither.
+  const taken = new Set(prompts.map(p => p.id).filter(Boolean));
+  const scored = [];
+  for (const h of historyPrompts) {
+    if (!h.id || taken.has(h.id)) continue;
+    const hb = norm(body(h));
+    if (hb.length < 200) continue;
+    const step = Math.max(1, Math.floor((hb.length - 60) / 8));
+    const windows = [];
+    for (let i = 0; i + 60 <= hb.length && windows.length < 9; i += step)
+      windows.push(hb.slice(i, i + 60));
+    for (const u of unmatched) {
+      if (u.b.length < hb.length / 2 || u.b.length > hb.length * 2) continue;
+      const hits = windows.filter(w => u.b.includes(w)).length;
+      if (hits * 2 >= windows.length && hits >= 4)
+        scored.push({ u, h, score: hits / windows.length });
+    }
+  }
+  scored.sort((a, b) => b.score - a.score);
+  const claimed = new Set();
+  for (const { u, h, score } of scored) {
+    if (u.named || claimed.has(h.id)) continue;
+    const rival = scored.find(
+      s => s.u === u && s.h.id !== h.id && s.score === score
+    );
+    if (rival) continue;
+    u.named = true;
+    claimed.add(h.id);
+    u.p.id = h.id;
+    u.p.name = h.name || '';
+    u.p.description = h.description || '';
+    restored++;
+  }
+  for (const u of unmatched) if (!u.named && !u.p.id) fresh.push(u.p);
+
+  const slug = s =>
+    s
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  const baseId = p => `data-${slug(assetStem(p.asset))}`;
+  const stems = new Map();
+  for (const p of fresh) stems.set(baseId(p), (stems.get(baseId(p)) || 0) + 1);
+  for (const p of fresh) {
+    const stem = assetStem(p.asset);
+    const heading = assetHeading(body(p).replace(/\\([`$\\])/g, '$1'));
+    const headingSlug = slug(heading).split('-').slice(0, 6).join('-');
+    p.id =
+      stems.get(baseId(p)) > 1 && headingSlug
+        ? `${baseId(p)}-${headingSlug}`
+        : baseId(p);
+    p.name = `Data: ${stem}${stems.get(baseId(p)) > 1 && heading ? ` (${heading.slice(0, 60)})` : ''}`;
+    p.description = `Text asset ${stem} that Claude Code loads by path from its bundle.`;
+  }
+  console.log(
+    `Named ${adopted + restored + fresh.length} text asset(s): ${adopted} from the reference catalogue, ${restored} from the pre-split catalogue, ${fresh.length} from their file name`
+  );
+  return prompts;
+}
+
 function extractStrings(filepath, minLength = 500, opts = {}) {
   _gateCandidates.clear(); // idempotent across calls
   const code = fs.readFileSync(filepath, 'utf-8');
@@ -5071,8 +5251,34 @@ function extractStrings(filepath, minLength = 500, opts = {}) {
     }
   };
 
+  // A text asset (a skill file, a reference doc) is one whole document: it is
+  // captured as a unit, past the prose gates, and only a cache verdict can drop
+  // it. Without a verdict it is also handed to classification, so its facing
+  // gets decided like any other new string.
+  const assets = textAssetSegments(code);
+  const decideAsset = (site, asset) => {
+    dumpCandidate(literalSiteRecord(site));
+    const tbody = site.pieces.join('');
+    const cls = classifyByCache(tbody);
+    if (cls && cls.facing !== 'model') return;
+    if (!cls) recordGateCandidate(tbody, leadOf(site.start));
+    stringData.push({
+      name: '',
+      id: '',
+      description: '',
+      pieces: [...site.pieces],
+      identifiers: [],
+      identifierMap: {},
+      start: site.start,
+      end: site.end,
+      asset: asset.name,
+    });
+  };
+
   for (const site of bundle.sites) {
-    if (site.kind === 'composite') decideComposite(site);
+    const asset = site.kind === 'template' && assets.get(site.start);
+    if (asset && asset.end === site.end) decideAsset(site, asset);
+    else if (site.kind === 'composite') decideComposite(site);
     else if (site.kind === 'string') decideString(site);
     else decideTemplate(site);
   }
@@ -6228,6 +6434,11 @@ if (require.main === module) {
     mergedResult.prompts,
     loadUpstreamPrompts()
   );
+  mergedResult.prompts = applyAssetNames(
+    mergedResult.prompts,
+    loadUpstreamPrompts(),
+    loadAssetHistory()
+  );
   mergedResult.prompts = normalizeIdGroups(mergedResult.prompts);
   mergedResult.prompts = disambiguateIdCollisions(
     mergedResult.prompts,
@@ -6351,7 +6562,7 @@ if (require.main === module) {
 
   // Remove extraction bookkeeping before writing
   mergedResult.prompts = mergedResult.prompts.map(
-    ({ start, end, settings, legacyShapes, ...rest }) => rest
+    ({ start, end, settings, legacyShapes, asset, ...rest }) => rest
   );
 
   // Add version as top-level field
@@ -6457,4 +6668,7 @@ module.exports.slotLiteralVerdict = slotLiteralVerdict;
 module.exports.applySlotLiteralNames = applySlotLiteralNames;
 module.exports.applyCacheNames = applyCacheNames;
 module.exports.applySettingsDescriptionNames = applySettingsDescriptionNames;
+module.exports.applyAssetNames = applyAssetNames;
+module.exports.assetStem = assetStem;
+module.exports.textAssetSegments = textAssetSegments;
 module.exports.nestedRangeIndex = nestedRangeIndex;
