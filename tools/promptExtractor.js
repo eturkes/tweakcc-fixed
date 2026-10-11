@@ -4296,9 +4296,13 @@ function shouldCapture(text, cacheBody, lead, minLength, opts = {}) {
     // other templates (CC 2.1.296: " isn't available in this session." closes
     // both the in-session refusal and a CLI-only `claude plugin` error). A
     // verdict on THIS template's whole body is the more specific ruling.
-    if (opts.slotLiteral === 'quasi') {
+    // The veto is a cache verdict, so the curated rulings that outrank the
+    // cache (a settings-schema description, a NEW_PROMPT_ASSIGNMENTS pin)
+    // outrank it here too.
+    if (opts.slotLiteral === 'quasi' && !opts.settingsDescription) {
       const own = classifyByCache(cacheBody, opts.legacyCacheBodies);
-      if (own && own.facing !== 'model') return false;
+      if (own && own.facing !== 'model' && !lookupNewPromptAssignment(text))
+        return false;
     }
     return true;
   }
@@ -5030,9 +5034,13 @@ function extractStrings(filepath, minLength = 500, opts = {}) {
     // quasi. Any quasi carrying a `catalogue` verdict captures the template,
     // because the template is the unit that can be overridden — unless the
     // template's own body carries a ui/internal verdict (see shouldCapture).
-    const slotLiteral = site.quasis.some(q => Boolean(slotLiteralVerdict(q)))
-      ? 'quasi'
-      : false;
+    // With no substitution the lone quasi IS the template, so the verdict is a
+    // ruling on this exact text and outranks the cache like a string's does.
+    const slotLiteral = !site.quasis.some(q => Boolean(slotLiteralVerdict(q)))
+      ? false
+      : site.quasis.length === 1
+        ? true
+        : 'quasi';
     const settings = settingsAt(site);
     dumpCandidate(literalSiteRecord(site));
     if (

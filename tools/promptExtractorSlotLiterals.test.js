@@ -12,6 +12,10 @@
 
 import { describe, it, expect, afterEach } from 'vitest';
 import { createRequire } from 'node:module';
+import crypto from 'node:crypto';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 
 const require = createRequire(import.meta.url);
 const ex = require('./promptExtractor.js');
@@ -19,6 +23,13 @@ const ex = require('./promptExtractor.js');
 const HASH_TASK_LIST = 'c0dabec62341035c'; // sha256-16 of norm("\n- Task list: ")
 
 afterEach(() => ex._setSlotLiteralsForTests(null));
+
+const sha16 = s =>
+  crypto
+    .createHash('sha256')
+    .update(s.replace(/\s+/g, ' ').trim())
+    .digest('hex')
+    .slice(0, 16);
 
 describe('slotLiteralCandidates: recovering the literal from a stored piece', () => {
   it('strips a bare trailing `${`', () => {
@@ -119,6 +130,32 @@ describe('shouldCapture: the bypass', () => {
     }
   });
 
+  // The veto is a cache verdict, so whatever outranks the cache outranks it.
+  it('keeps a curated pin and a settings description over the veto', () => {
+    const body = 'Stop hook feedback:\n${}';
+    expect(ex.lookupNewPromptAssignment(body)).toBeTruthy();
+    ex._setClassificationCacheForTests({
+      [ex.sha1Hex(body)]: { facing: 'ui' },
+    });
+    try {
+      expect(
+        ex.shouldCapture(body, body, 'x=', 500, { slotLiteral: 'quasi' })
+      ).toBe(true);
+      const other = "${.cross} The ${} isn't available in this session.";
+      ex._setClassificationCacheForTests({
+        [ex.sha1Hex(other)]: { facing: 'ui' },
+      });
+      expect(
+        ex.shouldCapture(other, other, 'x=', 500, {
+          slotLiteral: 'quasi',
+          settingsDescription: true,
+        })
+      ).toBe(true);
+    } finally {
+      ex._setClassificationCacheForTests(null);
+    }
+  });
+
   it('still refuses inside a drop context', () => {
     // The bypass outranks the cache and the prose gate, never the drop context.
     const lead = 'import ';
@@ -129,6 +166,61 @@ describe('shouldCapture: the bypass', () => {
         })
       ).toBe(false);
     }
+  });
+});
+
+// The quasi veto only works if the template site hands shouldCapture 'quasi';
+// a site passing `true` would capture the CLI-only template and the direct
+// shouldCapture tests above would never notice.
+describe('extractStrings: a quasi verdict at a real template site', () => {
+  const QUASI = " isn't available in this session.";
+  const extract = code => {
+    const f = path.join(
+      os.tmpdir(),
+      `pe-slot-${process.pid}-${Math.random().toString(36).slice(2)}.js`
+    );
+    fs.writeFileSync(f, code);
+    try {
+      return ex(f).prompts.map(p =>
+        (p.pieces || []).filter(x => typeof x === 'string').join('')
+      );
+    } finally {
+      fs.unlinkSync(f);
+    }
+  };
+  afterEach(() => ex._setClassificationCacheForTests(null));
+
+  it('drops a template whose own body is ui and keeps the quasi string', () => {
+    const tbody = '${.name}' + QUASI;
+    ex._setSlotLiteralsForTests({
+      [sha16(QUASI)]: { verdict: 'catalogue', id: 'x', name: 'x', desc: 'x' },
+    });
+    ex._setClassificationCacheForTests({
+      [ex.sha1Hex(tbody)]: { facing: 'ui' },
+    });
+    const bodies = extract(
+      `function a(e){let r=e.on?${JSON.stringify(QUASI)}:"";return send(\`Use it.\${r}\`)}\n` +
+        `function b(e){return print(\`\${e.name}${QUASI}\`)}\n`
+    );
+    expect(bodies).toContain(QUASI);
+    expect(bodies).not.toContain(tbody);
+    ex._setClassificationCacheForTests({});
+    expect(
+      extract(`function b(e){return print(\`\${e.name}${QUASI}\`)}\n`)
+    ).toContain(tbody);
+  });
+
+  // With no substitution the lone quasi is the whole template: the verdict is
+  // on this exact text and outranks the cache, as it does for a string.
+  it('treats a template without substitutions as the literal itself', () => {
+    const text = 'Remote Control is off.';
+    ex._setSlotLiteralsForTests({
+      [sha16(text)]: { verdict: 'catalogue', id: 'x', name: 'x', desc: 'x' },
+    });
+    ex._setClassificationCacheForTests({
+      [ex.sha1Hex(text)]: { facing: 'ui' },
+    });
+    expect(extract(`function c(){return send(\`${text}\`)}\n`)).toContain(text);
   });
 });
 
