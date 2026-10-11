@@ -11,7 +11,12 @@
 //   3. Rejecting the founding literal because its last word ends in a colon.
 
 import { describe, it, expect } from 'vitest';
-import { findSlotLiterals, isCandidateText } from './checkSlotLiterals.mjs';
+import {
+  findSlotLiterals,
+  isCandidateText,
+  verdictConflicts,
+} from './checkSlotLiterals.mjs';
+import { keyVariants } from './probeCacheKey.mjs';
 
 const CATALOGUE = {
   prompts: [
@@ -227,5 +232,43 @@ describe('checkSlotLiterals: the extractor piece form counts as catalogued', () 
       ],
     };
     expect(findSlotLiterals(source, catalogue)).toEqual([]);
+  });
+});
+
+// CC 2.1.296: nine slot literals were catalogued here while the classification
+// cache ruled the same text ui or internal; the catalogue followed this file.
+describe('checkSlotLiterals: verdict conflicts with the classification cache', () => {
+  const text = 'Remote Control is off for this account.';
+  const catalogue = {
+    prompts: [
+      { id: 'tool-result-fixture-off', pieces: [text], identifiers: [] },
+    ],
+  };
+  const key = keyVariants(text)[0].key;
+  const allow = {
+    aaaaaaaaaaaaaaaa: { verdict: 'catalogue', id: 'tool-result-fixture-off' },
+  };
+
+  it('reports a catalogued literal the cache rules ui', () => {
+    const c = verdictConflicts(allow, catalogue, { [key]: { facing: 'ui' } });
+    expect(c.map(x => [x.id, x.cacheFacing])).toEqual([
+      ['tool-result-fixture-off', 'ui'],
+    ]);
+  });
+
+  it('accepts agreement, a glue verdict, or no cache verdict', () => {
+    expect(
+      verdictConflicts(allow, catalogue, { [key]: { facing: 'model' } })
+    ).toEqual([]);
+    expect(
+      verdictConflicts(
+        {
+          aaaaaaaaaaaaaaaa: { verdict: 'glue', id: 'tool-result-fixture-off' },
+        },
+        catalogue,
+        { [key]: { facing: 'ui' } }
+      )
+    ).toEqual([]);
+    expect(verdictConflicts(allow, catalogue, {})).toEqual([]);
   });
 });

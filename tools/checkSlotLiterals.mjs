@@ -72,6 +72,7 @@ import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 
 import { walk, resolveIdentifier } from './lib/slotScope.mjs';
+import { keyVariants } from './probeCacheKey.mjs';
 
 const require = createRequire(import.meta.url);
 const parser = require('@babel/parser');
@@ -380,6 +381,41 @@ function loadAllowlist() {
   }
 }
 
+// A `catalogue` verdict here lands the literal no matter what the
+// classification cache says, and both stores are keyed on content, so a literal
+// ruled `ui` or `internal` in the cache while catalogued here is two
+// contradicting verdicts, one of them wrong. On CC 2.1.296 nine had drifted
+// apart, and the catalogue silently followed this file.
+export function verdictConflicts(allowlist, catalogue, cache) {
+  const bodies = new Map();
+  for (const p of catalogue.prompts || []) {
+    if (!p.id) continue;
+    const body = (p.pieces || []).filter(x => typeof x === 'string').join('');
+    if (!bodies.has(p.id)) bodies.set(p.id, []);
+    bodies.get(p.id).push(body);
+  }
+  const out = [];
+  for (const [hash, row] of Object.entries(allowlist)) {
+    if (row?.verdict !== 'catalogue' || !row.id) continue;
+    for (const body of bodies.get(row.id) || []) {
+      const facings = keyVariants(body)
+        .map(k => cache[k.key]?.facing)
+        .filter(Boolean);
+      const other = facings.find(x => x !== 'model');
+      if (other && !facings.includes('model'))
+        out.push({ hash, id: row.id, text: body, cacheFacing: other });
+    }
+  }
+  return out;
+}
+
+const CACHE = path.join(
+  path.dirname(fileURLToPath(import.meta.url)),
+  '..',
+  'data',
+  'prompt-classification.json'
+);
+
 function main() {
   const args = process.argv.slice(2);
   const update = args.includes('--update-allowlist');
@@ -396,10 +432,17 @@ function main() {
   const findings = findSlotLiterals(source, catalogue);
   const allowlist = loadAllowlist();
   const unreviewed = findings.filter(f => !allowlist[f.hash]);
+  const conflicts = verdictConflicts(
+    allowlist,
+    catalogue,
+    JSON.parse(
+      fs.readFileSync(process.env.TWEAKCC_CLASSIFICATION_CACHE || CACHE, 'utf8')
+    )
+  );
 
   if (args.includes('--json')) {
-    console.log(JSON.stringify({ findings, unreviewed }, null, 1));
-    process.exit(unreviewed.length ? 1 : 0);
+    console.log(JSON.stringify({ findings, unreviewed, conflicts }, null, 1));
+    process.exit(unreviewed.length || conflicts.length ? 1 : 0);
   }
 
   console.log(
@@ -409,8 +452,22 @@ function main() {
       (findings.length - unreviewed.length) +
       ' allowlisted, ' +
       unreviewed.length +
-      ' unreviewed'
+      ' unreviewed, ' +
+      conflicts.length +
+      ' catalogued against a ui/internal cache verdict'
   );
+  for (const f of conflicts)
+    console.log(
+      '\n  CONFLICT [' +
+        f.hash +
+        '] ' +
+        f.id +
+        ' catalogued here, cache says ' +
+        f.cacheFacing +
+        ': ' +
+        JSON.stringify(f.text) +
+        ' — rule it once and make both stores agree'
+    );
 
   for (const f of unreviewed) {
     console.log(
@@ -445,7 +502,7 @@ function main() {
     return;
   }
 
-  process.exit(unreviewed.length ? 1 : 0);
+  process.exit(unreviewed.length || conflicts.length ? 1 : 0);
 }
 
 if (

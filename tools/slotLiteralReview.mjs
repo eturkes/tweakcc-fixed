@@ -30,14 +30,14 @@ import { catalogueIndex, sha1 } from './lib/classifyVerdicts.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ALLOWLIST = path.join(HERE, '..', 'data', 'slot-literal-allowlist.json');
-const VERDICTS = new Set(['catalogue', 'glue', 'not-a-slot']);
+const VERDICTS = new Set(['catalogue', 'glue', 'not-a-slot', 'off-route']);
 const ID_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const EMPTY_ALLOWLIST = '{\n}\n';
 const readJson = f => JSON.parse(fs.readFileSync(f, 'utf8'));
 
 const BRIEF = (outDir, cliPath) => `# Slot-literal review brief
 
-You review literals that render INTO a catalogued Claude Code prompt through one of its \`\${…}\` substitutions. Each literal reaches the model as part of that prompt but has no catalogue id of its own, so no prompt override can reword it. Decide one verdict per literal.
+You review literals that render INTO a catalogued Claude Code prompt through one of its \`\${…}\` substitutions. Each literal has no catalogue id of its own, so no prompt override can reword it. It reaches the model only where that host does at this emission site: a catalogued host proves some site of it is model-facing, not this one. Decide one verdict per literal.
 
 Bundle (read-only, one line per module; read around offsets with node or dd, never print it whole):
 ${cliPath}
@@ -47,6 +47,7 @@ ${cliPath}
 - \`catalogue\`: the literal carries something the model acts on or must know: an instruction, a refusal or failure reason, a remedy, a rule, a state statement that changes what the model does next. A prompt author could plausibly want to reword it. It gets its own id.
 - \`glue\`: reaches the model but only labels or connects an interpolated value: a noun phrase naming a thing, a connective fragment, a quoting marker, a unit, a placeholder like "(unknown)". Nothing the model acts on beyond what the host prompt already says.
 - \`not-a-slot\`: a resolver artifact; the literal does not flow into that substitution. The checker resolves a bare identifier once against declarators in the enclosing functions; confirm at the emission site that the substitution's identifier is bound to the declarator holding this literal and that the branch choosing it can reach this template. If not, use this verdict and say where the literal really goes.
+- \`off-route\`: the literal does flow into the substitution, but at this site the host never reaches the model (its text is thrown and caught, logged, or rendered only in the terminal). Trace the host from this emission site to its sink before giving \`catalogue\`: the host prompt being catalogued proves only that SOME site of it reaches the model. Verdicts on text are content-keyed, so also check the classification cache for this literal's own text (data/prompt-classification.json): a \`catalogue\` here must agree with it, and the checker fails when a catalogued literal's cache verdict is \`ui\`/\`internal\`.
 
 Rules:
 1. Read the emission site before deciding. The packet gives the host prompt's pristine body and the source around the literal; read further in the bundle when the binding or the delivery is not settled by that.
@@ -63,7 +64,7 @@ Rules:
 
 Write a JSON array to your verdicts path, one row per hash in your hashes file, each exactly once:
 
-{"hash": "<16 hex>", "verdict": "catalogue|glue|not-a-slot", "reason": "…", "id": "…", "name": "…", "desc": "…"}
+{"hash": "<16 hex>", "verdict": "catalogue|glue|not-a-slot|off-route", "reason": "…", "id": "…", "name": "…", "desc": "…"}
 
 (\`id\`/\`name\`/\`desc\` only for \`catalogue\`.) Validate it before replying: \`node ${fileURLToPath(import.meta.url)} merge ${outDir} --check\` reports every problem across all packets; fix the ones in your file. Reply with the counts per verdict and the path.
 `;
@@ -293,7 +294,9 @@ export function checkVerdicts(
       if (seen.has(r.hash)) problems.push(`${where}: listed twice`);
       seen.add(r.hash);
       if (!VERDICTS.has(r.verdict))
-        problems.push(`${where}: verdict must be catalogue|glue|not-a-slot`);
+        problems.push(
+          `${where}: verdict must be catalogue|glue|not-a-slot|off-route`
+        );
       if (typeof r.reason !== 'string' || r.reason.trim().length < 20)
         problems.push(`${where}: reason must cite the evidence`);
       if (allowlist[r.hash])
