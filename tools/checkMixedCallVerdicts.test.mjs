@@ -380,6 +380,137 @@ describe('checkMixedCallVerdicts', () => {
     expect(scan(ruled('internal')).unearnedMixed).toEqual([]);
   });
 
+  // CC 2.1.296: an array or `+` chain argument was read only as its leaves, so
+  // a verdict on its joined text (`p("app_scroll only supports vertical " +
+  // "…")` ruled internal beside 200 model arms) never reached the gate.
+  describe('composite arguments', () => {
+    const CHAIN = ['Model facing ', 'chain argument text'];
+    const LINES = ['Array model line one', 'Array model line two'];
+    const chain = CHAIN.map(s => `"${s}"`).join('+');
+    const array = `[${LINES.map(s => `"${s}"`).join(',')}]`;
+    const composites = (extra = {}) =>
+      ruled('internal', {
+        [key(CHAIN.join(''))]: { facing: 'model' },
+        [key(LINES.join('\n'))]: { facing: 'model' },
+        ...extra,
+      });
+
+    it('counts a `+` chain or array written in the call as earned', () => {
+      const code = program(
+        `function a(x){if(x)return p(${chain});if(x>1)return p(${array});return p("${LOGGED}")}`
+      );
+      const r = scan(composites({ [key(MODEL)]: undefined }), [], code);
+      expect(r.mixed).toHaveLength(1);
+      expect(r.mixed[0].model).toEqual(
+        [
+          { key: key(CHAIN.join('')), body: CHAIN.join('') },
+          { key: key(LINES.join('\n')), body: LINES.join('\n') },
+        ].sort((x, y) => x.key.localeCompare(y.key))
+      );
+      expect(r.mixed[0].other).toEqual([
+        { key: key(LOGGED), facing: 'internal', body: LOGGED },
+      ]);
+    });
+
+    it('reads a joined array argument by its separator', () => {
+      const code = program(
+        `function a(x){if(x)return p(${array}.join(" "));return p("${LOGGED}")}`
+      );
+      const r = scan(
+        ruled('internal', { [key(LINES.join(' '))]: { facing: 'model' } }),
+        [],
+        code
+      );
+      expect(r.mixed[0].model).toEqual([
+        { key: key(LINES.join(' ')), body: LINES.join(' ') },
+      ]);
+    });
+
+    it('raises a ruling on the whole beside its own ruled parts', () => {
+      const code = program(
+        `function a(x){if(x)return p("${MODEL}");return p("${LOGGED}"+" tail line")}`
+      );
+      const r = scan(
+        ruled('model', { [key(`${LOGGED} tail line`)]: { facing: 'ui' } }),
+        [],
+        code
+      );
+      expect(r.mixed).toHaveLength(1);
+      expect(r.mixed[0].model.map(a => a.body).sort()).toEqual(
+        [LOGGED, MODEL].sort()
+      );
+      expect(r.mixed[0].other).toEqual([
+        {
+          key: key(`${LOGGED} tail line`),
+          facing: 'ui',
+          body: `${LOGGED} tail line`,
+        },
+      ]);
+    });
+
+    it('leaves a composite reached through a variable unearned', () => {
+      for (const value of [chain, array]) {
+        const code = program(
+          'function q(m){console.log(m)}',
+          `function a(x){let s=${value};q(s);if(x)return p(s);return p("${LOGGED}")}`,
+          `function b(){return p("${SECOND}")}`
+        );
+        const r = scan(composites(), [], code);
+        expect(r.mixed).toEqual([]);
+        expect(r.unearnedMixed).toEqual([]);
+      }
+    });
+
+    it('gives the parts of an unruled composite its route', () => {
+      const parts = `["${MODEL}","Unruled array partner line"]`;
+      const direct = program(
+        `function a(x){if(x)return p(${parts});return p("${LOGGED}")}`
+      );
+      const [m] = scan(ruled('internal'), [], direct).mixed;
+      expect(m.model).toEqual([{ key: key(MODEL), body: MODEL }]);
+      const bound = program(
+        'function q(m){console.log(m)}',
+        `function a(x){let s=${parts};q(s);if(x)return p(s);return p("${LOGGED}")}`
+      );
+      const r = scan(ruled('internal'), [], bound);
+      expect(r.mixed).toEqual([]);
+      expect(r.unearnedMixed).toEqual([]);
+    });
+
+    it('lists a composite whose joined text occurs elsewhere as advisory', () => {
+      const joined = CHAIN.join('');
+      const code = program(
+        `function a(x){if(x)return p(${chain});return p("${LOGGED}")}`,
+        `function b(){console.log("${joined}")}`
+      );
+      const r = scan(composites(), [], code);
+      expect(r.mixed).toEqual([]);
+      expect(r.unearnedMixed).toHaveLength(1);
+      expect(r.unearnedMixed[0].model).toEqual([
+        {
+          key: key(joined),
+          body: joined,
+          elsewhere: [code.indexOf(`"${joined}"`)],
+        },
+      ]);
+      // A joined array is one occurrence, though the call and its array are
+      // both composites of that text.
+      const twice = program(
+        `function a(x){if(x)return p(${array});return p("${LOGGED}")}`,
+        `function c(){console.log(${array}.join("\\n"))}`
+      );
+      const u = scan(composites(), [], twice).unearnedMixed;
+      expect(u).toHaveLength(1);
+      expect(u[0].model).toEqual([
+        {
+          key: key(LINES.join('\n')),
+          body: LINES.join('\n'),
+          elsewhere: [twice.lastIndexOf(array)],
+        },
+      ]);
+    });
+  });
+
   const gate = (...args) =>
     spawnSync(process.execPath, [GATE, cli, catalogueFile(), ...args], {
       encoding: 'utf8',

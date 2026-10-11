@@ -47139,7 +47139,12 @@
     "name": "Computer-use App Scroll Horizontal Unsupported Cont",
     "desc": "Final fragment of the app_scroll horizontal-dx refusal, pointing at display-scope scroll."
   },
-  "75bcb61c0fddb740b7e2db0d316257451549dd69": { "facing": "internal" },
+  "75bcb61c0fddb740b7e2db0d316257451549dd69": {
+    "facing": "model",
+    "id": "tool-result-computer-use-app-scroll-horizontal-unsupported",
+    "name": "Computer-Use App Scroll Horizontal Unsupported",
+    "desc": "app_scroll feature_unavailable tool_result rejecting a non-zero dx and pointing to display-scope scroll."
+  },
   "8e046ba42434444d6fb7c5d9afeb538cc1b2d07c": { "facing": "internal" },
   "ca79cb70b9fd5fbc80c4a5ac875f766d085789e0": {
     "facing": "model",
@@ -47159,7 +47164,12 @@
     "name": "Computer-use App Release Requires App Cont",
     "desc": "Second fragment of the app_release bad_args message explaining how to pass app versus window_id."
   },
-  "b281fc0e554bc1fb30ad1eefdf3b9a6b48ec1ebc": { "facing": "internal" },
+  "b281fc0e554bc1fb30ad1eefdf3b9a6b48ec1ebc": {
+    "facing": "model",
+    "id": "tool-result-computer-use-app-release-requires-app",
+    "name": "Computer-Use App Release Requires App",
+    "desc": "app_release bad_args tool_result when window_id is passed without app, explaining how to pass app versus window_id."
+  },
   "8100745f8eae873ee201d2e148be026e5c5ad9b2": {
     "facing": "model",
     "id": "tool-result-computer-use-app-release-user-takeover-note",
@@ -64350,12 +64360,7 @@
     "name": "Tool Parameter: Artifact if_version Every Returned Document",
     "desc": "Addon spelling of the if_version source clause: every document a get, list or query returns carries the version."
   },
-  "0e1a70c741ae5d1dd268c92b7addd641f3bd7a22": {
-    "facing": "model",
-    "id": "tool-parameter-artifact-if-version-version-source",
-    "name": "Tool Parameter: Artifact if_version Version Source",
-    "desc": "nr() spelling pair for where if_version comes from: every read_db document, or every document a get, list or query returns."
-  },
+  "0e1a70c741ae5d1dd268c92b7addd641f3bd7a22": { "facing": "internal" },
   "759c041863809ad27b283e133bb737f8d09c4413": {
     "facing": "model",
     "id": "tool-result-artifact-durable-wake-relay-unavailable",
@@ -75712,12 +75717,7 @@
     "name": "Tool Parameter: Artifact Publish Asset Flag",
     "desc": "Artifact tool asset-flag schema: with url, upload file_path or each of file_paths to the artifact asset store instead of publishing the page."
   },
-  "5dfaab8f8762afaa0520957838ede9a769f17f20": {
-    "facing": "model",
-    "id": "tool-parameter-artifact-from-url-open-wording",
-    "name": "Tool Parameter: Artifact from_url Open Wording",
-    "desc": "as() search/replace pair rewriting the from_url schema from \"one you can open\" to the cowork wording \"one the person can open\"."
-  },
+  "5dfaab8f8762afaa0520957838ede9a769f17f20": { "facing": "internal" },
   "388b11f18768d9fc37cc96216bfb4e1cf1068987": {
     "facing": "model",
     "id": "tool-result-artifact-design-skill-not-loaded",
@@ -99315,7 +99315,12 @@
   "3239dfc262c18c43831e0e061c733b0d154a1169": { "facing": "internal" },
   "c7efb2caf23201f4e3aca097dedd63dbc278ba78": { "facing": "ui" },
   "adf5b67fe5c67c1fcfb65128b57d863f16e512c1": { "facing": "internal" },
-  "5142774ca6faeb20d586aae45ccbd5c184f5e61d": { "facing": "ui" },
+  "5142774ca6faeb20d586aae45ccbd5c184f5e61d": {
+    "facing": "model",
+    "id": "slash-command-plugin-marketplace-catalog-redirect-refused-with-policy",
+    "name": "/plugin marketplace: catalog redirect refused with policy",
+    "desc": "Marketplace-catalog fetch refusal when the server redirects to a disallowed URL, with the cross-origin redirect rules (https, no loopback/link-local/metadata hosts)."
+  },
   "3b255a065730af835a090735b87f151460429ecd": {
     "facing": "model",
     "id": "tool-result-image-resize-processing-unavailable",
