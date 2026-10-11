@@ -39,8 +39,12 @@ const env = () => {
     SHOWTIME_TWEAKCC_DIR: path.join(T, 'tc'),
     SHOWTIME_RUNLOG: path.join(T, 'run.log'),
   };
-  delete e.SHOWTIME_VERBOSE;
+  for (const k of ['SHOWTIME_VERBOSE', 'SHOWTIME_MODE', 'SHOWTIME_MODEL', 'SHOWTIME_EFFORT', 'SHOWTIME_VERIFY_EFFORT', 'SHOWTIME_VERSION']) delete e[k];
   return e;
+};
+const driverEnv = (extra, ...a) => {
+  const r = spawnSync('node', [DRIVER, ...a], { encoding: 'utf8', env: { ...env(), ...extra } });
+  return { code: r.status, out: (r.stdout || '').replace(ANSI, ''), err: r.stderr || '', lines: (r.stdout || '').trim().split('\n') };
 };
 const driver = (...a) => {
   const r = spawnSync('node', [DRIVER, ...a], { encoding: 'utf8', env: env() });
@@ -240,7 +244,7 @@ describe.skipIf(!hasDriver)('driver classify-args / audit-args read the builders
   afterAll(() => fs.rmSync(T, { recursive: true, force: true }));
 
   it('classify-args prints the path-only args with part counts and refuses the old flow', () => {
-    const flags = ['--model', 'sonnet', '--verify-model', 'opus', '--classify-effort', 'high', '--verify-effort', 'medium'];
+    const flags = ['--model', 'sonnet', '--effort', 'high'];
     write('tmp/classify-evidence-9.9.8/classify-evidence-00.json', {});
     const old = driver('classify-args', '9.9.8', ...flags);
     expect(old.code).toBe(1);
@@ -266,12 +270,15 @@ describe.skipIf(!hasDriver)('driver classify-args / audit-args read the builders
     expect(r.code).toBe(0);
     expect(r.lines).toHaveLength(1);
     expect(JSON.parse(r.lines[0])).toMatchObject({
-      version: '9.9.9', evidenceDir: dir, chunkCount: 2, mdParts: [1, 2], model: 'sonnet', verifyModel: 'opus', classifyEffort: 'high', verifyEffort: 'medium', repoDir: REPO,
+      version: '9.9.9', evidenceDir: dir, chunkCount: 2, mdParts: [1, 2], model: 'sonnet', effort: 'high', repoDir: REPO,
     });
-    expect(Object.keys(JSON.parse(r.lines[0]))).toEqual(expect.arrayContaining(['version', 'evidenceDir', 'chunkCount', 'mdParts', 'model', 'verifyModel', 'classifyEffort', 'verifyEffort', 'repoDir']));
-    const noDefaults = driver('classify-args', '9.9.9', '--model', 'sonnet');
-    expect(noDefaults.code).toBe(1);
-    expect(noDefaults.out).toContain('missing --verify-model, --classify-effort, --verify-effort');
+    expect(Object.keys(JSON.parse(r.lines[0]))).not.toEqual(expect.arrayContaining(['verifyModel']));
+    const noEffort = driver('classify-args', '9.9.9', '--model', 'sonnet');
+    expect(noEffort.code).toBe(1);
+    expect(noEffort.out).toContain('missing --effort');
+    // `driver env` exports the showtime.json defaults; flags still win.
+    const viaEnv = driverEnv({ SHOWTIME_MODEL: 'opus', SHOWTIME_EFFORT: 'medium' }, 'classify-args', '9.9.9', '--effort', 'low');
+    expect(JSON.parse(viaEnv.lines[0])).toMatchObject({ model: 'opus', effort: 'low' });
   });
 
   it('audit-args reproduces the builder line and fails when the active set moved', () => {
