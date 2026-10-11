@@ -4566,5 +4566,53 @@
     "facing": "ui",
     "hash": "61094fbdf70c60e10f8ce98bdc765aa5bd5bf70b",
     "why": "Read the 2.1.296 emission path: the text is the Artifact tool's getToolUseSummary, whose three consumers are human-facing (agent-progress row, remote permission request, push notification); the narration side-query reads getActivityDescription, which the Artifact tool does not define, so no model route exists."
+  },
+  "system-reminder-cold-resume-new-conversation-no-pointer": {
+    "verdict": "archived",
+    "facing": "ui",
+    "hash": "c34702f3a9c997b243ac4c3a559eb03195e2ddf1",
+    "why": "Ruled ui on 2.1.296: built as an informational system message, which message normalization drops before the API call (only local_command system messages are sent), so it renders in the transcript only."
+  },
+  "system-reminder-cold-resume-new-conversation-with-pointer": {
+    "verdict": "archived",
+    "facing": "ui",
+    "hash": "4875133ffa1dd82402015b7ef31bf45d7125613c",
+    "why": "Ruled ui on 2.1.296: built as an informational system message, which message normalization drops before the API call (only local_command system messages are sent), so it renders in the transcript only."
+  },
+  "tool-result-send-message-endpoint-unverifiable": {
+    "verdict": "archived",
+    "facing": "internal",
+    "hash": "fb6d585a442b341a3abaf3fff4fa1852061efdfa",
+    "why": "Ruled internal on 2.1.296: thrown only in the UDS client's connect handler when expectPeerPid is set; SendMessage and SendFile never pass it, and every caller that does (rename notice, notify_when_idle subscribe, artifact takeover, reply-yield, idle notice, hold receipt) logs or classifies the error for telemetry."
+  },
+  "tool-result-send-message-wrong-endpoint": {
+    "verdict": "archived",
+    "facing": "internal",
+    "hash": "629a1bd75316c33d2fedec13d21ebbb57ca8988c",
+    "why": "Ruled internal on 2.1.296: thrown only in the UDS client's connect handler when expectPeerPid is set; SendMessage and SendFile never pass it, and every caller that does (rename notice, notify_when_idle subscribe, artifact takeover, reply-yield, idle notice, hold receipt) logs or classifies the error for telemetry."
+  },
+  "slash-command-plugin-marketplace-refresh-claude-code-plugins-deprecated": {
+    "verdict": "archived",
+    "facing": "ui",
+    "hash": "7c33749ad5e925e5bf66ca963ab71060e1c10c54",
+    "why": "Ruled ui on 2.1.296: one line of the manifest-missing error thrown while refreshing a marketplace; only the `claude plugin marketplace update` CLI prints the whole error, the in-session marketplace views and autoupdate log it, and the install and update paths keep only the first line."
+  },
+  "slash-command-plugin-marketplace-refresh-may-have-moved": {
+    "verdict": "archived",
+    "facing": "ui",
+    "hash": "e667847e75a18ebe0eccad9447d80b68e75a936a",
+    "why": "Ruled ui on 2.1.296: one line of the manifest-missing error thrown while refreshing a marketplace; only the `claude plugin marketplace update` CLI prints the whole error, the in-session marketplace views and autoupdate log it, and the install and update paths keep only the first line."
+  },
+  "system-prompt-slash-command-unavailable-in-session-2": {
+    "verdict": "archived",
+    "facing": "ui",
+    "hash": "55e7810ed8e1a6874d56260cbef51616a717efd0",
+    "why": "Ruled ui on 2.1.296: the `${cross} The ${…} isn't available in this session.` variant is printed only by the `claude plugin marketplace add` CLI, which writes it to stderr and exits; the in-session refusal stays catalogued as system-prompt-slash-command-unavailable-in-session."
+  },
+  "system-prompt-stop-hook-feedback-framing": {
+    "verdict": "archived",
+    "facing": "ui",
+    "hash": "0ec01ad510eeb9901ee23c7da377d421fcb37db9",
+    "why": "Ruled ui on 2.1.296: the model-facing `Stop hook feedback:` + newline framing this pin was written for is gone; the surviving `Stop hook feedback: ${…}` is built only by the transcript row renderer, and the pin's loose match had been catalogueing that UI text."
   }
 }

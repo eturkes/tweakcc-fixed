@@ -1986,21 +1986,15 @@
     "promptId": "slash-command-plugin-marketplace-refresh-manifest-missing-in-repository",
     "label": "SLASH_COMMAND_PLUGIN_MARKETPLACE_REFRESH_MANIFEST_MISSING_IN_REPOSITORY_VAR_0",
     "text": "We've deprecated \"claude-code-plugins\" in favor of \"claude-plugins-official\".",
-    "verdict": "catalogue",
-    "id": "slash-command-plugin-marketplace-refresh-claude-code-plugins-deprecated",
-    "name": "Slash Command: /plugin marketplace refresh — claude-code-plugins deprecated",
-    "desc": "Line in the marketplace-manifest-missing refresh error for the old \"claude-code-plugins\" marketplace, saying it is deprecated in favor of \"claude-plugins-official\".",
-    "reason": "names the replacement marketplace the model should move to (ke branch in the refresh catch @11643126)"
+    "verdict": "off-route",
+    "reason": "names the replacement marketplace the model should move to (ke branch in the refresh catch @11643126) Ruled ui on 2.1.296 adjudication: Only occurrence: ke in r$r's manifest-missing catch @12426947 (chunk-sfn1dbxq), on line 3 of the thrown Error (\"The marketplace.json file is no longer present…\\n\\n${ke}\\n…\"). r$r is reached only through Az @12422755. Callers: the `claude plugin marketplace update` CLI @39647068 prints the full error via we(v,…) (ui); the /plugin Marketplaces tab @40376813 only logs l(Nt) and pushes the name (internal); autoupdate @19105070 and refresh-on-miss @30397516 only log; the install/update paths @18969959 and @19073285 surface NH(l(me)), and NH @224489 = uy(Ar(t)) with Ar=Qe(t,\"\\n\"), so only the first line is kept and this line never reaches them. No model sink, so ui."
   },
   "00aa4ed16bd20a72": {
     "promptId": "slash-command-plugin-marketplace-refresh-manifest-missing-in-repository",
     "label": "SLASH_COMMAND_PLUGIN_MARKETPLACE_REFRESH_MANIFEST_MISSING_IN_REPOSITORY_VAR_0",
     "text": "This marketplace may have been deprecated or moved to a new location.",
-    "verdict": "catalogue",
-    "id": "slash-command-plugin-marketplace-refresh-may-have-moved",
-    "name": "Slash Command: /plugin marketplace refresh — marketplace may have moved",
-    "desc": "Line in the marketplace-manifest-missing refresh error for any other marketplace, saying it may have been deprecated or moved to a new location.",
-    "reason": "states the likely cause the model reports and acts on (ke else-branch @11643205)"
+    "verdict": "off-route",
+    "reason": "states the likely cause the model reports and acts on (ke else-branch @11643205) Ruled ui on 2.1.296 adjudication: Sibling else-arm of the same ke @12426947 in r$r's manifest-missing throw. Same routes: printed in full only by the `claude plugin marketplace update` CLI (we(v,…) @39647068, ui); logged by /plugin @40376813, autoupdate @19105070 and refresh-on-miss @30397516; the install/update paths @18969959 and @19073285 keep only the first line through NH/Ar (@224489, Qe(t,\"\\n\")), which drops this line. No model sink, so ui."
   },
   "4d43c7cf56a78e64": {
     "promptId": "tool-result-artifact-db-bytes-per-database-limit-reached",
@@ -3065,32 +3059,23 @@
   "09b7c36aac5a52d0": {
     "promptId": "slash-command-plugin-install-already-installed",
     "label": "SLASH_COMMAND_PLUGIN_INSTALL_ALREADY_INSTALLED_VAR_0",
-    "verdict": "catalogue",
-    "id": "slash-command-plugin-install-already-installed-listed-same-repository-as-this",
-    "name": "Slash Command: /plugin install — other installed plugins are listed at the same repository",
-    "desc": "States that plugins installed from other marketplaces are listed at the same repository and folder as this one, that it may load more than once, and to uninstall the others to keep one.",
+    "verdict": "off-route",
     "text": " listed there at the same repository and folder as this one. ",
-    "reason": "Quasi at 18991206 of the Ae-branch template inside the non-Se Ke template (`${...}${I(...)} installed here from ${me(Ae)} ${I(...)} listed there at the same repository and folder as this one. ${...}: to keep only one, uninstall the ${nn}`), reaching ${Ke}. It states the duplicate-load risk and the remedy."
+    "reason": "Quasi at 18991206 of the Ae-branch template inside the non-Se Ke template (`${...}${I(...)} installed here from ${me(Ae)} ${I(...)} listed there at the same repository and folder as this one. ${...}: to keep only one, uninstall the ${nn}`), reaching ${Ke}. It states the duplicate-load risk and the remedy. Ruled ui on 2.1.296 adjudication: Only site 18991206, the Ae branch of Ke in KYe, reachable only when Se is false, i.e. the plugin's own marketplace is the official or a reserved one. The only model route is Ck at 40513079 (/plugin npm-install), and it always installs C=name@npm, where Se is true and the Se template at 18990679 is used instead. The Ae branch is therefore reached only through the CLI `claude plugin install` v0o at 28489781/39651218, which prints to the terminal (ui). The cache verdict stands."
   },
   "7dc2a5813edc034a": {
     "promptId": "slash-command-plugin-install-already-installed",
     "label": "SLASH_COMMAND_PLUGIN_INSTALL_ALREADY_INSTALLED_VAR_0",
-    "verdict": "catalogue",
-    "id": "slash-command-plugin-install-already-installed-same-plugin-loads-twice",
-    "name": "Slash Command: /plugin install — the same plugin loads twice or more",
-    "desc": "States that if the duplicate listings are the same plugin, it loads twice or more than once.",
+    "verdict": "off-route",
     "text": "If they are the same plugin, it loads ",
-    "reason": "Leading quasi of the nested `If they are the same plugin, it loads ${...}` template at 18991284 (Re.length===0 branch) inside the Ae-branch template, reaching ${Ke}. It states the consequence of the duplicate."
+    "reason": "Leading quasi of the nested `If they are the same plugin, it loads ${...}` template at 18991284 (Re.length===0 branch) inside the Ae-branch template, reaching ${Ke}. It states the consequence of the duplicate. Ruled ui on 2.1.296 adjudication: Standalone template node at 18991284, inside the Ae branch of Ke (Re.length===0). Same routing as 09b7c36aac5a52d0: it is reached only for official or reserved marketplaces, i.e. only from the CLI v0o at 28489781 (ui), never from the npm-only /plugin path at 40513079. The identical sentence at 18990790 is part of the larger Se template (884acb484a375160, model), not this node. The cache verdict stands."
   },
   "ed288c28d2ee8759": {
     "promptId": "slash-command-plugin-install-already-installed",
     "label": "SLASH_COMMAND_PLUGIN_INSTALL_ALREADY_INSTALLED_VAR_0",
-    "verdict": "catalogue",
-    "id": "slash-command-plugin-install-already-installed-same-plugin-too-loads-n-times",
-    "name": "Slash Command: /plugin install — if those are the same plugin too it loads N times",
-    "desc": "States that if the same-repository plugins are also the same plugin, it loads the given number of times.",
+    "verdict": "off-route",
     "text": " the same plugin too, it loads ",
-    "reason": "Quasi of the nested `If ${I(...)} the same plugin too, it loads ${se.length+1} times` template at 18991410 (Re.length>0 branch) inside the Ae-branch template, reaching ${Ke}. It states the consequence of the duplicate."
+    "reason": "Quasi of the nested `If ${I(...)} the same plugin too, it loads ${se.length+1} times` template at 18991410 (Re.length>0 branch) inside the Ae-branch template, reaching ${Ke}. It states the consequence of the duplicate. Ruled ui on 2.1.296 adjudication: Only site 18991410, the Re.length>0 arm inside the Ae branch of Ke. It is reached only when Se is false (official or reserved marketplace), so only from the CLI v0o at 28489781 (ui), never from the npm-only /plugin install path at 40513079. The cache verdict stands."
   },
   "e1ef69a5e5e9589a": {
     "promptId": "slash-command-terminal-setup-settings-update-warning-output",
@@ -3250,12 +3235,9 @@
   "b8d5449a11489939": {
     "promptId": "slash-command-ultrareview-launched",
     "label": "SLASH_COMMAND_ULTRAREVIEW_LAUNCHED_VAR_8",
-    "verdict": "catalogue",
-    "id": "slash-command-ultrareview-note-not-base-branch-no-task",
-    "name": "Slash Command: Ultrareview — argument read as a note, standard review runs on the diff",
-    "desc": "Tells the reader that their text was taken as a review note rather than a base branch, and that the standard review runs on the diff shown.",
+    "verdict": "off-route",
     "text": "\nYour text was read as a note, not a base branch — the standard review runs on the diff above.",
-    "reason": "The skipTaskRegistration arm of `ae` (22556755), which the same return interpolates as `${oe}${ae}` in the launched text block. It states that the argument was treated as a note, not a base branch. The other arm is already catalogued as slash-command-ultrareview-note-not-base-branch."
+    "reason": "The skipTaskRegistration arm of `ae` (22556755), which the same return interpolates as `${oe}${ae}` in the launched text block. It states that the argument was treated as a note, not a base branch. The other arm is already catalogued as slash-command-ultrareview-note-not-base-branch. Ruled ui on 2.1.296 adjudication: Only literal: the skipTaskRegistration arm of ae in $Xn @22556756. The only caller that sets skipTaskRegistration:true is the `claude ultrareview` CLI @26408118 (Q2e passes it through @22561343). There the launched message is printed to the terminal via w(e.message) @26408400. In-session /ultrareview and /code-review never pass the flag (it is undefined), so they take the other arm. No model sink, so ui."
   },
   "5dc3cbe4b83541b7": {
     "promptId": "tool-result-artifact-read-runtime-capabilities-declaration-block",
@@ -4006,12 +3988,9 @@
   "7ead8956f57a91b0": {
     "promptId": "slash-command-plugin-marketplace-error-result",
     "label": "SLASH_COMMAND_PLUGIN_MARKETPLACE_ERROR_RESULT_VAR_0",
-    "verdict": "catalogue",
-    "id": "slash-command-remote-control-disabled-by-org-policy",
-    "name": "Slash Command: Remote Control — disabled by your organization's policy",
-    "desc": "States that Remote Control cannot start because the organization's policy disables it.",
+    "verdict": "off-route",
     "text": "Remote Control is disabled by your organization's policy.",
-    "reason": "At 18887561 `c=u(\"allow_remote_control\",\"Remote Control\",\"is\",<literal>)` where u is policyDeniedReason (nf at 4016605), which hands the fourth argument back through d0t when the org has denied the policy. `n(`Error: ${c}`)` then emits it in the same function. It is the refusal reason for Remote Control."
+    "reason": "At 18887561 `c=u(\"allow_remote_control\",\"Remote Control\",\"is\",<literal>)` where u is policyDeniedReason (nf at 4016605), which hands the fourth argument back through d0t when the org has denied the policy. `n(`Error: ${c}`)` then emits it in the same function. It is the refusal reason for Remote Control. Ruled ui on 2.1.296 adjudication: Exact literal at @18887562: the 4th arg to policyDeniedReason in the `claude remote-control` CLI entry, which ends in exitWithError n(`Error: ${c}`) to stderr (ui; the promptId slash-command-plugin-marketplace-error-result is a mis-attribution to a generic Error: host). Also @25560029: the $r() default message for the headless bridge (runBridgeHeadless). The daemon @14904843 catches it and logs d(e.message) (internal/ui). The longer \"…Contact your organization admin for access.\" @6927539 is a different literal. No model sink, so ui."
   },
   "91a3152a561ca710": {
     "promptId": "slash-command-plugin-marketplace-error-result",
@@ -4109,5 +4088,99 @@
     "desc": "States that the cloud session could not be opened, used when no more specific error is available.",
     "text": "Unable to open the cloud session",
     "reason": "In si's open_failed case at 36107148, `h=OEe(n??\"\")||<literal>` and `h.startsWith(\"Error: \")?h:`Error: ${h}`` are in the same block. It is the fallback failure reason when the headless cloud session cannot be opened and no other message exists."
+  },
+  "8963372a7a6fa802": {
+    "promptId": "slash-command-plugin-validate-hooks-module-import-no-such-file",
+    "label": "SLASH_COMMAND_PLUGIN_VALIDATE_HOOKS_MODULE_IMPORT_NO_SUCH_FILE_VAR_0",
+    "verdict": "off-route",
+    "text": ": cannot import \"",
+    "reason": "Quasi of the template bound to `p` in Xws at 3615403 (`${t}: cannot import \"${e}\" (from …):`), which is the leading `${p}` of the host `${p} no such file under ${r}` at 3616055 (and of the outside-folder and rethrow errors). It states the failed operation — the hooks module cannot import this specifier — which the host body otherwise lacks. Ruled internal on 2.1.296 adjudication: The slot host is misattributed: Xws at 3615403 builds a different template (`${t}: cannot import \"${e}\" (from …):` + filesystem tails). This body exists only at 3681982: Ok(e) rejects every import for a hooks module whose source is in memory (Fe.source in oUn at 3682081). Fe.register is fed only at 3684998 (hb), by the shipped source of built-in plugins, so the text fires only if a shipped built-in module imports a file, a build invariant (dev-only). Even then mWt's failure is caught in a_e at 10973151 and logged (t level error, telemetry, zz/r8), never sent to the model. The cache verdict stands."
+  },
+  "274a86f0083cfda9": {
+    "promptId": "tool-result-artifact-db-data-not-json-serializable",
+    "label": "TOOL_RESULT_ARTIFACT_DB_DATA_NOT_JSON_SERIALIZABLE_VAR_1",
+    "verdict": "glue",
+    "text": "the file's object",
+    "reason": "In Fn at 32677501, `s=n?\"the file's object\":\"data\"` and both host templates (`${r}${s} must be a JSON-serializable…` and `${r}${s} serializes to…`) interpolate that `s`. It is only the noun phrase naming the subject (file_path payload vs data); the rule is in the host prompt."
+  },
+  "617d5e9025271340": {
+    "promptId": "tool-result-project-doc-or-file-not-found",
+    "label": "TOOL_RESULT_PROJECT_DOC_OR_FILE_NOT_FOUND_VAR_2",
+    "verdict": "catalogue",
+    "id": "tool-result-project-doc-or-file-not-found-project-empty",
+    "name": "Tool Result: Project doc or file not found — the project has no docs or files",
+    "desc": "Tells the model the project holds no docs or files at all, so no other path is available to read.",
+    "text": " The project has no docs or files.",
+    "reason": "In ze at 33925238, `s` is the else branch of `r.length>0?` Available: …`:\" The project has no docs or files.\"` and is interpolated as `${s}` in `No doc or file at \"${e2(n)}\".${s}`. It tells the model the project is empty, so there is no other path to retry."
+  },
+  "14c98a9c6bd28a19": {
+    "promptId": "tool-result-project-memory-file-not-found",
+    "label": "TOOL_RESULT_PROJECT_MEMORY_FILE_NOT_FOUND_VAR_2",
+    "verdict": "catalogue",
+    "id": "tool-result-project-memory-file-not-found-no-memory-files",
+    "name": "Tool Result: Project memory file not found — the project has no memory files",
+    "desc": "Tells the model the project holds no memory files at all, so no other memory path is available.",
+    "text": " The project has no memory files.",
+    "reason": "In Dt at 33925476, `s` is the else branch of `r.length>0?` Available: …`:\" The project has no memory files.\"` and is interpolated as `${s}` in `No memory file at \"${e2(n)}\".${s}`. It tells the model the project has no memory files, so there is nothing else to read."
+  },
+  "675a9f19f6cdf722": {
+    "promptId": "slash-command-import-mcp-add-write-not-saved",
+    "label": "SLASH_COMMAND_IMPORT_MCP_ADD_WRITE_NOT_SAVED_VAR_1",
+    "verdict": "catalogue",
+    "id": "slash-command-import-mcp-add-write-not-saved-to-file",
+    "name": "Slash Command: /import MCP add — server was not saved to the config file",
+    "desc": "Tells the model that the MCP server it added was not written to the named config file.",
+    "text": "was not saved to ",
+    "reason": "In Y9t (offset ~10748360) `let h=r===\"add\"?`was not saved to ${n}`:…` binds h, which the error template interpolates as `MCP server \"${e}\" ${h}…`; this add-branch template is its own node and states the failure (the server config was not written to the named file) that the remedy sentence acts on."
+  },
+  "d3c2d9ab10fcc6e1": {
+    "promptId": "slash-command-import-mcp-add-write-not-saved",
+    "label": "SLASH_COMMAND_IMPORT_MCP_ADD_WRITE_NOT_SAVED_VAR_1",
+    "verdict": "catalogue",
+    "id": "slash-command-import-mcp-remove-write-not-removed-from-file",
+    "name": "Slash Command: /import MCP remove — server was not removed from the config file",
+    "desc": "Tells the model that the MCP server it removed is still in the named config file because the write did not happen.",
+    "text": "was not removed from ",
+    "reason": "In Y9t the remove branch `r===\"add\"?…:`was not removed from ${n}`` binds h, interpolated directly as `${h}` in the `MCP server \"${e}\" ${h}…` error template; it is a separate template node stating the failure that the server was not removed from the named file."
+  },
+  "4098f3455faeb80b": {
+    "promptId": "slash-command-import-mcp-add-write-not-saved",
+    "label": "SLASH_COMMAND_IMPORT_MCP_ADD_WRITE_NOT_SAVED_VAR_4",
+    "verdict": "catalogue",
+    "id": "slash-command-import-mcp-add-write-not-saved-retry-add",
+    "name": "Slash Command: /import MCP add — add the server again after fixing the file",
+    "desc": "Tells the model to add the MCP server again once the config file is writable.",
+    "text": "add the server again",
+    "reason": "In Y9t `y=r===\"add\"?\"add the server again\":…` binds y, which ends the error template as `…outside the sandbox, then ${y}.`; it is the remedy step the model is told to take after fixing file permissions."
+  },
+  "2694a2637459d841": {
+    "promptId": "slash-command-import-mcp-add-write-not-saved",
+    "label": "SLASH_COMMAND_IMPORT_MCP_ADD_WRITE_NOT_SAVED_VAR_4",
+    "verdict": "catalogue",
+    "id": "slash-command-import-mcp-remove-write-not-saved-retry-remove",
+    "name": "Slash Command: /import MCP remove — remove the server again after fixing the file",
+    "desc": "Tells the model to remove the MCP server again once the config file is writable.",
+    "text": "remove the server again",
+    "reason": "In Y9t the remove branch of `y=r===\"add\"?…:\"remove the server again\"` binds y, interpolated as the final `then ${y}.` remedy in the not-saved error template; it instructs the model to retry the removal."
+  },
+  "2d2aa4509ab64146": {
+    "promptId": "slash-command-import-mcp-add-write-unconfirmed",
+    "label": "SLASH_COMMAND_IMPORT_MCP_ADD_WRITE_UNCONFIRMED_VAR_8",
+    "verdict": "catalogue",
+    "id": "slash-command-import-mcp-add-write-unconfirmed-readd-if-missing",
+    "name": "Slash Command: /import MCP add — add the server again if it is missing",
+    "desc": "Tells the model to add the MCP server again if the check shows it was not saved.",
+    "text": "add the server again if it is missing",
+    "reason": "In Q9t (offset ~10748760) `b=r===\"add\"?\"add the server again if it is missing\":…` binds b, which ends the unconfirmed-write error template as `${Ta(M)}, then ${b}.`; it is the conditional remedy the model acts on after checking the server list."
+  },
+  "23bcb02bffeb6a2e": {
+    "promptId": "slash-command-import-mcp-add-write-unconfirmed",
+    "label": "SLASH_COMMAND_IMPORT_MCP_ADD_WRITE_UNCONFIRMED_VAR_8",
+    "verdict": "catalogue",
+    "id": "slash-command-import-mcp-remove-write-unconfirmed-remove-if-listed",
+    "name": "Slash Command: /import MCP remove — remove the server again if it is still listed",
+    "desc": "Tells the model to remove the MCP server again if the check shows it is still configured.",
+    "text": "remove the server again if it is still listed",
+    "reason": "In Q9t the remove branch of `b=r===\"add\"?…:\"remove the server again if it is still listed\"` binds b, interpolated as the final `then ${b}.` in the unconfirmed-write error template; it is the conditional remedy instruction for a removal."
   }
 }

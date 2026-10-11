@@ -562,5 +562,33 @@
     "text": "The file is past the size cap and was not read",
     "verdict": "catalogue",
     "why": "a(b) call-site argument in the plugin validator ft(): G(n,\"mcp\",`${b} — MCP server files are read without following symlinks and are capped at …`) (slash-command-plugin-mcp-server-files-are-read-without). Its sibling reason \"The file is not a regular file … and was not read\" is catalogued as slash-command-plugin-validate-mcp-file-not-regular-file; this one is named by the 2.1.296 classify pass, which raised it as a call-group candidate."
+  },
+  "05fea074bb325250": {
+    "builder": "g",
+    "param": "n",
+    "text": "output no longer measurable (${})",
+    "verdict": "off-route",
+    "why": "g(path, reason) from $Tt: the shell poller's Nst() catch replaces it with the catalogued 'Command killed: its output file was replaced or could no longer be verified', and the other callers drop it, so this reason never reaches the model."
+  },
+  "a99fdc1e65e33805": {
+    "builder": "g",
+    "param": "n",
+    "text": "lstat refused a swapped path (${})",
+    "verdict": "off-route",
+    "why": "g(path, reason) in jMn. Every caller of lKe logs or drops the throw (GPn, GetTask, statusOf) and the Bash tool's Kor/IYt wrap it in try/catch, so the task-output-swap-refused text built from this reason never reaches the model."
+  },
+  "e0a840baf843527d": {
+    "builder": "g",
+    "param": "n",
+    "text": "open refused a swapped path (${})",
+    "verdict": "off-route",
+    "why": "g(path, reason) in jMn. Every caller of lKe logs or drops the throw (GPn, GetTask, statusOf) and the Bash tool's Kor/IYt wrap it in try/catch, so the task-output-swap-refused text built from this reason never reaches the model."
+  },
+  "63e9bed38f0c5038": {
+    "builder": "g",
+    "param": "n",
+    "text": "file changed between lstat and open",
+    "verdict": "off-route",
+    "why": "g(path, reason) in jMn. Every caller of lKe logs or drops the throw (GPn, GetTask, statusOf) and the Bash tool's Kor/IYt wrap it in try/catch, so the task-output-swap-refused text built from this reason never reaches the model."
   }
 }
