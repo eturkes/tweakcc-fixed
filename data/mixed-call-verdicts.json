@@ -267,6 +267,97 @@
       }
     ]
   },
+  "4311d049f36b5201": {
+    "at": 32778342,
+    "model": {
+      "031172f40b5ec3640210557d8e413ed1a10336e3": "read only:",
+      "26b2a91412034b4b02339f5bd2b78232b908c884": "Required for action",
+      "40811a4e778d3c55f01ef5f9720b475215a0e766": "publish with `asset: true`, in place of `file_path`:",
+      "55057976b7d8a2b9c4dfbadf7c4c9bdf14e5d1df": "Options for action",
+      "678237e80cc1e051640bc147a877cd5c2d0c0284": "one the person can open",
+      "79bf3ec913f3bbefd1c36f7900578d3ef36f9fb4": "publish with `asset: true` and `from_url` only:",
+      "830b463fa629e92d622143ade6a86720b396fc97": "Required for every action except 'batch' and 'profiles'.",
+      "aa8e982d78eee97d63756e5471137a3c353fedaf": "separate calls",
+      "b74273a257345825eefda19918b8dc303f0560b9": "publish with `asset: true` only:",
+      "babfabf9ac24fd25e37ad43dd4aec3c1f0d66617": "read: read just",
+      "c4f43355b10a9f9e9e0aa600c88df2762378067e": "action 'batch' only:",
+      "c7bccd90fcd36a06349c0837deced79221251c8d": "every document a get, list or query returns",
+      "decc88b95ad78767b74ae751c6ea6691ba911794": "action 'str_replace' only:",
+      "e72bd80dce09c5bc5999bfcca2a09fc2ca2f0e7f": "(from a `scope: \"assets\"` listing of it, or an upload resul…"
+    },
+    "position": 1,
+    "reviews": [
+      {
+        "arms": {
+          "3acc8f6178aa41e3537654de859397741ce6d70e": {
+            "facing": "internal",
+            "preview": "separate write_db calls"
+          },
+          "3d1aa983bc953d6e666bed7f130c7c558ef69797": {
+            "facing": "internal",
+            "preview": "read_db and write_db only: act"
+          },
+          "59646077279bb96b829f28e6f28eb4eeee612797": {
+            "facing": "internal",
+            "preview": "Required for read_db and write_db."
+          },
+          "5f889b7b331882f71623ea310a1083a308207547": {
+            "facing": "internal",
+            "preview": "one you can open"
+          },
+          "71e4799038add911d1509377b22ab46e96c54b32": {
+            "facing": "internal",
+            "preview": "every read_db document"
+          },
+          "7f2b8b4239aa5c200d237aaa5841284a4cdc3032": {
+            "facing": "internal",
+            "preview": "write_db with db_op 'batch' only:"
+          },
+          "95b80c4000fcc0b5e94d4fe76417d9485fc16a46": {
+            "facing": "internal",
+            "preview": "Options for db_op"
+          },
+          "a370f758a4a5958696faaff754242b81c219f2ad": {
+            "facing": "internal",
+            "preview": "copy_from only:"
+          },
+          "b4b6d360749771406d1f1e86b1d7cc93704d4693": {
+            "facing": "internal",
+            "preview": "Required for db_op"
+          },
+          "c8eb54c02bf208cd57b78d0b54fbd5b752a21ea4": {
+            "facing": "internal",
+            "preview": "comments only:"
+          },
+          "d77d465dcc203bc12a0f0229103e3d3001e06a9b": {
+            "facing": "internal",
+            "preview": "upload_asset:"
+          },
+          "d99780c240b675e9b2997e6cda698fe033874179": {
+            "facing": "internal",
+            "preview": "write_db with db_op 'set', 'update', 'str_replace' or 'dele…"
+          },
+          "e27f1a5acebf5a2f44592cf8fee9dc525dc0d8d6": {
+            "facing": "internal",
+            "preview": "(its list_assets or upload_asset results)"
+          },
+          "e9ce02722278a7ef7541c29715ccfdad4798200f": {
+            "facing": "internal",
+            "preview": "comments: read just"
+          },
+          "e9dfb283762163357b59a58d0e60240d25bda4b0": {
+            "facing": "internal",
+            "preview": "action 'set', 'update', 'str_replace' or 'delete'"
+          },
+          "f22c4ed3b1cfddcfeacf6d5cba07a5bbd08afaab": {
+            "facing": "internal",
+            "preview": "write_db with db_op 'str_replace' only:"
+          }
+        },
+        "why": "m(desc,[[needle,replacement]]) (32760899) runs `t=t.replace(n,f)` on a zod description and emits only the result. The internal arms are the db_op-spelled needles (first elements, e.g. \"write_db with db_op 'str_replace' only:\"), which are only searched for and never emitted. The model arms are the action-spelled replacements (second elements) that end up in the tool schema descriptions."
+      }
+    ]
+  },
   "58ad133c6782aca3": {
     "at": 10393207,
     "model": {
@@ -1142,94 +1233,31 @@
       }
     ]
   },
-  "ace52307cc689fe8": {
-    "at": 32778342,
+  "b659c16547488079": {
+    "at": 8202704,
     "model": {
-      "031172f40b5ec3640210557d8e413ed1a10336e3": "read only:",
-      "26b2a91412034b4b02339f5bd2b78232b908c884": "Required for action",
-      "40811a4e778d3c55f01ef5f9720b475215a0e766": "publish with `asset: true`, in place of `file_path`:",
-      "55057976b7d8a2b9c4dfbadf7c4c9bdf14e5d1df": "Options for action",
-      "678237e80cc1e051640bc147a877cd5c2d0c0284": "one the person can open",
-      "79bf3ec913f3bbefd1c36f7900578d3ef36f9fb4": "publish with `asset: true` and `from_url` only:",
-      "830b463fa629e92d622143ade6a86720b396fc97": "Required for every action except 'batch' and 'profiles'.",
-      "aa8e982d78eee97d63756e5471137a3c353fedaf": "separate calls",
-      "b74273a257345825eefda19918b8dc303f0560b9": "publish with `asset: true` only:",
-      "babfabf9ac24fd25e37ad43dd4aec3c1f0d66617": "read: read just",
-      "c4f43355b10a9f9e9e0aa600c88df2762378067e": "action 'batch' only:",
-      "c7bccd90fcd36a06349c0837deced79221251c8d": "every document a get, list or query returns",
-      "decc88b95ad78767b74ae751c6ea6691ba911794": "action 'str_replace' only:",
-      "e72bd80dce09c5bc5999bfcca2a09fc2ca2f0e7f": "(from a `scope: \"assets\"` listing of it, or an upload resul…"
+      "36365543cf9aa33bbfb83e4683a0f86dfef986f8": "Please convert the image to PNG, JPEG, GIF, or WebP.",
+      "7394ffe4e1c2e3e8df5fe4d9493442987247a1d7": "Unable to resize image (${()} raw, ${()} base64). The image…",
+      "9e76c0d0e1ad44e72b907442ee3a5372c73e4905": "Unable to resize image — dimensions exceed the ${}x${}px li…",
+      "a51f84650af948948d26293dc6320c8a9815a8d3": "Unable to resize image — could not verify image dimensions …",
+      "d2a309892c2d532244f9a3e52232e500533909b7": "Unable to resize image — image processing is unavailable an…",
+      "eaa3f03625a38845dd545cda76913bcb0c249b13": "Unable to resize image — ${}, and ${}, so it cannot be sent…",
+      "ee2b3ff06c103d41408f4ac15ac0e3ada622264f": "Image file is empty (0 bytes)"
     },
-    "position": 1,
+    "position": 0,
     "reviews": [
       {
         "arms": {
-          "3acc8f6178aa41e3537654de859397741ce6d70e": {
+          "27627a6488341893ffe0fe1bb3f60be962bc6c95": {
             "facing": "internal",
-            "preview": "separate write_db calls"
+            "preview": "Unable to compress image (${(.length)}) to fit within ${()}…"
           },
-          "3d1aa983bc953d6e666bed7f130c7c558ef69797": {
+          "a03f1cd46264bb996572898df0111531c71fbbc2": {
             "facing": "internal",
-            "preview": "read_db and write_db only: act"
-          },
-          "59646077279bb96b829f28e6f28eb4eeee612797": {
-            "facing": "internal",
-            "preview": "Required for read_db and write_db."
-          },
-          "5f889b7b331882f71623ea310a1083a308207547": {
-            "facing": "internal",
-            "preview": "one you can open"
-          },
-          "71e4799038add911d1509377b22ab46e96c54b32": {
-            "facing": "internal",
-            "preview": "every read_db document"
-          },
-          "7f2b8b4239aa5c200d237aaa5841284a4cdc3032": {
-            "facing": "internal",
-            "preview": "write_db with db_op 'batch' only:"
-          },
-          "95b80c4000fcc0b5e94d4fe76417d9485fc16a46": {
-            "facing": "internal",
-            "preview": "Options for db_op"
-          },
-          "a370f758a4a5958696faaff754242b81c219f2ad": {
-            "facing": "internal",
-            "preview": "copy_from only:"
-          },
-          "b4b6d360749771406d1f1e86b1d7cc93704d4693": {
-            "facing": "internal",
-            "preview": "Required for db_op"
-          },
-          "c8eb54c02bf208cd57b78d0b54fbd5b752a21ea4": {
-            "facing": "internal",
-            "preview": "comments only:"
-          },
-          "d77d465dcc203bc12a0f0229103e3d3001e06a9b": {
-            "facing": "internal",
-            "preview": "upload_asset:"
-          },
-          "d99780c240b675e9b2997e6cda698fe033874179": {
-            "facing": "internal",
-            "preview": "write_db with db_op 'set', 'update', 'str_replace' or 'dele…"
-          },
-          "e27f1a5acebf5a2f44592cf8fee9dc525dc0d8d6": {
-            "facing": "internal",
-            "preview": "(its list_assets or upload_asset results)"
-          },
-          "e9ce02722278a7ef7541c29715ccfdad4798200f": {
-            "facing": "internal",
-            "preview": "comments: read just"
-          },
-          "e9dfb283762163357b59a58d0e60240d25bda4b0": {
-            "facing": "internal",
-            "preview": "action 'set', 'update', 'str_replace' or 'delete'"
-          },
-          "f22c4ed3b1cfddcfeacf6d5cba07a5bbd08afaab": {
-            "facing": "internal",
-            "preview": "write_db with db_op 'str_replace' only:"
+            "preview": "Unable to compress image (${(.length)}) to fit within ${()}…"
           }
         },
-        "why": "m(desc,[[needle,replacement]]) (32760899) runs `t=t.replace(n,f)` on a zod description and emits only the result. The internal arms are the db_op-spelled needles (first elements, e.g. \"write_db with db_op 'str_replace' only:\"), which are only searched for and never emitted. The model arms are the action-spelled replacements (second elements) that end up in the tool schema descriptions."
+        "why": "eO is ImageResizeError. The model arms (and the corrected base64-limit arm) are thrown by WNe's resize path (8192621-8196865) and reach the model as unprocessable-image text (8197856). The two 'Unable to compress image' arms are thrown only by T_r (8202611, 8202711), and every T_r caller catches them: the Read tool's mys catch logs and falls back to a 400px JPEG (12151738), gys sits in try{}catch{} (28656121), and the session-serving Pe logs (28447788)."
       }
     ]
   },
@@ -1774,34 +1802,6 @@
           }
         },
         "why": "He is the generic HooksError class (320434). The model arms come from event dispatch on the chain that runs the model's tool calls: k7t installs core tool.call (10861652); the worker dispatch rejects with \"${y} event is not plain data\" (11001352, 11002669); ga/Ydn have the no-core rejection (11659973, 11660967); and cWt's surface-module refusal reaches /plugin validate (10275208). The internal arms are $.<api> refusals and host invariants returned to plugin hook code, which go to hookFailed and the debug log. \"HTTP ${.status}\" is thrown here inside $.audio.play's fetch (10447102, caught and rewrapped) and is model only because the same text appears elsewhere (tool-result-http-status-code)."
-      }
-    ]
-  },
-  "b89f0bb15a8499ae": {
-    "at": 8202704,
-    "model": {
-      "36365543cf9aa33bbfb83e4683a0f86dfef986f8": "Please convert the image to PNG, JPEG, GIF, or WebP.",
-      "7394ffe4e1c2e3e8df5fe4d9493442987247a1d7": "Unable to resize image (${()} raw, ${()} base64). The image…",
-      "9e76c0d0e1ad44e72b907442ee3a5372c73e4905": "Unable to resize image — dimensions exceed the ${}x${}px li…",
-      "a51f84650af948948d26293dc6320c8a9815a8d3": "Unable to resize image — could not verify image dimensions …",
-      "d2a309892c2d532244f9a3e52232e500533909b7": "Unable to resize image — image processing is unavailable an…",
-      "eaa3f03625a38845dd545cda76913bcb0c249b13": "Unable to resize image — ${}, and ${}, so it cannot be sent…",
-      "ee2b3ff06c103d41408f4ac15ac0e3ada622264f": "Image file is empty (0 bytes)"
-    },
-    "position": 0,
-    "reviews": [
-      {
-        "arms": {
-          "27627a6488341893ffe0fe1bb3f60be962bc6c95": {
-            "facing": "internal",
-            "preview": "Unable to compress image (${(.length)}) to fit within ${()}…"
-          },
-          "a03f1cd46264bb996572898df0111531c71fbbc2": {
-            "facing": "internal",
-            "preview": "Unable to compress image (${(.length)}) to fit within ${()}…"
-          }
-        },
-        "why": "eO is ImageResizeError. The model arms (and the corrected base64-limit arm) are thrown by WNe's resize path (8192621-8196865) and reach the model as unprocessable-image text (8197856). The two 'Unable to compress image' arms are thrown only by T_r (8202611, 8202711), and every T_r caller catches them: the Read tool's mys catch logs and falls back to a 400px JPEG (12151738), gys sits in try{}catch{} (28656121), and the session-serving Pe logs (28447788)."
       }
     ]
   },

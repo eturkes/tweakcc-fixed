@@ -633,6 +633,26 @@ describe('checkSiblingArms: bounded assembled strings', () => {
     expect(mixed.unearnedCallGroups).toBe(0);
   });
 
+  it('anchors a call group on a composite argument ruled as a whole', () => {
+    const cache = {
+      [key('Chain anchor head and its tail')]: { facing: 'model' },
+    };
+    const r = scan(
+      'function err(){}err("Chain anchor head "+"and its tail");err("Unruled error line")',
+      [],
+      cache
+    );
+    expect(r.findings.map(f => f.body)).toEqual(['Unruled error line']);
+    expect(r.findings[0].siblingRelations[0].via).toBe('direct');
+    const bound = scan(
+      'function err(){}function f(){let s="Chain anchor head "+"and its tail";err(s);err("Unruled error line");return s}',
+      [],
+      cache
+    );
+    expect(bound.findings).toEqual([]);
+    expect(bound.unearnedCallGroups).toBe(1);
+  });
+
   it('does not anchor on a template with no prose outside its slots', () => {
     const r = scan(
       'function f(a,b){return [`${a}: ${b}`,"Slot sibling text"].join("\\n")}',

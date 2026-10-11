@@ -31,9 +31,12 @@
 //     anchor is not an arm but the catalogued prompt whose text contains the
 //     needle, since the replacement renders into that prompt at runtime; a
 //     needle that is a bare key token marks a lookup table and anchors nothing.
-// An array or `+` chain is one arm when the extractor ruled its joined text (a
-// composite verdict); otherwise its own literal leaves are the arms, each under
-// the body the extractor looks it up by (a composite element is a fragment).
+// An array, `+` chain or `[…].join()` that is one value of a group (a case's
+// return, a call's argument) is one arm when the extractor ruled its joined
+// text (a composite verdict), beside any leaf ruled on its own; otherwise its
+// own literal leaves are the arms, each under the body the extractor looks it
+// up by (a composite element is a fragment). The leaves of a join group are
+// always its arms: there the joined text is the group.
 // A group is checked only when one of its arms is catalogued (a `model` cache
 // verdict or a catalogue body). Each other arm that has no verdict at all
 // (current or pre-promotion key), is not catalogued, and reads as words (two
@@ -561,37 +564,63 @@ function flowGroups(nodes, parents, base) {
     if (args.length > 1)
       roots.push({ node, kind: 'calls', args, sites, position });
 
-  const flow = (n, out, seen, depth, via = 'direct') => {
+  // `[…].join(sep)`: the extractor's composite for it spans the call, with the
+  // separator applied.
+  const isArrayJoin = n =>
+    n.type === 'CallExpression' &&
+    n.callee.type === 'MemberExpression' &&
+    !n.callee.computed &&
+    n.callee.property.name === 'join' &&
+    n.callee.object.type === 'ArrayExpression';
+  // The values an expression can take, into `out` (node -> arm). With `whole`
+  // (the arguments of a call group and the values of a return set, each one
+  // value), an array, `+` chain or `[…].join()` is one arm holding its own
+  // flowed parts, so resolve() can read it as the composite the extractor
+  // ruled; a joined string's own pieces (`whole` off) are the arms themselves.
+  const flow = (n, out, seen, depth, via, whole) => {
     if (!n || depth > 6) return;
-    if (isLiteralLeaf(n)) {
-      if (!out.has(n)) out.set(n, via);
-    } else if (n.type === 'ConditionalExpression') {
-      flow(n.consequent, out, seen, depth, via);
-      flow(n.alternate, out, seen, depth, via);
+    if (
+      whole &&
+      (isConcat(n) || n.type === 'ArrayExpression' || isArrayJoin(n))
+    ) {
+      if (out.has(n)) return;
+      const parts = new Map();
+      out.set(n, { via, parts });
+      open(isArrayJoin(n) ? n.callee.object : n, parts, seen, depth, via, true);
+      if (!parts.size) out.delete(n);
+    } else if (isLiteralLeaf(n)) {
+      if (!out.has(n)) out.set(n, { via });
+    } else open(n, out, seen, depth, via, whole);
+  };
+  const open = (n, out, seen, depth, via, whole) => {
+    if (n.type === 'ConditionalExpression') {
+      flow(n.consequent, out, seen, depth, via, whole);
+      flow(n.alternate, out, seen, depth, via, whole);
     } else if (n.type === 'LogicalExpression') {
-      if (n.operator !== '&&') flow(n.left, out, seen, depth, via);
-      flow(n.right, out, seen, depth, via);
+      if (n.operator !== '&&') flow(n.left, out, seen, depth, via, whole);
+      flow(n.right, out, seen, depth, via, whole);
     } else if (isConcat(n)) {
-      flow(n.left, out, seen, depth, via);
-      flow(n.right, out, seen, depth, via);
+      flow(n.left, out, seen, depth, via, whole);
+      flow(n.right, out, seen, depth, via, whole);
     } else if (n.type === 'SequenceExpression') {
-      flow(n.expressions.at(-1), out, seen, depth, via);
+      flow(n.expressions.at(-1), out, seen, depth, via, whole);
     } else if (n.type === 'ArrayExpression') {
       for (const el of n.elements) {
         if (!el) continue;
-        if (el.type !== 'SpreadElement') flow(el, out, seen, depth, via);
+        if (el.type !== 'SpreadElement') flow(el, out, seen, depth, via, whole);
         else {
           const fn = spreadCallback(el);
           if (fn) {
             if (fn.body.type !== 'BlockStatement')
-              flow(fn.body, out, seen, depth + 1, via);
+              flow(fn.body, out, seen, depth + 1, via, whole);
           } else
             flow(
               el.argument,
               out,
               seen,
               depth + 1,
-              via === 'direct' ? 'spread' : via
+              via === 'direct' ? 'spread' : via,
+              whole
             );
         }
       }
@@ -603,10 +632,10 @@ function flowGroups(nodes, parents, base) {
       seen.add(key);
       for (const expr of bindings.get(scope)?.get(n.name) || [])
         if (functionOf(expr) === functionOf(n))
-          flow(expr, out, seen, depth + 1, 'ident');
+          flow(expr, out, seen, depth + 1, 'ident', whole);
       for (const expr of pushes.get(scope)?.get(n.name) || [])
         if (functionOf(expr) === functionOf(n))
-          flow(expr, out, seen, depth + 1, 'push');
+          flow(expr, out, seen, depth + 1, 'push', whole);
     } else if (n.type === 'CallExpression') {
       const c = n.callee;
       if (
@@ -616,20 +645,41 @@ function flowGroups(nodes, parents, base) {
           c.property.name
         )
       ) {
-        flow(c.object, out, seen, depth, via);
+        flow(c.object, out, seen, depth, via, whole);
         if (c.property.name === 'concat')
-          for (const a of n.arguments) flow(a, out, seen, depth, via);
+          for (const a of n.arguments) flow(a, out, seen, depth, via, whole);
       }
     } else if (n.type === 'ParenthesizedExpression') {
-      flow(n.expression, out, seen, depth, via);
+      flow(n.expression, out, seen, depth, via, whole);
     }
   };
+  const armFrom = (n, { via, parts }) => ({
+    start: base + n.start,
+    end: base + n.end,
+    ...(parts
+      ? { parts: [...parts].map(([p, a]) => armFrom(p, a)) }
+      : {
+          text:
+            n.type === 'Literal'
+              ? n.value
+              : n.quasis.map(q => q.value.cooked ?? q.value.raw).join(' '),
+        }),
+    via,
+  });
+  // Literals in a flowed value, through its composites: a group of one
+  // array's elements still pairs them, as it did before arrays were arms.
+  const leafCount = arms =>
+    [...arms.values()].reduce(
+      (n, a) => n + (a.parts ? leafCount(a.parts) : 1),
+      0
+    );
   const groups = [];
   for (const root of roots) {
     const out = new Map();
     const seen = new Set();
-    for (const arg of root.args) flow(arg, out, seen, 0);
-    if (out.size < 2) continue;
+    for (const arg of root.args)
+      flow(arg, out, seen, 0, 'direct', root.kind !== 'join');
+    if (leafCount(out) < 2) continue;
     groups.push({
       kind: root.kind,
       at: base + root.node.start,
@@ -642,15 +692,7 @@ function flowGroups(nodes, parents, base) {
           end: base + c.end,
         })),
       }),
-      arms: [...out].map(([n, via]) => ({
-        start: base + n.start,
-        end: base + n.end,
-        text:
-          n.type === 'Literal'
-            ? n.value
-            : n.quasis.map(q => q.value.cooked ?? q.value.raw).join(' '),
-        via,
-      })),
+      arms: [...out].map(([n, a]) => armFrom(n, a)),
     });
   }
   return groups;
@@ -864,16 +906,24 @@ export function scanSiblingArms(cliPath, { catalogue, cache, version } = {}) {
     memo.set(k, r);
     return r;
   };
-  // An array or `+` chain whose joined text is ruled is one arm, covered or
-  // anchoring as a whole; otherwise its parts are the arms.
+  // An array or `+` chain whose joined text is ruled is one arm, covering its
+  // unruled parts; a part with a verdict or catalogue entry of its own stays an
+  // arm beside it, since that is the text the catalogue splices and a verdict
+  // contradicting the whole's is what the mixed gate exists to show. Unruled,
+  // its parts are the arms. A flowed part keeps the `via` it was reached by:
+  // the whole's, unless a variable inside it was followed.
   const resolve = arm => {
     if (!arm.parts) {
       const r = lookup(literals, arm.start, arm.end);
       return r ? [{ ...r, text: arm.text, via: arm.via }] : [];
     }
+    const parts = arm.parts.flatMap(resolve);
     const c = lookup(composites, arm.start, arm.end);
-    if (c && (c.verdict || c.modelId)) return [c];
-    return arm.parts.flatMap(resolve);
+    if (!c || !(c.verdict || c.modelId)) return parts;
+    return [
+      { ...c, via: arm.via },
+      ...parts.filter(p => p.verdict || p.modelId),
+    ];
   };
 
   const modelSpans = [];
@@ -903,14 +953,15 @@ export function scanSiblingArms(cliPath, { catalogue, cache, version } = {}) {
   let unearnedCallGroups = 0;
   // A call group spans every call of one callee in a module, so a model arm
   // proves the callee emits model text only when that text is model-facing
-  // because of these calls: the literal is written in a call's argument (not
-  // reached through a variable that may have other uses) and every literal
-  // carrying the same body sits inside one of the group's calls (a telemetry
-  // copy in the next argument is fine). Otherwise its verdict, keyed on
-  // content, may have been earned at the other use (CC 2.1.296:
-  // `let s=\`…\`;t(s,{level:"warn"});return {message:s}` logged tool results
-  // through the imported debug logger, whose group would have raised 1,510
-  // log lines).
+  // because of these calls: the literal is written in a call's argument, by
+  // itself or in an array or `+` chain written there (not reached through a
+  // variable that may have other uses), and every site carrying the same body
+  // (for a composite, every occurrence of its joined text) sits inside one of
+  // the group's calls (a telemetry copy in the next argument is fine).
+  // Otherwise its verdict, keyed on content, may have been earned at the other
+  // use (CC 2.1.296: `let s=\`…\`;t(s,{level:"warn"});return {message:s}`
+  // logged tool results through the imported debug logger, whose group would
+  // have raised 1,510 log lines).
   const earnedIn = (a, g) =>
     a.via === 'direct' &&
     (sitesByBody.get(a.body) || [{ start: a.start, end: a.end }]).every(e =>
