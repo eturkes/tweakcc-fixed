@@ -95,6 +95,11 @@ export interface StringsPrompt {
    * 566 catalogued prompts a Linux apply could never find. Absent = all.
    */
   platforms?: string[];
+  /**
+   * Module path of the text asset this prompt is the whole document of (see
+   * nativeTextAssets.ts). Absent for prompt text that lives in JS.
+   */
+  asset?: string;
 }
 
 /**
@@ -1856,6 +1861,7 @@ export const loadSystemPromptsWithRegex = async (
     identifiers: (number | string)[];
     identifierMap: Record<string, string>;
     platforms?: string[];
+    asset?: string;
   }>
 > => {
   // Check if strings file was preloaded - if not, return empty array
@@ -1874,6 +1880,7 @@ export const loadSystemPromptsWithRegex = async (
     identifiers: (number | string)[];
     identifierMap: Record<string, string>;
     platforms?: string[];
+    asset?: string;
   }> = [];
 
   const shadowSet = await loadShadowSet();
@@ -1938,6 +1945,7 @@ export const loadSystemPromptsWithRegex = async (
       identifiers: jsonPrompt.identifiers,
       identifierMap: jsonPrompt.identifierMap,
       platforms: jsonPrompt.platforms,
+      asset: jsonPrompt.asset,
     });
   }
 

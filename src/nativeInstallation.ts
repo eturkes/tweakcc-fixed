@@ -15,6 +15,11 @@ import {
   textToTemplateLiteral,
   type TextAsset,
 } from './nativeTextAssets';
+import {
+  MODULE_SENTINEL_RE,
+  moduleCountDeclaration,
+  moduleSentinel,
+} from './virtualBundle';
 
 // ============================================================================
 // Nix binary wrapper detection
@@ -255,23 +260,7 @@ export function isClaudeModule(moduleName: string): boolean {
   );
 }
 
-/**
- * CC 2.1.246 code-split the app: `/$bunfs/root/cli` became a ~20 KB ESM entry
- * loader and the real code moved into ~1,400 sibling modules, 128 of which
- * carry model-facing prompt text. Every downstream consumer (patches, prompt
- * overrides, the extractor) is written against ONE `cli.js` string, so instead
- * of threading a module array through all of them we hand them a single
- * VIRTUAL bundle: every JS module concatenated, each preceded by a sentinel
- * comment naming its module-table index. Repack splits on the same sentinel
- * and writes each segment back to its own module.
- *
- * The sentinel is a block comment, so the bundle stays valid-ish JS, and
- * `/*@@` appears in zero of the 1,411 real modules (checked on 2.1.246).
- */
-const MODULE_SENTINEL_RE = /\n\/\*@@TWEAKCC_MODULE:(\d+):([^@]*)@@\*\/\n/g;
-
-export const moduleSentinel = (index: number, name: string): string =>
-  `\n/*@@TWEAKCC_MODULE:${index}:${name}@@*/\n`;
+export { moduleSentinel } from './virtualBundle';
 
 const UTF8_STRICT = new TextDecoder('utf-8', { fatal: true });
 
@@ -1059,7 +1048,7 @@ function buildVirtualBundle(
     `#!/usr/bin/env node\n// @bun @bytecode\n` +
       `// Virtual bundle: ${moduleCount} modules and ${assetCount} text ` +
       `assets, split on the module sentinels below.\n` +
-      `var __ccVirtualBundleModules = ${moduleCount};\n`,
+      moduleCountDeclaration(moduleCount),
     'utf8'
   );
   const bundle = Buffer.concat([preamble, ...parts]);

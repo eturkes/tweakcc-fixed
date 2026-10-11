@@ -7,6 +7,7 @@ import {
   decodeTextAsset,
   encodeTextAsset,
   templateLiteralToText,
+  textAssetVisible,
   textToTemplateLiteral,
   zstdAvailable,
 } from './nativeTextAssets';
@@ -158,4 +159,17 @@ describe('decodeTextAsset / encodeTextAsset', () => {
       expect(decodeTextAsset('/a.md', BUN_LOADER_FILE, 0, frame)).toBeNull();
     }
   );
+});
+
+describe('textAssetVisible', () => {
+  it('sees JS prompts and uncompressed assets on any Node', () => {
+    expect(textAssetVisible(undefined)).toBe(true);
+    expect(textAssetVisible('/$bunfs/root/SKILL-ab12cd34.md')).toBe(true);
+  });
+
+  it('sees a .zst asset only when Node can decompress it', () => {
+    expect(textAssetVisible('/$bunfs/root/SKILL-ab12cd34.md.zst')).toBe(
+      zstdAvailable()
+    );
+  });
 });

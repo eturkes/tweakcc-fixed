@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { applySystemPrompts } from './systemPrompts';
 import * as promptSync from '../systemPromptSync';
 import * as systemPromptHashIndex from '../systemPromptHashIndex';
+import { moduleCountDeclaration, moduleSentinel } from '../virtualBundle';
 
 vi.mock('../systemPromptSync', async () => {
   const actual = await vi.importActual('../systemPromptSync');
@@ -986,6 +987,46 @@ describe('systemPrompts.ts', () => {
         expect(result.newContent).toContain('x="never skip hooks"');
         expect(result.newContent).toContain('z="OTHER OVERRIDE"');
       });
+    });
+  });
+
+  // A virtual bundle carries every text asset as one template literal after
+  // the JS. JS prompt text that a doc also quotes used to count the doc as a
+  // second candidate site and get skipped as ambiguous.
+  describe('text assets in a virtual bundle', () => {
+    const text = 'Run /model to switch';
+    const content =
+      '#!/usr/bin/env node\n' +
+      moduleCountDeclaration(1) +
+      moduleSentinel(0, '/$bunfs/root/m0.js') +
+      `let a="${text}";` +
+      moduleSentinel(1, '/$bunfs/root/doc.md') +
+      `\`${text}\``;
+    const entry = (asset: string | undefined, override: string) => ({
+      ...buildMockPromptData({
+        promptId: asset ? 'data-doc' : 'js-prompt',
+        prompt: { content: override },
+        regex: 'Run /model to switch',
+        pieces: [text],
+        getInterpolatedContent: () => override,
+      }),
+      asset,
+    });
+
+    it('lands a JS prompt in the JS even when an asset quotes it verbatim', async () => {
+      setupMocks(entry(undefined, 'Use /model now'));
+      const result = await applySystemPrompts(content, '1.0.0', false);
+      expect(result.results[0].applied).toBe(true);
+      expect(result.newContent).toContain('let a="Use /model now";');
+      expect(result.newContent).toContain(`\`${text}\``);
+    });
+
+    it('lands an asset prompt only inside its asset', async () => {
+      setupMocks(entry('/$bunfs/root/doc.md', 'Use /model now'));
+      const result = await applySystemPrompts(content, '1.0.0', false);
+      expect(result.results[0].applied).toBe(true);
+      expect(result.newContent).toContain(`let a="${text}";`);
+      expect(result.newContent).toContain('`Use /model now`');
     });
   });
 });

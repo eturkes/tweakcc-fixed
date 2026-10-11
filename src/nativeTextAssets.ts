@@ -239,3 +239,12 @@ export function templateLiteralToText(source: string): string {
   }
   return out;
 }
+
+/**
+ * Whether this Node can see a text asset the catalogue names. A `.zst` asset
+ * without Node zstd never enters the virtual bundle, so its prompt has no site
+ * to find; any other asset (or a JS prompt) is always visible.
+ */
+export function textAssetVisible(assetName: string | undefined): boolean {
+  return !assetName?.endsWith('.zst') || zstdAvailable();
+}

@@ -6560,9 +6560,11 @@ if (require.main === module) {
     return contentA.localeCompare(contentB);
   });
 
-  // Remove extraction bookkeeping before writing
+  // Remove extraction bookkeeping before writing. `asset` stays: the apply
+  // keeps a text-asset prompt inside its own asset and every other prompt out
+  // of the assets (src/virtualBundle.ts BundleRegions).
   mergedResult.prompts = mergedResult.prompts.map(
-    ({ start, end, settings, legacyShapes, asset, ...rest }) => rest
+    ({ start, end, settings, legacyShapes, ...rest }) => rest
   );
 
   // Add version as top-level field
