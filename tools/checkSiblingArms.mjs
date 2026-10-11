@@ -551,13 +551,15 @@ function flowGroups(nodes, parents, base) {
       // Past a spread the position of every later argument is unknown.
       if (a.type === 'SpreadElement') break;
       const key = `${scopeId(scope)}:${n.callee.name}:${i}`;
-      if (!calls.has(key)) calls.set(key, { node: n, args: [], sites: [] });
+      if (!calls.has(key))
+        calls.set(key, { node: n, args: [], sites: [], position: i });
       calls.get(key).args.push(a);
       calls.get(key).sites.push(n);
     }
   }
-  for (const { node, args, sites } of calls.values())
-    if (args.length > 1) roots.push({ node, kind: 'calls', args, sites });
+  for (const { node, args, sites, position } of calls.values())
+    if (args.length > 1)
+      roots.push({ node, kind: 'calls', args, sites, position });
 
   const flow = (n, out, seen, depth, via = 'direct') => {
     if (!n || depth > 6) return;
@@ -633,6 +635,7 @@ function flowGroups(nodes, parents, base) {
       at: base + root.node.start,
       end: base + root.node.end,
       ...(root.sites && {
+        position: root.position,
         callSites: root.sites.map(c => ({
           start: base + c.start,
           end: base + c.end,
@@ -917,7 +920,7 @@ export function scanSiblingArms(cliPath, { catalogue, cache, version } = {}) {
     const arms = g.arms.flatMap(resolve);
     const flowGroup = FLOW_KINDS.has(g.kind);
     if (g.kind === 'calls') {
-      const split = mixedRulings(arms);
+      const split = mixedRulings(arms, g.position, a => earnedIn(a, g));
       if (split) mixed.push({ at: g.at, ...split });
     }
     const anchorSites = arms.filter(
@@ -991,33 +994,43 @@ export function scanSiblingArms(cliPath, { catalogue, cache, version } = {}) {
 // One callee usually sends every argument at a position down the same route,
 // so a call group whose arms are ruled both `model` and `ui`/`internal` holds a
 // wrong verdict unless the call sites themselves route differently. On CC
-// 2.1.296, 23 of 40 such groups held 51 wrong verdicts between them. The key
-// covers every ruled arm and its facing, so a group is re-raised whenever a
-// verdict or an arm changes.
-function mixedRulings(arms) {
-  const ruled = new Map();
+// 2.1.296, 23 of 40 such groups held 51 wrong verdicts between them.
+//
+// An arm's facing is its cache verdict; catalogue membership stands in only
+// where there is none, since a catalogued body ruled `internal` is not model
+// text. A model arm counts only where its verdict is earned at these calls (the
+// anchoring rule above): one earned at another use of the same text says
+// nothing about this callee's other arms. Unlike an anchor it needs no
+// catalogue id, so a body the extractor never catalogues still counts.
+//
+// The fingerprint names the group across releases, so it cannot use the
+// callee's minified name or chunk, which change every build. It is the
+// argument position plus the earned model-arm keys. Every site of an earned
+// body lies inside this group's calls, so another group at that position can
+// share a key only by nesting its calls inside these, and would have to share
+// all of them. The callee's arity is left out: an imported callee has no
+// visible declaration, and a parameter added to it would re-key every review.
+// checkMixedCallVerdicts fails when two current groups share a fingerprint.
+function mixedRulings(arms, position, isEarned) {
+  const model = new Map();
+  const other = new Map();
   for (const a of arms) {
-    const facing = a.modelId ? 'model' : a.verdict?.facing;
-    if (facing && a.key) ruled.set(a.key, { facing, body: a.body });
+    if (!a.key) continue;
+    const facing = a.verdict?.facing || (a.modelId ? 'model' : null);
+    if (facing === 'model') {
+      if (isEarned(a)) model.set(a.key, a.body);
+    } else if (facing) other.set(a.key, { facing, body: a.body });
   }
-  const facings = new Set([...ruled.values()].map(r => r.facing));
-  if (!facings.has('model') || facings.size < 2) return null;
-  const key = createHash('sha1')
-    .update(
-      [...ruled]
-        .map(([k, r]) => `${k}:${r.facing}`)
-        .sort()
-        .join('\n')
-    )
-    .digest('hex')
-    .slice(0, 16);
-  const arms2 = [...ruled.values()];
+  if (!model.size || !other.size) return null;
+  const modelKeys = [...model.keys()].sort();
   return {
-    key,
-    model: arms2.filter(r => r.facing === 'model').map(r => r.body),
-    other: arms2
-      .filter(r => r.facing !== 'model')
-      .map(r => ({ facing: r.facing, body: r.body })),
+    position,
+    fingerprint: createHash('sha1')
+      .update([position, ...modelKeys].join('\n'))
+      .digest('hex')
+      .slice(0, 16),
+    model: modelKeys.map(key => ({ key, body: model.get(key) })),
+    other: [...other].map(([key, r]) => ({ key, ...r })),
   };
 }
 
