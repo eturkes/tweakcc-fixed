@@ -44,9 +44,9 @@ describe('slotLiteralCandidates: recovering the literal from a stored piece', ()
   it('undoes the two escapes template pieces store raw', () => {
     // pieces hold RAW source; the allowlist hashes the cooked text. Without
     // this the REPL shQuote guidance never matched its own verdict.
-    expect(ex.slotLiteralCandidates('use \\`shQuote(s)\\` for \\$HOME')).toContain(
-      'use `shQuote(s)` for $HOME'
-    );
+    expect(
+      ex.slotLiteralCandidates('use \\`shQuote(s)\\` for \\$HOME')
+    ).toContain('use `shQuote(s)` for $HOME');
   });
 
   it('never returns an empty candidate', () => {
@@ -78,9 +78,9 @@ describe('slotLiteralVerdict', () => {
 describe('shouldCapture: the bypass', () => {
   it('captures a below-floor string on a slot-literal verdict', () => {
     // Three words: far under the prose gate, which is the whole problem.
-    expect(ex.shouldCapture('\n- Task list: ', '\n- Task list: ', 'let n=r?', 500)).toBe(
-      false
-    );
+    expect(
+      ex.shouldCapture('\n- Task list: ', '\n- Task list: ', 'let n=r?', 500)
+    ).toBe(false);
     expect(
       ex.shouldCapture('\n- Task list: ', '\n- Task list: ', 'let n=r?', 500, {
         slotLiteral: true,
@@ -94,6 +94,29 @@ describe('shouldCapture: the bypass', () => {
     expect(
       ex.shouldCapture(script, script, 'x=', 500, { slotLiteral: true })
     ).toBe(false);
+  });
+
+  // CC 2.1.296: the quasi " isn't available in this session." carries a
+  // verdict read at the in-session refusal, and also closes a CLI-only
+  // `claude plugin` error whose own body is ruled ui.
+  it("lets a template's own ui verdict beat a quasi's slot verdict", () => {
+    const body = "${.cross} The ${} isn't available in this session.";
+    const key = ex.sha1Hex(body);
+    ex._setClassificationCacheForTests({ [key]: { facing: 'ui' } });
+    try {
+      expect(
+        ex.shouldCapture(body, body, 'x=', 500, { slotLiteral: 'quasi' })
+      ).toBe(false);
+      expect(
+        ex.shouldCapture(body, body, 'x=', 500, { slotLiteral: true })
+      ).toBe(true);
+      ex._setClassificationCacheForTests({});
+      expect(
+        ex.shouldCapture(body, body, 'x=', 500, { slotLiteral: 'quasi' })
+      ).toBe(true);
+    } finally {
+      ex._setClassificationCacheForTests(null);
+    }
   });
 
   it('still refuses inside a drop context', () => {
@@ -123,7 +146,12 @@ describe('applySlotLiteralNames', () => {
   it('names an anonymous capture from its piece', () => {
     ex._setSlotLiteralsForTests(ALLOW);
     const prompts = [
-      { id: '', name: '', description: '', pieces: ['\n- Task list: ${', '.taskListPath}'] },
+      {
+        id: '',
+        name: '',
+        description: '',
+        pieces: ['\n- Task list: ${', '.taskListPath}'],
+      },
     ];
     ex.applySlotLiteralNames(prompts);
     expect(prompts[0].id).toBe(
@@ -135,7 +163,12 @@ describe('applySlotLiteralNames', () => {
   it('never overwrites an established id', () => {
     ex._setSlotLiteralsForTests(ALLOW);
     const prompts = [
-      { id: 'already-carried', name: 'x', description: '', pieces: ['\n- Task list: ${'] },
+      {
+        id: 'already-carried',
+        name: 'x',
+        description: '',
+        pieces: ['\n- Task list: ${'],
+      },
     ];
     ex.applySlotLiteralNames(prompts);
     expect(prompts[0].id).toBe('already-carried');
@@ -143,14 +176,18 @@ describe('applySlotLiteralNames', () => {
 
   it('leaves an unrelated prompt anonymous rather than guessing', () => {
     ex._setSlotLiteralsForTests(ALLOW);
-    const prompts = [{ id: '', name: '', description: '', pieces: ['unrelated text'] }];
+    const prompts = [
+      { id: '', name: '', description: '', pieces: ['unrelated text'] },
+    ];
     ex.applySlotLiteralNames(prompts);
     expect(prompts[0].id).toBe('');
   });
 
   it('is a no-op when the allowlist is empty', () => {
     ex._setSlotLiteralsForTests({});
-    const prompts = [{ id: '', name: '', description: '', pieces: ['\n- Task list: ${'] }];
+    const prompts = [
+      { id: '', name: '', description: '', pieces: ['\n- Task list: ${'] },
+    ];
     ex.applySlotLiteralNames(prompts);
     expect(prompts[0].id).toBe('');
   });
@@ -165,12 +202,18 @@ describe('the shipped allowlist stays load-bearing', () => {
     expect(bad.map(v => v.text)).toEqual([]);
   });
 
-  it('records only the three verdicts the tool defines', () => {
+  it('records only the verdicts the tool defines', () => {
     // `not-a-slot` is not a judgement about the text — it marks a resolver
     // artifact, where the literal is an ARGUMENT to a call whose return value
-    // is the real slot value. Only `catalogue` mints an id.
+    // is the real slot value. `off-route` is in the slot, but this site's host
+    // never reaches the model. Only `catalogue` mints an id.
     const kinds = new Set(Object.values(allow).map(v => v.verdict));
-    expect([...kinds].sort()).toEqual(['catalogue', 'glue', 'not-a-slot']);
+    expect([...kinds].sort()).toEqual([
+      'catalogue',
+      'glue',
+      'not-a-slot',
+      'off-route',
+    ]);
   });
 
   it('mints ids from `catalogue` only', () => {

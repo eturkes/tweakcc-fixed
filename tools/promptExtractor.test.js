@@ -523,3 +523,17 @@ describe('sameVarPattern', () => {
     expect(sameVarPattern({ identifiers: [0, 1] }, n, code)).toBe(false);
   });
 });
+
+// CC 2.1.295/2.1.296: the model-facing `Stop hook feedback:` framing with its
+// feedback on the next line is gone, and a loose `includes` pin had been
+// cataloguing the transcript row renderer's `Stop hook feedback: ${…}`.
+describe('NEW_PROMPT_ASSIGNMENTS: stop hook feedback framing', () => {
+  it('names the newline framing and not the row renderer text', () => {
+    expect(
+      extractStrings.lookupNewPromptAssignment('Stop hook feedback:\n${x}')?.id
+    ).toBe('system-prompt-stop-hook-feedback-framing');
+    expect(
+      extractStrings.lookupNewPromptAssignment('Stop hook feedback: ${x}')
+    ).toBe(null);
+  });
+});

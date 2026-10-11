@@ -1545,7 +1545,9 @@ const NEW_PROMPT_ASSIGNMENTS = [
       'Model-facing framing tag wrapping a forked/local slash-command\'s stdout into a user-role message sent to the model ("<local-command-stdout>\\n${out}\\n</local-command-stdout>"); present whenever a local command produces output that is fed back to the model.',
   },
   {
-    matcher: t => t.includes('Stop hook feedback:'),
+    // The model-facing framing puts the feedback on its own line; the
+    // terminal row renderer's `Stop hook feedback: ${…}` is ui (CC 2.1.296).
+    matcher: t => /^Stop hook feedback:\s*\n/.test(t),
     name: 'Stop Hook Feedback Framing',
     id: 'system-prompt-stop-hook-feedback-framing',
     description:
@@ -4288,7 +4290,18 @@ function shouldCapture(text, cacheBody, lead, minLength, opts = {}) {
   // kind of curated decision NEW_PROMPT_ASSIGNMENTS encodes, so it wins over
   // the cache and the prose gate alike. Hard structural excludes still win over
   // it, exactly as they do over a cached 'model'.
-  if (opts.slotLiteral) return !isHardExcluded(text);
+  if (opts.slotLiteral) {
+    if (isHardExcluded(text)) return false;
+    // A quasi's verdict was read at one host, and the same quasi recurs in
+    // other templates (CC 2.1.296: " isn't available in this session." closes
+    // both the in-session refusal and a CLI-only `claude plugin` error). A
+    // verdict on THIS template's whole body is the more specific ruling.
+    if (opts.slotLiteral === 'quasi') {
+      const own = classifyByCache(cacheBody, opts.legacyCacheBodies);
+      if (own && own.facing !== 'model') return false;
+    }
+    return true;
+  }
   // A settings-schema description is found structurally (the model reads the
   // whole schema via /update-config and settings validation errors), which
   // survives a reword that would orphan any per-string cache row.
@@ -5015,8 +5028,11 @@ function extractStrings(filepath, minLength = 500, opts = {}) {
     // A template's slot literal is one of its QUASIS, not the whole raw
     // source: `\n- Task list: ${e.taskListPath}` was hashed as its leading
     // quasi. Any quasi carrying a `catalogue` verdict captures the template,
-    // because the template is the unit that can be overridden.
-    const slotLiteral = site.quasis.some(q => Boolean(slotLiteralVerdict(q)));
+    // because the template is the unit that can be overridden — unless the
+    // template's own body carries a ui/internal verdict (see shouldCapture).
+    const slotLiteral = site.quasis.some(q => Boolean(slotLiteralVerdict(q)))
+      ? 'quasi'
+      : false;
     const settings = settingsAt(site);
     dumpCandidate(literalSiteRecord(site));
     if (
