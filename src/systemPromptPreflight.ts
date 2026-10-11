@@ -32,6 +32,7 @@ import {
   bodyCarriedBy,
   changedSpan,
   delimiterBefore,
+  detachedSlice,
   detectUnicodeEscaping,
   extractBuildTime,
   introducedRawNonAscii,
@@ -315,6 +316,40 @@ export const replayPromptPlans = async (
 };
 
 /**
+ * The claim one surface makes by turning `working` into `next`, recorded in
+ * `mapper`, or null when it changed nothing.
+ *
+ * Every surface yields a whole new copy of cli.js and the claims outlive it,
+ * so the replacement is copied out rather than sliced: a V8 slice is a view
+ * that keeps its parent alive, and 75 surfaces each pinning a 50 MB bundle
+ * (100 MB once a two-byte splice widens it) is what ran the apply out of heap.
+ */
+export const surfaceClaim = (
+  working: string,
+  next: string,
+  mapper: OffsetMapper,
+  surface: SpanClaim['surface'],
+  id: string,
+  body: string
+): SpanClaim | null => {
+  const span = changedSpan(working, next);
+  if (!span) return null;
+  const newLen = span.end - span.start + (next.length - working.length);
+  const claim: SpanClaim = {
+    ...mapper.spanToPristine(span),
+    surface,
+    id,
+    site: 0,
+    mutates: true,
+    body,
+    delimiter: '',
+    replacement: detachedSlice(next, span.start, span.start + newLen),
+  };
+  mapper.record(span, newLen);
+  return claim;
+};
+
+/**
  * Spans the inline-blob and system-reminder surfaces claim, measured the way
  * `--apply` measures them: sequentially, each anchor searched in the content
  * the previous surface left behind (two blobs sharing an anchor land on
@@ -334,23 +369,11 @@ const claimOverrideSurfaces = async (
     body: string,
     next: string
   ): void => {
-    const span = changedSpan(working, next);
+    const claim = surfaceClaim(working, next, mapper, surface, id, body);
     // No change means the anchor did not resolve, or the override is a pristine
     // passthrough. Neither takes ownership of bytes away from anyone.
-    if (!span) return;
-    const newLen = span.end - span.start + (next.length - working.length);
-    const claim: SpanClaim = {
-      ...mapper.spanToPristine(span),
-      surface,
-      id,
-      site: 0,
-      mutates: true,
-      body,
-      delimiter: '',
-      replacement: next.slice(span.start, span.start + newLen),
-    };
+    if (!claim) return;
     claims.push(claim);
-    mapper.record(span, newLen);
     working = next;
   };
 

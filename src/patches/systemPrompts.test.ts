@@ -109,7 +109,9 @@ describe('systemPrompts.ts', () => {
           const capturedVar = match[1];
           return `Timeout: \${${capturedVar}()} ms!`;
         },
-        pieces: ['Timeout: ${', '()} ms'],
+        // Pieces as buildSearchRegexFromPieces would have produced `regex`
+        // from: the matcher narrows on their literal text.
+        pieces: ['Timeout: ', '() ms'],
         identifiers: [1],
         identifierMap: { '1': 'MAX_TIMEOUT' },
       });
@@ -139,7 +141,7 @@ describe('systemPrompts.ts', () => {
           const var2 = match[2];
           return `Values: \${${var1}} and \${${var2}}!`;
         },
-        pieces: ['Values: ${', '} and ${', '}'],
+        pieces: ['Values: ', ' and ', ''],
         identifiers: [1, 2],
         identifierMap: { '1': 'VAR1', '2': 'VAR2' },
       });

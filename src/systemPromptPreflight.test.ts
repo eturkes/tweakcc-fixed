@@ -1,6 +1,8 @@
+import v8 from 'node:v8';
+import vm from 'node:vm';
 import { beforeAll, describe, expect, it } from 'vitest';
 
-import { replayPromptPlans } from './systemPromptPreflight';
+import { replayPromptPlans, surfaceClaim } from './systemPromptPreflight';
 import { OffsetMapper, SpanClaim } from './systemPromptSites';
 import {
   encodeReplacementForDelimiter,
@@ -218,5 +220,43 @@ describe('replayPromptPlans', () => {
     expect(result.content).toBe('TARGET');
     expect(result.landed.get(guarded)).toBe(false);
     expect(result.mutations).toEqual([]);
+  });
+});
+
+// Each inline-blob and reminder surface turns the bundle into a whole new
+// string, and its claim outlives that string. A claim holding a plain slice
+// pinned the full bundle it came from, one copy per surface: 75 surfaces of a
+// 100 MB two-byte bundle ran --apply out of heap.
+describe('surfaceClaim', () => {
+  it('does not keep the bundle it was measured against alive', () => {
+    v8.setFlagsFromString('--expose-gc');
+    const gc = vm.runInNewContext('gc') as () => void;
+    const mapper = new OffsetMapper();
+    const size = 8_000_000;
+    let working = 'a'.repeat(size);
+    const claims: SpanClaim[] = [];
+    gc();
+    const before = process.memoryUsage().heapUsed;
+    for (let i = 0; i < 20; i++) {
+      const at = 1000 + i * 100;
+      const next =
+        working.slice(0, at) + `override number ${i}` + working.slice(at + 1);
+      const claim = surfaceClaim(
+        working,
+        next,
+        mapper,
+        'reminder',
+        `r${i}`,
+        ''
+      );
+      expect(claim?.replacement).toBe(`override number ${i}`);
+      claims.push(claim!);
+      working = next;
+    }
+    gc();
+    const retained = process.memoryUsage().heapUsed - before;
+    // One live bundle (`working`) plus noise; a leak is 20 bundles.
+    expect(retained).toBeLessThan(size * 4);
+    expect(claims).toHaveLength(20);
   });
 });

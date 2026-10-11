@@ -652,6 +652,18 @@ const commonSuffixLength = (a: string, b: string, limit: number): number => {
 };
 
 /**
+ * `text.slice(start, end)` as a string that owns its characters. V8 returns a
+ * slice of 13+ chars as a view that keeps the whole parent alive, so a short
+ * span sliced out of a working copy of cli.js and stored past the next splice
+ * pins one full copy of the bundle per stored span.
+ */
+export const detachedSlice = (
+  text: string,
+  start: number,
+  end: number
+): string => Buffer.from(text.slice(start, end), 'utf16le').toString('utf16le');
+
+/**
  * The `[start, end)` span of `before` that `after` replaced, derived from the
  * common prefix/suffix. Returns null when the strings are identical. Chunked so
  * a 20 MB cli.js costs a few hundred native comparisons rather than 20 million

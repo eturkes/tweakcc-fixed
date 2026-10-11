@@ -381,3 +381,60 @@ describe('bracket keys on an interpolated object are platform-generalized', () =
     expect(await bothEngines(close, 'x=`idx ${o[a[Q9]] end`;')).toBe(1);
   });
 });
+
+// A prompt with no 12-char word run (`\n</ax-summary>`, `${a}.path} → ${b}`)
+// used to fall back to its RegExp for every lookup, which over a MutableText
+// meant joining the whole bundle first: ~1,500 full copies per apply. It now
+// narrows on its longest exact literal run, so it must never reach the RegExp.
+describe('prompts without a long word run', () => {
+  // A spec whose RegExp cannot even compile: reaching the fallback throws.
+  const tokenOnly = (pieces: string[]): PromptMatchSpec => ({
+    ...spec(pieces),
+    regex: `(${pieces.join('|')}`,
+  });
+
+  it('agree with the RegExp engine on short and punctuation anchors', async () => {
+    const haystack =
+      'a=`\n</ax-summary>`;b="  ${o}.path} → ${q}";c="(x)"; d=`\n</ax-summary>`';
+    await expectEquivalent(['\n</ax-summary>'], haystack);
+    await expectEquivalent(['  ${', '.path} → ${', '}'], haystack);
+    await expectEquivalent(['(x)'], haystack);
+  });
+
+  it('are matched by the catalogue without the RegExp fallback', async () => {
+    const short = tokenOnly(['\n</ax-summary>']);
+    const tiny = tokenOnly(['(x)']);
+    const catalog = new PromptPieceMatcherCatalog([short, tiny]);
+    const content = 'a=`\n</ax-summary>`;c="(x)";';
+    catalog.index(content);
+    const working = new MutableText(content);
+    expect(
+      (await catalog.matchCurrent(short.regex, working)).map(signature)
+    ).toEqual([[3, '\n</ax-summary>']]);
+    expect(
+      (await catalog.matchCurrent(tiny.regex, working)).map(signature)
+    ).toEqual([[22, '(x)']]);
+  });
+
+  it('keeps short and tiny anchor occurrences current through a splice', async () => {
+    const short = tokenOnly(['\n</ax-summary>']);
+    const tiny = tokenOnly(['(x)']);
+    const catalog = new PromptPieceMatcherCatalog([short, tiny]);
+    const original = 'a=`OLD`;';
+    catalog.index(original);
+    const working = new MutableText(original);
+    const replacement = '\n</ax-summary>(x)';
+    working.splice(3, 6, replacement);
+    catalog.recordSplice(working, {
+      start: 3,
+      end: 6,
+      replacementLength: replacement.length,
+    });
+    expect(
+      (await catalog.matchCurrent(short.regex, working)).map(signature)
+    ).toEqual([[3, '\n</ax-summary>']]);
+    expect(
+      (await catalog.matchCurrent(tiny.regex, working)).map(signature)
+    ).toEqual([[17, '(x)']]);
+  });
+});
