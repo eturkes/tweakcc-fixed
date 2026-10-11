@@ -10,10 +10,12 @@
 //      unrelated text got attributed to the slot.
 //   3. Rejecting the founding literal because its last word ends in a colon.
 
+import crypto from 'node:crypto';
 import { describe, it, expect } from 'vitest';
 import {
   findSlotLiterals,
   isCandidateText,
+  isReviewed,
   verdictConflicts,
 } from './checkSlotLiterals.mjs';
 import { keyVariants } from './probeCacheKey.mjs';
@@ -237,6 +239,14 @@ describe('checkSlotLiterals: the extractor piece form counts as catalogued', () 
 
 // CC 2.1.296: nine slot literals were catalogued here while the classification
 // cache ruled the same text ui or internal; the catalogue followed this file.
+const sha16 = s =>
+  crypto
+    .createHash('sha256')
+    .update(s.replace(/\s+/g, ' ').trim())
+    .digest('hex')
+    .slice(0, 16);
+const cacheKey = s => keyVariants(s)[0].key;
+
 describe('checkSlotLiterals: verdict conflicts with the classification cache', () => {
   const text = 'Remote Control is off for this account.';
   const catalogue = {
@@ -244,16 +254,16 @@ describe('checkSlotLiterals: verdict conflicts with the classification cache', (
       { id: 'tool-result-fixture-off', pieces: [text], identifiers: [] },
     ],
   };
-  const key = keyVariants(text)[0].key;
+  const key = cacheKey(text);
   const allow = {
-    aaaaaaaaaaaaaaaa: { verdict: 'catalogue', id: 'tool-result-fixture-off' },
+    [sha16(text)]: { verdict: 'catalogue', id: 'tool-result-fixture-off' },
   };
 
   it('reports a catalogued literal the cache rules ui', () => {
     const c = verdictConflicts(allow, catalogue, { [key]: { facing: 'ui' } });
-    expect(c.map(x => [x.id, x.cacheFacing])).toEqual([
-      ['tool-result-fixture-off', 'ui'],
-    ]);
+    expect(
+      c.filter(x => x.kind === 'host').map(x => [x.id, x.cacheFacing])
+    ).toEqual([['tool-result-fixture-off', 'ui']]);
   });
 
   it('accepts agreement, a glue verdict, or no cache verdict', () => {
@@ -263,12 +273,151 @@ describe('checkSlotLiterals: verdict conflicts with the classification cache', (
     expect(
       verdictConflicts(
         {
-          aaaaaaaaaaaaaaaa: { verdict: 'glue', id: 'tool-result-fixture-off' },
+          [sha16(text)]: { verdict: 'glue', id: 'tool-result-fixture-off' },
         },
         catalogue,
         { [key]: { facing: 'ui' } }
       )
     ).toEqual([]);
     expect(verdictConflicts(allow, catalogue, {})).toEqual([]);
+  });
+
+  // The extractor gives one id to every capture of a literal and renames the
+  // extra ones `-2`, `-3`…; a carried-over id survives the naming pass. Hosts
+  // looked up by the row's id missed all of them (13 on 2.1.296).
+  it('finds hosts by content, whatever id they carry', () => {
+    const cat = {
+      prompts: [
+        { id: 'tool-result-fixture-off-2', pieces: [text], identifiers: [] },
+      ],
+    };
+    const c = verdictConflicts(allow, cat, { [key]: { facing: 'ui' } });
+    expect(c.map(x => [x.kind, x.host])).toContainEqual([
+      'host',
+      'tool-result-fixture-off-2',
+    ]);
+    const noId = { [sha16(text)]: { verdict: 'catalogue' } };
+    expect(
+      verdictConflicts(noId, cat, { [key]: { facing: 'internal' } }).map(
+        x => x.kind
+      )
+    ).toContain('host');
+  });
+
+  it('checks a template host captured through one of its quasis', () => {
+    const quasi = ' was refused by the sandbox policy.';
+    const cat = {
+      prompts: [
+        {
+          id: 'tool-result-fixture-refused',
+          pieces: ['${', '.path}' + quasi],
+          identifiers: [0],
+          identifierMap: { 0: 'FILE' },
+        },
+      ],
+    };
+    const body = '${.path}' + quasi;
+    const c = verdictConflicts(
+      { [sha16(quasi)]: { verdict: 'catalogue', id: 'x-fixture' } },
+      cat,
+      { [cacheKey(body)]: { facing: 'ui' } }
+    );
+    expect(c.map(x => [x.kind, x.host, x.cacheFacing])).toEqual([
+      ['host', 'tool-result-fixture-refused', 'ui'],
+    ]);
+  });
+
+  // A `catalogue` verdict for "\n- Task list: " captures the template
+  // "\n- Task list: ${.taskListPath}"; a cache ruling on the literal itself is
+  // the contradiction, and the host body never carries it.
+  it('checks the literal itself, in raw and cooked form', () => {
+    const cat = {
+      prompts: [
+        {
+          id: 'system-reminder-fixture-task-list',
+          pieces: ['\\n- Task list: ${', '.taskListPath}'],
+          identifiers: [0],
+          identifierMap: { 0: 'CTX' },
+        },
+      ],
+    };
+    const allowT = {
+      [sha16('\n- Task list: ')]: {
+        verdict: 'catalogue',
+        id: 'system-reminder-fixture-task-list',
+        text: '\n- Task list: ',
+      },
+    };
+    for (const form of ['\n- Task list: ', '\\n- Task list: ']) {
+      const c = verdictConflicts(allowT, cat, {
+        [cacheKey(form)]: { facing: 'ui' },
+      });
+      expect(c.map(x => [x.kind, x.text])).toEqual([['literal', form]]);
+    }
+  });
+
+  // The extractor binds the FIRST hit in its lookup order; a later alias saying
+  // model does not make the bound ui verdict agree.
+  it('compares the verdict the extractor binds, and flags split aliases', () => {
+    const body = 'Read ${[Ye]} before you edit the file.';
+    const cat = {
+      prompts: [
+        {
+          id: 'tool-result-fixture-read',
+          pieces: ['Read ${[', 'Ye]} before you edit the file.'],
+          identifiers: [0],
+          identifierMap: { 0: 'X' },
+        },
+      ],
+    };
+    const [raw, norm] = keyVariants(body);
+    expect(norm.variant).toBe('bracket-index');
+    const allowR = { [sha16(body)]: { verdict: 'catalogue', id: 'r' } };
+    const c = verdictConflicts(allowR, cat, {
+      [raw.key]: { facing: 'ui' },
+      [norm.key]: { facing: 'model' },
+    });
+    expect(c.map(x => x.kind).sort()).toEqual(
+      ['alias', 'alias', 'host', 'literal'].sort()
+    );
+    const flipped = verdictConflicts(allowR, cat, {
+      [raw.key]: { facing: 'model' },
+      [norm.key]: { facing: 'ui' },
+    });
+    expect([...new Set(flipped.map(x => x.kind))]).toEqual(['alias']);
+  });
+});
+
+// off-route and not-a-slot are rulings on one host; content-keyed rows must not
+// silence the same literal rendering into another host.
+describe('checkSlotLiterals: site-specific verdicts cover only their host', () => {
+  const f = { hash: 'h', promptId: 'slash-command-a' };
+  const g = { hash: 'h', promptId: 'tool-result-b' };
+  it('covers the named host only', () => {
+    for (const verdict of ['off-route', 'not-a-slot']) {
+      const allow = { h: { verdict, promptId: 'slash-command-a' } };
+      expect(isReviewed(allow, f)).toBe(true);
+      expect(isReviewed(allow, g)).toBe(false);
+      expect(
+        isReviewed(
+          {
+            h: {
+              verdict,
+              promptId: 'slash-command-a',
+              promptIds: ['tool-result-b'],
+            },
+          },
+          g
+        )
+      ).toBe(true);
+      expect(isReviewed({ h: { verdict } }, f)).toBe(false);
+    }
+  });
+  it('lets a text verdict cover every host', () => {
+    for (const verdict of ['catalogue', 'glue'])
+      expect(
+        isReviewed({ h: { verdict, promptId: 'slash-command-a' } }, g)
+      ).toBe(true);
+    expect(isReviewed({ h: { note: 'REVIEW ME' } }, g)).toBe(false);
   });
 });

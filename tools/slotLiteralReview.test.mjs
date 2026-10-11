@@ -318,3 +318,171 @@ describe('slotLiteralReview', () => {
     expect(fs.existsSync(path.join(out, 'verdicts-00.json'))).toBe(false);
   });
 });
+
+// off-route and not-a-slot rule on one host; catalogue and glue on the text. A
+// literal ruled site-specifically at one host and rendering into another must
+// be packaged again for that host, and its verdict recorded on the same row.
+describe('slotLiteralReview: site verdicts across hosts', () => {
+  const LIT = 'the session is not in auto mode';
+  const CAT = {
+    prompts: [
+      {
+        id: 'tool-result-fixture-refused',
+        identifiers: [0, 1],
+        identifierMap: { 0: 'SUBJECT', 1: 'REASON' },
+        pieces: ['${', '.name} was refused: ${', '}'],
+      },
+      {
+        id: 'tool-result-fixture-blocked',
+        identifiers: [0, 1],
+        identifierMap: { 0: 'SUBJECT', 1: 'REASON' },
+        pieces: ['${', '.name} was blocked: ${', '}'],
+      },
+    ],
+  };
+  const SRC =
+    `function c(e,x){let r=x?${JSON.stringify(LIT)}:"";return \`\${e.name} was refused: \${r}\`}\n` +
+    `function d(e,x){let r=x?${JSON.stringify(LIT)}:"";return \`\${e.name} was blocked: \${r}\`}\n`;
+  const [A, B] = CAT.prompts.map(p => p.id);
+  let dir, out, cli, json, allowlistPath, hash;
+  const opts = () => ({ allowlistPath, noCandidates: true });
+  const writeAllow = obj =>
+    fs.writeFileSync(allowlistPath, JSON.stringify(obj, null, 2) + '\n');
+  const readAllow = () => JSON.parse(fs.readFileSync(allowlistPath, 'utf8'));
+  const writeVerdicts = rows =>
+    fs.writeFileSync(path.join(out, 'verdicts-00.json'), JSON.stringify(rows));
+  const offRouteAtA = () => ({
+    [hash]: {
+      promptId: A,
+      label: 'REASON',
+      verdict: 'off-route',
+      text: LIT,
+      reason: 'c() throws the refusal and its caller logs it',
+    },
+  });
+
+  beforeEach(() => {
+    dir = fs.mkdtempSync(path.join(os.tmpdir(), 'slotlit-site-'));
+    out = path.join(dir, 'review');
+    cli = path.join(dir, 'cli.js');
+    json = path.join(dir, 'prompts.json');
+    allowlistPath = path.join(dir, 'allowlist.json');
+    fs.writeFileSync(cli, SRC);
+    fs.writeFileSync(json, JSON.stringify(CAT));
+    const found = findSlotLiterals(SRC, CAT);
+    expect(found.map(f => f.promptId).sort()).toEqual([A, B].sort());
+    hash = found[0].hash;
+  });
+
+  it('packages a literal re-raised at a new host and appends that host', () => {
+    writeAllow(offRouteAtA());
+    expect(buildPackets(cli, json, out, { allowlistPath })).toEqual({
+      literals: 1,
+      packets: 1,
+    });
+    const md = fs.readFileSync(path.join(out, 'packet-00.md'), 'utf8');
+    expect(md).toContain('Already ruled `off-route`');
+    expect(md).toContain(`Renders into \`${B}\``);
+    expect(md).not.toContain(`Renders into \`${A}\``);
+    writeVerdicts([
+      {
+        hash,
+        verdict: 'not-a-slot',
+        reason: 'd() never binds r to this declarator at the template',
+      },
+    ]);
+    expect(mergeVerdicts(out, opts())).toMatchObject({
+      problems: [],
+      appended: 0,
+      updated: 1,
+    });
+    const row = readAllow()[hash];
+    expect(row).toMatchObject({ promptId: A, promptIds: [B] });
+    expect(row.reason).toContain(`${B} (not-a-slot): d() never binds`);
+    expect(
+      buildPackets(cli, json, out, { allowlistPath, force: true })
+    ).toEqual({ literals: 0, packets: 0 });
+  });
+
+  it('lets a verdict on the text replace a site row', () => {
+    writeAllow(offRouteAtA());
+    buildPackets(cli, json, out, { allowlistPath });
+    writeVerdicts([
+      { hash, verdict: 'glue', reason: 'labels the refusal reason at d()' },
+    ]);
+    expect(mergeVerdicts(out, opts()).updated).toBe(1);
+    expect(readAllow()[hash]).toMatchObject({ verdict: 'glue', promptId: B });
+  });
+
+  it('refuses to add anything over a verdict on the text', () => {
+    buildPackets(cli, json, out, { allowlistPath });
+    writeAllow({ [hash]: { verdict: 'glue', text: LIT } });
+    writeVerdicts([
+      { hash, verdict: 'off-route', reason: 'thrown and logged at both hosts' },
+    ]);
+    expect(checkVerdicts(out, opts()).problems.join('\n')).toMatch(
+      /already in the allowlist as glue/
+    );
+  });
+
+  it('records a site verdict only at the hosts it names', () => {
+    fs.writeFileSync(allowlistPath, '{\n}\n');
+    buildPackets(cli, json, out, { allowlistPath });
+    writeVerdicts([
+      {
+        hash,
+        verdict: 'off-route',
+        hosts: [A],
+        reason: 'c() throws the refusal and its caller logs it',
+      },
+    ]);
+    expect(mergeVerdicts(out, opts()).appended).toBe(1);
+    const row = readAllow()[hash];
+    expect(row).toMatchObject({ promptId: A, verdict: 'off-route' });
+    expect(row.promptIds).toBeUndefined();
+    expect(
+      buildPackets(cli, json, out, { allowlistPath, force: true })
+    ).toEqual({ literals: 1, packets: 1 });
+  });
+
+  it('rejects hosts on a text verdict or outside the packet', () => {
+    fs.writeFileSync(allowlistPath, '{\n}\n');
+    buildPackets(cli, json, out, { allowlistPath });
+    writeVerdicts([
+      {
+        hash,
+        verdict: 'glue',
+        hosts: [A],
+        reason: 'labels the refusal reason',
+      },
+    ]);
+    expect(checkVerdicts(out, opts()).problems.join('\n')).toMatch(
+      /hosts applies only to off-route/
+    );
+    writeVerdicts([
+      {
+        hash,
+        verdict: 'off-route',
+        hosts: ['tool-result-elsewhere'],
+        reason: 'thrown and logged at both hosts',
+      },
+    ]);
+    expect(checkVerdicts(out, opts()).problems.join('\n')).toMatch(
+      /non-empty subset/
+    );
+  });
+
+  it('refuses to rewrite rows of a non-canonical allowlist', () => {
+    const raw =
+      JSON.stringify(offRouteAtA(), null, 2).replace('{\n', '{\n\n') + '\n';
+    fs.writeFileSync(allowlistPath, raw);
+    buildPackets(cli, json, out, { allowlistPath });
+    writeVerdicts([
+      { hash, verdict: 'off-route', reason: 'thrown and logged at d() too' },
+    ]);
+    expect(mergeVerdicts(out, opts()).problems.join('\n')).toMatch(
+      /not in canonical/
+    );
+    expect(fs.readFileSync(allowlistPath, 'utf8')).toBe(raw);
+  });
+});

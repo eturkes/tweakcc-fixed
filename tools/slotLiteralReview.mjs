@@ -25,7 +25,14 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { findSlotLiterals, literalForms } from './checkSlotLiterals.mjs';
+import {
+  SITE_VERDICTS,
+  findSlotLiterals,
+  isReviewed,
+  literalForms,
+  rowCovers,
+  rowHosts,
+} from './checkSlotLiterals.mjs';
 import { catalogueIndex, sha1 } from './lib/classifyVerdicts.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
@@ -52,7 +59,7 @@ ${cliPath}
 Rules:
 1. Read the emission site before deciding. The packet gives the host prompt's pristine body and the source around the literal; read further in the bundle when the binding or the delivery is not settled by that.
 2. Two literals that are quasis of ONE template node (\`a \${x} b\` reports \`a \` and \` b\` separately): catalogue the node once, with a name describing the whole branch, and mark the other quasi \`glue\` with a reason naming that id.
-3. A literal shared by several host prompts (the packet lists each) gets one verdict.
+3. A literal shared by several host prompts (the packet lists each): \`catalogue\` and \`glue\` are verdicts on the TEXT, one per literal, covering every host. \`off-route\` and \`not-a-slot\` are verdicts on one host's emission site and cover only the hosts they are recorded for: give one only when it holds at every host listed, or add \`"hosts": [<prompt ids>]\` naming the hosts where it holds (the rest stay unreviewed and come back in the next packet). A literal marked "already ruled" was ruled site-specifically at other hosts; rule only the hosts listed under it.
 4. For \`catalogue\`:
    - \`id\`: kebab-case, prefixed like its host prompt (\`tool-result-\`, \`data-\`, \`system-reminder-\`, \`system-prompt-\`, \`slash-command-\`, \`tool-description-\`, \`tool-parameter-\`, \`agent-prompt-\`, \`skill-\`), specific to what the text says. It must not appear in ${path.join(outDir, 'existing-ids.txt')} (one id per line) and must be unique within your output.
    - \`name\`: \`<Kind>: <Topic> — <what it says>\`, matching existing names, e.g. \`Tool Result: StartTask — start the task without files\`.
@@ -64,9 +71,9 @@ Rules:
 
 Write a JSON array to your verdicts path, one row per hash in your hashes file, each exactly once:
 
-{"hash": "<16 hex>", "verdict": "catalogue|glue|not-a-slot|off-route", "reason": "…", "id": "…", "name": "…", "desc": "…"}
+{"hash": "<16 hex>", "verdict": "catalogue|glue|not-a-slot|off-route", "reason": "…", "id": "…", "name": "…", "desc": "…", "hosts": ["…"]}
 
-(\`id\`/\`name\`/\`desc\` only for \`catalogue\`.) Validate it before replying: \`node ${fileURLToPath(import.meta.url)} merge ${outDir} --check\` reports every problem across all packets; fix the ones in your file. Reply with the counts per verdict and the path.
+(\`id\`/\`name\`/\`desc\` only for \`catalogue\`; \`hosts\` optional, only for \`off-route\`/\`not-a-slot\`.) Validate it before replying: \`node ${fileURLToPath(import.meta.url)} merge ${outDir} --check\` reports every problem across all packets; fix the ones in your file. Reply with the counts per verdict and the path.
 `;
 
 // Findings recorded at build time, so merge never re-runs the scan.
@@ -85,6 +92,10 @@ const pendingClassifyBodies = dir =>
     .readdirSync(dir)
     .filter(f => /^classify-chunk-\d+\.json$/.test(f))
     .flatMap(f => readJson(path.join(dir, f)).map(c => c.body));
+
+// The unreviewed hosts a packet listed for a literal (a findings.json written
+// before `hosts` was recorded has only the first).
+const findingHosts = f => (f ? f.hosts || [f.promptId] : []);
 
 function promptBody(p) {
   const map = p.identifierMap || {};
@@ -121,7 +132,7 @@ export function buildPackets(
   const catalogue = readJson(jsonPath);
   const allowlist = fs.existsSync(allowlistPath) ? readJson(allowlistPath) : {};
   const unreviewed = findSlotLiterals(source, catalogue).filter(
-    f => !allowlist[f.hash]
+    f => !isReviewed(allowlist, f)
   );
   const byHash = new Map();
   for (const f of unreviewed) {
@@ -159,6 +170,11 @@ export function buildPackets(
       md.push(
         `\n---\n\n## ${hash}\n\nLiteral: ${JSON.stringify(text)}\nLiteral source offset: ${offset}\n`
       );
+      const prior = allowlist[hash];
+      if (prior && SITE_VERDICTS.has(prior.verdict))
+        md.push(
+          `\nAlready ruled \`${prior.verdict}\` at ${rowHosts(prior).join(', ')}: ${JSON.stringify(prior.reason || prior.why || '')}. Rule only the hosts listed below.\n`
+        );
       for (const f of findings) {
         md.push(
           `\n### Renders into \`${f.promptId}\` substitution #${f.slot} (label ${f.label}), resolved via ${f.resolvedVia}\n`
@@ -191,7 +207,14 @@ export function buildPackets(
   }
   fs.writeFileSync(
     findingsFile(outDir),
-    JSON.stringify(Object.fromEntries(items.map(([h, f]) => [h, f[0]])))
+    JSON.stringify(
+      Object.fromEntries(
+        items.map(([h, f]) => [
+          h,
+          { ...f[0], hosts: [...new Set(f.map(x => x.promptId))] },
+        ])
+      )
+    )
   );
   fs.writeFileSync(
     manifestFile(outDir),
@@ -299,8 +322,37 @@ export function checkVerdicts(
         );
       if (typeof r.reason !== 'string' || r.reason.trim().length < 20)
         problems.push(`${where}: reason must cite the evidence`);
-      if (allowlist[r.hash])
-        problems.push(`${where}: already in the allowlist`);
+      // A verdict on the text (catalogue/glue) covers every host, so nothing
+      // may be added on top of it. A site verdict (off-route/not-a-slot)
+      // covers only its hosts; a literal re-raised at another host is
+      // reviewable, and merge records it beside the existing row.
+      const prior = allowlist[r.hash];
+      const hosts = findingHosts(findings[r.hash]);
+      if (prior?.verdict && !SITE_VERDICTS.has(prior.verdict))
+        problems.push(
+          `${where}: already in the allowlist as ${prior.verdict}, a verdict on the text that covers every host`
+        );
+      else if (
+        prior?.verdict &&
+        hosts.every(h => rowCovers(prior, { promptId: h }))
+      )
+        problems.push(
+          `${where}: already ruled ${prior.verdict} at every host it renders into`
+        );
+      if ('hosts' in r) {
+        if (!SITE_VERDICTS.has(r.verdict))
+          problems.push(
+            `${where}: hosts applies only to off-route/not-a-slot; ${r.verdict} covers every host`
+          );
+        else if (
+          !Array.isArray(r.hosts) ||
+          !r.hosts.length ||
+          r.hosts.some(h => !hosts.includes(h))
+        )
+          problems.push(
+            `${where}: hosts must be a non-empty subset of ${hosts.join(', ')}`
+          );
+      }
       const forms = formsOf(findings[r.hash]);
       if (r.verdict === 'catalogue') {
         for (const k of ['id', 'name', 'desc'])
@@ -349,7 +401,7 @@ export function checkVerdicts(
 export function mergeVerdicts(outDir, opts = {}) {
   const allowlistPath = opts.allowlistPath || ALLOWLIST;
   const { problems, rows, findings } = checkVerdicts(outDir, opts);
-  if (problems.length) return { problems, appended: 0 };
+  if (problems.length) return { problems, appended: 0, updated: 0 };
   const raw = fs.existsSync(allowlistPath)
     ? fs.readFileSync(allowlistPath, 'utf8')
     : EMPTY_ALLOWLIST;
@@ -357,22 +409,78 @@ export function mergeVerdicts(outDir, opts = {}) {
     return {
       problems: [`${allowlistPath} does not end in "\\n}\\n"`],
       appended: 0,
+      updated: 0,
     };
-  const entries = rows.map(r => {
+  const allowlist = JSON.parse(raw);
+  const added = [];
+  const changed = new Map();
+  for (const r of rows) {
     const f = findings[r.hash];
-    const e = { promptId: f.promptId, label: f.label, verdict: r.verdict };
+    const prior = allowlist[r.hash];
+    const site = SITE_VERDICTS.has(r.verdict);
+    const hosts = (r.hosts || findingHosts(f)).filter(
+      h => !prior || !rowCovers(prior, { promptId: h })
+    );
+    if (site && prior && SITE_VERDICTS.has(prior.verdict)) {
+      // Another host's ruling on the same literal: one row, every host named.
+      const known = rowHosts(prior);
+      changed.set(r.hash, {
+        ...prior,
+        promptIds: [
+          ...(prior.promptIds || []),
+          ...hosts.filter(h => !known.includes(h)),
+        ],
+        reason: [
+          prior.reason,
+          `${hosts.join(', ')} (${r.verdict}): ${r.reason}`,
+        ]
+          .filter(Boolean)
+          .join('\n'),
+      });
+      continue;
+    }
+    const e = {
+      promptId: site ? hosts[0] : f.promptId,
+      ...(site && hosts.length > 1 && { promptIds: hosts.slice(1) }),
+      label: f.label,
+      verdict: r.verdict,
+    };
     if (r.verdict === 'catalogue')
       Object.assign(e, { id: r.id, name: r.name, desc: r.desc });
     Object.assign(e, { text: f.text, reason: r.reason });
-    return `  ${JSON.stringify(r.hash)}: ${JSON.stringify(e, null, 2).replace(/\n/g, '\n  ')}`;
-  });
-  if (!entries.length) return { problems: [], appended: 0 };
-  const head = raw.slice(0, -3);
-  const sep = /^\s*\{\s*$/.test(head) ? '\n' : ',\n';
-  const next = head + sep + entries.join(',\n') + '\n}\n';
+    // A verdict on the text replaces a site row, or a placeholder.
+    if (prior) changed.set(r.hash, e);
+    else added.push([r.hash, e]);
+  }
+  if (!added.length && !changed.size)
+    return { problems: [], appended: 0, updated: 0 };
+  let next;
+  if (!changed.size) {
+    const entries = added.map(
+      ([h, e]) =>
+        `  ${JSON.stringify(h)}: ${JSON.stringify(e, null, 2).replace(/\n/g, '\n  ')}`
+    );
+    const head = raw.slice(0, -3);
+    const sep = /^\s*\{\s*$/.test(head) ? '\n' : ',\n';
+    next = head + sep + entries.join(',\n') + '\n}\n';
+  } else {
+    // Rewriting rows in place re-serializes the file, which is byte-identical
+    // only when the file is already in canonical form.
+    if (raw !== JSON.stringify(allowlist, null, 2) + '\n')
+      return {
+        problems: [
+          `${allowlistPath} is not in canonical JSON.stringify(…, null, 2) form; updating rows in place would rewrite other rows`,
+        ],
+        appended: 0,
+        updated: 0,
+      };
+    for (const [h, e] of changed) allowlist[h] = e;
+    for (const [h, e] of added) allowlist[h] = e;
+    next = JSON.stringify(allowlist, null, 2) + '\n';
+  }
   JSON.parse(next);
   fs.writeFileSync(allowlistPath, next);
-  return { problems: [], appended: entries.length };
+  return { problems: [], appended: added.length, updated: changed.size };
 }
 
 const USAGE =
@@ -434,7 +542,7 @@ function main() {
       process.exit(1);
     }
     console.log(
-      `slot-literal review: appended ${r.appended} verdict(s) to ${path.relative(process.cwd(), ALLOWLIST)}`
+      `slot-literal review: appended ${r.appended} and updated ${r.updated} verdict(s) in ${path.relative(process.cwd(), ALLOWLIST)}`
     );
     return;
   }

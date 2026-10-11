@@ -72,10 +72,10 @@ import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 
 import { walk, resolveIdentifier } from './lib/slotScope.mjs';
-import { keyVariants } from './probeCacheKey.mjs';
 
 const require = createRequire(import.meta.url);
 const parser = require('@babel/parser');
+const ex = require('./promptExtractor.js');
 const {
   EARLIER_SHAPES,
   decodeUnicodeEscapesInPiece,
@@ -381,31 +381,160 @@ function loadAllowlist() {
   }
 }
 
+// `off-route` and `not-a-slot` are rulings on one emission site, not on the
+// text, yet rows are keyed by content. A literal ruled off-route at one host is
+// not reviewed at another host that does reach the model, so those verdicts
+// cover only the host(s) they name. `catalogue` and `glue` are about the text
+// and cover every host.
+export const SITE_VERDICTS = new Set(['off-route', 'not-a-slot']);
+export const rowHosts = row =>
+  [row.promptId, ...(Array.isArray(row.promptIds) ? row.promptIds : [])].filter(
+    Boolean
+  );
+export function rowCovers(row, finding) {
+  if (!row?.verdict) return false;
+  if (!SITE_VERDICTS.has(row.verdict)) return true;
+  return rowHosts(row).includes(finding.promptId);
+}
+export const isReviewed = (allowlist, finding) =>
+  Boolean(allowlist[finding.hash]) &&
+  rowCovers(allowlist[finding.hash], finding);
+
+// The cooked value of raw template/string source: what a StringLiteral site
+// hashes, where a template site hashes the raw piece.
+const cook = s =>
+  s.replace(
+    /\\(u\{[0-9a-fA-F]+\}|u[0-9a-fA-F]{4}|x[0-9a-fA-F]{2}|\r\n|[\s\S])/g,
+    (_m, c) => {
+      if (c[0] === 'u' && c.length > 1)
+        return String.fromCodePoint(parseInt(c.replace(/[u{}]/g, ''), 16));
+      if (c[0] === 'x' && c.length === 3)
+        return String.fromCharCode(parseInt(c.slice(1), 16));
+      const simple = { n: '\n', r: '\r', t: '\t', b: '\b', f: '\f', v: '\v' };
+      if (c in simple) return simple[c];
+      if (c === '0') return '\0';
+      if (c === '\n' || c === '\r\n' || c === '\r') return '';
+      return c;
+    }
+  );
+
+// The verdict the extractor binds a body to: the FIRST hit in classifyByCache's
+// order (each body's cacheLookupForms, the current body before its legacy
+// ones). Comparing every alias instead let one `model` alias hide the `ui`
+// verdict the extractor actually reads. `mixed` flags a body whose aliases
+// disagree on model vs dropped: whichever binds, one ruling is wrong.
+function boundVerdict(cache, bodies) {
+  let first = null;
+  const facings = new Set();
+  for (const b of bodies)
+    for (const form of ex.cacheLookupForms(b)) {
+      const hit = cache[ex.sha1Hex(form)];
+      if (!hit) continue;
+      first ??= hit;
+      facings.add(hit.facing === 'model' ? 'model' : 'dropped');
+    }
+  return { first, mixed: facings.size > 1 };
+}
+
 // A `catalogue` verdict here lands the literal no matter what the
 // classification cache says, and both stores are keyed on content, so a literal
 // ruled `ui` or `internal` in the cache while catalogued here is two
 // contradicting verdicts, one of them wrong. On CC 2.1.296 nine had drifted
 // apart, and the catalogue silently followed this file.
+//
+// Hosts are found by CONTENT, the way the extractor finds them
+// (applySlotLiteralNames): every catalogued entry whose pieces probe to a
+// `catalogue` row through slotLiteralCandidates. Looking hosts up by the row's
+// id missed every `-N` sibling disambiguateIdCollisions minted, every carried-
+// over id the naming pass skipped, and every row without an id. The literal
+// itself is checked too: a template host's body is not the literal, and a ruling
+// keyed on the literal alone never reached a host lookup.
+//
+// Kinds: `host` (a catalogued body the cache drops), `literal` (the literal's
+// own text the cache drops), `alias` (a body whose cache aliases disagree).
 export function verdictConflicts(allowlist, catalogue, cache) {
-  const bodies = new Map();
-  for (const p of catalogue.prompts || []) {
-    if (!p.id) continue;
-    const body = (p.pieces || []).filter(x => typeof x === 'string').join('');
-    if (!bodies.has(p.id)) bodies.set(p.id, []);
-    bodies.get(p.id).push(body);
-  }
+  const rows = new Map();
+  for (const [h, row] of Object.entries(allowlist))
+    if (row?.verdict === 'catalogue') rows.set(h, row);
+  if (!rows.size) return [];
+  ex.setCcVersionForCacheLookups(catalogue.version || null);
+  // The capture-time body is the raw binary text, so its version-stamped form
+  // goes first, as it does when the extractor meets it.
+  const raw = body =>
+    catalogue.version
+      ? body.split('<<CCVERSION>>').join(catalogue.version)
+      : body;
+
   const out = [];
-  for (const [hash, row] of Object.entries(allowlist)) {
-    if (row?.verdict !== 'catalogue' || !row.id) continue;
-    for (const body of bodies.get(row.id) || []) {
-      const facings = keyVariants(body)
-        .map(k => cache[k.key]?.facing)
-        .filter(Boolean);
-      const other = facings.find(x => x !== 'model');
-      if (other && !facings.includes('model'))
-        out.push({ hash, id: row.id, text: body, cacheFacing: other });
+  const seen = new Set();
+  const push = c => {
+    const k = [c.kind, c.hash, c.host ?? '', c.text].join('\u0000');
+    if (seen.has(k)) return;
+    seen.add(k);
+    out.push(c);
+  };
+  const litForms = new Map();
+  const addForm = (h, s) => {
+    if (!litForms.has(h)) litForms.set(h, new Set());
+    litForms.get(h).add(s);
+  };
+  for (const [h, row] of rows)
+    if (typeof row.text === 'string' && hash(row.text) === h)
+      addForm(h, row.text);
+
+  for (const p of catalogue.prompts || []) {
+    const pieces = (p.pieces || []).filter(x => typeof x === 'string');
+    const legacy = (p.legacyShapes || []).map(l =>
+      l.pieces.filter(x => typeof x === 'string')
+    );
+    const probes = [pieces.join(''), ...pieces, ...legacy.flat()];
+    const hits = new Set();
+    for (const probe of probes)
+      for (const cand of ex.slotLiteralCandidates(probe)) {
+        // Rows hash the cooked literal and pieces hold raw source, so a quasi
+        // with an escape (the founding "\n- Task list: ") matches only cooked.
+        const cooked = cook(cand);
+        const h = [cand, cooked].map(hash).find(x => rows.has(x));
+        if (!h) continue;
+        hits.add(h);
+        addForm(h, cand);
+        addForm(h, cooked);
+      }
+    if (!hits.size) continue;
+    const body = pieces.join('');
+    const v = boundVerdict(cache, [
+      raw(body),
+      ...legacy.map(l => raw(l.join(''))),
+    ]);
+    for (const h of hits) {
+      const id = rows.get(h).id;
+      if (v.first && v.first.facing !== 'model')
+        push({
+          kind: 'host',
+          hash: h,
+          id,
+          host: p.id,
+          text: body,
+          cacheFacing: v.first.facing,
+        });
+      if (v.mixed) push({ kind: 'alias', hash: h, id, host: p.id, text: body });
     }
   }
+
+  for (const [h, forms] of litForms)
+    for (const form of forms) {
+      const v = boundVerdict(cache, [raw(form)]);
+      const id = rows.get(h).id;
+      if (v.first && v.first.facing !== 'model')
+        push({
+          kind: 'literal',
+          hash: h,
+          id,
+          text: form,
+          cacheFacing: v.first.facing,
+        });
+      if (v.mixed) push({ kind: 'alias', hash: h, id, text: form });
+    }
   return out;
 }
 
@@ -431,7 +560,7 @@ function main() {
   const catalogue = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
   const findings = findSlotLiterals(source, catalogue);
   const allowlist = loadAllowlist();
-  const unreviewed = findings.filter(f => !allowlist[f.hash]);
+  const unreviewed = findings.filter(f => !isReviewed(allowlist, f));
   const conflicts = verdictConflicts(
     allowlist,
     catalogue,
@@ -445,6 +574,7 @@ function main() {
     process.exit(unreviewed.length || conflicts.length ? 1 : 0);
   }
 
+  const kinds = k => conflicts.filter(c => c.kind === k).length;
   console.log(
     'slot-literals: ' +
       findings.length +
@@ -454,20 +584,35 @@ function main() {
       unreviewed.length +
       ' unreviewed, ' +
       conflicts.length +
-      ' catalogued against a ui/internal cache verdict'
+      ' catalogued against a ui/internal cache verdict (' +
+      kinds('host') +
+      ' host, ' +
+      kinds('literal') +
+      ' literal, ' +
+      kinds('alias') +
+      ' contradictory-alias)'
   );
-  for (const f of conflicts)
+  for (const f of conflicts) {
+    const where =
+      '\n  ' +
+      (f.kind === 'alias' ? 'ALIAS' : 'CONFLICT') +
+      ' [' +
+      f.hash +
+      '] ' +
+      (f.id || '(no id)') +
+      (f.host && f.host !== f.id ? ' hosted by ' + (f.host || '(no id)') : '') +
+      (f.kind === 'literal' ? ' (the literal itself)' : '');
     console.log(
-      '\n  CONFLICT [' +
-        f.hash +
-        '] ' +
-        f.id +
-        ' catalogued here, cache says ' +
-        f.cacheFacing +
-        ': ' +
-        JSON.stringify(f.text) +
+      where +
+        (f.kind === 'alias'
+          ? ': the cache rules this body both model and ui/internal under different keys: '
+          : ' catalogued here, cache says ' + f.cacheFacing + ': ') +
+        JSON.stringify(
+          f.text.length > 300 ? f.text.slice(0, 300) + '...' : f.text
+        ) +
         ' — rule it once and make both stores agree'
     );
+  }
 
   for (const f of unreviewed) {
     console.log(
@@ -490,6 +635,23 @@ function main() {
   if (update) {
     const next = { ...allowlist };
     for (const f of unreviewed) {
+      // A site-specific verdict ruled at another host stays; overwriting it
+      // would erase that host's review. Rule this host by adding it to the
+      // row's `promptIds`, or replace the row with a verdict on the text.
+      if (next[f.hash]) {
+        console.log(
+          '\n  kept [' +
+            f.hash +
+            '] ' +
+            next[f.hash].verdict +
+            ' at ' +
+            rowHosts(next[f.hash]).join(', ') +
+            '; rule it for ' +
+            f.promptId +
+            ' by hand'
+        );
+        continue;
+      }
       next[f.hash] = {
         promptId: f.promptId,
         label: f.label,
