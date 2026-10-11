@@ -267,97 +267,6 @@
       }
     ]
   },
-  "4311d049f36b5201": {
-    "at": 32778342,
-    "model": {
-      "031172f40b5ec3640210557d8e413ed1a10336e3": "read only:",
-      "26b2a91412034b4b02339f5bd2b78232b908c884": "Required for action",
-      "40811a4e778d3c55f01ef5f9720b475215a0e766": "publish with `asset: true`, in place of `file_path`:",
-      "55057976b7d8a2b9c4dfbadf7c4c9bdf14e5d1df": "Options for action",
-      "678237e80cc1e051640bc147a877cd5c2d0c0284": "one the person can open",
-      "79bf3ec913f3bbefd1c36f7900578d3ef36f9fb4": "publish with `asset: true` and `from_url` only:",
-      "830b463fa629e92d622143ade6a86720b396fc97": "Required for every action except 'batch' and 'profiles'.",
-      "aa8e982d78eee97d63756e5471137a3c353fedaf": "separate calls",
-      "b74273a257345825eefda19918b8dc303f0560b9": "publish with `asset: true` only:",
-      "babfabf9ac24fd25e37ad43dd4aec3c1f0d66617": "read: read just",
-      "c4f43355b10a9f9e9e0aa600c88df2762378067e": "action 'batch' only:",
-      "c7bccd90fcd36a06349c0837deced79221251c8d": "every document a get, list or query returns",
-      "decc88b95ad78767b74ae751c6ea6691ba911794": "action 'str_replace' only:",
-      "e72bd80dce09c5bc5999bfcca2a09fc2ca2f0e7f": "(from a `scope: \"assets\"` listing of it, or an upload resul…"
-    },
-    "position": 1,
-    "reviews": [
-      {
-        "arms": {
-          "3acc8f6178aa41e3537654de859397741ce6d70e": {
-            "facing": "internal",
-            "preview": "separate write_db calls"
-          },
-          "3d1aa983bc953d6e666bed7f130c7c558ef69797": {
-            "facing": "internal",
-            "preview": "read_db and write_db only: act"
-          },
-          "59646077279bb96b829f28e6f28eb4eeee612797": {
-            "facing": "internal",
-            "preview": "Required for read_db and write_db."
-          },
-          "5f889b7b331882f71623ea310a1083a308207547": {
-            "facing": "internal",
-            "preview": "one you can open"
-          },
-          "71e4799038add911d1509377b22ab46e96c54b32": {
-            "facing": "internal",
-            "preview": "every read_db document"
-          },
-          "7f2b8b4239aa5c200d237aaa5841284a4cdc3032": {
-            "facing": "internal",
-            "preview": "write_db with db_op 'batch' only:"
-          },
-          "95b80c4000fcc0b5e94d4fe76417d9485fc16a46": {
-            "facing": "internal",
-            "preview": "Options for db_op"
-          },
-          "a370f758a4a5958696faaff754242b81c219f2ad": {
-            "facing": "internal",
-            "preview": "copy_from only:"
-          },
-          "b4b6d360749771406d1f1e86b1d7cc93704d4693": {
-            "facing": "internal",
-            "preview": "Required for db_op"
-          },
-          "c8eb54c02bf208cd57b78d0b54fbd5b752a21ea4": {
-            "facing": "internal",
-            "preview": "comments only:"
-          },
-          "d77d465dcc203bc12a0f0229103e3d3001e06a9b": {
-            "facing": "internal",
-            "preview": "upload_asset:"
-          },
-          "d99780c240b675e9b2997e6cda698fe033874179": {
-            "facing": "internal",
-            "preview": "write_db with db_op 'set', 'update', 'str_replace' or 'dele…"
-          },
-          "e27f1a5acebf5a2f44592cf8fee9dc525dc0d8d6": {
-            "facing": "internal",
-            "preview": "(its list_assets or upload_asset results)"
-          },
-          "e9ce02722278a7ef7541c29715ccfdad4798200f": {
-            "facing": "internal",
-            "preview": "comments: read just"
-          },
-          "e9dfb283762163357b59a58d0e60240d25bda4b0": {
-            "facing": "internal",
-            "preview": "action 'set', 'update', 'str_replace' or 'delete'"
-          },
-          "f22c4ed3b1cfddcfeacf6d5cba07a5bbd08afaab": {
-            "facing": "internal",
-            "preview": "write_db with db_op 'str_replace' only:"
-          }
-        },
-        "why": "m(desc,[[needle,replacement]]) (32760899) runs `t=t.replace(n,f)` on a zod description and emits only the result. The internal arms are the db_op-spelled needles (first elements, e.g. \"write_db with db_op 'str_replace' only:\"), which are only searched for and never emitted. The model arms are the action-spelled replacements (second elements) that end up in the tool schema descriptions."
-      }
-    ]
-  },
   "58ad133c6782aca3": {
     "at": 10393207,
     "model": {
@@ -1233,10 +1142,135 @@
       }
     ]
   },
+  "ace52307cc689fe8": {
+    "at": 32778342,
+    "model": {
+      "031172f40b5ec3640210557d8e413ed1a10336e3": "read only:",
+      "26b2a91412034b4b02339f5bd2b78232b908c884": "Required for action",
+      "40811a4e778d3c55f01ef5f9720b475215a0e766": "publish with `asset: true`, in place of `file_path`:",
+      "55057976b7d8a2b9c4dfbadf7c4c9bdf14e5d1df": "Options for action",
+      "678237e80cc1e051640bc147a877cd5c2d0c0284": "one the person can open",
+      "79bf3ec913f3bbefd1c36f7900578d3ef36f9fb4": "publish with `asset: true` and `from_url` only:",
+      "830b463fa629e92d622143ade6a86720b396fc97": "Required for every action except 'batch' and 'profiles'.",
+      "aa8e982d78eee97d63756e5471137a3c353fedaf": "separate calls",
+      "b74273a257345825eefda19918b8dc303f0560b9": "publish with `asset: true` only:",
+      "babfabf9ac24fd25e37ad43dd4aec3c1f0d66617": "read: read just",
+      "c4f43355b10a9f9e9e0aa600c88df2762378067e": "action 'batch' only:",
+      "c7bccd90fcd36a06349c0837deced79221251c8d": "every document a get, list or query returns",
+      "decc88b95ad78767b74ae751c6ea6691ba911794": "action 'str_replace' only:",
+      "e72bd80dce09c5bc5999bfcca2a09fc2ca2f0e7f": "(from a `scope: \"assets\"` listing of it, or an upload resul…"
+    },
+    "position": 1,
+    "reviews": [
+      {
+        "arms": {
+          "3acc8f6178aa41e3537654de859397741ce6d70e": {
+            "facing": "internal",
+            "preview": "separate write_db calls"
+          },
+          "3d1aa983bc953d6e666bed7f130c7c558ef69797": {
+            "facing": "internal",
+            "preview": "read_db and write_db only: act"
+          },
+          "59646077279bb96b829f28e6f28eb4eeee612797": {
+            "facing": "internal",
+            "preview": "Required for read_db and write_db."
+          },
+          "5f889b7b331882f71623ea310a1083a308207547": {
+            "facing": "internal",
+            "preview": "one you can open"
+          },
+          "71e4799038add911d1509377b22ab46e96c54b32": {
+            "facing": "internal",
+            "preview": "every read_db document"
+          },
+          "7f2b8b4239aa5c200d237aaa5841284a4cdc3032": {
+            "facing": "internal",
+            "preview": "write_db with db_op 'batch' only:"
+          },
+          "95b80c4000fcc0b5e94d4fe76417d9485fc16a46": {
+            "facing": "internal",
+            "preview": "Options for db_op"
+          },
+          "a370f758a4a5958696faaff754242b81c219f2ad": {
+            "facing": "internal",
+            "preview": "copy_from only:"
+          },
+          "b4b6d360749771406d1f1e86b1d7cc93704d4693": {
+            "facing": "internal",
+            "preview": "Required for db_op"
+          },
+          "c8eb54c02bf208cd57b78d0b54fbd5b752a21ea4": {
+            "facing": "internal",
+            "preview": "comments only:"
+          },
+          "d77d465dcc203bc12a0f0229103e3d3001e06a9b": {
+            "facing": "internal",
+            "preview": "upload_asset:"
+          },
+          "d99780c240b675e9b2997e6cda698fe033874179": {
+            "facing": "internal",
+            "preview": "write_db with db_op 'set', 'update', 'str_replace' or 'dele…"
+          },
+          "e27f1a5acebf5a2f44592cf8fee9dc525dc0d8d6": {
+            "facing": "internal",
+            "preview": "(its list_assets or upload_asset results)"
+          },
+          "e9ce02722278a7ef7541c29715ccfdad4798200f": {
+            "facing": "internal",
+            "preview": "comments: read just"
+          },
+          "e9dfb283762163357b59a58d0e60240d25bda4b0": {
+            "facing": "internal",
+            "preview": "action 'set', 'update', 'str_replace' or 'delete'"
+          },
+          "f22c4ed3b1cfddcfeacf6d5cba07a5bbd08afaab": {
+            "facing": "internal",
+            "preview": "write_db with db_op 'str_replace' only:"
+          }
+        },
+        "why": "m(desc,[[needle,replacement]]) (32760899) runs `t=t.replace(n,f)` on a zod description and emits only the result. The internal arms are the db_op-spelled needles (first elements, e.g. \"write_db with db_op 'str_replace' only:\"), which are only searched for and never emitted. The model arms are the action-spelled replacements (second elements) that end up in the tool schema descriptions."
+      },
+      {
+        "arms": {
+          "0e1a70c741ae5d1dd268c92b7addd641f3bd7a22": {
+            "facing": "internal",
+            "preview": "every read_db document\nevery document a get, list or query …"
+          },
+          "1bddda5ec9ce3db91ea868f6d045504bcadc96ef": {
+            "facing": "internal",
+            "preview": "copy_from only:\npublish with `asset: true`, in place of `fi…"
+          },
+          "3de366e724e4b16c506a6dc9b70f4406547a4f1e": {
+            "facing": "internal",
+            "preview": "Required for read_db and write_db.\nRequired for every actio…"
+          },
+          "5dfaab8f8762afaa0520957838ede9a769f17f20": {
+            "facing": "internal",
+            "preview": "one you can open\none the person can open"
+          },
+          "79d389205082e7a3e22750add366c4358552f908": {
+            "facing": "internal",
+            "preview": "copy_from only:\npublish with `asset: true` and `from_url` o…"
+          },
+          "f4376e5041766de326572c8faf0948b7d5070a4f": {
+            "facing": "internal",
+            "preview": "write_db with db_op 'set', 'update', 'str_replace' or 'dele…"
+          },
+          "f4bfaf147401438815e268421232c65c200e33e2": {
+            "facing": "internal",
+            "preview": "(its list_assets or upload_asset results)\n(from a `scope: \"…"
+          }
+        },
+        "why": "m(desc,[[needle,replacement]]) (32760899) runs t=t.replace(n,f) per pair and emits only the result via e.describe(t). All seven composite arms are ARTIFACTS: each is one [needle,replacement] pair joined with \\n (32762270, 32762344, 32762414, 32776514, 32777361, 32777480), and needle and replacement are never emitted joined, so they are internal (0e1a70c7 and 5dfaab8f corrected from model). The model arms are the replacement leaves that land in the tool schema descriptions; the internal leaves are the db_op-spelled needles that are only searched for."
+      }
+    ]
+  },
   "b659c16547488079": {
     "at": 8202704,
     "model": {
       "36365543cf9aa33bbfb83e4683a0f86dfef986f8": "Please convert the image to PNG, JPEG, GIF, or WebP.",
+      "3b255a065730af835a090735b87f151460429ecd": "Unable to resize image — image processing is unavailable an…",
       "7394ffe4e1c2e3e8df5fe4d9493442987247a1d7": "Unable to resize image (${()} raw, ${()} base64). The image…",
       "9e76c0d0e1ad44e72b907442ee3a5372c73e4905": "Unable to resize image — dimensions exceed the ${}x${}px li…",
       "a51f84650af948948d26293dc6320c8a9815a8d3": "Unable to resize image — could not verify image dimensions …",
@@ -1258,6 +1292,15 @@
           }
         },
         "why": "eO is ImageResizeError. The model arms (and the corrected base64-limit arm) are thrown by WNe's resize path (8192621-8196865) and reach the model as unprocessable-image text (8197856). The two 'Unable to compress image' arms are thrown only by T_r (8202611, 8202711), and every T_r caller catches them: the Read tool's mys catch logs and falls back to a 400px JPEG (12151738), gys sits in try{}catch{} (28656121), and the session-serving Pe logs (28447788)."
+      },
+      {
+        "arms": {
+          "3b255a065730af835a090735b87f151460429ecd": {
+            "facing": "model",
+            "preview": "Unable to resize image — image processing is unavailable an…"
+          }
+        },
+        "why": "eO is ImageResizeError. The new model arm is a real one-string message: \"Unable to resize image — image processing is unavailable…\"+\"Please convert…\" thrown as one eO in WNe's catch path (8196056, inside WNe 8192537) when K1() cannot read header dimensions; the caller at 8197856 catches eO and returns h.message as the unprocessable-image result the model reads. The internal arms remain the \"Unable to compress image\" throws in T_r (8202611, 8202711), which every T_r caller catches (12151738, 28656121, 28447788)."
       }
     ]
   },
@@ -1934,11 +1977,78 @@
       }
     ]
   },
-  "c904ad1df64ca50d": {
+  "ca115a964461db39": {
+    "at": 34174130,
+    "model": {
+      "00b8125ef2d179a6e7b08f707ccbc09bfacb78cc": "no row at ${} to place in",
+      "04e551dbe498e000b200185bdd8f57fd00b7855d": "no row at ${}",
+      "0c33128e9309bbefac165e23b953682b6efa445d": "workflow run ${this.runId} was restored from the journal on…",
+      "2261583c462885e7ce2a5319136e3598b05bfae8": "world full (${this.maxRows} rows) — a rule is probably putt…",
+      "30559ec01955da80083cc1404b6aaef9e6f54f4f": "atleast(N, pattern): N must be a non-negative integer",
+      "35069eec6ef02d04af7a471290cb11c26b6b9f3a": "a pattern must be a JSON object (nested objects as subsets,…",
+      "44125371e50c5a619d6f3c62684956f9b1536162": "a fact may not carry \\`${}\\` — the host sets it on the row",
+      "4edee5fb9a5da1f272fc000b43d5506285529f9f": "child workflow row landed at ${}, expected ${}",
+      "5b0ed091b2ac1a6dfbf0dfdc71cd302191636ab0": "row ${} is retracted; nothing can be placed inside it",
+      "6219e1265ca6fe60444f8606d0c9861fea40d455": "atleast(N, pattern) expects a non-negative integer",
+      "6b0a0e76ee8578bc3bef9205c052e340e8bd7764": "agent failed",
+      "8b86a30678c7e7ff7f4fa734b8c6b5613a48ea5f": "child workflow failed",
+      "a431013487fb61620917f65c5497b294f56f03d0": "v(name) expects a non-empty string",
+      "a50be4dd593ace1c6542621383c182bc8f690ae8": "agent produced no result (skipped, blocked, or gave up afte…",
+      "a8e7b6c3fc0fe168f293244da75adc47852654ef": "a fact must be an object with a non-empty string `topic`",
+      "b54f8ab28aaee15636305e8161916b6b838c9694": "workflow run ${this.runId} was killed",
+      "b5b0ade244f116900072ade6fd46915905a44fe3": "a run restored from the journal cannot be founded",
+      "c4a234b66d6a74ef169e77e96eb9a421a678e4ed": "founding row landed at ${}, expected ${this.scope}",
+      "ee8d2955093e7a757789c944a4216e0b4bd73d73": "workflow run ${this.runId} is not founded"
+    },
+    "position": 0,
+    "reviews": [
+      {
+        "arms": {
+          "2702e7c4de3cf627990763394e8a17dad5b7587c": {
+            "facing": "internal",
+            "preview": "Workflow aborted"
+          },
+          "7ad72a26e2f4aa73d7e756b55b4fa20416275508": {
+            "facing": "internal",
+            "preview": "restore() on a non-empty world"
+          },
+          "d77a74254784fb86c3df8e8a49cd0b98a1d25e5b": {
+            "facing": "internal",
+            "preview": "restore(): row ${.addr} out of order"
+          }
+        },
+        "why": "x is the generic TelemetrySafeError in the workflow v2 world/runtime. The model arms are rule, fact and agent failures that the workflow script awaits, and they come back in the run's result. \"Workflow aborted\" is thrown only on the kill signal (34152667 child retracted by kill, 34159869 awaited agent retracted with s.aborted), when the run is being killed and is reported as killed instead. The restore() arms are journal-restore invariants of world.restore (34144453)."
+      }
+    ]
+  },
+  "d4fa9f48bb6d5a19": {
+    "at": 6502427,
+    "model": {
+      "50b18f3d0c7081b82db61d4cc03f335c32f5b55a": "${} refused: the hooks worker is being replaced, and a hook…"
+    },
+    "position": 0,
+    "reviews": [
+      {
+        "arms": {
+          "596b766313cc880c91f5f3ef0011c4503c883871": {
+            "facing": "internal",
+            "preview": "${.name}: ${}: not a native module; it runs in a hop"
+          },
+          "720107d1394c39a46abd40a792124bd5b9e67536": {
+            "facing": "internal",
+            "preview": "${}: a hop member is not one of these handlers"
+          }
+        },
+        "why": "He is HooksError. The model arm is the respawn gate st() (6502449): iOn rejects the event dispatch with it while the hooks worker reloads, so the event a tool call or turn triggered fails and the model gets the error. The internal arms are host invariants that only a host bug can trigger: Se's hop-member lookup (6500711) and $o/_o called on a module without native links (6499206, 6500216)."
+      }
+    ]
+  },
+  "d9b2e737d0883337": {
     "at": 6861904,
     "model": {
       "02195b1aecb48e11e4fbb262e3fcd6832c08fc39": "every hop must satisfy the archive URL policy (${.replace(/…",
       "42ca58b6458d33e37febc8e583af71a0dd453ae0": "Plugin archive integrity check failed for ${}: expected sha…",
+      "5142774ca6faeb20d586aae45ccbd5c184f5e61d": "Marketplace catalog redirected to a disallowed URL and was …",
       "721d1e0a09e189b658970ccbece14e99e2a18f0c": "Plugin archive redirected to a disallowed URL and was refus…",
       "8feda4663d944b71740219ba77dcae94dd330220": "marketplace headersHelper failed (${.reason})",
       "98f8a6e99044ee8eac3f79d1071f214ebf41ecec": "(unparseable redirect target)",
@@ -2023,72 +2133,15 @@
           }
         },
         "why": "x is the generic error in the plugin-fetch module chunk-x1hnhzq0. The model arms run without consent: the marketplace headersHelper ht (6861271, marketplace fetch) and the archive integrity check in nus (6852801), plus the redirect refusals corrected here. The remaining ui arms run only after explicit consent, which /plugin install <id> never supplies. yt (6861904) first calls sn (6862968), which throws a wJ refusal unless runEntryHelper is set, and SXr refuses explicit installs whose helper was not shown (Z0n 'unshown', 12550728). The command-source arms (6839262-6846621) run under tus (6850103), which checks commandSourceConsent first (Wn(e,s)). Ck passes no consent (KYe(a,vk,{},h), 40513124), so on the model route these fail as wJ refusals before any of these texts is produced; they surface in the CLI or /plugin Discover consent flows."
-      }
-    ]
-  },
-  "ca115a964461db39": {
-    "at": 34174130,
-    "model": {
-      "00b8125ef2d179a6e7b08f707ccbc09bfacb78cc": "no row at ${} to place in",
-      "04e551dbe498e000b200185bdd8f57fd00b7855d": "no row at ${}",
-      "0c33128e9309bbefac165e23b953682b6efa445d": "workflow run ${this.runId} was restored from the journal on…",
-      "2261583c462885e7ce2a5319136e3598b05bfae8": "world full (${this.maxRows} rows) — a rule is probably putt…",
-      "30559ec01955da80083cc1404b6aaef9e6f54f4f": "atleast(N, pattern): N must be a non-negative integer",
-      "35069eec6ef02d04af7a471290cb11c26b6b9f3a": "a pattern must be a JSON object (nested objects as subsets,…",
-      "44125371e50c5a619d6f3c62684956f9b1536162": "a fact may not carry \\`${}\\` — the host sets it on the row",
-      "4edee5fb9a5da1f272fc000b43d5506285529f9f": "child workflow row landed at ${}, expected ${}",
-      "5b0ed091b2ac1a6dfbf0dfdc71cd302191636ab0": "row ${} is retracted; nothing can be placed inside it",
-      "6219e1265ca6fe60444f8606d0c9861fea40d455": "atleast(N, pattern) expects a non-negative integer",
-      "6b0a0e76ee8578bc3bef9205c052e340e8bd7764": "agent failed",
-      "8b86a30678c7e7ff7f4fa734b8c6b5613a48ea5f": "child workflow failed",
-      "a431013487fb61620917f65c5497b294f56f03d0": "v(name) expects a non-empty string",
-      "a50be4dd593ace1c6542621383c182bc8f690ae8": "agent produced no result (skipped, blocked, or gave up afte…",
-      "a8e7b6c3fc0fe168f293244da75adc47852654ef": "a fact must be an object with a non-empty string `topic`",
-      "b54f8ab28aaee15636305e8161916b6b838c9694": "workflow run ${this.runId} was killed",
-      "b5b0ade244f116900072ade6fd46915905a44fe3": "a run restored from the journal cannot be founded",
-      "c4a234b66d6a74ef169e77e96eb9a421a678e4ed": "founding row landed at ${}, expected ${this.scope}",
-      "ee8d2955093e7a757789c944a4216e0b4bd73d73": "workflow run ${this.runId} is not founded"
-    },
-    "position": 0,
-    "reviews": [
+      },
       {
         "arms": {
-          "2702e7c4de3cf627990763394e8a17dad5b7587c": {
-            "facing": "internal",
-            "preview": "Workflow aborted"
-          },
-          "7ad72a26e2f4aa73d7e756b55b4fa20416275508": {
-            "facing": "internal",
-            "preview": "restore() on a non-empty world"
-          },
-          "d77a74254784fb86c3df8e8a49cd0b98a1d25e5b": {
-            "facing": "internal",
-            "preview": "restore(): row ${.addr} out of order"
+          "5142774ca6faeb20d586aae45ccbd5c184f5e61d": {
+            "facing": "model",
+            "preview": "Marketplace catalog redirected to a disallowed URL and was …"
           }
         },
-        "why": "x is the generic TelemetrySafeError in the workflow v2 world/runtime. The model arms are rule, fact and agent failures that the workflow script awaits, and they come back in the run's result. \"Workflow aborted\" is thrown only on the kill signal (34152667 child retracted by kill, 34159869 awaited agent retracted with s.aborted), when the run is being killed and is reported as killed instead. The restore() arms are journal-restore invariants of world.restore (34144453)."
-      }
-    ]
-  },
-  "d4fa9f48bb6d5a19": {
-    "at": 6502427,
-    "model": {
-      "50b18f3d0c7081b82db61d4cc03f335c32f5b55a": "${} refused: the hooks worker is being replaced, and a hook…"
-    },
-    "position": 0,
-    "reviews": [
-      {
-        "arms": {
-          "596b766313cc880c91f5f3ef0011c4503c883871": {
-            "facing": "internal",
-            "preview": "${.name}: ${}: not a native module; it runs in a hop"
-          },
-          "720107d1394c39a46abd40a792124bd5b9e67536": {
-            "facing": "internal",
-            "preview": "${}: a hop member is not one of these handlers"
-          }
-        },
-        "why": "He is HooksError. The model arm is the respawn gate st() (6502449): iOn rejects the event dispatch with it while the hooks worker reloads, so the event a tool call or turn triggered fails and the model gets the error. The internal arms are host invariants that only a host bug can trigger: Se's hop-member lookup (6500711) and $o/_o called on a module without native links (6499206, 6500216)."
+        "why": "x is the generic error in plugin-fetch chunk-x1hnhzq0. The composite arm (corrected to model) is the literal+literal head of the one message rus (6853867) throws when a marketplace-catalog redirect is refused; rus is the beforeRedirect of S7e (beforeRedirect:rus(...), 12369521), whose axios failure is rethrown as that x by nio (6865111) and propagates through b7e (12373227) to /plugin marketplace add/update (12383987, 12416447) local_command output, the same route as its already-model leaves a7e00639/b78b1406. The ui arms are the consent-gated plugin-source-command and directory texts (6839262-6846621 under tus 6850103, and yt/sn 6861904-6862968) that the model route never reaches, as in the existing review."
       }
     ]
   },
@@ -2483,6 +2536,257 @@
           }
         },
         "why": "x is chunk-886tf6ja's generic TelemetrySafeError thrown across chunk-sfn1dbxq. After the corrections the model arms are tool and slash-command errors: Read/WebFetch/MCP/Skill/hook throws and plugin install, import and marketplace throws that reach /plugin, /import or /plugin update output (Ck 40513124, /import 22720650, vi 19073700). The remaining ui arms belong to other paths: the plugin loader (ZQe/FEn 12678571-12679015 via WEn/pEn; monitors and hooks-file reads caught into the plugin error list at 12645332/12642968; the v5 manifest read variant only via wne/GEn load paths), the /plugin Marketplaces and Errors tabs (Qze remove errors → setError/ge at 40374298/40525675, Svt toggle → Ct at 40380393, $es auto-update toggle), CLI-only --scope removes (12393026/12393245), claude mcp add CLI checks in h2 (10767489/10767721; /import's converters never build those transport types), and partial or auto compaction (Eon via Lir/ees). The internal arms are logged with c()/t() (12864203, 9586780, 9582757, 8832224/8832747), caught as ENOENT or by storage callers (13225011, 13118849, 13186817-13188562, 12454078, 12404252), dead or caught-and-recorded in DV ($e at CIe 8943242), J('warn')-logged sync-owned probes (8867413), or poll-event rejections returned to the poll producer (settleDropped 8819588)."
+      }
+    ]
+  },
+  "f339e82454150149": {
+    "at": 20324011,
+    "model": {
+      "003c22f3e1c458335750a6491767122f73ec9860": "Call app_screenshot first — app_ax_find searches the elemen…",
+      "01c0e5d438ace6e6257137379183124892e39ebc": "\"${()}\" is granted at tier \"read\" — ",
+      "0237515380c84943aacaaab0dc43b3e79efffac0": "${(.reasonCode??\"canvas\",,,)}.",
+      "0244d4ff0fbf02abdbddb6c90d3412a8af44ea46": "window_id ${} no longer belongs to ${()}. Call app_list_win…",
+      "044942bd44166cb22af1e189beb2926fffa4f0b5": "${}: ${}. Keystrokes follow key focus, so the ",
+      "08d983245c37338cb0d8b2bae47155786346efb5": "Unknown app-scoped tool \"${}\".",
+      "0a12582be61d4dd5b27daaef2ae148d3fff903e1": "Text may not contain tab or newline characters while a save…",
+      "0a32f491e4a5a6a5b7adf501a4ed33c122f30870": "display-scope `scroll`, or scroll vertically and rely on th…",
+      "115bb1eeb1093b8359095f1d893d5bb9b8b5093e": "menu can open terminals and run programs. Left-click still …",
+      "134cc41c85dd74674f9d8b7b9ce660f676d9a4f2": "Typing into this window is not allowed: it is editing a pro…",
+      "13efa39768a9503bbca10ad0d1b7fad7754508e2": "The desktop shell is frontmost. Double-click, right-click, …",
+      "15f00557025e411ff978a3ec6e9db789330757ca": "scroll_amount must be a non-negative int",
+      "177ff01450c507454034c8315c02b44c15596466": "app cannot be used to inject text. Bring a tier-\"full\" app …",
+      "1c9f89a496b3427cf7f696ac6704a8820b5e4cd7": "Tool \"${}\" failed: ${()?():}",
+      "1ec8ed944396c48f09848585dabb82df813b0399": "Could not verify the click target — the Claude overlay inte…",
+      "2028bcc5aabff4e75a302023732c3db792645a84": "coordinate frame — take an app_screenshot of this window fi…",
+      "2114566d1e132184060605ca529a5b373f29f7d7": "Key \"${.chord}\" is not allowed while ${} — ",
+      "2188f2b964c49578b8f96ec308513b69a628938a": "element_index ${} is out of range (AX summary has ${.axSumm…",
+      "27d6ce02e91405e317d404e2838837b191957c16": "These coordinates are outside the visible screen, so the ta…",
+      "29f1b047343c10a1b442b7f9d20ab71b0c9e30b3": "repeat must be a positive integer",
+      "2a93f9f2452003d8aea65f346988125afa870d3e": "Could not verify keyboard focus for the key sequence \"${.ch…",
+      "2b029f9f9f40412bff8b91671f81d4150bbb57db": "scroll_amount exceeds maximum of 100",
+      "2c98ec5a98b9862f29d7e1043d3a14ec979e3027": "applications, which exceeds the ${()} grant.",
+      "2d1e18fc98acaf5e1d08fb241afa093317f5ef77": "app_menu cannot press Apple-menu items (Shut Down, Restart,…",
+      "2d8edae71cd5b1ad7bcbadfdc5e188168238176a": "mouse button already held, call left_mouse_up first",
+      "2f3e3b7683ebc9d79bbcef24e09fa08664b87680": "fail the same way until then.",
+      "2f5ba2ee243708cf0f928af6c63457135d97fc8a": "app_menu: provide exactly one of `path` (array of titles to…",
+      "3121fe0b1da83fedabeb4e872fcda19bf8f093b3": "A password field has secure input active; keyboard actions …",
+      "329b1752fc19b4c4159f923d54a32c1bf2c968a2": "${?`\"${()}\"`:\"a different focus state\"} only. Take a screen…",
+      "34366f896e5ac313a3b865f4bf7a07c5f2eda0c1": "app_menu cannot press Services items — they invoke other ",
+      "35aa22d2315c0f02bcfa91d7671557ebd2a11e7a": "name only, then press Return as a separate action.",
+      "3610bf79f87e9a83951921339306f24c57168421": "The screen is locked. app_screenshot continues to work in b…",
+      "3757c861299fdf55163276361ab8eac544de2217": "Click at these coordinates would land on \"${()}\", which is …",
+      "380c3c062ebd51e38406e2e6ca8130597f57b68e": "or continue with the app_* tools for the granted background…",
+      "3969222bce28457fe83a5c27b12e294b8bcab3cb": "Keyboard input is not allowed here: a file dialog is open a…",
+      "3981455c21eb1faa96f79580eeff13e3b7db3f22": "Call app_screenshot first — app_ax_find searches the elemen…",
+      "39fc10b923306f832fa62bcf2c0c541d78313d2a": "Alt+click or Alt+double-click on an item opens its Properti…",
+      "3a0078189d0e3375818439cc26491416ba7550fd": "region y1 must be greater than y0",
+      "3a316117663e7b4592dc422bc70548d7ba59b875": "Another Claude session is currently controlling window_id $…",
+      "3bfe59a6fb26faaf2311ed8366556c37a74f9123": "region percentages must be between 0 and 100",
+      "3c20107b608c6fd439cd1352c4c34fbfe51f652c": "The screen is locked. app_screenshot continues to work in b…",
+      "3f45820d034c5d243c7fdb79c8bf278b42e64c69": "element may have moved or been removed since the last captu…",
+      "402887e8933d520e03a707dabd6d33c24d67c1fb": " Use the Claude-in-Chrome MCP for browser interaction (tool…",
+      "419535763d198a1ab2bd63c969ef6216fb6c3984": "since your last one.",
+      "424238f5864a9e8aa7ed3fecbe2ebb904bb3d2c4": "delivered. Take a fresh app_screenshot to see what landed —…",
+      "453180d4263ddfa3776163c626de6a827cdb1c1d": "The user took over ${()??\"this app\"} ",
+      "4636898426bef07e33e91f40cc2657b2e3745b55": "region exceeds the coordinate frame (${}×${})",
+      "4673421406fadaaf2a049e2831b856a879d35ed2": "Cannot target the host application itself — the app-scoped …",
+      "469053afcf1328ed234ea1cd03d928537b55afb2": "app_scroll only supports vertical (dy). Horizontal scroll i…",
+      "47693fce59fd20bd0086600240ec959b371aeec2": "Right-clicks are not allowed inside a file dialog — its con…",
+      "4815eebba9e46a21a6c3f75f008cdac6d7ae11ce": "coordinate values are pixels in the latest app_screenshot's…",
+      "496b4b370ca7d49b1bc2588984fecaacd5b1d26f": "\"${}\" is a system key combo. The user has not granted the s…",
+      "49b763359e89f35eed5a303e376d288c233e8af2": "Right-clicks are not allowed inside a file dialog — its con…",
+      "49db0f33cd545005c12766fc46653a994d67f46d": "app_menu: `path` must be a non-empty array of strings.",
+      "4c886c270958245f1f6a4674f9a9f11de247c436": "The screen is locked. Background app tools are blocked unti…",
+      "4cccec51ebd845b836fb14b6f2f79f8179c3a36c": "Typing and keyboard shortcuts are disabled at this tier. ",
+      "4d4ef0dfea10253bec4414cdc5033c3a37097092": "Wait aborted (user interrupt).",
+      "4de84e62d20329b9f8df38622a6b268bc68ce12d": "\"${()}\" is not in the allowed applications and is ",
+      "4e462e69338d1dc2209a834abdac36a5084af30c": "clicks with modifier keys require tier \"full\" (they can Pas…",
+      "4f6f7cf3bc640248b19ce836345cd062c3c53684": "Could not verify which document this window is editing. Tak…",
+      "50b53f12ba9471db1116c520e6a90a2f309fd756": "No coordinate, element_index, or target given and no prior …",
+      "50edddfea51ea0864af750d43f5a49edfe215bef": "actions[${}].action must be one of: ${[...].join(\", \")}.",
+      "50fcbed52d9ccb4b328b6cc5b20ffe877af52e9b": "not implemented for the background AX path — use ",
+      "531aed01eb6781a17df70d9d299c3be573d377b7": "No monitor named \"${}\" is connected. Available monitors: ${…",
+      "53adeef9839e0f36c3d1687b22ffbd636de2c773": "which is granted at tier \"click\" — right-click, middle-clic…",
+      "54b0983ba30b945d059002d2f6b8ce17872da6d7": "Saving here is not allowed: the target ${} is a protected s…",
+      "578ee9afb1c4bd78e0ecc70868ba147d495cf3d4": "Typing this into the save sheet is not allowed: ${[.reason]…",
+      "584a9293e303f63de925c55699e69611a8fca56d": "A held press or drag is not allowed while a save sheet is o…",
+      "58513ebb6c00ea321b0c6b8ce75ec27444bfec08": "App ${()} is blocked by policy and cannot be used with comp…",
+      "5bbb6d9152ce9b9a68776ce1716cdfcf5c7e469b": "${} threw: ${}",
+      "5c3e3ac046895915f973de2c64dcef0667039a2d": "app_screenshot to check before assuming it failed.",
+      "5ecd1809f4ed13de64a96cfd76dc81a953851214": "finish or ask the user to stop it — other windows and apps …",
+      "5f64e5dfb8033ecf8ea169b3ef42802b6b6122b1": "Accessibility while locked. Screenshot to observe; act once…",
+      "6154968b80aceaa3c50bbcc89cb0a58b6a8a9bfe": "\"apps\" must be an array of strings.",
+      "623982d5df9e248279c0a4ce245379c92b2dd455": "region must be an array of length 4: [x0, y0, x1, y1]",
+      "658bdec46ce541d39e3558353a25ca96e7f628b6": "selection) before retrying.",
+      "65ccf0437cdd30b43c856e7663343be7da73e2fc": "Menu item ${.stringify()} was found but pressing it failed …",
+      "66148a6341235989c49a24e1adcf9034a88fd026": "The user declined to start the guided walkthrough (teach mo…",
+      "678a327a3cd5277f54f0a9461eae4518dc4c6cab": "A held press is not allowed while a save sheet is open. Use…",
+      "68aa7fe6f89c1f152a664273558a719c8ccd5cf9": "`window_id` requires `app` — pass both to release one windo…",
+      "6d518266b0ddf8b1332ebef5e4f04bf6d7a4f1af": "Another Claude session currently has full-screen control, w…",
+      "6d7a821ec25290348e7cb6cdfbd30639130572a5": "Claude's own window still has keyboard focus. This should n…",
+      "6d7c0e82f6c5afbe6aa46c23bb4e4f910950517b": "list_apps is not available on this platform.",
+      "6f6205b14d37d853ceddcfe12a5f94ce644c48d3": "This element (${}${} at ${}${}) cannot be ${[.kind]} while …",
+      "73aa364fa6efdc272275f196d71c347fd4b24448": "\"steps\" must be a non-empty array.",
+      "74121fbbd69f08dde61c83f3016a6ed993b88534": "Computer-use access to ${} can't be approved during a sched…",
+      "754365c24af4fe935b3123942ead8c2c9c0f0d77": "Call request_access to ask the user to raise the tier, or u…",
+      "75bcb61c0fddb740b7e2db0d316257451549dd69": "app_scroll only supports vertical (dy). Horizontal scroll i…",
+      "762bf3094293595b1edceb69eb1eb62e249b82d5": "right-click, middle-click, and clicks with modifier keys re…",
+      "77ae7c634380829327e666374084bfe512af2628": "text must be a string",
+      "7ab5f65d370b57825f95ccfe85d57ab607a7bddc": "That menu item would touch the system clipboard. Use app_ty…",
+      "7bf2108a7b6d7f58765025d1863a988be8109911": "\"${()}\" is granted at tier \"click\" — ",
+      "7c7e5af4535bf4cefcac488e72cea666af81d7c2": "Unknown tool \"${}\".",
+      "7d9deb2dd26ca3351168dd5e7d31735ca840e27f": "The mouse cursor is not on any visible screen, so the targe…",
+      "7dbbf3b20e1067b88441f2b450009450565c6396": "Could not read the save sheet's current target folder and f…",
+      "7eab7ab0878130d7afc1e99a92d8d31634bfd80b": "macOS Accessibility / Screen Recording permissions aren't g…",
+      "7f5b6b8db0ec26e2684f74478d4bfe5b71b29aae": "${} on ${}${}${} failed (AXError: ${}). Take a fresh app_sc…",
+      "8101bb02598c995067a5d0cdf42407a020469f8a": "remaining input was NOT delivered — it was approved for ",
+      "81ce7412c53ff9d880816a83628c75662fac78eb": "Failed to enumerate displays: ${()}",
+      "8306f13eba8d19d75b54d1d10d4c946d09cf39c2": "The window did not appear on the current Space within the e…",
+      "849bd154533b77c7c849f19ae4570d6dda3e89bc": "app_drag requires a coordinate or element_index target — 'f…",
+      "855825ee3073cf4a1e68c89258b017bd05f7c9cb": "take a screenshot before zooming (region coords are relativ…",
+      "8576d5964ee22a801815acfe4f028f068773977b": "\"${}\" is a system-level shortcut. Request the \\`systemKeyCo…",
+      "86611dee927731ec6f32ee1e6d9ca5a8284ac3f4": "Teach mode is not available in this session.",
+      "86bad9ef0fab9c63de534b83a39c565d44865857": "apps array — that single grant covers all of them.",
+      "87e51e438236310ebe96e7627081fd25d1e559ae": "window_id (an integer from app_list_windows) is required.",
+      "87f367fd698a02aaab58d5723e4b6213cd017b09": "Per-app background tools are not available in this build.",
+      "886a32dcea3cec2e2eef00e072b09acaff25bc26": "actions[${}].action must be a string",
+      "8c6c5acc7f3dd8dd271bc4dac9377c9ae8c50b1c": "Key \"${.chord}\" is not one of the allowed navigation keys w…",
+      "8cd4f351ba676c6e3b03e7ecb8b6c1b6d463891f": "actions[${}].action=\"${}\" is not allowed in a batch. Allowe…",
+      "8e492d06c6e64fdb582fe971c45eb255febee162": "Display switching is not available in this session.",
+      "8ece79c5a551d5e24245ceec4c347de0827d2df3": "coordinate values are pixels in the latest app_screenshot's ",
+      "8ed518caea9abe7763b7f22fab333b357364254b": "grant covers all of them.${} To interact with a different a…",
+      "8f45729a5b8d7b675c2aaa59b3f6cca8333dba9c": "This click could confirm a save to a protected ${} — a ",
+      "8f53127c63f624427963b5c116e677db833f2bad": "That window changed before the move ran (it was closed, mov…",
+      "8f71c5c2ac73c7e9a68f83171be640644c88f9e7": "Another Claude session started using the computer while thi…",
+      "91ea0dea71fe93a111c578ee2f1851d5d81afeb2": "This action requires tier \"${}\" on ${()}, which is granted …",
+      "93404238f8dc54897ded344a868c639d6fe5df72": "file onto an item can launch it, and drags there move files…",
+      "938a0c9f59d4cc8eda341652385805b2da087b77": "steps[${}] must be an object",
+      "93efffbc019943acd09bb1a974e9bac9c11582b8": "The screen is locked. app_screenshot continues to work in b…",
+      "95011fee78b049cb96f758c3f8e14ef5da7205d9": "actions must be a non-empty array",
+      "950bf70e2ff9b92a3eb5d8c42cc913d1431c8215": "Pointer input into this window is not allowed: it is editin…",
+      "95319cac2b6d1d9223cbdd3907411b10cd7cd998": "The user just clicked into ${()??\"this app\"}, taking it ove…",
+      "96467e9d3e0bed66c3a486aca9deb7c470b05c9b": "Only one monitor is connected. There is nothing to switch t…",
+      "97d7fbef50786b846f27f06cc8a6cda74357637d": "the hit test. This can happen under heavy GPU or RDP load. …",
+      "97faae90116c06a8aafce3cb605d4945d5e0beab": "Ask the user to take any actions in this app themselves.",
+      "9d82dd6620d864368004514d329911a9d8675872": "Could not verify the click target — the Claude overlay inte…",
+      "9e1a1ca6cc56e8876b8cc5e1c18943d1e0711950": "${.ceil(/1000)}s. Wait, work on something else, or ask the …",
+      "9e3f291f1d9d01d623061b58a3c0c9ec65d24d95": "Clipboard write is not granted. Request `clipboardWrite` vi…",
+      "9e865aa61b90c61feed54825780951c9fb8cb46c": "${()} has no open windows. Call app_list_windows or open on…",
+      "a075015212cd297d8d359b12624526c1aea1ba92": "Call request_teach_access again immediately — the next call…",
+      "a2191e9f835013ecb6020e7b25e73359bb50cf81": "the app selection list.",
+      "a344ee5f491da2d7ed802e72b10bc0bd798eb6ba": "Click at these coordinates would land on \"${()}\", ",
+      "a41486564f046623755b37f139139d84458b85db": "Could not verify which window this ${===\"click\"?\"click\":\"dr…",
+      "a54b9e1a3bbfd4ce9f0f6dbb33af131fbf573771": "disabled — check the app's state (e.g. no document open, no ",
+      "a6da46ae0710f8f75f93b4d4f8ebca2337b563ae": "Key repeat aborted after ${} of ${} presses (user interrupt…",
+      "a74460de9013e381a5d029b51f071ba9d65a0d8e": "The element at ${} belongs to a different process (an Open/…",
+      "a77c8155495b4ff974b9823125517a49e01ad448": "show the app selection list.",
+      "a9e7c3126a0e61afb5a03268143832f8eac645da": "Moving a window between Spaces isn't available in this buil…",
+      "ac54f3c088a3bceca937a4380b235a989664eb99": "Typed text may not contain tab or newline characters while …",
+      "adfab9ddd55b652f3f6d865aacbc4415af644a56": "macOS Accessibility and Screen Recording are now both grant…",
+      "ae6b96cb32dc01a37f7262f22d978200008a5ab4": "currently in front. Take a new screenshot — it may have app…",
+      "af65913f86fbfc8a5eca6a3d9137440b31ae01e8": "Teach mode is not active. Call request_teach_access first.",
+      "afc7100e9039be338fb99f1d0cc03efeeb623a17": "captured by the last screenshot of this window.",
+      "afcef2bf3d49d75257fa8ba5057cd5604fa1035f": "A click at these coordinates would land on the file dialog'…",
+      "b07a59139ac97f206b9148224695fddef3de5899": "expected time. It may still be settling — take a fresh ",
+      "b0c8179a0926c1d1a8d6dc155765348f7d006dd5": "Save/Open as a separate action.",
+      "b281fc0e554bc1fb30ad1eefdf3b9a6b48ec1ebc": "`window_id` requires `app` — pass both to release one windo…",
+      "b37b92add55a2f90eed07dc5a20c538b941e873e": "The click would land on the desktop shell (Dock, Spotlight,…",
+      "b3e7bc5438b046b0459f28947cb41ba4fa999227": "Drag-and-drop is not allowed inside a file dialog — droppin…",
+      "b40f9da98bc7c00be47a7e68f448072bd06c71b1": "\"${()}\" is a tier-\"click\" app and currently frontmost. writ…",
+      "b452415c2868212c95a9d25b4fd5e38a316753d5": "Key sequence \"${.chord}\" presses more than one key. While $…",
+      "b497e78dcc717e6aae0c6cf3e4903e4627c054d9": "Menu path ${.stringify()} ends at a submenu, not a pressabl…",
+      "b60b05f750c521bada2f623c3b7da61dce438bb6": "Could not verify the control under this ${}. Take a fresh s…",
+      "b75a8234e93f7e60a4f2b73f174379ce9b1c9a63": "Typing was interrupted after part of the text was already ",
+      "b77d3ca89b42c17580186a72d205946a834a9f0d": "Provide at most one of: coordinate, element_index, or targe…",
+      "b7e1d16050a0393622988e4d5645ae3ff4420938": "Ask the user to watch for the approval prompt, then try aga…",
+      "b80db303c9c25775e3c3af51f2850435f87ccfe9": "Window ${} doesn't belong to ${()} (or no longer exists). T…",
+      "b873293c9df47ec7737d8361c5af6c6ec11e1360": "Return in the Go-to-Folder box is not allowed: its contents…",
+      "b991f2f56be980ed9d289caa56c020208e096bf5": "duration must be a number",
+      "bb1db32b9882b25fe692efc9e1ab9e3676d611f4": "Opening a context (right-click) menu would bring the app to…",
+      "bbf45d20fd3ec749be6545a595421a71015a9a24": "Cannot request additional permissions during teach mode — t…",
+      "bcfd9264aba90c0cb2a9d4a615192421bd33874e": "region values must be non-negative numbers",
+      "be26e9a94d3a59db927b7f96c4f9f495fda51b5c": "typing, key presses, and paste require tier \"full\". The key…",
+      "bf0d4df26c98e3ec53ca5f654ab1d8a06b27cba6": "Typing aborted after ${} of ${.length} graphemes (user inte…",
+      "c06015113d8d413795493b97769db29f9ef6810a": "`app` to release all of that app's windows, or neither to r…",
+      "c274b2ab8cfbd2f5a8de1433b29b558f28dc8e8e": "The screen is locked. app_screenshot continues to work in b…",
+      "c4f1101d147695e64ae5e23bd0873e710adc0c8e": "text is required",
+      "c98bcb74f22e38bc9741ea734118ea06fd318917": "The window did not appear on the current Space within the ",
+      "ca79cb70b9fd5fbc80c4a5ac875f766d085789e0": "app_drag requires `to_coordinate: [x, y]` in the same windo…",
+      "cae4403300a106be484130496753433d33829ec9": " No interaction is permitted; ask the user to take any acti…",
+      "cb1d7d9257c1da33da013201cba0df38ab7ec16a": "moments ago — backing off from re-acquiring it for another ",
+      "cb367f4fcc36bca4299430a6e4df1f4fee2728f5": "This session was not wired with a permission handler. Compu…",
+      "cbc3cb7a45fee84a1e88bf643ad39798e15c08d2": "Alt-modified clicks are not allowed inside a file dialog — …",
+      "cc17323bc742a48e275d0daa05bea8cc9c856c1f": "Clipboard read is not granted. Request `clipboardRead` via …",
+      "cc25de48dd1ca022d1ce2a87a58f37b156f89004": "The screen locked before the move ran, so the window was no…",
+      "ccd99b37c8e16026a0090f7f247a7cf755e13800": "shell-startup, ssh, or launch-agent location. Click Cancel …",
+      "cd603f5b19991224779ed9d9fbdcd8b28f10d8e0": "Teach mode is already active. To add more apps, end the cur…",
+      "ce2004635718ab0ad3e53f5dc872822f0321cb8f": "Clicks are not allowed while the Go-to-Folder box is open: …",
+      "d11d833c6eddd99de677d6008a7ea605e3e12286": "NOT re-type the whole string (that would append on top of t…",
+      "d1c04d8770ab53dd4a12ff2383482bb6de7013a9": "background — ",
+      "d28cef46728234c0a42790d4cf0f9b6dcc603a12": "app_menu: `list` must be a string (menu title) or null (top…",
+      "d2cac6152795eb457be46a4a98433e2cc63010d2": "App ${()??\"(name withheld)\"} is not in the granted-applicat…",
+      "d797e782c88baa71d16051491d4d73bba30629fd": "element_index requires a prior app_screenshot of this windo…",
+      "da84e82ca18a4b43ff66dafda008a8ea4b2d341f": "visible in screenshots only, no clicks or typing.",
+      "de0fadaccd5ff9964224fbae35db7d90b94d7120": "how they would like to proceed — for example, whether you s…",
+      "e01d4d1a9371e5ea41e9cccf2b2ea778e4c4fbe5": "Menu item ${.stringify()} is disabled — the app may ",
+      "e05f2ffc7337419785eeea664616f138173076e7": "Computer control is disabled in Settings. Enable it and try…",
+      "e0d004e9cdf627b9f781af8382cedc4e33b9f0e7": "Call request_access again immediately — the next call will …",
+      "e10eda94ba29600e1f141a56d44b7abe8ca87e59": "Use the Claude-in-Chrome MCP for browser interaction.",
+      "e1325b78f8dba24b297a4aeadbda4fd4449988b7": "\"${}\" would touch the system clipboard. Use app_type for te…",
+      "e205633e9c64a9afe1a821b1d5f4cb34d790e042": "Full-screen control was not approved (declined or not confi…",
+      "e2710e313f18a0e4f12bd618fc1a0ca4355d787b": "duration must be non-negative",
+      "e2bb70ceec33e747b9e4872969b90c28a13d9017": "Another Claude session is currently using the computer. Wai…",
+      "e429e72d0ce62370216bfd24995c7666a654d24a": "\"${}\" is not granted for this session. Call request_access …",
+      "e54f2c2a926cc7d8e374b6dfb32f4fa28b94e93d": "actions[${}] must be an object",
+      "e5bb8212e97574d5aebb417bbf268d0c4d4ac445": "Full-screen control needs your approval, which can't be giv…",
+      "e5be8da6b0a779ed41983da33efacfaf6e57ca2a": "Could not verify keyboard focus for the key \"${.chord}\", wh…",
+      "e6271ac042b747032bf76cfbf88feeaf64713546": "duration is too long. Duration is in seconds.",
+      "e9ae09b8b432092b2d5a6639d892c9ac44282356": "performed — ${(\"user_actively_typing\",,)}.",
+      "e9af73daf3c48bb1d52d88a7a583e34c20e8ef77": "The user saw the permission prompt but macOS ${.join(\" and …",
+      "e9e4440a7b541fed7c99a26430d3344e75deaf18": "Clicks are disabled at this tier. ",
+      "eab41a3b691e7b62ea96becf3fafad5ab1e5eeb2": "would clear the clipboard anyway — a UI Paste button in thi…",
+      "eb1798c84de15e9af07580084bae71889c4a8e66": "${} on ${}${}${} was NOT ",
+      "eb87ccb5d565a429fd824fc1f2ba3c3bf0e0a8df": "${()} does not expose a menu bar (agent process or not full…",
+      "ebe9e828f0c39ce50bb2dbdc7bc556201fe1fcb1": "The modifier chord \"${.text}\" would fire a system shortcut.…",
+      "ec75057d5dca0987986a9af2ae41646d49835fdf": "Batch aborted after ${.length} of ${} actions (user interru…",
+      "ed14d336783601f01d449ba088a04992a38eb535": "${()} grant.",
+      "ee7c52253e59ec0b66b0b207ec394a65aa3e1173": "scroll_direction must be 'up', 'down', 'left', or 'right'",
+      "eec1b0739700c2f1b2b8fd47a194f1831f28e189": "is open — a Return here would confirm the save. Type the fi…",
+      "eef241a5e2a2b4554621111818660875a64550a0": "repeat exceeds maximum of 100",
+      "ef70a1de3cc529e65c730d0b00b172dc8ef73f7a": "Key hold aborted (user interrupt).",
+      "f1deffc15cca7b3c41d9724585f5b4499ffdddf0": "Click at these coordinates would land on \"${()}\", which is …",
+      "f2fd71f58c633a9c0cf117fe285bca26e4fa812e": " Already-granted apps remain available: ${.map(()=>.display…",
+      "f3aeea39b0a173b8668c626219d85e7fda662710": "This session is currently controlling ${.join(\", \")} in the…",
+      "f45f386f1459b8c039c087bb741312160ee41f2f": "need the screen unlocked — macOS blocks window-level ",
+      "f4740dbd53876c088efb81562a8370c0581530bb": "need a document open, a selection, or to be frontmost for t…",
+      "f52bb1f997d9ea299df44b2e03d8e8a94633c723": "do the task directly instead of guiding them through it.",
+      "f683cad4b6b3906624e1a78b7140d65436fafd1f": "Accessibility and Screen Recording permissions are required…",
+      "f6873d8657906116f4f45f7152761b5489284f83": "The menu bar of ${()} resolved to a foreign process and can…",
+      "f787745658063c772217457927ce5b31fe6fbbe0": "Menu item not found while walking ${.stringify()}.",
+      "f8a45bdf0d1cd7b59b5fe9e695f1a6d0f40bd546": "The user saw the permission prompt but macOS ${.join(\" and …",
+      "f8dbc8d847c97e78f0f525ae551ab6b9d47dd31b": "Could not verify keyboard focus for typed text containing t…",
+      "fb044efd720553c08445217ccae7c4853fe0f4af": "introspects its target via Accessibility from the main thre…",
+      "fe55b437e4b38c304aafdbc022ac8d48ae9af7e2": "app_drag requires a coordinate or element_index target — 'f…",
+      "fe925430f19d69807a96ab1a73c45362392bd3bb": "Drag-and-drop is not allowed inside a file dialog — droppin…",
+      "fed49d2eae66fbdcb2646dfefc54cc380bc08c09": "Out, Lock Screen, Sleep) — system-scope actions exceed the ",
+      "fef47f94e7573cc2297d392c7a5072452b6ed458": "App ${()??\"(name withheld)\"} is blocked by policy and canno…",
+      "ffc2e855c373e02f33db5bf60806d2f8a0e19cac": "No response to the full-screen approval within the time lim…",
+      "fffcd1f35b12e237a9d456c062544b13acfebd3d": "region x1 must be greater than x0"
+    },
+    "position": 0,
+    "reviews": [
+      {
+        "arms": {
+          "18ab98f082f61b1148f2eb7692a0936847f24c92": {
+            "facing": "internal",
+            "preview": "Typing was interrupted after part of the text was already d…"
+          },
+          "8e046ba42434444d6fb7c5d9afeb538cc1b2d07c": {
+            "facing": "internal",
+            "preview": "app_scroll only supports vertical (dy). Horizontal scroll i…"
+          }
+        },
+        "why": "p (20214196) builds the computer-use isError tool_result {content:[{type:text,text}]} the model reads, so every whole argument is model: b281fc0e is the full 2-literal chain jo returns for window_id without app (20272786) and 75bcb61c the full 3-literal chain the app_scroll dx check returns (20270239), both corrected to model. The two internal arms are ARTIFACTS, not routes: 8e046ba4 and 18ab98f0 are the left-nested (a+b) sub-node of the 3-literal chains at 20270239 and 20266828, never emitted on their own (only the whole chain is passed to p); their text is carried by the model leaves (469053af/50fcbed5/0a32f491 and b75a8234/424238f5/d11d833c), so they stay internal to keep them out of the catalogue."
       }
     ]
   },
