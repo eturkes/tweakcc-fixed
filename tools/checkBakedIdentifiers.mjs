@@ -48,6 +48,7 @@ export const buildMatcherCore = async () => {
       contents: [
         "export { generalizeExpressionIdentifiers, IDENTIFIER_SENTINEL } from './src/systemPromptExpressionIdentifiers';",
         "export { buildSearchRegexFromPieces } from './src/systemPromptSync';",
+        "export { findPromptPieceMatchesByTokens } from './src/systemPromptPieceMatcher';",
       ].join('\n'),
       resolveDir: REPO,
       loader: 'ts',
@@ -163,17 +164,34 @@ export const scannerPattern = (core, marked, names, version, buildTime) => {
   return { pattern, roles };
 };
 
+// The regex of a whole text asset (a 600K-char .d.ts, the public-suffix list)
+// overflows V8's regexp compiler. Those fall back to the apply's own token
+// matcher, which never compiles it; everything else keeps the regex, which is
+// the fast path for a one-off scan of a 50 MB bundle.
 export const presenceInBundle = (core, entry, bundle) => {
   const pattern = core.buildSearchRegexFromPieces(
     entry.pieces,
     bundle.version,
     bundle.buildTime
   );
-  return {
-    names: [],
-    count: new RegExp(pattern, 's').test(bundle.content) ? 1 : 0,
-    seen: [],
-  };
+  let found;
+  try {
+    found = new RegExp(pattern, 's').test(bundle.content);
+  } catch (err) {
+    if (!/stack overflow|too large/i.test(err.message)) throw err;
+    const byTokens = core.findPromptPieceMatchesByTokens(
+      {
+        regex: pattern,
+        pieces: entry.pieces,
+        version: bundle.version,
+        buildTime: bundle.buildTime,
+      },
+      bundle.content
+    );
+    if (!byTokens) throw err;
+    found = byTokens.length > 0;
+  }
+  return { names: [], count: found ? 1 : 0, seen: [] };
 };
 
 const inspectBakedInBundle = (core, entry, bundle, presence) => {

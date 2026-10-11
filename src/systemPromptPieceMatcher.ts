@@ -594,6 +594,17 @@ const batchOccurrences = (
  */
 export const foldPromptMatchContent = (content: string): string => content;
 
+/**
+ * The apply's token matcher on its own, without the regex fallback: the
+ * matches, or null when the prompt has no usable anchor (or the anchor is too
+ * common) and only the regex can decide. Synchronous, and it never compiles
+ * the prompt regex, which V8 cannot do for the largest text assets.
+ */
+export const findPromptPieceMatchesByTokens = (
+  spec: PromptMatchSpec,
+  content: string
+): RegExpExecArray[] | null => tokenMatches(compileMatcher(spec), content);
+
 export const findAllPromptPieceMatches = async (
   spec: PromptMatchSpec,
   content: string
