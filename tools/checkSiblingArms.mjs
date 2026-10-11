@@ -51,6 +51,7 @@
 // could not parse (its arms were never seen, so a pass would be unearned).
 // With --json, stdout is the JSON alone and the summary goes to stderr.
 import fs from 'node:fs';
+import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
@@ -911,9 +912,14 @@ export function scanSiblingArms(cliPath, { catalogue, cache, version } = {}) {
     (sitesByBody.get(a.body) || [{ start: a.start, end: a.end }]).every(e =>
       g.callSites.some(c => c.start <= e.start && e.end <= c.end)
     );
+  const mixed = [];
   for (const g of groups) {
     const arms = g.arms.flatMap(resolve);
     const flowGroup = FLOW_KINDS.has(g.kind);
+    if (g.kind === 'calls') {
+      const split = mixedRulings(arms);
+      if (split) mixed.push({ at: g.at, ...split });
+    }
     const anchorSites = arms.filter(
       a => a.modelId && (g.kind !== 'calls' || earnedIn(a, g))
     );
@@ -978,6 +984,40 @@ export function scanSiblingArms(cliPath, { catalogue, cache, version } = {}) {
     unearnedCallGroups,
     unparsed,
     findings,
+    mixed,
+  };
+}
+
+// One callee usually sends every argument at a position down the same route,
+// so a call group whose arms are ruled both `model` and `ui`/`internal` holds a
+// wrong verdict unless the call sites themselves route differently. On CC
+// 2.1.296, 23 of 40 such groups held 51 wrong verdicts between them. The key
+// covers every ruled arm and its facing, so a group is re-raised whenever a
+// verdict or an arm changes.
+function mixedRulings(arms) {
+  const ruled = new Map();
+  for (const a of arms) {
+    const facing = a.modelId ? 'model' : a.verdict?.facing;
+    if (facing && a.key) ruled.set(a.key, { facing, body: a.body });
+  }
+  const facings = new Set([...ruled.values()].map(r => r.facing));
+  if (!facings.has('model') || facings.size < 2) return null;
+  const key = createHash('sha1')
+    .update(
+      [...ruled]
+        .map(([k, r]) => `${k}:${r.facing}`)
+        .sort()
+        .join('\n')
+    )
+    .digest('hex')
+    .slice(0, 16);
+  const arms2 = [...ruled.values()];
+  return {
+    key,
+    model: arms2.filter(r => r.facing === 'model').map(r => r.body),
+    other: arms2
+      .filter(r => r.facing !== 'model')
+      .map(r => ({ facing: r.facing, body: r.body })),
   };
 }
 

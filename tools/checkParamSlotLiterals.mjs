@@ -37,6 +37,8 @@
  *   catalogue   an instruction, a constraint, a name the model must reproduce
  *   glue        labels or joins an interpolated value; nothing to override
  *   not-a-slot  a resolution artifact — this text is not really in the slot
+ *   off-route   really in the slot, but every path from this call site drops
+ *               or catches the result before the model sees it
  *
  * Verdicts are content-hash keyed in data/param-slot-allowlist.json, so they
  * are version-independent: reviewing a literal once keeps it quiet forever and
@@ -235,7 +237,7 @@ if (fs.existsSync(ALLOWLIST)) {
   }
 }
 
-const VERDICTS = new Set(['catalogue', 'glue', 'not-a-slot']);
+const VERDICTS = new Set(['catalogue', 'glue', 'not-a-slot', 'off-route']);
 const unreviewed = [];
 for (const [key, f] of findings) {
   const entry = allow[key];
@@ -248,7 +250,7 @@ if (update) {
     allow[key] = {
       builder: f.builder,
       param: f.param,
-      note: 'REVIEW ME - replace with the verdict (catalogue|glue|not-a-slot) and its reason',
+      note: 'REVIEW ME - replace with the verdict (catalogue|glue|not-a-slot|off-route) and its reason',
       text: f.text,
     };
   }
