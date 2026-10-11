@@ -604,3 +604,14 @@ match), two different things have two different bars:
 The split exists because a wrong _name_ is a cheap rename, but a wrong _override body_
 silently changes what the model is told — and (per §6) can pass the four-zeros and
 smoke while rendering wrong content on a lazy path.
+
+## 17. Complete classification evidence
+
+Showing only a fixed number of sibling relations in Markdown can hide distinct emission paths or
+uncertainty, even if candidate JSON still contains them. Render every deduplicated relation, actual
+read/call/write/projection site and unresolved item in the supplied Markdown parts. Physical packet
+splitting must preserve all semantic evidence, and readers consume every supplied part.
+
+A model-facing anchor supplies a discovery lead. Trace the candidate's actual emission route before
+assigning facing, preserve unresolved transport explicitly, and rebuild packets after source or
+metadata changes. Canonical source occurrences and distinct consumption sites remain separate.

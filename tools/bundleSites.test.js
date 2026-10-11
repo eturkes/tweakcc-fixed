@@ -338,6 +338,17 @@ describe('extractStrings with the site cache', () => {
   });
 });
 
+describe('decodeUnicodeEscapesInPiece', () => {
+  it('decodes printable escapes and keeps control and line-terminator escapes', () => {
+    const src = String.raw`a\u2014b\xd7c[\0-\x08\n-\x1f\x7f-\x9f\u2028\u{2029}]`;
+    expect(sites.decodeUnicodeEscapesInPiece(src)).toBe(
+      String.raw`a` +
+        '\u2014b\u00d7c' +
+        String.raw`[\0-\x08\n-\x1f\x7f-\x9f\u2028\u{2029}]`
+    );
+  });
+});
+
 describe('templateShape', () => {
   it('labels a slot named __proto__ like any other identifier', () => {
     // Deliberate: the old object-keyed labelling emitted [{}] / {} here.

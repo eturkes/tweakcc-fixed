@@ -709,3 +709,238 @@ describe('checkRemovedIdCoverage: every live run, each site once', () => {
     );
   });
 });
+
+describe('checkRemovedIdCoverage: contextual coverage in rename and split branches', () => {
+  const kept =
+    'Secrets stay in the vault and never enter the conversation transcript.';
+  const other =
+    'Rotate the deploy key whenever a maintainer leaves the project.';
+  const old = {
+    id: 'fixture-old-secrets',
+    pieces: [kept],
+    identifiers: [],
+    identifierMap: {},
+  };
+  const parent = {
+    id: 'fixture-parent-secrets',
+    pieces: [`Use the vault for credentials. ${kept}`],
+    identifiers: [],
+    identifierMap: {},
+  };
+  const fragment = {
+    id: 'fixture-fragment-secrets',
+    pieces: [kept],
+    identifiers: [],
+    identifierMap: {},
+  };
+
+  it('flags an extra source site hidden by a fragment nested in the rename successor', () => {
+    const out = run(
+      write('rename-nested-cli.js', `x="${parent.pieces[0]}";y="${kept}"`),
+      write('rename-nested-prev.json', { prompts: [old] }),
+      write('rename-nested-cur.json', { prompts: [parent, fragment] })
+    );
+    expect(out).toMatch(/STILL IN BUNDLE —[\s\S]*fixture-old-secrets/);
+    expect(out).toMatch(/removed-id coverage: FAIL/);
+  });
+
+  it('passes the nested rename when the bundle has no surplus contextual site', () => {
+    const out = run(
+      write('rename-covered-cli.js', `x="${parent.pieces[0]}"`),
+      write('rename-covered-prev.json', { prompts: [old] }),
+      write('rename-covered-cur.json', { prompts: [parent, fragment] })
+    );
+    expect(out).toMatch(/1 renamed\/reshuffled/);
+    expect(out).toMatch(/0 STILL IN BUNDLE/);
+  });
+
+  it('flags an extra source site hidden by nested fragments after a split', () => {
+    const splitOld = { ...old, pieces: [`${kept}\n${other}`] };
+    const secondParent = {
+      id: 'fixture-second-parent',
+      pieces: [`Deployment notes: ${other}`],
+      identifiers: [],
+      identifierMap: {},
+    };
+    const secondFragment = {
+      ...secondParent,
+      id: 'fixture-second-fragment',
+      pieces: [other],
+    };
+    const out = run(
+      write(
+        'split-nested-cli.js',
+        `x="${parent.pieces[0]}";y="${secondParent.pieces[0]}";z="${kept}"`
+      ),
+      write('split-nested-prev.json', { prompts: [splitOld] }),
+      write('split-nested-cur.json', {
+        prompts: [parent, fragment, secondParent, secondFragment],
+      })
+    );
+    expect(out).toMatch(/STILL IN BUNDLE —[\s\S]*fixture-old-secrets/);
+    expect(out).toMatch(/removed-id coverage: FAIL/);
+  });
+
+  it('deduplicates nested slot-bearing bodies despite different identifier labels', () => {
+    const lead = 'Secrets stay in the protected vault under tenant ';
+    const tail = ' and never enter the conversation transcript.';
+    const slotted = {
+      id: 'fixture-slotted-fragment',
+      pieces: [lead + '${', '}' + tail],
+      identifiers: [0],
+      identifierMap: { 0: 'FRAGMENT_TENANT' },
+    };
+    const slottedParent = {
+      ...slotted,
+      id: 'fixture-slotted-parent',
+      pieces: ['Use the vault. ' + lead + '${', '}' + tail],
+      identifierMap: { 0: 'PARENT_TENANT' },
+    };
+    const slottedOld = {
+      ...slotted,
+      id: 'fixture-old-slotted',
+      identifierMap: { 0: 'OLD_TENANT' },
+    };
+    const out = run(
+      write(
+        'rename-slotted-cli.js',
+        'x=`Use the vault. ' +
+          lead +
+          '${a}' +
+          tail +
+          '`;y=`' +
+          lead +
+          '${b}' +
+          tail +
+          '`'
+      ),
+      write('rename-slotted-prev.json', { prompts: [slottedOld] }),
+      write('rename-slotted-cur.json', { prompts: [slottedParent, slotted] })
+    );
+    expect(out).toMatch(/STILL IN BUNDLE —[\s\S]*fixture-old-slotted/);
+    expect(out).toMatch(/removed-id coverage: FAIL/);
+  });
+
+  const lead = 'Secrets stay in the protected vault under tenant ';
+  const tail = ' and never enter the conversation transcript.';
+  const oldSlotted = {
+    id: 'fixture-old-mixed-slots',
+    pieces: [lead + '${', '}' + tail],
+    identifiers: [0],
+    identifierMap: { 0: 'OLD_TENANT' },
+  };
+  const promotedParent = {
+    id: 'fixture-parent-mixed-slots',
+    pieces: ['Use the vault. ' + lead + '${', '(', ')}' + tail],
+    identifiers: [0, 1],
+    identifierMap: { 0: 'CONVERT', 1: 'PARENT_TENANT' },
+  };
+  const bakedChild = {
+    id: 'fixture-child-mixed-slots',
+    pieces: [lead + '${String(', ')}' + tail],
+    identifiers: [0],
+    identifierMap: { 0: 'CHILD_TENANT' },
+  };
+  const mixedSource =
+    'x=`Use the vault. ' + lead + '${String(a)}' + tail + '`;';
+
+  it('flags a stranded site despite promoted and baked converter segmentation', () => {
+    const out = run(
+      write(
+        'mixed-cli.js',
+        mixedSource + 'y=`' + lead + '${String(b)}' + tail + '`;'
+      ),
+      write('mixed-prev.json', { prompts: [oldSlotted] }),
+      write('mixed-cur.json', { prompts: [promotedParent, bakedChild] })
+    );
+    expect(out).toMatch(/STILL IN BUNDLE —[\s\S]*fixture-old-mixed-slots/);
+    expect(out).toMatch(/removed-id coverage: FAIL/);
+  });
+
+  it('passes mixed segmentation when only the parent emission survives', () => {
+    const out = run(
+      write('mixed-covered-cli.js', mixedSource),
+      write('mixed-covered-prev.json', { prompts: [oldSlotted] }),
+      write('mixed-covered-cur.json', { prompts: [promotedParent, bakedChild] })
+    );
+    expect(out).toMatch(/1 renamed\/reshuffled/);
+    expect(out).toMatch(/removed-id coverage: PASS/);
+  });
+
+  it.each([
+    ['operator', '+ 1', '- 1'],
+    ['literal', ', {key: "first"}', ', {key: "second"}'],
+    ['property key', ', {first: 1}', ', {second: 1}'],
+  ])(
+    'keeps distinct %s expressions as independently covered emissions',
+    (_kind, first, second) => {
+      const parent = {
+        ...promotedParent,
+        pieces: ['Use the vault. ' + lead + '${', '(', first + ')}' + tail],
+      };
+      const child = {
+        ...bakedChild,
+        pieces: [lead + '${String(', second + ')}' + tail],
+      };
+      const out = run(
+        write(
+          'distinct-cli.js',
+          'x=`Use the vault. ' +
+            lead +
+            '${String(a' +
+            first +
+            ')}' +
+            tail +
+            '`;y=`' +
+            lead +
+            '${String(b' +
+            second +
+            ')}' +
+            tail +
+            '`;'
+        ),
+        write('distinct-prev.json', { prompts: [oldSlotted] }),
+        write('distinct-cur.json', { prompts: [parent, child] })
+      );
+      expect(out).toMatch(/removed-id coverage: PASS/);
+      expect(out).toMatch(/0 STILL IN BUNDLE/);
+    }
+  );
+
+  it('normalizes nested template and regex syntax without ending on literal braces', () => {
+    const syntax = ', {key: `} ${a}`, pattern: /[}]/}';
+    const parent = {
+      ...promotedParent,
+      pieces: ['Use the vault. ' + lead + '${', '(', syntax + ')}' + tail],
+    };
+    const child = {
+      ...bakedChild,
+      pieces: [
+        lead + '${String(',
+        syntax.replace('${a}', '${b}') + ')}' + tail,
+      ],
+    };
+    const out = run(
+      write(
+        'nested-expression-cli.js',
+        'x=`Use the vault. ' +
+          lead +
+          '${String(a' +
+          syntax +
+          ')}' +
+          tail +
+          '`;y=`' +
+          lead +
+          '${String(b' +
+          syntax.replace('${a}', '${b}') +
+          ')}' +
+          tail +
+          '`;'
+      ),
+      write('nested-expression-prev.json', { prompts: [oldSlotted] }),
+      write('nested-expression-cur.json', { prompts: [parent, child] })
+    );
+    expect(out).toMatch(/removed-id coverage: FAIL/);
+    expect(out).toMatch(/STILL IN BUNDLE —[\s\S]*fixture-old-mixed-slots/);
+  });
+});

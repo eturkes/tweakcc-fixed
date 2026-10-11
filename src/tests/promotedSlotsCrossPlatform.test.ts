@@ -5,6 +5,7 @@ import { findAllPromptPieceMatches } from '../systemPromptPieceMatcher';
 import {
   applyIdentifierMapping,
   buildSearchRegexFromPieces,
+  reconstructContentFromPieces,
 } from '../systemPromptSync';
 
 /* eslint-disable @typescript-eslint/no-require-imports */
@@ -73,5 +74,54 @@ describe('an indexed object literal matches across platform builds', () => {
     expect(written).toBe(
       'Write a doc. ${{here:"Pass `path`.",none:"Pass `content`."}[t]} Then ${Qa?"list memory.":""} Done.'
     );
+  });
+});
+
+// The pristine override, reconstructed from the catalogue entry, must write
+// each build's own names back: a name left in a piece is written verbatim, and
+// a destructuring key captured as a slot keeps its label (keys are never
+// substituted).
+describe('a pristine override round-trips on another build', () => {
+  const roundTrip = async (darwin: string, linux: string) => {
+    const { pieces, identifiers } = shapeOf(darwin);
+    const identifierMap: Record<string, string> = {};
+    for (const label of identifiers) identifierMap[label] = `SLOT_${label}`;
+    const content = reconstructContentFromPieces(
+      pieces,
+      identifiers,
+      identifierMap
+    );
+    const [match] = await matchBoth(pieces, linux);
+    expect(match).toBeDefined();
+    return {
+      written: applyIdentifierMapping(
+        content,
+        identifiers,
+        identifierMap,
+        Array.from(match).slice(1) as string[],
+        version
+      ),
+      matched: match[0],
+    };
+  };
+
+  it('re-emits a name inside an arrow body', async () => {
+    const body = (p: string, r: string, t: string, m: string) =>
+      `x=\`\${${p}??"the arguments"} must be \${${r}.map((${m})=>${t}[String(${m})]??String(${m})).join(" or ")}\`;`;
+    const { written, matched } = await roundTrip(
+      body('p', 'R', 'br', 'O'),
+      body('d', 'Q', 'Zt', 'M')
+    );
+    expect(written).toBe(matched);
+  });
+
+  it('keeps destructuring keys as source text', async () => {
+    const body = (e: string, a: string, p: string) =>
+      `x=\`Usage \${${e}.groups.map(({group:${a},calls:${p}})=>({group:${a},calls:${p}}))} end\`;`;
+    const { written, matched } = await roundTrip(
+      body('e', 'a', 'p'),
+      body('t', 'n', 'r')
+    );
+    expect(written).toBe(matched);
   });
 });

@@ -10,6 +10,7 @@ import {
   collectSearchNeedles,
   isProseNeedle,
   placedFor,
+  siteOffsets,
 } from './lib/searchNeedles.mjs';
 
 const REPO = path.resolve(
@@ -126,6 +127,18 @@ describe('collectSearchNeedles', () => {
     const src =
       'function f(e){return e.includes("fixture \\u2014 needle text")}';
     expect(collectSearchNeedles(src)[0].needle).toBe('fixture — needle text');
+  });
+});
+
+describe('siteOffsets', () => {
+  it('finds a prompt stored in a single-quoted literal with an escaped apostrophe', () => {
+    const src =
+      "function P4o(){return' Watching isn\\'t available in this session, so read them.'}";
+    const entry = {
+      id: 'x',
+      pieces: [" Watching isn't available in this session, so read them."],
+    };
+    expect(siteOffsets(src, [entry])).toEqual([src.indexOf('Watching')]);
   });
 });
 

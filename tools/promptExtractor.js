@@ -1545,7 +1545,9 @@ const NEW_PROMPT_ASSIGNMENTS = [
       'Model-facing framing tag wrapping a forked/local slash-command\'s stdout into a user-role message sent to the model ("<local-command-stdout>\\n${out}\\n</local-command-stdout>"); present whenever a local command produces output that is fed back to the model.',
   },
   {
-    matcher: t => t.includes('Stop hook feedback:'),
+    // The model-facing framing puts the feedback on its own line; the
+    // terminal row renderer's `Stop hook feedback: ${…}` is ui (CC 2.1.296).
+    matcher: t => /^Stop hook feedback:\s*\n/.test(t),
     name: 'Stop Hook Feedback Framing',
     id: 'system-prompt-stop-hook-feedback-framing',
     description:
@@ -3748,8 +3750,8 @@ function loadSlotLiterals() {
 }
 // Debug seam: `TWEAKCC_DUMP_CANDIDATES=<path>` writes one JSON line per string
 // node the extractor considers, as {start, end, kind, cacheBody}, plus
-// `legacyCacheBody` for a template whose slot was promoted (the second body
-// classifyByCache looks it up under).
+// `legacyCacheBodies` for a template an earlier extractor cut differently (the
+// further bodies classifyByCache looks it up under).
 //
 // It exists because the cache key for a TEMPLATE literal is not the text anyone
 // reading the binary would write down. `cacheBody` is `pieces.join('')` — the
@@ -3914,11 +3916,13 @@ function* cacheLookupForms(body) {
   }
 }
 
-// `legacyBody` is the body a template had before slot promotion
-// (tools/lib/bundleSites.cjs); verdicts recorded against that form still bind.
-function classifyByCache(body, legacyBody) {
+// `legacyBodies` are the bodies a template had in an earlier extractor's slot
+// shape (tools/lib/bundleSites.cjs); verdicts recorded against them still bind.
+// A single body string is accepted too.
+function classifyByCache(body, legacyBodies) {
   const cache = loadClassificationCache();
-  for (const b of legacyBody ? [body, legacyBody] : [body]) {
+  const bodies = [body, ...[].concat(legacyBodies || []).filter(Boolean)];
+  for (const b of bodies) {
     for (const form of cacheLookupForms(b)) {
       const hit = cache[sha1Hex(form)];
       if (hit) return hit;
@@ -3927,8 +3931,10 @@ function classifyByCache(body, legacyBody) {
   return null;
 }
 
-const legacyBodyOf = p =>
-  p.legacy ? p.legacy.pieces.filter(x => typeof x === 'string').join('') : '';
+const legacyBodiesOf = p =>
+  (p.legacyShapes || []).map(l =>
+    l.pieces.filter(x => typeof x === 'string').join('')
+  );
 
 // Serialize the cache in the repo's canonical one-entry-per-line format (the
 // showtime driver's classify-merge writes the same bytes).
@@ -4042,7 +4048,19 @@ function proseOutsideSlots(text) {
   return out;
 }
 
+// One bare word: an enum value, key or pluralised noun (`error`, `read_file`).
+// Model-facing only as a value inside a catalogued prompt's slot, which the
+// slot-literal gate covers. Never a catalogue entry of its own: the cache is
+// keyed on content, so a `model` verdict earned at one site catalogues every
+// `e==="error"` comparison in the bundle (3,837 entries on CC 2.1.296), and an
+// override would rewrite all of them.
+const BARE_TOKEN = /^[A-Za-z_$][\w$-]*$/;
+function isBareToken(text) {
+  return BARE_TOKEN.test(text.trim());
+}
+
 function isHardExcluded(text) {
+  if (isBareToken(text)) return true;
   // No prose at all — a template that is only interpolation scaffolding
   // (`${x}\n\n${y()}`, `${a}, ${b}`). Nothing model-facing is authored here,
   // so an override can only ever be "unchanged", while the regex built from
@@ -4095,14 +4113,6 @@ function isHardExcluded(text) {
     return true;
   // Runtime-hardening IIFEs the bundler emits (executable code).
   if (text.startsWith('(() => {')) return true;
-  // claude-in-chrome file_upload tool description (kept out of the catalogue
-  // for baseline consistency — no sibling browser tool is catalogued).
-  if (
-    text.startsWith(
-      'Upload one or multiple files to a file input element on the page'
-    )
-  )
-    return true;
   // A general-purpose-agent fragment with no working override target (a
   // nested/clobbered span; see the inline notes in validateInput's history).
   if (
@@ -4280,12 +4290,27 @@ function shouldCapture(text, cacheBody, lead, minLength, opts = {}) {
   // kind of curated decision NEW_PROMPT_ASSIGNMENTS encodes, so it wins over
   // the cache and the prose gate alike. Hard structural excludes still win over
   // it, exactly as they do over a cached 'model'.
-  if (opts.slotLiteral) return !isHardExcluded(text);
+  if (opts.slotLiteral) {
+    if (isHardExcluded(text)) return false;
+    // A quasi's verdict was read at one host, and the same quasi recurs in
+    // other templates (CC 2.1.296: " isn't available in this session." closes
+    // both the in-session refusal and a CLI-only `claude plugin` error). A
+    // verdict on THIS template's whole body is the more specific ruling.
+    // The veto is a cache verdict, so the curated rulings that outrank the
+    // cache (a settings-schema description, a NEW_PROMPT_ASSIGNMENTS pin)
+    // outrank it here too.
+    if (opts.slotLiteral === 'quasi' && !opts.settingsDescription) {
+      const own = classifyByCache(cacheBody, opts.legacyCacheBodies);
+      if (own && own.facing !== 'model' && !lookupNewPromptAssignment(text))
+        return false;
+    }
+    return true;
+  }
   // A settings-schema description is found structurally (the model reads the
   // whole schema via /update-config and settings validation errors), which
   // survives a reword that would orphan any per-string cache row.
   if (opts.settingsDescription) return !isHardExcluded(text);
-  const cls = classifyByCache(cacheBody, opts.legacyCacheBody);
+  const cls = classifyByCache(cacheBody, opts.legacyCacheBodies);
   if (cls) {
     if (isHardExcluded(text)) return false;
     if (cls.facing === 'model') return true;
@@ -4808,7 +4833,7 @@ function backfillIdenticalSites(stringData, sites, code) {
       identifierMap: { ...(template.identifierMap || {}) },
       start: site.start,
       end: site.end,
-      ...(template.legacy && { legacy: template.legacy }),
+      ...(template.legacyShapes && { legacyShapes: template.legacyShapes }),
     });
   };
 
@@ -4846,6 +4871,28 @@ function templateExprNode(site) {
   return { expressions };
 }
 
+function literalSiteRecord(site) {
+  const range = { start: site.start, end: site.end, kind: site.kind };
+  if (site.kind === 'composite')
+    return {
+      ...range,
+      cacheBody: site.text,
+      fragments: site.fragments.map(f => ({
+        start: f.start,
+        end: f.end,
+        body: f.value,
+      })),
+    };
+  if (site.kind === 'string') return { ...range, cacheBody: site.value };
+  return {
+    ...range,
+    cacheBody: site.pieces.join(''),
+    ...(site.legacyShapes && {
+      legacyCacheBodies: site.legacyShapes.map(l => l.pieces.join('')),
+    }),
+  };
+}
+
 // `opts.cache` reuses the bundle-only site collection from the on-disk cache
 // (tools/lib/bundleSites.cjs). The CLI and collectLiteralSites turn it on;
 // TWEAKCC_EXTRACT_NO_CACHE=1 forces a cold collection either way.
@@ -4859,6 +4906,13 @@ function extractStrings(filepath, minLength = 500, opts = {}) {
         ? `extractStrings: site cache hit (${bundle.file})`
         : `extractStrings: site cache miss, collected and stored (${bundle.file})`
     );
+  }
+  if (opts.sitesOnly) {
+    for (const site of bundle.sites) {
+      if (site.kind === 'composite' && !_collectComposites) continue;
+      dumpCandidate(literalSiteRecord(site));
+    }
+    return null;
   }
   const settingsIndex = new Map(bundle.settings);
   const settingsAt = site => {
@@ -4874,17 +4928,7 @@ function extractStrings(filepath, minLength = 500, opts = {}) {
   // already captured is enclosed or retired.
   const decideComposite = site => {
     if (_siteCollector && _collectComposites)
-      _siteCollector.push({
-        start: site.start,
-        end: site.end,
-        kind: 'composite',
-        cacheBody: site.text,
-        fragments: site.fragments.map(f => ({
-          start: f.start,
-          end: f.end,
-          body: f.value,
-        })),
-      });
+      dumpCandidate(literalSiteRecord(site));
     const fragCaptured = site.fragments.map(frag => {
       const v = frag.value;
       return shouldCapture(v, v, leadOf(frag.start), minLength, {
@@ -4954,12 +4998,7 @@ function extractStrings(filepath, minLength = 500, opts = {}) {
     const lead = leadOf(site.start);
     const slotLiteral = Boolean(slotLiteralVerdict(site.value));
     const settings = settingsAt(site);
-    dumpCandidate({
-      start: site.start,
-      end: site.end,
-      kind: 'string',
-      cacheBody: site.value,
-    });
+    dumpCandidate(literalSiteRecord(site));
     if (
       shouldCapture(site.value, site.value, lead, minLength, {
         slotLiteral,
@@ -4993,21 +5032,23 @@ function extractStrings(filepath, minLength = 500, opts = {}) {
     // A template's slot literal is one of its QUASIS, not the whole raw
     // source: `\n- Task list: ${e.taskListPath}` was hashed as its leading
     // quasi. Any quasi carrying a `catalogue` verdict captures the template,
-    // because the template is the unit that can be overridden.
-    const slotLiteral = site.quasis.some(q => Boolean(slotLiteralVerdict(q)));
+    // because the template is the unit that can be overridden — unless the
+    // template's own body carries a ui/internal verdict (see shouldCapture).
+    // With no substitution the lone quasi IS the template, so the verdict is a
+    // ruling on this exact text and outranks the cache like a string's does.
+    const slotLiteral = !site.quasis.some(q => Boolean(slotLiteralVerdict(q)))
+      ? false
+      : site.quasis.length === 1
+        ? true
+        : 'quasi';
     const settings = settingsAt(site);
-    dumpCandidate({
-      start: site.start,
-      end: site.end,
-      kind: 'template',
-      cacheBody: tbody,
-      ...(site.legacy && { legacyCacheBody: site.legacy.pieces.join('') }),
-    });
+    dumpCandidate(literalSiteRecord(site));
     if (
       shouldCapture(fullContent, tbody, lead, minLength, {
         slotLiteral,
         settingsDescription: Boolean(settings),
-        legacyCacheBody: site.legacy && site.legacy.pieces.join(''),
+        legacyCacheBodies:
+          site.legacyShapes && site.legacyShapes.map(l => l.pieces.join('')),
         range: site,
       })
     ) {
@@ -5025,7 +5066,7 @@ function extractStrings(filepath, minLength = 500, opts = {}) {
         end: site.end,
         slotLiteral,
         ...(settings && { settings }),
-        ...(site.legacy && { legacy: site.legacy }),
+        ...(site.legacyShapes && { legacyShapes: site.legacyShapes }),
       });
     }
   };
@@ -5040,7 +5081,6 @@ function extractStrings(filepath, minLength = 500, opts = {}) {
       `extractStrings: parsed ${bundle.modules.parsed}/${bundle.modules.total} bundle modules`
     );
   }
-  if (opts.sitesOnly) return null;
   backfillIdenticalSites(stringData, bundle.sites, code);
 
   // Filter out strings that are subsets of other strings
@@ -5131,7 +5171,7 @@ function applyCacheNames(prompts) {
     (p.pieces || []).filter(x => typeof x === 'string').join('');
   for (const p of prompts) {
     if (p.id) continue; // established/fuzzy-carried name wins
-    const cls = classifyByCache(body(p), legacyBodyOf(p));
+    const cls = classifyByCache(body(p), legacyBodiesOf(p));
     if (cls && cls.facing === 'model' && cls.id) {
       p.id = cls.id;
       p.name = cls.name || '';
@@ -5155,7 +5195,7 @@ function applySlotLiteralNames(prompts) {
     const pieces = (p.pieces || []).filter(x => typeof x === 'string');
     // Whole body first (a StringLiteral capture IS the literal), then each
     // piece, longest first, so a template naming from its most specific quasi.
-    const legacyPieces = p.legacy ? p.legacy.pieces : [];
+    const legacyPieces = (p.legacyShapes || []).flatMap(l => l.pieces);
     const probes = [pieces.join('')].concat(
       pieces.slice().sort((a, b) => b.length - a.length),
       legacyPieces.slice().sort((a, b) => b.length - a.length)
@@ -5489,27 +5529,212 @@ function normalizeIdGroups(prompts) {
   return prompts.filter(p => !dropped.has(p));
 }
 
-// The old item's identifierMap, relabelled for the new item's slots. When the
-// old item is in the new item's pre-promotion shape its labels index the legacy
-// slots, so each name moves to the label its slot holds now; carrying it by
-// label would bind it to whichever slot was promoted ahead of it. Promoted
-// slots are left unnamed for the synthetic fill.
-function carriedIdentifierMap(oldItem, newItem) {
-  const legacy = newItem.legacy;
-  const same = (a, b) => JSON.stringify(a || []) === JSON.stringify(b || []);
-  if (
-    !legacy ||
-    same(oldItem.identifiers, newItem.identifiers) ||
-    !same(oldItem.identifiers, legacy.identifiers)
-  ) {
-    return oldItem.identifierMap;
+// Slot identity across catalogues. A catalogue entry's labels name slots only
+// within the slot shape its extractor cut: two shapes of one template can hold
+// equal `identifiers` arrays over different slots (drop a destructuring key and
+// promote a later name, and [0,1,2] still reads [0,1,2]). So a name never moves
+// label-to-label between entries; it moves slot-to-slot, through the shape the
+// old entry was cut in and that shape's `occurrences` into the current slots.
+//
+// The shapes a fresh item can be matched in: its own, then each earlier
+// extractor's (tools/lib/bundleSites.cjs `legacyShapes`).
+function itemShapes(item) {
+  const ids = item.identifiers || [];
+  return [
+    {
+      pieces: item.pieces || [],
+      identifiers: ids,
+      occurrences: ids.map((_, i) => i),
+    },
+    ...(item.legacyShapes || []),
+  ];
+}
+
+// `oldItem`'s names for the slots `pairs` ([oldSlot, shapeSlot], …) aligns
+// with `shape`, keyed by the new item's labels. A shape slot that is no longer
+// a slot drops its name; a pairing that is not one-to-one between old and new
+// labels drops both rather than guess.
+function remapThroughShape(oldItem, newItem, shape, pairs) {
+  const oldMap = oldItem.identifierMap || {};
+  const links = [];
+  for (const [oi, si] of pairs) {
+    const slot = shape.occurrences[si];
+    if (slot === undefined || slot < 0) continue;
+    links.push([
+      String(oldItem.identifiers[oi]),
+      String(newItem.identifiers[slot]),
+    ]);
   }
+  const fan = (from, to) => {
+    const m = new Map();
+    for (const l of links) {
+      if (!m.has(l[from])) m.set(l[from], new Set());
+      m.get(l[from]).add(l[to]);
+    }
+    return m;
+  };
+  const outOf = fan(0, 1);
+  const into = fan(1, 0);
   const map = {};
-  legacy.occurrences.forEach((slot, i) => {
-    const name = (oldItem.identifierMap || {})[legacy.identifiers[i]];
-    if (name) map[newItem.identifiers[slot]] = name;
-  });
+  for (const [o, n] of links) {
+    if (outOf.get(o).size !== 1 || into.get(n).size !== 1) continue;
+    if (oldMap[o]) map[n] = oldMap[o];
+  }
   return map;
+}
+
+// The shape among `shapes` that `oldItem` was cut in, when its pieces and
+// labels are exactly that shape's (`norm` folds formatting the two pipelines
+// disagree on). Index into `shapes`, or -1.
+function exactShapeIndex(oldItem, shapes, norm = x => x) {
+  const key = item =>
+    JSON.stringify([(item.pieces || []).map(norm), item.identifiers || []]);
+  const k = key(oldItem);
+  return shapes.findIndex(sh => key(sh) === k);
+}
+
+const ALL_SLOTS = item => (item.identifiers || []).map((_, i) => [i, i]);
+
+// Each slot's surroundings: the text up to ANCHOR chars either side, with every
+// other slot written as `sep`. Two shapes of one template differ exactly there
+// (a name is slot or text), so equal surroundings mean the same slot, and an
+// edit elsewhere in a long prompt leaves them alone.
+const ANCHOR = 24;
+function slotAnchors(pieces, sep, norm) {
+  let text = '';
+  const at = [];
+  pieces.forEach((p, i) => {
+    text += norm(p);
+    if (i < pieces.length - 1) {
+      at.push(text.length);
+      text += sep;
+    }
+  });
+  return at.map(q => [
+    text.slice(Math.max(0, q - ANCHOR), q),
+    text.slice(q + 1, q + 1 + ANCHOR),
+  ]);
+}
+
+// Order-preserving pairing of `oldItem`'s slots with `shape`'s, maximizing the
+// number of matching surroundings (a pair needs at least one side equal).
+//
+// A name moves only along a pair that every optimal pairing makes. Repeated
+// surroundings tie several pairings (three slots in identical sentences, one
+// deleted, leave no way to tell which went), and picking one of them binds
+// names to the wrong variables with nothing to show for it; an unnamed slot is
+// caught by the orphan check instead. Between two such pairs (or a pair and an
+// end of the text), a lone old slot facing a lone new slot is the same slot
+// with its text rewritten on both sides, so it pairs too. A wider gap could be
+// one slot deleted and another inserted, so it stays unnamed. `complete`
+// counts only the evidenced pairs.
+function alignSlots(oldItem, shape, norm) {
+  const all = [...(oldItem.pieces || []), ...shape.pieces];
+  let sep = '\u0000';
+  for (let c = 0xe000; all.some(p => p.includes(sep)); c++)
+    sep = String.fromCharCode(c);
+  const A = slotAnchors(oldItem.pieces || [], sep, norm);
+  const B = slotAnchors(shape.pieces, sep, norm);
+  const w = (i, j) => (A[i][0] === B[j][0]) + (A[i][1] === B[j][1]);
+  const m = A.length;
+  const n = B.length;
+  const table = () =>
+    Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+  // suffix[i][j]: best score of old i.. against shape j..; prefix[i][j]: best
+  // of old ..i-1 against shape ..j-1.
+  const suffix = table();
+  for (let i = m - 1; i >= 0; i--)
+    for (let j = n - 1; j >= 0; j--) {
+      const wij = w(i, j);
+      suffix[i][j] = Math.max(
+        suffix[i + 1][j],
+        suffix[i][j + 1],
+        wij ? wij + suffix[i + 1][j + 1] : 0
+      );
+    }
+  const prefix = table();
+  for (let i = 1; i <= m; i++)
+    for (let j = 1; j <= n; j++) {
+      const wij = w(i - 1, j - 1);
+      prefix[i][j] = Math.max(
+        prefix[i - 1][j],
+        prefix[i][j - 1],
+        wij ? wij + prefix[i - 1][j - 1] : 0
+      );
+    }
+  const best = suffix[0][0];
+  const certain = [];
+  for (let i = 0; i < m; i++) {
+    // Some optimal pairing leaves old slot i unpaired: it splits at a column.
+    let canSkip = false;
+    for (let j = 0; j <= n && !canSkip; j++)
+      canSkip = prefix[i][j] + suffix[i + 1][j] === best;
+    if (canSkip) continue;
+    const partners = [];
+    for (let j = 0; j < n; j++) {
+      const wij = w(i, j);
+      if (wij && prefix[i][j] + wij + suffix[i + 1][j + 1] === best)
+        partners.push(j);
+    }
+    if (partners.length === 1) certain.push([i, partners[0]]);
+  }
+  const pairs = [];
+  const bounds = [[-1, -1], ...certain, [m, n]];
+  for (let k = 1; k < bounds.length; k++) {
+    const [pi, pj] = bounds[k - 1];
+    const [qi, qj] = bounds[k];
+    if (qi - pi === 2 && qj - pj === 2) pairs.push([pi + 1, pj + 1]);
+    if (k < bounds.length - 1) pairs.push(bounds[k]);
+  }
+  return {
+    pairs,
+    score: best,
+    complete: certain.length === m && m === n,
+  };
+}
+
+// `oldItem`'s identifierMap for `newItem`'s slots when the bodies differ (a
+// fuzzy carry, or upstream's entry for another build): the slots are paired by
+// their surroundings in whichever shape fits the old entry best, and names
+// move only along those pairs. Shapes that fit equally well keep only the
+// names they agree on. `complete` is whether every old slot and every slot of
+// the chosen shape paired on matching surroundings, so a partial map names
+// only slots it is sure of and the rest are left for the synthetic fill.
+function alignedIdentifierMap(oldItem, newItem, norm = x => x) {
+  const shapes = itemShapes(newItem);
+  const fits = shapes.map(sh => ({ sh, ...alignSlots(oldItem, sh, norm) }));
+  const best = Math.max(...fits.map(f => f.score));
+  const top = fits.filter(f => f.score === best);
+  const maps = top.map(f => remapThroughShape(oldItem, newItem, f.sh, f.pairs));
+  const map = {};
+  for (const [k, v] of Object.entries(maps[0]))
+    if (maps.every(m => m[k] === v)) map[k] = v;
+  return { map, complete: top.length === 1 && top[0].complete };
+}
+
+// Upstream's extractor cuts slots in our 'base' shape (no promotion, keys as
+// slots). Its names move to the slots they named; slots upstream does not
+// name keep ours unless the name is taken by an adopted one.
+function adoptUpstreamIdentifierMap(p, u) {
+  if (!u || !u.identifierMap) return false;
+  const shapes = itemShapes(p);
+  const norm = x => x.replace(/\\(['"`\\])/g, '$1');
+  const exact = exactShapeIndex(u, shapes, norm);
+  let adopted;
+  if (exact >= 0) {
+    adopted = remapThroughShape(u, p, shapes[exact], ALL_SLOTS(u));
+  } else {
+    const { map, complete } = alignedIdentifierMap(u, p, norm);
+    if (!complete) return false;
+    adopted = map;
+  }
+  const taken = new Set(Object.values(adopted));
+  const live = new Set((p.identifiers || []).map(String));
+  const kept = {};
+  for (const [k, v] of Object.entries(p.identifierMap || {}))
+    if (live.has(k) && !(k in adopted) && v && !taken.has(v)) kept[k] = v;
+  p.identifierMap = { ...kept, ...adopted };
+  return true;
 }
 
 // Fills every blank identifierMap name of one prompt with a stable synthetic
@@ -5545,17 +5770,20 @@ function fillSlotNames(p) {
     if (!live.has(String(k))) delete p.identifierMap[k];
   }
   // A promoted slot must not renumber the others: each unpromoted slot is
-  // named from its pre-promotion label, so an override written before
-  // promotion keeps binding, and promoted slots take the next unused index.
+  // named from its label in the newest earlier shape, so an override written
+  // before promotion keeps binding, and promoted slots take the next unused
+  // index.
+  const legacy = (p.legacyShapes || [])[0];
   const legacyLabel = new Map();
-  if (p.legacy) {
-    p.legacy.occurrences.forEach((slot, i) => {
-      legacyLabel.set(String(p.identifiers[slot]), p.legacy.identifiers[i]);
+  if (legacy) {
+    legacy.occurrences.forEach((slot, i) => {
+      if (slot >= 0)
+        legacyLabel.set(String(p.identifiers[slot]), legacy.identifiers[i]);
     });
   }
   const used = new Set(Object.values(p.identifierMap).filter(Boolean));
-  let spare = p.legacy
-    ? new Set(p.legacy.identifiers).size
+  let spare = legacy
+    ? new Set(legacy.identifiers).size
     : Object.keys(p.identifierMap).length;
   for (const k of Object.keys(p.identifierMap)) {
     if (p.identifierMap[k] || !legacyLabel.has(k)) continue;
@@ -5566,7 +5794,7 @@ function fillSlotNames(p) {
   }
   for (const k of Object.keys(p.identifierMap)) {
     if (p.identifierMap[k]) continue;
-    let name = `${slug}_VAR_${p.legacy ? spare++ : k}`;
+    let name = `${slug}_VAR_${legacy ? spare++ : k}`;
     while (used.has(name)) name = `${slug}_VAR_${spare++}`;
     used.add(name);
     p.identifierMap[k] = name;
@@ -5636,14 +5864,16 @@ function mergeWithExisting(newData, oldData, currentVersion) {
     }
   }
 
-  // Exact-match index: the FIRST old item per (content, label-encoded
+  // Exact-match index: the FIRST old item per (pieces, label-encoded
   // identifiers), the same item a linear find over oldData.prompts returns.
-  const exactKey = (content, identifiers) =>
-    `${content}\0${JSON.stringify(identifiers)}`;
+  // Pieces, not their joined text: the split is where the slots are, and
+  // labels only mean the same slots when it is identical.
+  const exactKey = item =>
+    JSON.stringify([item.pieces || [], item.identifiers || []]);
   const exactOld = new Map();
   const oldKeysById = new Map();
   for (const oldItem of oldData.prompts) {
-    const key = exactKey(reconstructContent(oldItem), oldItem.identifiers);
+    const key = exactKey(oldItem);
     if (!exactOld.has(key)) exactOld.set(key, oldItem);
     if (!oldItem.id) continue;
     if (!oldKeysById.has(oldItem.id)) oldKeysById.set(oldItem.id, new Set());
@@ -5654,28 +5884,26 @@ function mergeWithExisting(newData, oldData, currentVersion) {
   // sharing its opening, and the previous owner keeps the id.
   const currentKeys = new Set();
   for (const item of newData.prompts) {
-    currentKeys.add(exactKey(reconstructContent(item), item.identifiers));
-    if (item.legacy) {
-      currentKeys.add(
-        exactKey(item.legacy.pieces.join(''), item.legacy.identifiers)
-      );
-    }
+    for (const shape of itemShapes(item)) currentKeys.add(exactKey(shape));
   }
   const ownerStillPresent = id =>
     [...(oldKeysById.get(id) || [])].some(k => currentKeys.has(k));
 
   const newPrompts = newData.prompts.map((newItem, idx) => {
     const newContent = reconstructContent(newItem);
-    const legacy = newItem.legacy;
+    const shapes = itemShapes(newItem);
 
-    // Try to find a matching old item by content and label-encoded identifiers.
-    // A prompt that gained promoted slots is matched in its pre-promotion shape
-    // as well, since the old catalogue may predate promotion.
-    const currentOld = exactOld.get(exactKey(newContent, newItem.identifiers));
-    const legacyOld =
-      !currentOld && legacy
-        ? exactOld.get(exactKey(legacy.pieces.join(''), legacy.identifiers))
-        : undefined;
+    // Try to find a matching old item by pieces and label-encoded identifiers,
+    // in the current shape and then in each earlier extractor's, since the old
+    // catalogue may have been cut by one of them.
+    let shapeIndex = -1;
+    let exactHit;
+    for (let k = 0; k < shapes.length && !exactHit; k++) {
+      exactHit = exactOld.get(exactKey(shapes[k]));
+      if (exactHit) shapeIndex = k;
+    }
+    const currentOld = shapeIndex === 0 ? exactHit : undefined;
+    const legacyOld = shapeIndex > 0 ? exactHit : undefined;
 
     if (legacyOld) {
       // The prompt text is unchanged, but its pristine body now names a slot
@@ -5683,13 +5911,18 @@ function mergeWithExisting(newData, oldData, currentVersion) {
       // the override is flagged for realignment rather than passing as current.
       const assignedFromMap = lookupNewPromptAssignment(newContent);
       const overlaidIdentifierMap = overlayAssignmentMap(
-        carriedIdentifierMap(legacyOld, newItem),
+        remapThroughShape(
+          legacyOld,
+          newItem,
+          shapes[shapeIndex],
+          ALL_SLOTS(legacyOld)
+        ),
         assignedFromMap && assignedFromMap.identifierMap,
         newItem.identifiers,
         (assignedFromMap && assignedFromMap.id) || legacyOld.id
       );
       console.log(
-        `Promoted slot(s) in "${legacyOld.id || legacyOld.name}": identifiers ${JSON.stringify(legacyOld.identifiers)} → ${JSON.stringify(newItem.identifiers)}`
+        `Re-cut slot(s) in "${legacyOld.id || legacyOld.name}": identifiers ${JSON.stringify(legacyOld.identifiers)} → ${JSON.stringify(newItem.identifiers)}`
       );
       return {
         ...newItem,
@@ -5751,14 +5984,15 @@ function mergeWithExisting(newData, oldData, currentVersion) {
       const fp = fpNormalize(content).slice(0, FUZZY_PREFIX);
       return fp.length >= FUZZY_MIN ? fpToOld.get(fp) : undefined;
     };
-    const fuzzyCandidate =
-      fuzzyFor(newContent) || (legacy && fuzzyFor(legacy.pieces.join('')));
+    let fuzzyCandidate;
+    for (const shape of shapes) {
+      fuzzyCandidate = fuzzyCandidate || fuzzyFor(shape.pieces.join(''));
+    }
     // A body the classifier already named is a prompt of its own; applyCacheNames
     // gives it that name. Carrying a sibling's id onto it would leave its
     // verdict unused and hand it a positional suffix of the sibling.
     const cached =
-      fuzzyCandidate &&
-      classifyByCache(newContent, legacy ? legacy.pieces.join('') : '');
+      fuzzyCandidate && classifyByCache(newContent, legacyBodiesOf(newItem));
     const cachedId =
       cached && cached.facing === 'model' && cached.id ? cached.id : null;
     let fuzzyOld = fuzzyCandidate;
@@ -5780,7 +6014,7 @@ function mergeWithExisting(newData, oldData, currentVersion) {
       );
       const assignedFromMap = lookupNewPromptAssignment(newContent);
       const overlaidIdentifierMap = overlayAssignmentMap(
-        carriedIdentifierMap(fuzzyOld, newItem),
+        alignedIdentifierMap(fuzzyOld, newItem).map,
         assignedFromMap && assignedFromMap.identifierMap,
         newItem.identifiers,
         (assignedFromMap && assignedFromMap.id) || fuzzyOld.id
@@ -5964,11 +6198,11 @@ if (require.main === module) {
       prompts: data.prompts.map(prompt => ({
         ...prompt,
         pieces: replaceVersionInPieces(prompt.pieces, versionStr),
-        ...(prompt.legacy && {
-          legacy: {
-            ...prompt.legacy,
-            pieces: replaceVersionInPieces(prompt.legacy.pieces, versionStr),
-          },
+        ...(prompt.legacyShapes && {
+          legacyShapes: prompt.legacyShapes.map(l => ({
+            ...l,
+            pieces: replaceVersionInPieces(l.pieces, versionStr),
+          })),
         }),
       })),
     };
@@ -6040,15 +6274,7 @@ if (require.main === module) {
       for (const p of up.prompts || []) if (p.id) upById.set(p.id, p);
       let adopted = 0;
       for (const p of mergedResult.prompts) {
-        const u = p.id && upById.get(p.id);
-        if (
-          u &&
-          u.identifierMap &&
-          JSON.stringify(u.identifiers) === JSON.stringify(p.identifiers)
-        ) {
-          p.identifierMap = { ...u.identifierMap };
-          adopted++;
-        }
+        if (adoptUpstreamIdentifierMap(p, p.id && upById.get(p.id))) adopted++;
       }
       console.log(
         `Adopted upstream identifierMap for ${adopted} shared prompt(s)`
@@ -6125,7 +6351,7 @@ if (require.main === module) {
 
   // Remove extraction bookkeeping before writing
   mergedResult.prompts = mergedResult.prompts.map(
-    ({ start, end, settings, legacy, ...rest }) => rest
+    ({ start, end, settings, legacyShapes, ...rest }) => rest
   );
 
   // Add version as top-level field
@@ -6145,7 +6371,12 @@ if (require.main === module) {
   // these into the chunk files the classification workflow consumes;
   // classify-merge writes the verdicts and the next extraction acts on them.
   const gateCandidates = result.gateCandidates || [];
-  const sidecarPath = '/tmp/tweakcc-gate-candidates.json';
+  const sidecarPath =
+    process.env.TWEAKCC_GATE_CANDIDATES ||
+    path.join(
+      process.env.SHOWTIME_TMP || '/tmp',
+      'tweakcc-gate-candidates.json'
+    );
   fs.writeFileSync(
     sidecarPath,
     JSON.stringify(
@@ -6189,6 +6420,7 @@ module.exports.leadShowsExceptionContext = leadShowsExceptionContext;
 module.exports.contentIsModelFacingShortPrompt =
   contentIsModelFacingShortPrompt;
 module.exports.validateInput = validateInput;
+module.exports.isBareToken = isBareToken;
 module.exports.ADMIT_FLOOR = ADMIT_FLOOR;
 module.exports.shouldCapture = shouldCapture;
 module.exports.looksLikeEnglishProse = looksLikeEnglishProse;
@@ -6204,6 +6436,8 @@ module.exports._setClassificationCacheForTests =
 // genuinely-ambiguous cross-id) is behavior worth locking down.
 module.exports.mergeWithExisting = mergeWithExisting;
 module.exports.fillSlotNames = fillSlotNames;
+module.exports.adoptUpstreamIdentifierMap = adoptUpstreamIdentifierMap;
+module.exports.alignedIdentifierMap = alignedIdentifierMap;
 module.exports.classifyByCache = classifyByCache;
 module.exports.rawCacheForms = rawCacheForms;
 module.exports.cacheLookupForms = cacheLookupForms;

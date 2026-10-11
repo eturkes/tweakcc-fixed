@@ -26,7 +26,7 @@ import { builtinModules } from 'node:module';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { Worker } from 'node:worker_threads';
+import { Worker, threadId } from 'node:worker_threads';
 import * as esbuild from 'esbuild';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
@@ -132,7 +132,7 @@ export const buildCore = async () => {
   fs.mkdirSync(dir, { recursive: true });
   const file = path.join(dir, `core-${codeHash}.mjs`);
   if (!fs.existsSync(file)) {
-    const tmp = `${file}.${process.pid}.${Date.now()}.tmp`;
+    const tmp = `${file}.${process.pid}.${threadId}.${crypto.randomUUID()}.tmp`;
     fs.writeFileSync(tmp, code);
     fs.renameSync(tmp, file);
   }
@@ -183,7 +183,7 @@ const writeCacheFile = (file, fresh) => {
   if (Object.keys(fresh).length === 0) return;
   // Merge with whatever a concurrent run wrote meanwhile; rename is atomic.
   const entries = { ...readCacheFile(file), ...fresh };
-  const tmp = `${file}.${process.pid}.${Date.now()}.tmp`;
+  const tmp = `${file}.${process.pid}.${threadId}.${crypto.randomUUID()}.tmp`;
   fs.writeFileSync(tmp, JSON.stringify({ format: CACHE_FORMAT, entries }));
   fs.renameSync(tmp, file);
 };

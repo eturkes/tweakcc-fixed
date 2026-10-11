@@ -113,7 +113,9 @@ describe('checker and harvest over an evidence directory', () => {
   let dir;
   let bundlePath;
   let promptsJson;
-  const A = H('a'), B = H('b'), C = H('c');
+  const sha1 = t => crypto.createHash('sha1').update(t).digest('hex');
+  const A = H('a'), B = sha1('own body'), C = H('c');
+  const catalogue = prompts => fs.writeFileSync(promptsJson, JSON.stringify({ version: '9.9.9', prompts }));
   const cand = (hash, extra = {}) => ({ hash, len: 10, body: 'b', sites: [], route: { verdict: 'ui', resolved: true }, allowedIds: [], ...extra });
   const write = (f, o) => fs.writeFileSync(path.join(dir, f), JSON.stringify(o));
   const run = (tool, ...a) => spawnSync(process.execPath, [path.join(HERE, tool), dir, ...a], { encoding: 'utf8' });
@@ -124,12 +126,15 @@ describe('checker and harvest over an evidence directory', () => {
     bundlePath = path.join(dir, 'cli.js');
     promptsJson = path.join(dir, 'prompts.json');
     fs.writeFileSync(bundlePath, 'bundle bytes');
-    fs.writeFileSync(promptsJson, JSON.stringify({ version: '9.9.9', prompts: [] }));
+    catalogue([
+      { id: 'tool-result-live-elsewhere', pieces: ['live elsewhere'] },
+      { id: 'tool-result-own-body', pieces: ['own body'] },
+    ]);
     const bundle = { path: bundlePath, sha256: crypto.createHash('sha256').update('bundle bytes').digest('hex') };
     const corpus = { promptsJson, digest: crypto.createHash('sha256').update(fs.readFileSync(promptsJson)).digest('hex').slice(0, 16) };
     man = { format: 1, version: '9.9.9', bundle, corpus, catalogueIndex: 'catalogue-index.json', chunkCount: 2, chunks: [{ chunk: '00', hashes: [A, B] }, { chunk: '01', hashes: [C] }] };
     write('manifest.json', man);
-    write('catalogue-index.json', { 'tool-result-live-elsewhere': [H('f')], 'tool-result-own-body': [B] });
+    write('catalogue-index.json', { 'tool-result-live-elsewhere': [sha1('live elsewhere')], 'tool-result-own-body': [B] });
     write('chunk-00.json', { bundle, corpus, candidates: [cand(A), cand(B, { route: { verdict: 'model', resolved: true } })] });
     write('chunk-01.json', { bundle, corpus, candidates: [cand(C, { reusedFrom: { id: 'tool-result-live-elsewhere' }, allowedIds: ['tool-result-live-elsewhere'] })] });
   });
@@ -177,6 +182,22 @@ describe('checker and harvest over an evidence directory', () => {
     write('verdicts-00.json', env('00', [ui(A), model(B, 'tool-result-own-body')]));
     fs.writeFileSync(bundlePath, 'other bytes');
     expect(run('checkClassifyVerdicts.mjs', '00').stdout).toMatch(/changed since the evidence was built/);
+  });
+
+  // CC 2.1.296: a re-extract during the run rewrote the catalogue and every
+  // chunk failed on its digest, though no verdict collided with anything.
+  it('checks collisions against the live catalogue, not its build-time digest', () => {
+    write('verdicts-00.json', env('00', [ui(A), model(B, 'tool-result-minted-here')]));
+    catalogue([
+      { id: 'tool-result-live-elsewhere', pieces: ['live elsewhere'] },
+      { id: 'tool-result-own-body', pieces: ['own body'] },
+      { id: 'tool-result-unrelated-addition', pieces: ['added by a re-extract'] },
+    ]);
+    expect(run('checkClassifyVerdicts.mjs', '00').stdout).toContain('PASS chunk 00 (classify)');
+    catalogue([
+      { id: 'tool-result-minted-here', pieces: ['a slot literal catalogued meanwhile'] },
+    ]);
+    expect(run('checkClassifyVerdicts.mjs', '00').stdout).toMatch(/reuses catalogue id tool-result-minted-here/);
   });
 
   it('verify stage requires exactly the scope and applies the corrections', () => {

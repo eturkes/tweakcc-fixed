@@ -18,10 +18,20 @@ const settingsPrompt = (text, keyPath, extra = {}) => ({
 
 describe('shouldCapture with a settings description', () => {
   it('captures ahead of the classification cache and the prose gate', () => {
-    expect(ex.shouldCapture('Short', 'Short', '', 500, {})).toBe(false);
+    expect(ex.shouldCapture('Short note', 'Short note', '', 500, {})).toBe(
+      false
+    );
+    expect(
+      ex.shouldCapture('Short note', 'Short note', '', 500, {
+        settingsDescription: true,
+      })
+    ).toBe(true);
+  });
+
+  it('never captures a one-word description, whose body matches every use', () => {
     expect(
       ex.shouldCapture('Short', 'Short', '', 500, { settingsDescription: true })
-    ).toBe(true);
+    ).toBe(false);
   });
 
   it('still yields to the hard structural excludes', () => {

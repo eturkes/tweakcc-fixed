@@ -4,113 +4,148 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { couldNotFindBlock } from './applySafetyHarness.mjs';
 
 const TOOL = path.join(
   path.dirname(fileURLToPath(import.meta.url)),
   'tagPlatforms.mjs'
 );
 
-// tagPlatforms runs `node tools/applySafetyHarness.mjs … <bundle>`. A `node`
-// shim first on PATH answers those calls with the canned output stored beside
-// each bundle and hands every other call to the real node.
-const SHIM = `#!/bin/sh
-case "$1" in
-  *applySafetyHarness.mjs)
-    for last; do :; done
-    cat "$last.harness-out"
-    exit 1;;
-esac
-exec "${process.execPath}" "$@"
-`;
-
-const harnessOutput = (log, { cut = false } = {}) => {
-  const block = couldNotFindBlock(log);
-  return [
-    '=== apply-safety harness ===',
-    'pristine:          /tmp/cli.js',
-    'apply ran:         true',
-    ...(cut ? block.slice(0, -2) : block),
-    ...(cut
-      ? []
-      : ['cannot apply safely (warns): 0', 'patched parses:    true']),
-    ...(cut ? [] : ['RESULT: FAIL']),
-    '',
-  ].join('\n');
-};
-
-const NOT_FOUND = name =>
-  `Could not find system prompt "${name}" in cli.js (using regex new RegExp("Could not find file ([\\\\w$]+)", "s"))`;
-
 let dir;
 let json;
 
 beforeEach(() => {
   dir = fs.mkdtempSync(path.join(os.tmpdir(), 'tagPlatforms-test-'));
-  fs.mkdirSync(path.join(dir, 'bin'));
-  fs.writeFileSync(path.join(dir, 'bin', 'node'), SHIM, { mode: 0o755 });
-  fs.mkdirSync(path.join(dir, 'home'));
   json = path.join(dir, 'prompts-9.9.9.json');
-  fs.writeFileSync(
-    json,
-    JSON.stringify({
-      version: '9.9.9',
-      prompts: [
-        { id: 'tool-read', name: 'Tool: Read', pieces: ['a'] },
-        { id: 'other', name: 'Other', pieces: ['b'] },
-      ],
-    })
-  );
 });
 
-afterEach(() => {
-  fs.rmSync(dir, { recursive: true, force: true });
-});
+afterEach(() => fs.rmSync(dir, { recursive: true, force: true }));
 
-const bundle = (name, output) => {
+const write = prompts =>
+  fs.writeFileSync(json, JSON.stringify({ version: '9.9.9', prompts }));
+// A real bundle stamps its version; an empty one stays empty.
+const bundle = (name, content, stamp = 'VERSION:"9.9.9";') => {
   const file = path.join(dir, name);
-  fs.writeFileSync(file, '');
-  fs.writeFileSync(`${file}.harness-out`, output);
+  fs.writeFileSync(file, content && stamp + content);
   return file;
 };
-
 const tag = (...specs) =>
-  spawnSync(process.execPath, [TOOL, json, ...specs, '--jobs=2'], {
+  spawnSync(process.execPath, [TOOL, json, '--jobs=2', ...specs], {
     encoding: 'utf8',
-    env: {
-      ...process.env,
-      PATH: `${path.join(dir, 'bin')}:${process.env.PATH}`,
-      HOME: path.join(dir, 'home'),
-      TWEAKCC_CONFIG_DIR: path.join(dir, 'home', '.tweakcc'),
-    },
   });
+const prompts = () => JSON.parse(fs.readFileSync(json, 'utf8')).prompts;
 
 describe('tagPlatforms', () => {
-  it('reads a listed line that says "Could not find" twice as one prompt', () => {
-    const darwin = bundle('darwin.js', harnessOutput(''));
-    const linux = bundle('linux.js', harnessOutput(NOT_FOUND('Tool: Read')));
-    const r = tag(`darwin=${darwin}`, `linux=${linux}`);
-    expect(r.stderr).toBe('');
-    expect(r.status).toBe(0);
-    const prompts = JSON.parse(fs.readFileSync(json, 'utf8')).prompts;
-    expect(prompts.find(p => p.id === 'tool-read').platforms).toEqual([
-      'darwin',
+  it('tags Data entries and sibling entries sharing a display name independently', () => {
+    write([
+      {
+        id: 'screenshot-unsupported',
+        name: 'Data: Screenshot',
+        pieces: ['Screenshot unsupported'],
+      },
+      {
+        id: 'screenshot-invisible',
+        name: 'Data: Screenshot',
+        pieces: ['Screenshot invisible'],
+      },
+      { id: 'shared', name: 'Shared', pieces: ['Shared text'] },
     ]);
-    expect(prompts.find(p => p.id === 'other').platforms).toBeUndefined();
-  });
-
-  it('writes no tags from a harness output cut short', () => {
-    const before = fs.readFileSync(json, 'utf8');
-    const darwin = bundle('darwin.js', harnessOutput(''));
+    const darwin = bundle(
+      'darwin.js',
+      'a="Screenshot unsupported";b="Screenshot invisible";c="Shared text";'
+    );
     const linux = bundle(
       'linux.js',
-      harnessOutput(`${NOT_FOUND('Tool: Read')}\n${NOT_FOUND('Other')}`, {
-        cut: true,
-      })
+      'a="Screenshot invisible";b="Shared text";'
     );
+    const r = tag(`darwin=${darwin}`, `linux=${linux}`, '--set=missing');
+    expect(r.stderr).toBe('');
+    expect(r.status).toBe(0);
+    expect(prompts().map(p => p.platforms)).toEqual([
+      ['darwin'],
+      undefined,
+      undefined,
+    ]);
+  });
+
+  it('generalizes minified names in a piece using the shared matcher', () => {
+    write([{ id: 'computed', pieces: ['Pick ${', '[String(O)]}'] }]);
+    const darwin = bundle('darwin.js', 'a=`Pick ${p[String(O)]}`;');
+    const linux = bundle('linux.js', 'a=`Pick ${z[String(M)]}`;');
+    expect(tag(`darwin=${darwin}`, `linux=${linux}`).status).toBe(0);
+    expect(prompts()[0].platforms).toBeUndefined();
+  });
+
+  it('keeps an inline expression carried when apply wildcards its changed structure', () => {
+    write([
+      {
+        id: 'inline-expression',
+        pieces: ['Pick ${', '[`${k.foo()}`]} done'],
+        platforms: ['darwin'],
+      },
+    ]);
+    const darwin = bundle('darwin.js', 'x=`Pick ${p[`${k.foo()}`]} done`;');
+    const linux = bundle('linux.js', 'x=`Pick ${q[`${m.bar()}`]} done`;');
+    const r = tag(`darwin=${darwin}`, `linux=${linux}`);
+    expect(r.status).toBe(0);
+    expect(prompts()[0].platforms).toBeUndefined();
+  });
+
+  it('requires every build of a platform to carry the entry', () => {
+    write([{ id: 'mac', pieces: ['Mac text'] }]);
+    const darwin = bundle('darwin.js', 'a="Mac text";');
+    const x64 = bundle('x64.js', 'a="Mac text";');
+    const arm64 = bundle('arm64.js', 'a="Different text";');
+    expect(
+      tag(`darwin=${darwin}`, `linux=${x64}`, `linux=${arm64}`).status
+    ).toBe(0);
+    expect(prompts()[0].platforms).toEqual(['darwin']);
+  });
+
+  it('clears obsolete tags but preserves drift missing everywhere', () => {
+    write([
+      { id: 'shared', pieces: ['Shared text'], platforms: ['darwin'] },
+      { id: 'gone', pieces: ['Gone text'], platforms: ['darwin'] },
+    ]);
+    const darwin = bundle('darwin.js', 'a="Shared text";');
+    const linux = bundle('linux.js', 'b="Shared text";');
+    expect(tag(`darwin=${darwin}`, `linux=${linux}`).status).toBe(0);
+    expect(prompts().map(p => p.platforms)).toEqual([undefined, ['darwin']]);
+  });
+
+  it('writes no tags when a bundle is unreadable or empty', () => {
+    write([{ id: 'mac', pieces: ['Mac text'] }]);
+    const before = fs.readFileSync(json, 'utf8');
+    const darwin = bundle('darwin.js', 'a="Mac text";');
+    const linux = bundle('linux.js', '');
+    expect(tag(`darwin=${darwin}`, `linux=${linux}`).status).toBe(2);
+    expect(tag(`darwin=${darwin}`, `linux=${dir}/nope.js`).status).toBe(2);
+    const unstamped = bundle('unstamped.js', 'a="Mac 1.2.3 text";', '');
+    const r = tag(`darwin=${darwin}`, `linux=${unstamped}`);
+    expect(r.status).toBe(2);
+    expect(r.stderr).toContain('no VERSION');
+    expect(fs.readFileSync(json, 'utf8')).toBe(before);
+  });
+
+  it('writes no tags when an entry cannot build its apply matcher', () => {
+    write([{ id: 'invalid', pieces: [null], platforms: ['darwin'] }]);
+    const before = fs.readFileSync(json, 'utf8');
+    const darwin = bundle('darwin.js', 'a="Mac text";');
+    const linux = bundle('linux.js', 'a="Linux text";');
     const r = tag(`darwin=${darwin}`, `linux=${linux}`);
     expect(r.status).toBe(2);
-    expect(r.stderr).toMatch(/incomplete again/);
+    expect(r.stderr).toContain('not writing tags');
+    expect(fs.readFileSync(json, 'utf8')).toBe(before);
+  });
+
+  it('rejects an unknown platform', () => {
+    write([]);
+    expect(tag('not-platform=/dev/null').status).toBe(2);
+  });
+
+  it('rejects an invalid worker limit without writing tags', () => {
+    write([]);
+    const before = fs.readFileSync(json, 'utf8');
+    expect(tag('--jobs=0', 'darwin=/dev/null').status).toBe(2);
     expect(fs.readFileSync(json, 'utf8')).toBe(before);
   });
 });

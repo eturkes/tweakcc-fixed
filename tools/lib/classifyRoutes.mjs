@@ -35,11 +35,12 @@ export function cachePathFor(cacheDir, bundleSha) {
 }
 
 // literal records -> Map(sha1(body) -> [[start, end, kind]])
-export function buildSiteIndex(records) {
+export function buildSiteIndex(records, { includeHashes = new Set() } = {}) {
   const idx = new Map();
   for (const r of records) {
-    if (!r || typeof r.cacheBody !== 'string' || !indexable(r.cacheBody)) continue;
+    if (!r || typeof r.cacheBody !== 'string') continue;
     const h = sha1(r.cacheBody);
+    if (!indexable(r.cacheBody) && !includeHashes.has(h)) continue;
     const k = r.kind === 'template' ? 't' : 's';
     const list = idx.get(h);
     if (list) list.push([r.start, r.end, k]);
@@ -161,31 +162,94 @@ export async function routesForCandidates({ cliPath, cands, version, cacheDir, l
       cached = null;
     }
   }
+  const requiredHashes = new Set(cands.flatMap(c => bodyVariants(c.body, version).map(sha1)));
   let siteIndex;
   let program;
   if (cached) {
     log(`route cache hit: ${cachePath}`);
     siteIndex = new Map(cached.sites);
     program = RouteProgram.fromJSON(cached.program, code);
+    const missing = new Set([...requiredHashes].filter(h => !siteIndex.has(h)));
+    if (missing.size) {
+      const additional = buildSiteIndex(collectSites(cliPath), { includeHashes: missing });
+      for (const hash of missing) {
+        const sites = additional.get(hash);
+        if (sites) siteIndex.set(hash, sites);
+      }
+      log(`route cache augmented: ${[...missing].filter(h => siteIndex.has(h)).length} candidate body/bodies`);
+    }
   } else {
     log('collecting literal sites with the extractor...');
-    siteIndex = buildSiteIndex(collectSites(cliPath));
+    siteIndex = buildSiteIndex(collectSites(cliPath), { includeHashes: requiredHashes });
     log(`indexed ${siteIndex.size} prose literal bodies; building settings index...`);
     program = new RouteProgram(code, { settingsIndex: settingsIndexFor(code) });
   }
   const sortedSites = [...siteIndex.values()].flat().sort((a, b) => a[0] - b[0]);
-  const routesByHash = new Map();
+  const locatedByHash = new Map();
+  const mismatchesByHash = new Map();
+  const problems = [];
   for (const c of cands) {
     const located = sitesFor(c, { siteIndex, code, sortedSites, version });
-    const routes = located.sites.map(s => ({ ...s, route: s.kind === 'text' ? null : program.trace(s.start) }));
-    routesByHash.set(c.hash, { method: located.method, sites: routes, route: combineRoutes(routes.map(r => r.route).filter(Boolean)) });
+    const mismatched = sourceSiteMismatches(c, located);
+    if (mismatched.length) {
+      mismatchesByHash.set(c.hash, mismatched);
+      for (const site of mismatched) {
+        const msg = `candidate ${c.hash}: source range ${site.start}-${site.end} does not match its canonical literal body (located ${located.method}); route left open`;
+        problems.push(msg);
+        log(msg);
+      }
+    }
+    locatedByHash.set(c.hash, located);
+  }
+  const siteRoutes = new Map();
+  const offsets = [...new Set([...locatedByHash].filter(([h]) => !mismatchesByHash.has(h)).flatMap(([, located]) => located.sites.filter(s => s.kind !== 'text').map(s => s.start)))].sort((a, b) => a - b);
+  for (const offset of offsets) siteRoutes.set(offset, program.trace(offset));
+  const routesByHash = new Map();
+  for (const c of cands) {
+    const located = locatedByHash.get(c.hash);
+    const mismatched = mismatchesByHash.get(c.hash);
+    if (mismatched) {
+      routesByHash.set(c.hash, {
+        method: located.method,
+        sites: located.sites.map(s => ({ ...s, route: null })),
+        route: failClosed(mismatched, located.method),
+        problems: problems.filter(p => p.startsWith(`candidate ${c.hash}:`)),
+      });
+      continue;
+    }
+    const routes = located.sites.map(s => ({ ...s, route: s.kind === 'text' ? null : siteRoutes.get(s.start) }));
+    routesByHash.set(c.hash, {
+      method: located.method,
+      sites: routes,
+      route: combineRoutes(routes.map(r => r.route).filter(Boolean)),
+    });
   }
   program.ondoneCallSites();
   fs.mkdirSync(path.dirname(cachePath), { recursive: true });
   const tmp = `${cachePath}.${process.pid}.tmp`;
   fs.writeFileSync(tmp, JSON.stringify({ format: CACHE_FORMAT, tracer: TRACER_SHA, bundleSha, bundlePath: path.resolve(cliPath), createdAt: new Date().toISOString(), sites: [...siteIndex], program: program.toJSON() }));
   fs.renameSync(tmp, cachePath);
-  return { program, siteIndex, routesByHash, cachePath, bundleSha, code };
+  return { program, siteIndex, routesByHash, cachePath, bundleSha, code, problems };
+}
+
+// A candidate raised at known ranges (the sibling gate's arms) must be found
+// at those exact literals; otherwise the sites traced are some other copy of
+// the text and their route proves nothing about the arm.
+export function sourceSiteMismatches(cand, located) {
+  if (!cand.sourceSites?.length) return [];
+  const ranges = new Set(located.method === 'ast-exact' ? located.sites.map(s => `${s.start}:${s.end}`) : []);
+  return cand.sourceSites.filter(site => !ranges.has(`${site.start}:${site.end}`));
+}
+
+// The route of such a candidate: nothing traced, no verdict, and the mismatch
+// as its open branch so the packet shows it to the classifier.
+export function failClosed(mismatched, method) {
+  return {
+    verdict: null,
+    resolved: false,
+    sinks: [],
+    unresolved: mismatched.map(site => ({ reason: `source range ${site.start}-${site.end} does not hold this body (located ${method}); rule the arm from its source range`, at: site.start })),
+  };
 }
 
 // One candidate can sit at several sites; a model proof at ANY site makes it

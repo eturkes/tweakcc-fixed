@@ -120,7 +120,7 @@ export function buildEntries(records) {
         end: r.end,
         kind: r.kind,
         cacheBody: r.cacheBody,
-        ...(typeof r.legacyCacheBody === 'string' && { legacyCacheBody: r.legacyCacheBody }),
+        ...(Array.isArray(r.legacyCacheBodies) && { legacyCacheBodies: r.legacyCacheBodies }),
       });
   }
   return [...entries.values()];
@@ -160,16 +160,18 @@ export function keyVariants(body) {
 }
 
 // Every key a site binds under, in classifyByCache's order: the current body's
-// variants, then those of its pre-promotion `legacyCacheBody` (labelled
-// `legacy`), so a verdict recorded before a slot was promoted still binds.
+// variants, then those of each body an earlier extractor's slot shape gave it
+// (`legacyCacheBodies`, labelled `legacy`), so a verdict recorded against an
+// earlier cut still binds.
 export function entryKeys(entry) {
   const keys = keyVariants(entry.cacheBody);
-  if (typeof entry.legacyCacheBody !== 'string') return keys;
   const seen = new Set(keys.map(k => k.key));
-  for (const k of keyVariants(entry.legacyCacheBody)) {
-    if (seen.has(k.key)) continue;
-    seen.add(k.key);
-    keys.push({ ...k, variant: k.variant === 'raw' ? 'legacy' : `legacy+${k.variant}` });
+  for (const body of entry.legacyCacheBodies || []) {
+    for (const k of keyVariants(body)) {
+      if (seen.has(k.key)) continue;
+      seen.add(k.key);
+      keys.push({ ...k, variant: k.variant === 'raw' ? 'legacy' : `legacy+${k.variant}` });
+    }
   }
   return keys;
 }

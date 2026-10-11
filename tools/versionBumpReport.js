@@ -329,7 +329,7 @@ function main() {
   const defaultCli = pristineCliPath();
   const versions = listPromptVersions(promptsDir);
   const fallbackTarget = args.new || args._[1] || versions[versions.length - 1];
-  const tmpCli = fallbackTarget ? `/tmp/cli-${fallbackTarget}.js` : null;
+  const tmpCli = fallbackTarget ? path.join(process.env.SHOWTIME_TMP || '/tmp', `cli-${fallbackTarget}.js`) : null;
   const cliPath =
     args.cli ||
     (fs.existsSync(defaultCli)

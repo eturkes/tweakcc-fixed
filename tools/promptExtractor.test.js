@@ -205,6 +205,25 @@ describe('promptExtractor below-floor capture', () => {
         }
       });
 
+      // CC 2.1.296: `model` verdicts on sibling arms such as `error` and
+      // `read_file` catalogued every string node of that word, 11,357 entries.
+      it('never captures a bare word on a model verdict', () => {
+        _setClassificationCacheForTests({
+          [sha1Hex('error')]: { facing: 'model' },
+          [sha1Hex('read_file')]: { facing: 'model' },
+          [sha1Hex('3 errors found')]: { facing: 'model' },
+        });
+        const { bodies } = extract(
+          'function f(e,n){if(e.kind==="error")return n?"read_file":"error";return {content:"3 errors found"}}'
+        );
+        expect(bodies).not.toContain('error');
+        expect(bodies).not.toContain('read_file');
+        expect(bodies).toContain('3 errors found');
+        expect(extractStrings.isBareToken(' error ')).toBe(true);
+        expect(extractStrings.isBareToken('/model')).toBe(false);
+        expect(extractStrings.isBareToken('Status:')).toBe(false);
+      });
+
       // CC 2.1.294: two arms of one ternary share their first 89 chars. The
       // relaunch arm was catalogued, and the sidecar filter dropped the
       // resume-only arm because a captured prompt contained its 80-char opening.
@@ -242,7 +261,9 @@ describe('promptExtractor below-floor capture', () => {
         }
         _setClassificationCacheForTests({ _: {} });
         expect(extract(code).candidates).toContain(inner);
-        _setClassificationCacheForTests({ [sha1Hex(outer)]: { facing: 'model' } });
+        _setClassificationCacheForTests({
+          [sha1Hex(outer)]: { facing: 'model' },
+        });
         const { bodies, candidates } = extract(code);
         expect(bodies).toContain(outer);
         expect(candidates).not.toContain(inner);
@@ -380,6 +401,35 @@ describe('promptExtractor below-floor capture', () => {
       expect(bodies).not.toContain(ui);
     });
 
+    // CC 2.1.296 renamed the arrow parameter `O` to `M` inside this slot of
+    // the start_task refusal; the catalogue held `String(O)` as piece text, so
+    // the body, its cache key and its id all changed with a minifier rename.
+    it('keeps no minified name from inside a slot expression in its pieces', () => {
+      const build = (table, param) =>
+        `var Ymn={type:"string",description:\`\${p??"the arguments"} must be \${R.map((${param})=>${table}[String(${param})]??String(${param})).join(" or ")}\`};`;
+      const shape = code => {
+        const f = path.join(
+          os.tmpdir(),
+          `pe-test-${process.pid}-${Math.random().toString(36).slice(2)}.js`
+        );
+        fs.writeFileSync(f, code);
+        try {
+          const hit = extractStrings(f).prompts.find(p =>
+            p.pieces.join('').includes('must be')
+          );
+          return { pieces: hit.pieces, identifiers: hit.identifiers };
+        } finally {
+          fs.unlinkSync(f);
+        }
+      };
+      const darwin = shape(build('br', 'O'));
+      const linux = shape(build('Qx', 'M'));
+      expect(linux).toEqual(darwin);
+      expect(darwin.pieces.join('')).toBe(
+        '${??"the arguments"} must be ${.map(()=>[()]??()).join(" or ")}'
+      );
+    });
+
     it('still captures an above-floor prose prompt (no baseline regression)', () => {
       const long =
         'You are an interactive CLI tool. You must always be helpful and you should ' +
@@ -471,5 +521,19 @@ describe('sameVarPattern', () => {
   it('rejects a differing interpolation count', () => {
     const { node: n, code } = node('a');
     expect(sameVarPattern({ identifiers: [0, 1] }, n, code)).toBe(false);
+  });
+});
+
+// CC 2.1.295/2.1.296: the model-facing `Stop hook feedback:` framing with its
+// feedback on the next line is gone, and a loose `includes` pin had been
+// cataloguing the transcript row renderer's `Stop hook feedback: ${…}`.
+describe('NEW_PROMPT_ASSIGNMENTS: stop hook feedback framing', () => {
+  it('names the newline framing and not the row renderer text', () => {
+    expect(
+      extractStrings.lookupNewPromptAssignment('Stop hook feedback:\n${x}')?.id
+    ).toBe('system-prompt-stop-hook-feedback-framing');
+    expect(
+      extractStrings.lookupNewPromptAssignment('Stop hook feedback: ${x}')
+    ).toBe(null);
   });
 });

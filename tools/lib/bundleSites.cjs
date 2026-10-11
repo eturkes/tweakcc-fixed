@@ -31,6 +31,13 @@ const PARSE_OPTIONS = { sourceType: 'module', plugins: ['jsx', 'typescript'] };
 // `\\uHHHH` source (= backslash + u + four hex chars at runtime) isn't
 // accidentally interpreted as an escape. Other escapes (\n, \t, \", \`)
 // are kept raw to match the storage format Piebald's published JSONs use.
+// An escape that decodes to a control character or a line terminator also stays
+// raw: the bundle writes `\x08` or `\u2028` in that form, the search regex has
+// no alternation for raw control characters, and a raw U+2028 spliced back into
+// a regex literal is a syntax error.
+const KEEP_ESCAPED = cp =>
+  cp < 0x20 || (cp >= 0x7f && cp <= 0x9f) || cp === 0x2028 || cp === 0x2029;
+
 function decodeUnicodeEscapesInPiece(s) {
   let out = '';
   let i = 0;
@@ -47,7 +54,10 @@ function decodeUnicodeEscapesInPiece(s) {
           const close = s.indexOf('}', i + 3);
           if (close > -1) {
             const hex = s.substring(i + 3, close);
-            if (/^[0-9a-fA-F]+$/.test(hex)) {
+            if (
+              /^[0-9a-fA-F]+$/.test(hex) &&
+              !KEEP_ESCAPED(parseInt(hex, 16))
+            ) {
               out += String.fromCodePoint(parseInt(hex, 16));
               i = close + 1;
               continue;
@@ -55,7 +65,10 @@ function decodeUnicodeEscapesInPiece(s) {
           }
         } else if (i + 6 <= s.length) {
           const hex = s.substring(i + 2, i + 6);
-          if (/^[0-9a-fA-F]{4}$/.test(hex)) {
+          if (
+            /^[0-9a-fA-F]{4}$/.test(hex) &&
+            !KEEP_ESCAPED(parseInt(hex, 16))
+          ) {
             out += String.fromCharCode(parseInt(hex, 16));
             i += 6;
             continue;
@@ -64,7 +77,7 @@ function decodeUnicodeEscapesInPiece(s) {
       }
       if (s[i + 1] === 'x' && i + 4 <= s.length) {
         const hex = s.substring(i + 2, i + 4);
-        if (/^[0-9a-fA-F]{2}$/.test(hex)) {
+        if (/^[0-9a-fA-F]{2}$/.test(hex) && !KEEP_ESCAPED(parseInt(hex, 16))) {
           out += String.fromCharCode(parseInt(hex, 16));
           i += 4;
           continue;
@@ -159,8 +172,16 @@ function assembleComposite(node) {
 // source order, as { node, parent }. This is the slot order a catalogue entry's
 // `identifiers` array follows, so tools that need the AST node behind slot N
 // (tools/lib/slotValues.mjs) read it from here rather than re-deriving it.
-function templateIdentifierNodes(node) {
+//
+// `shape` picks which extractor's slots to return. 'current' is this one.
+// 'main' and 'base' reproduce what earlier extractors emitted, so the merge can
+// line up a catalogue they wrote: 'base' is the plain traversal with
+// destructuring keys as slots (every catalogue through CC 2.1.292, and
+// upstream's extractor), 'main' adds the leading promotion of 666d0545
+// (catalogues from CC 2.1.294 on, until this extractor).
+function templateIdentifierNodes(node, { shape = 'current' } = {}) {
   const out = [];
+  const keysAsSlots = shape !== 'current';
   const traverseExpr = (exprNode, isTopLevel, parent) => {
     if (!exprNode || typeof exprNode !== 'object') return;
 
@@ -190,6 +211,20 @@ function templateIdentifierNodes(node) {
       return;
     }
 
+    // Reached only inside a destructuring pattern (object literals return
+    // above). A non-computed key is the source property name, not a binding:
+    // captured as a slot, an override's write-back leaves the slot's label in
+    // key position (keys are never substituted), so the pattern reads a
+    // property that does not exist.
+    if (exprNode.type === 'ObjectProperty' && !keysAsSlots) {
+      if (exprNode.computed) traverseExpr(exprNode.key, true, exprNode);
+      const { value } = exprNode;
+      if (!exprNode.shorthand) traverseExpr(value, true, exprNode);
+      else if (value && value.type === 'AssignmentPattern')
+        traverseExpr(value.right, true, value);
+      return;
+    }
+
     if (exprNode.type === 'ObjectExpression') {
       if (exprNode.properties) {
         exprNode.properties.forEach(prop => {
@@ -214,23 +249,41 @@ function templateIdentifierNodes(node) {
   for (const expr of node.expressions) {
     const before = out.length;
     traverseExpr(expr, true, node);
-    promoteLeadingReferences(expr, node, out, before);
+    if (shape === 'current')
+      promoteUncapturedReferences(expr, node, out, before);
+    else if (shape === 'main')
+      promoteLeadingReferences(expr, node, out, before);
   }
   out.sort((a, b) => a.node.start - b.node.start);
   return out;
 }
 
-// The traversal above captures the LEADING identifiers of a slot expression,
-// and the apply side generalizes every identifier after the first capture
-// (src/systemPromptExpressionIdentifiers.ts). It never reaches the index of a
-// computed member access or a bare object value, so in
-// `${{here:"…",none:"…"}[e]}` nothing is captured: the whole slot lands in a
-// piece, the minified `e` is pinned in the search regex, and an override
-// writes it back verbatim. Every value-position identifier ahead of the
-// expression's first capture becomes a slot of its own, marked `promoted` so
-// the merge can line the shape up with a catalogue extracted without them.
-// Shorthand properties stay literal: `{x}` splits into `{` + `}`, and an
-// override renaming the slot would rename the key with it.
+// The traversal above captures the LEADING identifiers of a slot expression.
+// It never reaches the index of a computed member access, an object-literal
+// value or an object spread, so in `${{here:"…",none:"…"}[e]}` or
+// `${s.map((M)=>br[String(M)])}` those names would stay in a piece as one
+// build's text. The apply's matchers accept any name there
+// (src/systemPromptExpressionIdentifiers.ts), but the cache key, the id
+// carryover and an override's write-back read the piece literally: CC 2.1.296
+// renamed `String(O)` to `String(M)` and the prompt lost its id, and an
+// override writes the extracting build's name back on every other build. So
+// every value-position identifier the traversal left out becomes a slot of
+// its own, marked `promoted` so the merge can line the shape up with a
+// catalogue extracted without them. Shorthand properties stay literal: a
+// shorthand survives minification only where the local kept its source name,
+// and `{x}` split into `{` + `}` would let an override rename the key.
+function promoteUncapturedReferences(expr, parent, out, from) {
+  const captured = new Set();
+  for (let i = from; i < out.length; i++) captured.add(out[i].node);
+  const refs = [];
+  collectReferences(expr, parent, refs);
+  for (const ref of refs) {
+    if (!captured.has(ref.node)) out.push({ ...ref, promoted: true });
+  }
+}
+
+// The 'main' shape's promotion (666d0545): only the value-position names ahead
+// of the expression's first capture.
 function promoteLeadingReferences(expr, parent, out, from) {
   const captured = new Set();
   let first = Infinity;
@@ -337,40 +390,45 @@ function splitAroundIdentifiers(fullContent, ids) {
   };
 }
 
-// `legacy`, present only when a slot was promoted, is the shape without the
-// promoted slots — what a catalogue extracted before promotion holds — and
-// `occurrences[i]` is the index into `identifiers` of its i-th slot.
+// The shapes earlier extractors cut this template into (see
+// templateIdentifierNodes), newest first and only those that differ from the
+// current one, as `legacyShapes`: each `{ pieces, identifiers, occurrences }`,
+// where `occurrences[i]` is the index into the current `identifiers` of its
+// i-th slot, or -1 for a slot that is no longer one. A catalogue written by an
+// earlier extractor holds one of them; its slot labels mean nothing in the
+// current shape until mapped through `occurrences`.
+const EARLIER_SHAPES = ['main', 'base'];
+
 function templateShape(node, code) {
   const contentStart = node.start + 1;
   const fullContent = code.substring(contentStart, node.end - 1);
-
-  const allIdentifiers = templateIdentifierNodes(node).map(
-    ({ node: n, promoted }) => ({
+  const slotsOf = shape =>
+    templateIdentifierNodes(node, { shape }).map(({ node: n }) => ({
       name: n.name,
       start: n.start - contentStart,
       end: n.end - contentStart,
-      promoted: Boolean(promoted),
-    })
-  );
+    }));
+  const key = ids => ids.map(id => id.start).join(',');
 
-  const shape = splitAroundIdentifiers(fullContent, allIdentifiers);
-  if (!allIdentifiers.some(id => id.promoted)) return shape;
-  const occurrences = [];
-  allIdentifiers.forEach((id, i) => {
-    if (!id.promoted) occurrences.push(i);
-  });
-  const legacy = splitAroundIdentifiers(
-    fullContent,
-    allIdentifiers.filter(id => !id.promoted)
-  );
-  return {
-    ...shape,
-    legacy: {
-      pieces: legacy.pieces,
-      identifiers: legacy.identifiers,
-      occurrences,
-    },
-  };
+  const current = slotsOf('current');
+  const shape = splitAroundIdentifiers(fullContent, current);
+  const index = new Map(current.map((id, i) => [id.start, i]));
+  const seen = new Set([key(current)]);
+  const legacyShapes = [];
+  for (const kind of EARLIER_SHAPES) {
+    const ids = slotsOf(kind);
+    if (seen.has(key(ids))) continue;
+    seen.add(key(ids));
+    const earlier = splitAroundIdentifiers(fullContent, ids);
+    legacyShapes.push({
+      pieces: earlier.pieces,
+      identifiers: earlier.identifiers,
+      occurrences: ids.map(id =>
+        index.has(id.start) ? index.get(id.start) : -1
+      ),
+    });
+  }
+  return legacyShapes.length ? { ...shape, legacyShapes } : shape;
 }
 
 // One site record per literal-bearing node, in the order the extractor's
@@ -378,7 +436,7 @@ function templateShape(node, code) {
 //   { kind: 'composite', start, end, text, fragments: [{ start, end, value }] }
 //   { kind: 'string', start, end, value }
 //   { kind: 'template', start, end, pieces, identifiers, labels, quasis,
-//     expressions: [start, end, start, end, …], legacy? }
+//     expressions: [start, end, start, end, …], legacyShapes? }
 // `quasis` holds each quasi's cooked value (raw when cooking failed), which is
 // what the slot-literal lookup hashes; `expressions` holds each interpolation's
 // source range, which the identical-site backfill compares across sites.
@@ -423,7 +481,7 @@ function collectNodeSites(ast, code, sites) {
         labels: shape.labels,
         quasis: (node.quasis || []).map(q => q.value.cooked ?? q.value.raw),
         expressions,
-        ...(shape.legacy && { legacy: shape.legacy }),
+        ...(shape.legacyShapes && { legacyShapes: shape.legacyShapes }),
       });
     }
 
@@ -638,6 +696,8 @@ module.exports = {
   decodeUnicodeEscapesInPiece,
   literalOf,
   assembleComposite,
+  EARLIER_SHAPES,
+  splitAroundIdentifiers,
   templateShape,
   templateIdentifierNodes,
   collectBundleSites,

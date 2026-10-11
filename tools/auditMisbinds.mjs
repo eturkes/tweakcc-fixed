@@ -14,6 +14,11 @@
 import { createRequire } from 'node:module';
 import fs from 'node:fs';
 import path from 'node:path';
+import {
+  bakedPositions,
+  loadMatcherCore,
+  scannerPattern,
+} from './checkBakedIdentifiers.mjs';
 
 const require = createRequire(import.meta.url);
 const {
@@ -28,10 +33,10 @@ const latestCommittedVer = () => {
   const dir = 'data/prompts';
   const vers = fs
     .readdirSync(dir)
-    .map((f) => /^prompts-(\d+\.\d+\.\d+)\.json$/.exec(f)?.[1])
+    .map(f => /^prompts-(\d+\.\d+\.\d+)\.json$/.exec(f)?.[1])
     .filter(Boolean)
     .sort((a, b) => {
-      const [x, y] = [a, b].map((v) => v.split('.').map(Number));
+      const [x, y] = [a, b].map(v => v.split('.').map(Number));
       return x[0] - y[0] || x[1] - y[1] || x[2] - y[2];
     });
   return vers[vers.length - 1];
@@ -71,7 +76,9 @@ try {
   console.error(
     `mis-bind audit: SKIPPED — upstream reference '${upstreamJson}' missing/empty (${e.message}). ` +
       `Dump it first: git show upstream/prompts/${VER}:data/prompts/prompts-${VER}.json > ${upstreamJson}` +
-      (allowSkip ? '' : ' (set TWEAKCC_ALLOW_MISBIND_SKIP=1 to treat a skip as non-fatal)')
+      (allowSkip
+        ? ''
+        : ' (set TWEAKCC_ALLOW_MISBIND_SKIP=1 to treat a skip as non-fatal)')
   );
   process.exit(allowSkip ? 0 : 2);
 }
@@ -108,7 +115,74 @@ const byId = d => {
 const O = byId(OURS),
   P = byId(PIEB);
 
+const core = await loadMatcherCore();
+// Both catalogues store the version and build stamp as placeholders; the
+// pattern fills upstream's, so ours must carry the same values to match.
+const BUILD_TIME_PROBE = '2000-01-01T00:00:00Z';
+const fillStamps = piece =>
+  piece
+    .replace(/<<CCVERSION>>/g, OURS.version)
+    .replace(/<<BUILD_TIME>>/g, BUILD_TIME_PROBE);
+const sameIdentifiers = (ours, upstream) =>
+  JSON.stringify(ours.identifiers || []) ===
+  JSON.stringify(upstream.identifiers || []);
+// Upstream slot -> our slot, read by matching upstream's pieces against our
+// body. When the text differs (upstream published for another build, or we
+// cut the prompt differently) but the identifiers arrays are equal, the slots
+// are compared label for label, as before slot alignment existed. `how` says
+// which; null means neither applies.
+const alignedSlots = (ours, upstream) => {
+  if (!ours) return null;
+  const prefix = '__TWEAKCC_AUDIT_SLOT_';
+  const content = ours.pieces
+    .map(
+      (piece, i) =>
+        fillStamps(piece) +
+        (i < ours.identifiers.length ? `${prefix}${ours.identifiers[i]}__` : '')
+    )
+    .join('');
+  const { names, marked } = bakedPositions(core, upstream.pieces);
+  const { pattern, roles } = scannerPattern(
+    core,
+    marked,
+    names,
+    OURS.version,
+    BUILD_TIME_PROBE
+  );
+  const match = new RegExp(pattern, 's').exec(content);
+  if (!match) {
+    if (!sameIdentifiers(ours, upstream)) return null;
+    const slots = {};
+    for (const label of upstream.identifiers || [])
+      slots[String(label)] = String(label);
+    return { slots, how: 'identifiers' };
+  }
+  const links = new Map();
+  let occurrence = 0;
+  roles.forEach((role, group) => {
+    if (role) return;
+    const upstreamSlot = String(upstream.identifiers[occurrence++]);
+    const captured = new RegExp(`^${prefix}(\\d+)__$`).exec(match[group + 1]);
+    if (!captured) return;
+    if (!links.has(upstreamSlot)) links.set(upstreamSlot, new Set());
+    links.get(upstreamSlot).add(captured[1]);
+  });
+  if (occurrence !== upstream.identifiers.length) return null;
+  const slots = {};
+  for (const [slot, targets] of links)
+    if (targets.size === 1) slots[slot] = [...targets][0];
+  const counts = new Map();
+  for (const target of Object.values(slots))
+    counts.set(target, (counts.get(target) || 0) + 1);
+  for (const [slot, target] of Object.entries(slots))
+    if (counts.get(target) > 1) delete slots[slot];
+  return { slots, how: 'aligned' };
+};
+
 const misbinds = [];
+const skipped = [];
+let compared = 0;
+let byIdentifiers = 0;
 for (const f of fs.readdirSync(overridesDir)) {
   if (!f.endsWith('.md')) continue;
   const id = f.slice(0, -3);
@@ -133,32 +207,61 @@ for (const f of fs.readdirSync(overridesDir)) {
   // version. That is a false positive on a gate whose whole value is that a hit
   // means something, so skip the prompt and say so, rather than adding a
   // permanent per-id silencer that would also hide a real regression later.
-  const sameLayout =
-    JSON.stringify(O[id]?.identifiers ?? null) ===
-    JSON.stringify(P[id]?.identifiers ?? null);
-  if (!sameLayout) {
+  const aligned = alignedSlots(O[id], P[id]);
+  if (!aligned) {
+    skipped.push(id);
     console.log(
       `mis-bind audit: slot layout differs from upstream (${(O[id]?.identifiers || []).length} vs ${(P[id]?.identifiers || []).length} slots) — not comparable: ${id}`
     );
     continue;
   }
+  const { slots, how } = aligned;
+  compared++;
+  if (how === 'identifiers') byIdentifiers++;
   const our = invert(O[id]?.identifierMap);
   const pieb = invert(P[id]?.identifierMap);
   for (const name of used) {
     const so = our[name],
       sp = pieb[name];
     if (so === undefined || sp === undefined) continue; // leak/uncomparable: other gates cover it
-    if (so !== sp)
-      misbinds.push(`${id}: \${${name}} ours=slot${so} upstream=slot${sp}`);
+    if (slots[sp] === undefined) {
+      misbinds.push(
+        `${id}: \${${name}} ours=slot${so} upstream=slot${sp} has no unique current expression slot (removed or ambiguous binding)`
+      );
+      continue;
+    }
+    if (so !== slots[sp])
+      misbinds.push(
+        `${id}: \${${name}} ours=slot${so} upstream=slot${sp} (maps to ours=slot${slots[sp]})`
+      );
   }
 }
 
-if (misbinds.length) {
-  console.error(`MIS-BINDS: ${misbinds.length} (override placeholder at wrong slot)`);
-  for (const m of misbinds) console.error('  ' + m);
+// A skipped prompt is not audited at all, so a mass skip would read as a clean
+// pass. Measured on the 2.1.296 catalogue: 2 skips of 258 against upstream's
+// 2.1.296 and 2.1.295, 7 of 242 against its 2.1.294 (the driver falls back to
+// upstream's newest release), 10 of 5251 against our own 2.1.295 and 54 of
+// 4952 against 2.1.292. The floor covers the handful of prompts the two
+// extractors cut differently; 2% leaves headroom over the worst real ratio
+// while any broken matcher or wrong reference skips far more.
+const skipLimit = Math.max(10, Math.ceil(compared * 0.02));
+const coverage = `${compared} compared (${byIdentifiers} by identifiers), ${skipped.length} not comparable (limit ${skipLimit})`;
+if (skipped.length > skipLimit) {
   console.error(
-    '\nFix: adopt upstream’s identifierMap for the prompt (identifiers array must match first), or hand-name the slot. See AGENTS.md bug-classes.'
+    `mis-bind audit: ${skipped.length} prompts not comparable to the upstream slot layout, over the limit of ${skipLimit} (${coverage}). Check the upstream reference version and the matcher before trusting this gate.`
   );
   process.exit(1);
 }
-console.log('mis-bind audit: 0 (every used placeholder sits at the upstream slot)');
+if (misbinds.length) {
+  console.error(
+    `MIS-BINDS: ${misbinds.length} (override placeholder at wrong slot; ${coverage})`
+  );
+  for (const m of misbinds) console.error('  ' + m);
+  console.error(
+    '\nFix: align upstream names to matching expression slots, or hand-name the slot; promoted slots make raw map keys nonportable. See AGENTS.md bug-classes.'
+  );
+  process.exit(1);
+}
+console.log(
+  `mis-bind audit: 0 (every used placeholder sits at the upstream slot; ${coverage})`
+);
