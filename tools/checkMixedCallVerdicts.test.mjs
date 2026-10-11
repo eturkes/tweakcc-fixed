@@ -1,6 +1,7 @@
 // A call group ruled both model and ui/internal must be raised until a review
-// naming the differing routes covers each of its non-model arms; only arms no
-// review covers are raised again.
+// naming the differing routes covers each of its non-model arms and each model
+// arm that joined it after its first review; only arms no review covers are
+// raised again.
 import { describe, it, expect, beforeEach } from 'vitest';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -25,12 +26,15 @@ const key = body => keyVariants(body)[0].key;
 const MODEL = 'Model facing call text';
 const LOGGED = 'Logged only call text';
 const SECOND = 'Second logged call text';
+const WRONG = 'Wrongly ruled model text for UI';
+const THIRD = 'Third model facing call text';
 const program = (...lines) =>
   ['function p(m){return {error:m}}', ...lines].join('\n');
 const CODE = program(
   `function a(x){if(x)return p("${MODEL}");return p("${LOGGED}")}`
 );
 const WHY = 'the model call returns a tool result; the other is only logged';
+const MODEL_WHY = 'the new arm is returned as a tool result like the first';
 
 describe('checkMixedCallVerdicts', () => {
   let dir;
@@ -144,29 +148,142 @@ describe('checkMixedCallVerdicts', () => {
     ).toEqual(['ui']);
   });
 
-  it('carries reviews to a group whose model arms changed', () => {
+  it('raises a model arm the carried reviews never saw', () => {
     const mixed = scan(ruled('internal')).mixed;
-    const { allowlist } = recordReviews(
-      {},
-      [{ key: mixed[0].fingerprint, why: WHY }],
-      mixed
-    );
+    const old = mixed[0].fingerprint;
+    const { allowlist } = recordReviews({}, [{ key: old, why: WHY }], mixed);
     const code = program(
+      `function a(x){if(x)return p("${MODEL}");if(x>1)return p("${WRONG}");return p("${LOGGED}")}`
+    );
+    const cache = ruled('internal', { [key(WRONG)]: { facing: 'model' } });
+    const moved = scan(cache, [], code).mixed;
+    expect(moved[0].fingerprint).not.toBe(old);
+    const open = unreviewedMixed(moved, allowlist);
+    expect(open).toHaveLength(1);
+    expect(open[0].carriedFrom).toEqual([old]);
+    expect(open[0].uncovered).toEqual([
+      { key: key(WRONG), facing: 'model', body: WRONG },
+    ]);
+
+    const partial = pruneReviews(allowlist, moved);
+    expect(partial.rekeyed).toEqual([{ from: old, to: moved[0].fingerprint }]);
+    expect(Object.keys(partial.allowlist[moved[0].fingerprint].model)).toEqual([
+      key(MODEL),
+    ]);
+    expect(unreviewedMixed(moved, partial.allowlist)[0].uncovered).toEqual(
+      open[0].uncovered
+    );
+
+    const rec = recordReviews(
+      allowlist,
+      [{ key: moved[0].fingerprint, why: MODEL_WHY }],
+      moved
+    );
+    expect(rec.problems).toEqual([]);
+    expect(Object.keys(rec.allowlist)).toEqual([moved[0].fingerprint]);
+    const entry = rec.allowlist[moved[0].fingerprint];
+    expect(Object.keys(entry.model).sort()).toEqual(
+      [key(MODEL), key(WRONG)].sort()
+    );
+    expect(entry.reviews).toEqual([
+      allowlist[old].reviews[0],
+      {
+        arms: { [key(WRONG)]: { facing: 'model', preview: WRONG } },
+        why: MODEL_WHY,
+      },
+    ]);
+    expect(unreviewedMixed(moved, rec.allowlist)).toEqual([]);
+    const same = pruneReviews(rec.allowlist, moved);
+    expect(same).toMatchObject({
+      removedEntries: [],
+      removedArms: [],
+      rekeyed: [],
+    });
+    expect(same.allowlist).toEqual(rec.allowlist);
+
+    const grown = scan(
+      { ...cache, [key(THIRD)]: { facing: 'model' } },
+      [],
+      program(
+        `function a(x){if(x)return p("${MODEL}");if(x>1)return p("${WRONG}");if(x>2)return p("${THIRD}");return p("${LOGGED}")}`
+      )
+    ).mixed;
+    expect(
+      unreviewedMixed(grown, rec.allowlist)[0].uncovered.map(a => a.body)
+    ).toEqual([THIRD]);
+    const p = pruneReviews(rec.allowlist, grown);
+    expect(p.rekeyed).toEqual([
+      { from: moved[0].fingerprint, to: grown[0].fingerprint },
+    ]);
+    expect(p.removedArms).toEqual([]);
+    const rekeyed = p.allowlist[grown[0].fingerprint];
+    expect(Object.keys(rekeyed.model).sort()).toEqual(
+      [key(MODEL), key(WRONG)].sort()
+    );
+    expect(rekeyed.reviews).toEqual(entry.reviews);
+    expect(
+      unreviewedMixed(grown, p.allowlist)[0].uncovered.map(a => a.body)
+    ).toEqual([THIRD]);
+  });
+
+  it('keeps an entry whose model arms all changed as a suggestion', () => {
+    const three = program(
       `function a(x){if(x)return p("${MODEL}");if(x>1)return p("${SECOND}");return p("${LOGGED}")}`
     );
-    const moved = scan(
-      ruled('internal', { [key(SECOND)]: { facing: 'model' } }),
+    const before = scan(
+      ruled('internal', { [key(SECOND)]: { facing: 'internal' } }),
       [],
-      code
+      three
     ).mixed;
-    expect(moved[0].fingerprint).not.toBe(mixed[0].fingerprint);
-    expect(unreviewedMixed(moved, allowlist)).toEqual([]);
-    const p = pruneReviews(allowlist, moved);
-    expect(p.rekeyed).toEqual([
-      { from: mixed[0].fingerprint, to: moved[0].fingerprint },
+    const old = before[0].fingerprint;
+    const { allowlist } = recordReviews({}, [{ key: old, why: WHY }], before);
+    const cache = {
+      [key(THIRD)]: { facing: 'model' },
+      [key(LOGGED)]: { facing: 'internal' },
+    };
+    const after = scan(
+      cache,
+      [],
+      program(`function a(x){if(x)return p("${THIRD}");return p("${LOGGED}")}`)
+    ).mixed;
+    const fp = after[0].fingerprint;
+    const [open] = unreviewedMixed(after, allowlist);
+    expect(open.carriedFrom).toBeUndefined();
+    expect(open.uncovered.map(a => a.body)).toEqual([LOGGED]);
+    expect(open.suggested).toEqual([
+      { entry: old, why: WHY, arms: [key(LOGGED)] },
     ]);
-    expect(Object.keys(p.allowlist)).toEqual([moved[0].fingerprint]);
-    expect(unreviewedMixed(moved, p.allowlist)).toEqual([]);
+
+    const p = pruneReviews(allowlist, after);
+    expect(p.removedEntries).toEqual([]);
+    expect(p.rekeyed).toEqual([]);
+    expect(p.removedArms).toEqual([
+      { entry: old, key: key(SECOND), facing: 'internal', preview: SECOND },
+    ]);
+    expect(p.allowlist[old].reviews).toEqual([
+      {
+        arms: { [key(LOGGED)]: allowlist[old].reviews[0].arms[key(LOGGED)] },
+        why: WHY,
+      },
+    ]);
+    const again = pruneReviews(p.allowlist, after);
+    expect(again).toMatchObject({
+      removedEntries: [],
+      removedArms: [],
+      rekeyed: [],
+    });
+    expect(again.allowlist).toEqual(p.allowlist);
+    expect(unreviewedMixed(after, p.allowlist)[0].suggested).toEqual(
+      open.suggested
+    );
+
+    const rec = recordReviews(p.allowlist, [{ key: fp, why: WHY }], after);
+    expect(rec.problems).toEqual([]);
+    expect(Object.keys(rec.allowlist)).toEqual([fp]);
+    expect(unreviewedMixed(after, rec.allowlist)).toEqual([]);
+    expect(
+      pruneReviews(p.allowlist, []).removedEntries.map(e => e.key)
+    ).toEqual([old]);
   });
 
   it('prunes entries and arms the scan no longer has', () => {
@@ -224,6 +341,45 @@ describe('checkMixedCallVerdicts', () => {
     ).toEqual(['ffffffffffffffff: not a current mixed group']);
   });
 
+  it('rejects a review that picks no arm', () => {
+    const mixed = scan(ruled('internal')).mixed;
+    const fp = mixed[0].fingerprint;
+    const r = recordReviews({}, [{ key: fp, why: WHY, arms: [] }], mixed);
+    expect(r).toEqual({
+      allowlist: {},
+      recorded: 0,
+      problems: [`${fp}: arms picks no arm`],
+    });
+  });
+
+  it('lists a group split only by a literal used elsewhere as advisory', () => {
+    const elsewhere = program(
+      `function a(x){if(x)return p("${MODEL}");return p("${LOGGED}")}`,
+      `function b(){console.log("${MODEL}")}`
+    );
+    const r = scan(ruled('internal'), [], elsewhere);
+    expect(r.mixed).toEqual([]);
+    expect(r.unearnedMixed).toHaveLength(1);
+    expect(r.unearnedMixed[0]).toMatchObject({
+      callee: 'p',
+      position: 0,
+      model: [
+        {
+          key: key(MODEL),
+          body: MODEL,
+          elsewhere: [elsewhere.lastIndexOf(`"${MODEL}"`)],
+        },
+      ],
+      other: [{ key: key(LOGGED), facing: 'internal', body: LOGGED }],
+    });
+    const viaVariable = program(
+      'function q(m){console.log(m)}',
+      `function a(x){let s="${MODEL}";q(s);if(x)return p(s);return p("${LOGGED}")}`
+    );
+    expect(scan(ruled('internal'), [], viaVariable).unearnedMixed).toEqual([]);
+    expect(scan(ruled('internal')).unearnedMixed).toEqual([]);
+  });
+
   const gate = (...args) =>
     spawnSync(process.execPath, [GATE, cli, catalogueFile(), ...args], {
       encoding: 'utf8',
@@ -244,7 +400,7 @@ describe('checkMixedCallVerdicts', () => {
     return f;
   };
 
-  it('records onto a file that already holds reviews', () => {
+  it('records onto a file that already holds reviews', async () => {
     const code = program(
       `function a(x){if(x)return p("${MODEL}");return p("${LOGGED}")}`,
       `function q(m){return m}`,
@@ -270,10 +426,49 @@ describe('checkMixedCallVerdicts', () => {
     expect(Object.keys(allow).sort()).toEqual(
       [m1.fingerprint, m2.fingerprint].sort()
     );
-    expect(formatAllowlist(allow)).toBe(text);
+    expect(await formatAllowlist(allow)).toBe(text);
     r = gate(...opts);
     expect(r.status).toBe(0);
     expect(r.stdout).toMatch(/mixed call verdicts: 0 unreviewed of 2/);
+  });
+
+  it('prints advisory and suggestion lines without failing on them', () => {
+    const opts = files(
+      ruled('internal', { [key(THIRD)]: { facing: 'model' } })
+    );
+    fs.writeFileSync(
+      cli,
+      program(
+        `function a(x){if(x)return p("${MODEL}");return p("${LOGGED}")}`,
+        `function b(){console.log("${MODEL}")}`
+      )
+    );
+    let r = gate(...opts);
+    expect(r.status).toBe(0);
+    expect(r.stdout).toMatch(
+      /^UNEARNED-MIXED [0-9a-f]{16} @\d+ p\(\) arg 0: 1 model/m
+    );
+    expect(r.stdout).toContain(`  internal ${key(LOGGED)} "${LOGGED}"`);
+    expect(r.stdout).toMatch(/unearned mixed call groups: 1 \(advisory/);
+    expect(r.stdout).toMatch(/mixed call verdicts: 0 unreviewed of 0 /);
+
+    fs.writeFileSync(cli, CODE);
+    const [m] = scan(ruled('internal')).mixed;
+    expect(
+      gate(...opts, '--record', reviews([{ key: m.fingerprint, why: WHY }]))
+        .status
+    ).toBe(0);
+    fs.writeFileSync(
+      cli,
+      program(`function a(x){if(x)return p("${THIRD}");return p("${LOGGED}")}`)
+    );
+    r = gate(...opts);
+    expect(r.status).toBe(1);
+    expect(r.stdout).toContain(
+      `  suggested by entry ${m.fingerprint} for ${key(LOGGED)} (not coverage): ${JSON.stringify(WHY)}`
+    );
+    expect(r.stdout).toMatch(/mixed call verdicts: 1 unreviewed of 1 /);
+    expect(r.stdout).not.toMatch(/run --prune/);
   });
 
   it('refuses to record or prune when a segment did not parse', () => {

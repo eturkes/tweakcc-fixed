@@ -15,13 +15,18 @@
 //
 // data/mixed-call-verdicts.json records reviews per arm. An entry is keyed by
 // the group's fingerprint (see mixedRulings in checkSiblingArms.mjs) and holds
-// reviews, each naming why the call sites route differently and the
-// `(arm key, facing)` pairs it covers. Only arms no review covers are raised,
-// so a group of a hundred arms re-raises the one arm that changed, not all of
-// them. When a group's earned model arms change, its fingerprint
-// changes; the entries at the same argument position that share one of its
-// model arms are the same callee, and their reviews carry over until --record
-// or --prune files them under the new fingerprint.
+// the group's reviewed model arms and its reviews, each naming why the call
+// sites route differently and the `(arm key, facing)` pairs it covers. Only
+// arms no review covers are raised, so a group of a hundred arms re-raises the
+// one arm that changed, not all of them. When a group's earned model arms
+// change, its fingerprint changes; the entries at the same argument position
+// that share one of its model arms are the same callee, and their reviews carry
+// over until --record or --prune files them under the new fingerprint. A model
+// arm none of those entries reviewed is raised like any other arm: text wrongly
+// ruled model would otherwise ride in on its callee's old reviews. An entry
+// that shares no model arm with any group stays while a group at its position
+// still raises one of its reviewed arms, and its reasons are shown there as
+// suggestions, not coverage.
 //
 // Usage:
 //   node tools/checkMixedCallVerdicts.mjs <cli.js> <prompts.json>
@@ -32,6 +37,9 @@
 // <reviews.json> is [{key, why, arms?}]: key is the fingerprint a MIXED line
 // prints, arms the arm keys to cover (default: every arm the group raises). A
 // group with a wrong verdict is fixed in the classification cache instead.
+// UNEARNED-MIXED lines are advisory and never change the exit status: groups
+// that would be mixed if a model arm written as a literal argument counted
+// even where its text is also used outside the group's calls.
 // Exit 0 = every mixed arm reviewed, 1 = unreviewed arms or a rejected record,
 // 2 = usage error, a bundle segment that could not be parsed, or two groups
 // sharing a fingerprint.
@@ -88,14 +96,56 @@ const covers = (entries, arm) =>
     )
   );
 
-// Every group with an arm no review covers, with those arms as `uncovered`.
+// Every arm of a group as `{key, facing, body}`, its model arms included.
+const armsOf = m => [
+  ...m.model.map(a => ({ key: a.key, facing: 'model', body: a.body })),
+  ...m.other,
+];
+
+// A group with no entry takes its model arms as given: reviewing its other
+// arms against them is the review. Once an entry exists, a model arm it does
+// not hold is new text the reviews never saw.
+function unreviewedArms(m, entries) {
+  const known = new Set(entries.flatMap(e => Object.keys(e.model || {})));
+  return armsOf(m).filter(a =>
+    a.facing === 'model'
+      ? entries.length && !known.has(a.key) && !covers(entries, a)
+      : !covers(entries, a)
+  );
+}
+
+// Entries no group owns or draws on whose reviews name an arm a group at their
+// position raises at the same facing, as {fingerprint: [{entry, why, arms}]}.
+function suggestionsFor(open, allowlist, drawn) {
+  const out = new Map();
+  for (const m of open) {
+    const raised = new Map(m.uncovered.map(a => [a.key, a.facing]));
+    const found = [];
+    for (const [fp, e] of Object.entries(allowlist)) {
+      if (drawn.has(fp) || e.position !== m.position) continue;
+      for (const r of e.reviews || []) {
+        const arms = Object.entries(r.arms || {})
+          .filter(([k, v]) => r.why && raised.get(k) === v.facing)
+          .map(([k]) => k);
+        if (arms.length) found.push({ entry: fp, why: r.why, arms });
+      }
+    }
+    if (found.length) out.set(m.fingerprint, found);
+  }
+  return out;
+}
+
+// Every group with an arm no review covers, with those arms as `uncovered` and
+// the reasons of unowned entries naming them as `suggested`.
 export function unreviewedMixed(mixed, allowlist) {
   const sources = sourcesOf(mixed, allowlist);
   const open = [];
   for (const m of mixed) {
     const from = sources.get(m);
-    const entries = from.map(fp => allowlist[fp]);
-    const uncovered = m.other.filter(a => !covers(entries, a));
+    const uncovered = unreviewedArms(
+      m,
+      from.map(fp => allowlist[fp])
+    );
     if (uncovered.length)
       open.push({
         ...m,
@@ -103,20 +153,43 @@ export function unreviewedMixed(mixed, allowlist) {
         ...(from.length && from[0] !== m.fingerprint && { carriedFrom: from }),
       });
   }
-  return open;
+  const drawn = new Set([...sources.values()].flat());
+  const suggested = suggestionsFor(open, allowlist, drawn);
+  return open.map(m =>
+    suggested.has(m.fingerprint)
+      ? { ...m, suggested: suggested.get(m.fingerprint) }
+      : m
+  );
 }
 
-const entryFor = (m, reviews) => ({
-  at: m.at,
-  model: Object.fromEntries(m.model.map(a => [a.key, preview(a.body)])),
-  position: m.position,
-  reviews,
-});
+// An entry's model map holds the model arms its reviews have seen: those its
+// sources held or a review covers, or every one for a group with no sources.
+const entryFor = (m, reviews, from) => {
+  const known = new Set([
+    ...from.flatMap(e => Object.keys(e.model || {})),
+    ...reviews.flatMap(r =>
+      Object.entries(r.arms).flatMap(([k, v]) =>
+        v.facing === 'model' ? [k] : []
+      )
+    ),
+  ]);
+  return {
+    at: m.at,
+    model: Object.fromEntries(
+      m.model
+        .filter(a => !from.length || known.has(a.key))
+        .map(a => [a.key, preview(a.body)])
+    ),
+    position: m.position,
+    reviews,
+  };
+};
 
 // The reviews of `from` restricted to arms the group still raises with the same
-// facing; reviews left with no arm are dropped and the same reason is merged.
+// facing; reviews left with no arm are dropped and reviews giving the same
+// reason are merged.
 function liveReviews(m, from) {
-  const current = new Map(m.other.map(a => [a.key, a]));
+  const current = new Map(armsOf(m).map(a => [a.key, a]));
   const byWhy = new Map();
   for (const e of from)
     for (const r of e.reviews || []) {
@@ -134,9 +207,19 @@ function liveReviews(m, from) {
   return [...byWhy].map(([why, arms]) => ({ arms, why }));
 }
 
+// The entries an allowlist still needs: those a group draws on or that hold a
+// suggestion for a group.
+function neededEntries(mixed, allowlist) {
+  const drawn = new Set([...sourcesOf(mixed, allowlist).values()].flat());
+  for (const m of unreviewedMixed(mixed, allowlist))
+    for (const s of m.suggested || []) drawn.add(s.entry);
+  return drawn;
+}
+
 // Adds `reviews` ([{key, why, arms?}]) to a copy of `allowlist`. A group
 // reviewed from carried entries is filed under its fingerprint with those
-// reviews; an entry no other current group draws on is then dropped.
+// reviews; an entry it drew on or that suggested reasons for it is then
+// dropped once no current group needs it.
 export function recordReviews(allowlist, reviews, mixed) {
   const next = { ...allowlist };
   const problems = [];
@@ -165,9 +248,10 @@ export function recordReviews(allowlist, reviews, mixed) {
       const picked = r.arms ?? [...raised.keys()];
       const bad = Array.isArray(picked)
         ? picked.filter(k => !raised.has(k))
-        : [String(picked)];
+        : [JSON.stringify(picked)];
       if (bad.length)
         problems.push(`${key}: not an unreviewed arm here: ${bad.join(', ')}`);
+      else if (!picked.length) problems.push(`${key}: arms picks no arm`);
       else if (new Set(picked).size !== picked.length)
         problems.push(`${key}: an arm is listed twice`);
       else
@@ -185,48 +269,71 @@ export function recordReviews(allowlist, reviews, mixed) {
   for (const { key, why, arms } of rows) {
     const m = groups.get(key);
     const from = sources.get(m).map(fp => allowlist[fp]);
-    next[key] = entryFor(m, [
-      ...liveReviews(m, from),
-      {
-        arms: Object.fromEntries(
-          arms.map(a => [a.key, { facing: a.facing, preview: preview(a.body) }])
-        ),
-        why,
-      },
-    ]);
+    const added = {
+      reviews: [{ arms: Object.fromEntries(arms.map(a => [a.key, a])), why }],
+    };
+    next[key] = entryFor(m, liveReviews(m, [...from, added]), from);
   }
-  const drawn = new Set([...sourcesOf(mixed, next).values()].flat());
+  const needed = neededEntries(mixed, next);
   for (const { key } of rows)
-    for (const fp of sources.get(groups.get(key)))
-      if (fp !== key && !drawn.has(fp)) delete next[fp];
+    for (const fp of [
+      ...sources.get(groups.get(key)),
+      ...(open.get(key).suggested || []).map(s => s.entry),
+    ])
+      if (fp !== key && !needed.has(fp)) delete next[fp];
   return { allowlist: next, recorded: rows.length, problems };
 }
 
 // Rebuilds `allowlist` from the current scan: each group's reviews filed under
-// its fingerprint with only the arms it still raises at the recorded facing.
-// Reports the entries no group draws on, the entries filed under a new
+// its fingerprint with only the arms it still raises at the recorded facing,
+// and each entry holding a suggestion kept with only the reviews and arms it
+// suggests. Reports the entries no group needs, the entries filed under a new
 // fingerprint, and the arms dropped from the rest.
 export function pruneReviews(allowlist, mixed) {
   const sources = sourcesOf(mixed, allowlist);
   const next = {};
   const kept = new Map();
   const rekeyed = [];
+  const keep = (fp, k) => {
+    if (!kept.has(fp)) kept.set(fp, new Set());
+    kept.get(fp).add(k);
+  };
   for (const m of mixed) {
     const from = sources.get(m);
     if (!from.length) continue;
-    const facing = new Map(m.other.map(a => [a.key, a.facing]));
+    const facing = new Map(armsOf(m).map(a => [a.key, a.facing]));
     for (const fp of from) {
       if (fp !== m.fingerprint) rekeyed.push({ from: fp, to: m.fingerprint });
-      if (!kept.has(fp)) kept.set(fp, new Set());
+      kept.set(fp, kept.get(fp) || new Set());
       for (const r of allowlist[fp].reviews || [])
         for (const [k, v] of Object.entries(r.arms || {}))
-          if (r.why && facing.get(k) === v.facing) kept.get(fp).add(k);
+          if (r.why && facing.get(k) === v.facing) keep(fp, k);
     }
-    const reviews = liveReviews(
-      m,
-      from.map(fp => allowlist[fp])
-    );
-    if (reviews.length) next[m.fingerprint] = entryFor(m, reviews);
+    const entries = from.map(fp => allowlist[fp]);
+    const reviews = liveReviews(m, entries);
+    if (reviews.length) next[m.fingerprint] = entryFor(m, reviews, entries);
+  }
+  const suggested = new Map();
+  for (const m of unreviewedMixed(mixed, allowlist))
+    for (const s of m.suggested || []) {
+      if (!suggested.has(s.entry)) suggested.set(s.entry, new Map());
+      const byWhy = suggested.get(s.entry);
+      byWhy.set(s.why, new Set([...(byWhy.get(s.why) || []), ...s.arms]));
+      for (const k of s.arms) keep(s.entry, k);
+    }
+  for (const [fp, byWhy] of suggested) {
+    const e = allowlist[fp];
+    next[fp] = {
+      ...e,
+      reviews: (e.reviews || []).flatMap(r => {
+        const arms = Object.entries(r.arms || {}).filter(([k]) =>
+          byWhy.get(r.why)?.has(k)
+        );
+        return arms.length
+          ? [{ arms: Object.fromEntries(arms), why: r.why }]
+          : [];
+      }),
+    };
   }
   const removedEntries = [];
   const removedArms = [];
@@ -237,32 +344,41 @@ export function pruneReviews(allowlist, mixed) {
     }
     for (const r of e.reviews || [])
       for (const [k, v] of Object.entries(r.arms || {}))
-        if (!kept.get(fp).has(k)) removedArms.push({ entry: fp, key: k, ...v });
+        if (
+          !kept.get(fp).has(k) ||
+          (suggested.has(fp) && !suggested.get(fp).get(r.why)?.has(k))
+        )
+          removedArms.push({ entry: fp, key: k, ...v });
   }
   return { allowlist: next, removedEntries, removedArms, rekeyed };
 }
 
-// Sorted keys, two-space indent, one line per covered arm.
-export function formatAllowlist(allowlist) {
-  const fmt = (v, indent) => {
-    if (v === null || typeof v !== 'object') return JSON.stringify(v);
-    const inner = indent + '  ';
-    if (Array.isArray(v))
-      return v.length
-        ? `[\n${v.map(x => inner + fmt(x, inner)).join(',\n')}\n${indent}]`
-        : '[]';
-    const keys = Object.keys(v).sort();
-    if (keys.join() === 'facing,preview')
-      return `{"facing": ${JSON.stringify(v.facing)}, "preview": ${JSON.stringify(v.preview)}}`;
-    return keys.length
-      ? `{\n${keys.map(k => `${inner}${JSON.stringify(k)}: ${fmt(v[k], inner)}`).join(',\n')}\n${indent}}`
-      : '{}';
-  };
-  return fmt(allowlist, '') + '\n';
+const sortKeys = v =>
+  Array.isArray(v)
+    ? v.map(sortKeys)
+    : v && typeof v === 'object'
+      ? Object.fromEntries(
+          Object.keys(v)
+            .sort()
+            .map(k => [k, sortKeys(v[k])])
+        )
+      : v;
+
+// Sorted keys, laid out by the repo's prettier config exactly as lint-staged
+// would rewrite the file, so a --record or --prune diff holds only the change.
+export async function formatAllowlist(allowlist) {
+  const prettier = await import('prettier');
+  const config = await prettier.resolveConfig(DEFAULT_ALLOWLIST, {
+    editorconfig: true,
+  });
+  return prettier.format(JSON.stringify(sortKeys(allowlist), null, 2), {
+    ...config,
+    parser: 'json',
+  });
 }
 
-function writeAllowlist(file, allowlist) {
-  const text = formatAllowlist(allowlist);
+async function writeAllowlist(file, allowlist) {
+  const text = await formatAllowlist(allowlist);
   JSON.parse(text);
   fs.writeFileSync(file, text);
 }
@@ -280,7 +396,7 @@ function parseArgs(argv) {
   return opt;
 }
 
-function main() {
+async function main() {
   let opt;
   try {
     opt = parseArgs(process.argv.slice(2));
@@ -325,7 +441,7 @@ function main() {
     const reviews = JSON.parse(fs.readFileSync(opt.record, 'utf8'));
     const rec = recordReviews(allowlist, reviews, r.mixed);
     for (const p of rec.problems) console.error(`FAIL ${p}`);
-    if (rec.recorded) writeAllowlist(allowlistPath, rec.allowlist);
+    if (rec.recorded) await writeAllowlist(allowlistPath, rec.allowlist);
     console.log(`mixed call verdicts: recorded ${rec.recorded} review(s)`);
     process.exit(rec.problems.length ? 1 : 0);
   }
@@ -340,7 +456,7 @@ function main() {
         `PRUNED arm ${a.key} (${a.facing}) from ${a.entry}: ${JSON.stringify(a.preview)}`
       );
     for (const k of p.rekeyed) console.log(`REKEYED ${k.from} -> ${k.to}`);
-    writeAllowlist(allowlistPath, p.allowlist);
+    await writeAllowlist(allowlistPath, p.allowlist);
     console.log(
       `mixed call verdicts: pruned ${p.removedEntries.length} entr(ies) and ${p.removedArms.length} arm(s), re-keyed ${p.rekeyed.length}; ${Object.keys(p.allowlist).length} entr(ies) kept`
     );
@@ -350,16 +466,42 @@ function main() {
   if (opt.json) console.log(JSON.stringify(open, null, 1));
   else
     for (const m of open) {
+      const raised = new Set(m.uncovered.map(a => a.key));
+      const others = m.uncovered.filter(a => a.facing !== 'model');
+      const fresh = m.uncovered.length - others.length;
       console.log(
-        `MIXED ${m.fingerprint} @${m.at} arg ${m.position}: ${m.uncovered.length} of ${m.other.length} arm(s) unreviewed${m.carriedFrom ? ` (reviews carried from ${m.carriedFrom.join(', ')})` : ''}`
+        `MIXED ${m.fingerprint} @${m.at} arg ${m.position}: ${others.length} of ${m.other.length} arm(s) unreviewed${fresh ? `, ${fresh} model arm(s) no review has seen` : ''}${m.carriedFrom ? ` (reviews carried from ${m.carriedFrom.join(', ')})` : ''}`
       );
       for (const a of m.model)
-        console.log(`  model    ${a.key} ${JSON.stringify(a.body)}`);
-      for (const a of m.uncovered)
+        console.log(
+          `  model    ${a.key} ${JSON.stringify(a.body)}${raised.has(a.key) ? ' (new: unreviewed)' : ''}`
+        );
+      for (const a of others)
         console.log(
           `  ${a.facing.padEnd(8)} ${a.key} ${JSON.stringify(a.body)}`
         );
+      for (const s of m.suggested || [])
+        console.log(
+          `  suggested by entry ${s.entry} for ${s.arms.join(', ')} (not coverage): ${JSON.stringify(s.why)}`
+        );
     }
+  for (const u of r.unearnedMixed) {
+    say(
+      `UNEARNED-MIXED ${u.fingerprint} @${u.at} ${u.callee}() arg ${u.position}: ${u.model.length} model arm(s) whose text is also used outside these calls, ${u.other.length} ui/internal arm(s)`
+    );
+    for (const a of u.model)
+      say(
+        `  model    ${a.key} ${JSON.stringify(preview(a.body))} (also at ${a.elsewhere.join(', ')})`
+      );
+    for (const a of u.other)
+      say(
+        `  ${a.facing.padEnd(8)} ${a.key} ${JSON.stringify(preview(a.body))}`
+      );
+  }
+  if (r.unearnedMixed.length)
+    say(
+      `unearned mixed call groups: ${r.unearnedMixed.length} (advisory, not gated: a model arm written as a literal argument whose text is also used outside the group's calls)`
+    );
   const arms = open.reduce((n, m) => n + m.uncovered.length, 0);
   const p = pruneReviews(allowlist, r.mixed);
   const stale =
@@ -376,4 +518,4 @@ if (
   process.argv[1] &&
   path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
 )
-  main();
+  await main();

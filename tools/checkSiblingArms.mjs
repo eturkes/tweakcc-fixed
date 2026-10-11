@@ -635,6 +635,7 @@ function flowGroups(nodes, parents, base) {
       at: base + root.node.start,
       end: base + root.node.end,
       ...(root.sites && {
+        callee: root.node.callee.name,
         position: root.position,
         callSites: root.sites.map(c => ({
           start: base + c.start,
@@ -916,12 +917,34 @@ export function scanSiblingArms(cliPath, { catalogue, cache, version } = {}) {
       g.callSites.some(c => c.start <= e.start && e.end <= c.end)
     );
   const mixed = [];
+  // Groups that would be mixed if a model arm written as a literal in a call's
+  // argument counted even where its text has other uses. Not gated: the other
+  // use may be where the verdict was earned. Arms reached through a variable
+  // stay out, as they are the debug-logger noise the earned rule exists for.
+  const unearnedMixed = [];
+  const outside = (body, g) =>
+    (sitesByBody.get(body) || [])
+      .filter(e => !g.callSites.some(c => c.start <= e.start && e.end <= c.end))
+      .map(e => e.start);
   for (const g of groups) {
     const arms = g.arms.flatMap(resolve);
     const flowGroup = FLOW_KINDS.has(g.kind);
     if (g.kind === 'calls') {
       const split = mixedRulings(arms, g.position, a => earnedIn(a, g));
       if (split) mixed.push({ at: g.at, ...split });
+      else {
+        const loose = mixedRulings(arms, g.position, a => a.via === 'direct');
+        if (loose)
+          unearnedMixed.push({
+            at: g.at,
+            callee: g.callee,
+            ...loose,
+            model: loose.model.map(a => ({
+              ...a,
+              elsewhere: [...new Set(outside(a.body, g))].sort((x, y) => x - y),
+            })),
+          });
+      }
     }
     const anchorSites = arms.filter(
       a => a.modelId && (g.kind !== 'calls' || earnedIn(a, g))
@@ -988,6 +1011,7 @@ export function scanSiblingArms(cliPath, { catalogue, cache, version } = {}) {
     unparsed,
     findings,
     mixed,
+    unearnedMixed,
   };
 }
 
