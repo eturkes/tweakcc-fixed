@@ -1,3 +1,4 @@
+import zlib from 'node:zlib';
 import { describe, expect, it } from 'vitest';
 
 import {
@@ -6,7 +7,10 @@ import {
   isPatchableJsModule,
   moduleSentinel,
   parseSentinelBundle,
+  rebuildBunDataFromVirtualBundle,
+  virtualBundleFromBunData,
 } from './nativeInstallation';
+import { zstdAvailable } from './nativeTextAssets';
 
 describe('isClaudeModule', () => {
   it.each([
@@ -251,5 +255,225 @@ describe('parseSentinelBundle', () => {
       ])
     );
     expect(got!.get(2)!.toString()).toBe('a much longer body than before\n');
+  });
+});
+
+// A minimal code-split Bun graph: [data][module table][offsets][trailer], the
+// same layout locateBundle hands to extraction and repack.
+interface FakeModule {
+  name: string;
+  contents: Buffer;
+  encoding: number;
+  loader: number;
+}
+
+function fakeBunData(modules: FakeModule[]): Buffer {
+  const chunks: Buffer[] = [];
+  let cursor = 0;
+  const put = (b: Buffer): [number, number] => {
+    const at = cursor;
+    chunks.push(b, Buffer.alloc(1));
+    cursor += b.length + 1;
+    return [at, b.length];
+  };
+  const records = modules.map(m => ({
+    name: put(Buffer.from(m.name, 'utf8')),
+    contents: put(m.contents),
+    m,
+  }));
+  // An odd-sized data region, as in the real 2.1.296 graph.
+  if (cursor % 2 === 0) {
+    chunks.push(Buffer.alloc(1));
+    cursor += 1;
+  }
+  const table = Buffer.alloc(records.length * 52);
+  records.forEach((r, i) => {
+    const e = i * 52;
+    table.writeUInt32LE(r.name[0], e);
+    table.writeUInt32LE(r.name[1], e + 4);
+    table.writeUInt32LE(r.contents[0], e + 8);
+    table.writeUInt32LE(r.contents[1], e + 12);
+    table.writeUInt8(r.m.encoding, e + 48);
+    table.writeUInt8(r.m.loader, e + 49);
+  });
+  const modOff = cursor;
+  const offsets = Buffer.alloc(32);
+  offsets.writeBigUInt64LE(BigInt(modOff + table.length), 0);
+  offsets.writeUInt32LE(modOff, 8);
+  offsets.writeUInt32LE(table.length, 12);
+  offsets.writeUInt32LE(modOff + table.length, 20);
+  return Buffer.concat([
+    ...chunks,
+    table,
+    offsets,
+    Buffer.from('\n---- Bun! ----\n'),
+  ]);
+}
+
+function readModules(blob: Buffer): FakeModule[] {
+  const tr = blob.length - 16 - 32;
+  const modOff = blob.readUInt32LE(tr + 8);
+  const len = blob.readUInt32LE(tr + 12);
+  const out: FakeModule[] = [];
+  for (let e = modOff; e < modOff + len; e += 52) {
+    const at = (o: number) =>
+      blob.subarray(
+        blob.readUInt32LE(e + o),
+        blob.readUInt32LE(e + o) + blob.readUInt32LE(e + o + 4)
+      );
+    out.push({
+      name: at(0).toString('utf8'),
+      contents: Buffer.from(at(8)),
+      encoding: blob.readUInt8(e + 48),
+      loader: blob.readUInt8(e + 49),
+    });
+  }
+  return out;
+}
+
+describe('text assets in the virtual bundle', () => {
+  const zstd = zlib as unknown as { zstdCompressSync(b: Buffer): Buffer };
+  const hasZstd = zstdAvailable();
+  const js = (s: string) => Buffer.from(s, 'latin1');
+  const modules: FakeModule[] = [
+    {
+      name: '/$bunfs/root/cli',
+      contents: js('import"./a.js";'),
+      encoding: 1,
+      loader: 1,
+    },
+    {
+      name: '/$bunfs/root/chunk-a.js',
+      contents: js('var t=Le("/$bunfs/root/doc-1.md");'.repeat(4)),
+      encoding: 1,
+      loader: 1,
+    },
+    {
+      name: '/$bunfs/root/doc-1.md',
+      contents: Buffer.from(
+        '# Doc\nUse `x` and ${HOME}, C:\\path\r\n',
+        'latin1'
+      ),
+      encoding: 1,
+      loader: 13,
+    },
+    {
+      name: '/$bunfs/root/ref-2.md',
+      contents: Buffer.from('# Ref · 😀 —\n', 'utf16le'),
+      encoding: 2,
+      loader: 13,
+    },
+    {
+      name: '/$bunfs/root/addon.node',
+      contents: Buffer.from([0xcf, 0xfa, 0xed, 0xfe, 0x00]),
+      encoding: 0,
+      loader: 10,
+    },
+    ...(hasZstd
+      ? [
+          {
+            name: '/$bunfs/root/SKILL-3.md.zst',
+            contents: zstd.zstdCompressSync(
+              Buffer.from('---\nname: s\n---\nbody é\n', 'utf8')
+            ),
+            encoding: 0,
+            loader: 5,
+          },
+        ]
+      : []),
+  ];
+  const blob = fakeBunData(modules);
+  const bundle = virtualBundleFromBunData(blob)!;
+  const text = bundle.toString('latin1');
+
+  it('emits every JS module, then every text asset, as a template literal', () => {
+    const names = [
+      ...text.matchAll(/\/\*@@TWEAKCC_MODULE:(\d+):([^@]*)@@\*\/\n(.)/g),
+    ].map(m => [Number(m[1]), m[3]]);
+    expect(names).toEqual([
+      [0, 'i'],
+      [1, 'v'],
+      [2, '`'],
+      [3, '`'],
+      ...(hasZstd ? [[5, '`']] : []),
+    ]);
+    expect(text).toContain(
+      '`# Doc\nUse \\`x\\` and \\${HOME}, C:\\\\path\\r\n`'
+    );
+    expect(text).toContain('`# Ref \\u00b7 \\ud83d\\ude00 \\u2014\n`');
+    // eslint-disable-next-line no-control-regex
+    expect(text).toMatch(/^[\x00-\x7f]*$/);
+  });
+
+  it('repacks an unedited bundle byte-identically', () => {
+    expect(rebuildBunDataFromVirtualBundle(blob, bundle).equals(blob)).toBe(
+      true
+    );
+  });
+
+  it('writes an edited asset back in its own encoding', () => {
+    const edited = text
+      .replace('# Doc\n', '# Doc edited\n')
+      .replace('# Ref \\u00b7', '# Ref \\u00b7 more')
+      .replace('body \\u00e9', 'body \\u00e9 again');
+    const out = readModules(
+      rebuildBunDataFromVirtualBundle(blob, Buffer.from(edited, 'latin1'))
+    );
+    expect(out[2]).toMatchObject({ encoding: 1, loader: 13 });
+    expect(out[2].contents.toString('latin1')).toBe(
+      '# Doc edited\nUse `x` and ${HOME}, C:\\path\r\n'
+    );
+    expect(out[3].encoding).toBe(2);
+    expect(out[3].contents.toString('utf16le')).toBe('# Ref · more 😀 —\n');
+    expect(out[4].contents.equals(modules[4].contents)).toBe(true);
+    expect(out[1].contents.equals(modules[1].contents)).toBe(true);
+    if (hasZstd) {
+      expect(out[5]).toMatchObject({ encoding: 0, loader: 5 });
+      expect(
+        (zlib as unknown as { zstdDecompressSync(b: Buffer): Buffer })
+          .zstdDecompressSync(out[5].contents)
+          .toString('utf8')
+      ).toBe('---\nname: s\n---\nbody é again\n');
+    }
+    // and the result extracts to exactly the edited bundle
+    const blob2 = rebuildBunDataFromVirtualBundle(
+      blob,
+      Buffer.from(edited, 'latin1')
+    );
+    expect(virtualBundleFromBunData(blob2)!.toString('latin1')).toBe(edited);
+  });
+
+  it('promotes a one-byte asset to UTF-16 when an edit adds non-ASCII', () => {
+    const edited = text.replace('# Doc\n', '# Doc \\u2014 x\n');
+    const out = readModules(
+      rebuildBunDataFromVirtualBundle(blob, Buffer.from(edited, 'latin1'))
+    );
+    expect(out[2].encoding).toBe(2);
+    expect(out[2].contents.toString('utf16le')).toBe(
+      '# Doc — x\nUse `x` and ${HOME}, C:\\path\r\n'
+    );
+  });
+
+  it('accepts raw UTF-8 an override wrote into an asset', () => {
+    const edited = Buffer.from(
+      text.replace('# Doc\n', '# Doc — raw\n'),
+      'utf8'
+    );
+    const out = readModules(rebuildBunDataFromVirtualBundle(blob, edited));
+    expect(out[2].contents.toString('utf16le')).toContain('# Doc — raw\n');
+  });
+
+  it('refuses an asset left with a ${} substitution', () => {
+    const edited = text.replace('# Doc\n', '# Doc ${x}\n');
+    expect(() =>
+      rebuildBunDataFromVirtualBundle(blob, Buffer.from(edited, 'latin1'))
+    ).toThrow(/doc-1\.md.*substitution/);
+  });
+
+  it('refuses a bundle that lost an asset segment', () => {
+    const cut = text.slice(0, text.indexOf('\n/*@@TWEAKCC_MODULE:3:'));
+    expect(() =>
+      rebuildBunDataFromVirtualBundle(blob, Buffer.from(cut, 'latin1'))
+    ).toThrow(/sentinel mismatch/);
   });
 });

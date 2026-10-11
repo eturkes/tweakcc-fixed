@@ -8,6 +8,13 @@ import os from 'node:os';
 import { execSync, execFileSync } from 'node:child_process';
 import LIEF from 'node-lief';
 import { isDebug, debug } from './utils';
+import {
+  decodeTextAsset,
+  encodeTextAsset,
+  templateLiteralToText,
+  textToTemplateLiteral,
+  type TextAsset,
+} from './nativeTextAssets';
 
 // ============================================================================
 // Nix binary wrapper detection
@@ -300,6 +307,22 @@ export function isPatchableJsModule(
   const n = moduleName.replaceAll('\\', '/');
   if (!n.endsWith('.js') && !isClaudeModule(n)) return false;
   return contents === undefined || isUtf8Text(contents);
+}
+
+/**
+ * The module as a text asset (see nativeTextAssets.ts), or null. Extraction
+ * and repack both decide through this one function, so the set of asset
+ * segments a bundle carries is exactly the set repack expects back.
+ */
+function textAssetOf(
+  bunData: Buffer,
+  module: BunModule,
+  moduleName: string
+): TextAsset | null {
+  if (module.contents.length <= 0) return null;
+  const contents = getStringPointerContent(bunData, module.contents);
+  if (isPatchableJsModule(moduleName, contents.length, contents)) return null;
+  return decodeTextAsset(moduleName, module.loader, module.encoding, contents);
 }
 
 /**
@@ -960,6 +983,92 @@ function fetchNpmSource(version: string): Buffer | null {
   }
 }
 
+/**
+ * The virtual bundle for a code-split module graph: every patchable JS module,
+ * then every text asset, each behind its module sentinel.
+ */
+function buildVirtualBundle(
+  bunData: Buffer,
+  bunOffsets: BunOffsets,
+  moduleStructSize: number
+): { data: Buffer | null; error?: string } {
+  const parts: Buffer[] = [];
+  let moduleCount = 0;
+  mapModules(
+    bunData,
+    bunOffsets,
+    moduleStructSize,
+    (module, moduleName, index) => {
+      if (module.contents.length <= 0) return undefined;
+      const contents = getStringPointerContent(bunData, module.contents);
+      if (!isPatchableJsModule(moduleName, module.contents.length, contents)) {
+        return undefined;
+      }
+      parts.push(Buffer.from(moduleSentinel(index, moduleName), 'utf8'));
+      parts.push(contents);
+      moduleCount++;
+      return undefined;
+    }
+  );
+
+  if (moduleCount === 0) {
+    return {
+      data: null,
+      error: 'code-split binary but no patchable JS modules were found',
+    };
+  }
+
+  // Text assets go AFTER every JS module, so a code patch that takes the
+  // first match of an anchor still lands in JS when an asset happens to
+  // quote the same words.
+  let assetCount = 0;
+  mapModules(
+    bunData,
+    bunOffsets,
+    moduleStructSize,
+    (module, moduleName, index) => {
+      const asset = textAssetOf(bunData, module, moduleName);
+      if (!asset) return undefined;
+      parts.push(
+        Buffer.from(
+          moduleSentinel(index, moduleName) + textToTemplateLiteral(asset.text),
+          'utf8'
+        )
+      );
+      assetCount++;
+      return undefined;
+    }
+  );
+
+  // The wording here deliberately avoids the strings used to detect a
+  // PATCHED binary (`__tweakcc`, `tweakcc v`, the sentinel name). A
+  // preamble containing them makes every pristine extraction look patched,
+  // which is the one check standing between this pipeline and building a
+  // catalogue out of already-lobotomized JS.
+  // Lead with a real JS STATEMENT, not just comments. Callers that
+  // MIME-sniff the bundle (the apply-safety harness writes it to a temp
+  // `cli.js` and lets `resolvePathToInstallationType` detect it) classify a
+  // file that opens with a comment block as plain text, and the harness
+  // then cannot run at all — it reported FAIL for every set on every
+  // platform while saying `apply ran: false`. CC's own single-module
+  // cli.js happened to satisfy the sniffer because real code followed its
+  // first comment line immediately; a 2.1.246 module opens with a long
+  // licence comment and does not. Everything before the first sentinel is
+  // discarded on split, so this preamble is inert for repack.
+  const preamble = Buffer.from(
+    `#!/usr/bin/env node\n// @bun @bytecode\n` +
+      `// Virtual bundle: ${moduleCount} modules and ${assetCount} text ` +
+      `assets, split on the module sentinels below.\n` +
+      `var __ccVirtualBundleModules = ${moduleCount};\n`,
+    'utf8'
+  );
+  const bundle = Buffer.concat([preamble, ...parts]);
+  debug(
+    `buildVirtualBundle: built virtual bundle from ${moduleCount} modules and ${assetCount} text assets, ${bundle.length} bytes`
+  );
+  return { data: bundle };
+}
+
 export function extractClaudeJsFromNativeInstallation(
   nativeInstallationPath: string,
   version?: string
@@ -996,65 +1105,11 @@ export function extractClaudeJsFromNativeInstallation(
     );
 
     if (codeSplit) {
-      const parts: Buffer[] = [];
-      let moduleCount = 0;
-      mapModules(
-        bunData,
-        bunOffsets,
-        moduleStructSize,
-        (module, moduleName, index) => {
-          if (module.contents.length <= 0) return undefined;
-          const contents = getStringPointerContent(bunData, module.contents);
-          if (
-            !isPatchableJsModule(moduleName, module.contents.length, contents)
-          ) {
-            return undefined;
-          }
-          parts.push(Buffer.from(moduleSentinel(index, moduleName), 'utf8'));
-          parts.push(contents);
-          moduleCount++;
-          return undefined;
-        }
-      );
-
-      if (moduleCount === 0) {
-        return {
-          data: null,
-          clearBytecode: false,
-          error: 'code-split binary but no patchable JS modules were found',
-        };
-      }
-
-      // The wording here deliberately avoids the strings used to detect a
-      // PATCHED binary (`__tweakcc`, `tweakcc v`, the sentinel name). A
-      // preamble containing them makes every pristine extraction look patched,
-      // which is the one check standing between this pipeline and building a
-      // catalogue out of already-lobotomized JS.
-      // Lead with a real JS STATEMENT, not just comments. Callers that
-      // MIME-sniff the bundle (the apply-safety harness writes it to a temp
-      // `cli.js` and lets `resolvePathToInstallationType` detect it) classify a
-      // file that opens with a comment block as plain text, and the harness
-      // then cannot run at all — it reported FAIL for every set on every
-      // platform while saying `apply ran: false`. CC's own single-module
-      // cli.js happened to satisfy the sniffer because real code followed its
-      // first comment line immediately; a 2.1.246 module opens with a long
-      // licence comment and does not. Everything before the first sentinel is
-      // discarded on split, so this preamble is inert for repack.
-      const preamble = Buffer.from(
-        `#!/usr/bin/env node\n// @bun @bytecode\n` +
-          `// Virtual bundle: ${moduleCount} modules, split on the module ` +
-          `sentinels below.\n` +
-          `var __ccVirtualBundleModules = ${moduleCount};\n`,
-        'utf8'
-      );
-      const bundle = Buffer.concat([preamble, ...parts]);
-      debug(
-        `extractClaudeJsFromNativeInstallation: built virtual bundle from ${moduleCount} modules, ${bundle.length} bytes`
-      );
       // Bytecode is handled PER MODULE at repack time (only modules whose
       // source actually changed get their bytecode pointer zeroed), so the
       // global flag stays false here.
-      return { data: bundle, clearBytecode: false };
+      const built = buildVirtualBundle(bunData, bunOffsets, moduleStructSize);
+      return { ...built, clearBytecode: false };
     }
 
     const result = mapModules(
@@ -1167,9 +1222,13 @@ function rebuildBunDataAppendOnly(
   bunData: Buffer,
   bunOffsets: BunOffsets,
   moduleStructSize: number,
-  moduleOverrides: Map<number, Buffer>
+  moduleOverrides: Map<number, Buffer>,
+  encodingOverrides: Map<number, number> = new Map()
 ): Buffer {
   const ALIGN = 8;
+  // `encoding` is the first byte after the pointers: 6 of them in the 52-byte
+  // record, 4 in the 36-byte one.
+  const encodingField = moduleStructSize === SIZEOF_MODULE_NEW ? 48 : 32;
   const modOff = bunOffsets.modulesPtr.offset;
 
   // Everything a StringPointer can address lives BELOW the module table.
@@ -1210,11 +1269,18 @@ function rebuildBunDataAppendOnly(
     // the bytecode is dropped. Zeroing the LENGTH (keeping the offset) makes
     // JSC fall back to parsing the patched source.
     tail.writeUInt32LE(0, e + 28); // bytecode.length
+    const encoding = encodingOverrides.get(index);
+    if (encoding !== undefined) tail.writeUInt8(encoding, e + encodingField);
     appended.push(override, Buffer.alloc(1)); // + null terminator
     cursor += override.length + 1;
     changedCount++;
     return undefined;
   });
+
+  // Nothing to append: hand back the original bytes. Padding the table to
+  // 8 bytes here would shift it by a few bytes for no reason and break the
+  // no-edit round trip.
+  if (changedCount === 0) return Buffer.from(bunData);
 
   const tailPad = cursor % ALIGN === 0 ? 0 : ALIGN - (cursor % ALIGN);
   if (tailPad > 0) appended.push(Buffer.alloc(tailPad));
@@ -1236,6 +1302,106 @@ function rebuildBunDataAppendOnly(
   out.writeUInt32LE(bunOffsets.compileExecArgvPtr.offset + delta, st + 20);
 
   return out;
+}
+
+/**
+ * Rebuild bunData from the per-module bodies of a virtual bundle.
+ *
+ * JS bodies are written as-is. A text-asset body is the template literal
+ * buildVirtualBundle emitted; it is cooked back to text, and only when that
+ * text differs from what the binary holds is it re-encoded (and re-compressed
+ * for `.zst`). An untouched asset therefore keeps its original bytes, so a
+ * no-edit round trip is byte-identical.
+ */
+function rebuildFromModuleOverrides(
+  bunData: Buffer,
+  bunOffsets: BunOffsets,
+  moduleStructSize: number,
+  moduleOverrides: Map<number, Buffer>
+): Buffer {
+  // A patch that deleted or fabricated a sentinel would silently merge two
+  // modules' source into one. Fail loudly instead: the set of indices in the
+  // bundle must be exactly the set of patchable JS modules and text assets in
+  // the binary.
+  const expected = new Set<number>();
+  const contents = new Map<number, Buffer>();
+  const encodings = new Map<number, number>();
+  mapModules(bunData, bunOffsets, moduleStructSize, (module, name, index) => {
+    if (module.contents.length <= 0) return undefined;
+    const original = getStringPointerContent(bunData, module.contents);
+    if (isPatchableJsModule(name, original.length, original)) {
+      expected.add(index);
+      const body = moduleOverrides.get(index);
+      if (body) contents.set(index, body);
+      return undefined;
+    }
+    const asset = textAssetOf(bunData, module, name);
+    if (!asset) return undefined;
+    expected.add(index);
+    const body = moduleOverrides.get(index);
+    if (!body) return undefined;
+    let text: string;
+    try {
+      text = templateLiteralToText(body.toString('utf8'));
+    } catch (err) {
+      throw new Error(
+        `repackNativeInstallation: ${name}: ${(err as Error).message}`
+      );
+    }
+    if (text === asset.text) return undefined;
+    const encoded = encodeTextAsset(asset.kind, text);
+    contents.set(index, encoded.contents);
+    if (encoded.encoding !== module.encoding) {
+      encodings.set(index, encoded.encoding);
+    }
+    return undefined;
+  });
+  const missing = [...expected].filter(i => !moduleOverrides.has(i));
+  const extra = [...moduleOverrides.keys()].filter(i => !expected.has(i));
+  if (missing.length > 0 || extra.length > 0) {
+    throw new Error(
+      `repackNativeInstallation: module sentinel mismatch — ` +
+        `${missing.length} missing (${missing.slice(0, 5).join(', ')}), ` +
+        `${extra.length} unexpected (${extra.slice(0, 5).join(', ')}). ` +
+        `A patch most likely deleted a /*@@TWEAKCC_MODULE:@@*/ boundary.`
+    );
+  }
+  return rebuildBunDataAppendOnly(
+    bunData,
+    bunOffsets,
+    moduleStructSize,
+    contents,
+    encodings
+  );
+}
+
+/**
+ * The virtual bundle for a raw Bun data blob (`[data][offsets][trailer]`), or
+ * null when the graph is not code-split. The format-independent half of
+ * extraction, exposed so it can be exercised without a native binary.
+ */
+export function virtualBundleFromBunData(blob: Buffer): Buffer | null {
+  const { bunOffsets, bunData, moduleStructSize } = parseBunDataBlob(blob);
+  return buildVirtualBundle(bunData, bunOffsets, moduleStructSize).data;
+}
+
+/**
+ * The format-independent half of repack: a raw Bun data blob rebuilt from an
+ * edited virtual bundle.
+ */
+export function rebuildBunDataFromVirtualBundle(
+  blob: Buffer,
+  modifiedBundle: Buffer
+): Buffer {
+  const { bunOffsets, bunData, moduleStructSize } = parseBunDataBlob(blob);
+  const overrides = parseSentinelBundle(modifiedBundle);
+  if (!overrides) throw new Error('not a virtual bundle');
+  return rebuildFromModuleOverrides(
+    bunData,
+    bunOffsets,
+    moduleStructSize,
+    overrides
+  );
 }
 
 function rebuildBunData(
@@ -1971,43 +2137,8 @@ export function repackNativeInstallation(
   // and takes the legacy path untouched.
   const moduleOverrides = parseSentinelBundle(modifiedClaudeJs);
 
-  if (moduleOverrides) {
-    // A patch that deleted or fabricated a sentinel would silently merge two
-    // modules' source into one. Fail loudly instead: the set of indices in the
-    // bundle must be exactly the set of patchable JS modules in the binary.
-    const expected = new Set<number>();
-    mapModules(
-      bundle.bunData,
-      bundle.bunOffsets,
-      bundle.moduleStructSize,
-      (module, moduleName, index) => {
-        if (module.contents.length <= 0) return undefined;
-        if (
-          isPatchableJsModule(
-            moduleName,
-            module.contents.length,
-            getStringPointerContent(bundle.bunData, module.contents)
-          )
-        ) {
-          expected.add(index);
-        }
-        return undefined;
-      }
-    );
-    const missing = [...expected].filter(i => !moduleOverrides.has(i));
-    const extra = [...moduleOverrides.keys()].filter(i => !expected.has(i));
-    if (missing.length > 0 || extra.length > 0) {
-      throw new Error(
-        `repackNativeInstallation: module sentinel mismatch — ` +
-          `${missing.length} missing (${missing.slice(0, 5).join(', ')}), ` +
-          `${extra.length} unexpected (${extra.slice(0, 5).join(', ')}). ` +
-          `A patch most likely deleted a /*@@TWEAKCC_MODULE:@@*/ boundary.`
-      );
-    }
-  }
-
   const newBuffer = moduleOverrides
-    ? rebuildBunDataAppendOnly(
+    ? rebuildFromModuleOverrides(
         bundle.bunData,
         bundle.bunOffsets,
         bundle.moduleStructSize,
