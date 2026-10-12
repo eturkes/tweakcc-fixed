@@ -22,6 +22,7 @@ jobs:
       - run: cargo build --locked --manifest-path tools/rg-fff/Cargo.toml
       - run: node tools/rg-fff/integration.mjs
       - run: node tools/rg-fff/daemon-integration.mjs
+      - run: node tools/rg-fff/viewer-integration.mjs
       - run: python3 tools/rg-fff/test_export_transcripts.py
 
   lint:

@@ -38,6 +38,7 @@ mod files;
 mod metrics;
 mod navigation;
 mod ranking;
+mod viewers;
 
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, HashMap, HashSet};
@@ -189,6 +190,9 @@ fn log_decision(tool: Tool, pattern: &Option<String>, decision: &str, nlines: i6
 }
 
 fn main() {
+    if viewers::dispatch() {
+        return;
+    }
     let argv: Vec<String> = std::env::args().collect();
     let explicit = argv
         .first()

@@ -1,4 +1,11 @@
-import { FFF_FEATURE_DESCRIPTION, FFF_FEATURE_TITLE } from '../fffDescription';
+import {
+  FFF_BASH_READ_DESCRIPTION,
+  FFF_BASH_READ_TITLE,
+  FFF_FEATURE_DESCRIPTION,
+  FFF_FEATURE_TITLE,
+} from '../fffDescription';
+import { ensureFffViewerLinks } from '../fffBashSetup';
+import { writeFffBashReads } from './fffBashReads';
 import chalk from 'chalk';
 import * as fs from 'node:fs/promises';
 import * as fsSync from 'node:fs';
@@ -576,6 +583,12 @@ const PATCH_DEFINITIONS = [
     description: FFF_FEATURE_DESCRIPTION,
   },
   {
+    id: 'fff-bash-reads',
+    name: FFF_BASH_READ_TITLE,
+    group: PatchGroup.FEATURES,
+    description: FFF_BASH_READ_DESCRIPTION,
+  },
+  {
     id: 'dream-mode',
     name: 'Dream mode',
     group: PatchGroup.FEATURES,
@@ -1081,6 +1094,19 @@ export const applyCustomization = async (
     }
   }
 
+  let fffViewerDirectory: string | null = null;
+  if (
+    rgFffWrapperPath &&
+    (config.settings.misc?.fffLearnFromBashReads ?? true)
+  ) {
+    fffViewerDirectory = await ensureFffViewerLinks(rgFffWrapperPath);
+    if (!fffViewerDirectory) {
+      console.log(
+        'patch: fffBashReads: viewer setup unavailable — keeping original file viewers'
+      );
+    }
+  }
+
   const patchImplementations: Record<PatchId, PatchImplementation> = {
     // Always Applied
     'verbose-property': {
@@ -1383,6 +1409,10 @@ export const applyCustomization = async (
       // which would also silently accept null).
       fn: c => writeSwapRipgrepForFff(c, rgFffWrapperPath!),
       condition: swapRipgrepEnabled && !!rgFffWrapperPath,
+    },
+    'fff-bash-reads': {
+      fn: c => writeFffBashReads(c, fffViewerDirectory!, rgFffWrapperPath!),
+      condition: swapRipgrepEnabled && !!fffViewerDirectory,
     },
     'dream-mode': {
       fn: c => writeDreamMode(c),

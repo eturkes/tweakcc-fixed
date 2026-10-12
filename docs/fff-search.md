@@ -9,6 +9,30 @@ ranking. Count and context output retain that file order. Successful Read, Edit,
 and Write operations update the local history; a search followed by reading one
 of its results also teaches the query-to-file preference.
 
+The separate **fff: learn from Bash file reads** setting is enabled by default
+and requires the main fff setting. Supported successful `cat`, `head`, `tail`,
+and single-file `sed` commands also teach file ranking, query preference, and
+session navigation. File operands are resolved after shell expansion against
+the command's actual working directory and must remain within its initial
+project scope. This observation stores paths and usage metadata, without adding
+file contents or raw Bash commands to history.
+
+At each Bash command's start, a bounded selector enables private executable
+proxies only for recognized native GNU/BSD viewers. Custom viewers retain their
+normal shell handling, and selection skips earlier relative/empty PATH entries
+whose meaning could change after `cd`. The proxies run the original viewer
+with its normal input, output, exit status, and inherited signal behavior.
+Custom shell functions and aliases keep precedence; supported viewers launched through `command`,
+`env`, `xargs`, or scripts can also contribute history. Learning recognizes
+supported system/package GNU viewers and macOS BSD viewers. Custom binaries,
+unknown options, failed commands, zero-count requests, follow/edit modes,
+multi-file `sed`, and stdin-only reads are left unlearned. Absolute executable
+paths or explicit PATH replacement can bypass the proxies. Successful viewer
+execution is a conservative usage signal, rather than syscall-level read
+tracing. Disabling this setting preserves all other fff features; disabling
+the main fff setting also disables Bash-read learning. Apply after changing
+either setting. Your terminal outside Claude Code retains its normal viewers.
+
 The wrapper supports literal/regex searches, case-insensitive matching, context,
 counts, filenames, multiple `-e` patterns, `-F`, and common `-o`/`-w` queries.
 Ripgrep globs use the real engine's file inventory to preserve their inclusion
@@ -73,6 +97,7 @@ cargo build --release --manifest-path tools/rg-fff/Cargo.toml
 cargo test --manifest-path tools/rg-fff/Cargo.toml
 node tools/rg-fff/integration.mjs
 node tools/rg-fff/daemon-integration.mjs
+node tools/rg-fff/viewer-integration.mjs
 python3 tools/rg-fff/test_export_transcripts.py
 ```
 

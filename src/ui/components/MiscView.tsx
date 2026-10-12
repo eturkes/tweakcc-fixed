@@ -1,4 +1,6 @@
 import {
+  FFF_BASH_READ_DESCRIPTION,
+  FFF_BASH_READ_TITLE,
   FFF_FEATURE_DESCRIPTION,
   FFF_FEATURE_TITLE,
 } from '../../fffDescription';
@@ -91,6 +93,7 @@ export function MiscView({ onSubmit }: MiscViewProps) {
     enableWorktreeMode: true,
     unlockResponsiveMode: false,
     swapRipgrepForFff: false,
+    fffLearnFromBashReads: true,
     allowCustomAgentModels: false,
     enableContextLimitOverride: false,
     enableModelCustomizations: true,
@@ -506,6 +509,20 @@ export function MiscView({ onSubmit }: MiscViewProps) {
             ensureMisc();
             settings.misc!.swapRipgrepForFff =
               !settings.misc!.swapRipgrepForFff;
+          });
+        },
+      },
+      {
+        id: 'fffLearnFromBashReads',
+        title: FFF_BASH_READ_TITLE,
+        description: FFF_BASH_READ_DESCRIPTION,
+        getValue: () => settings.misc?.fffLearnFromBashReads ?? true,
+        toggle: () => {
+          updateSettings(settings => {
+            ensureMisc();
+            settings.misc!.fffLearnFromBashReads = !(
+              settings.misc!.fffLearnFromBashReads ?? true
+            );
           });
         },
       },
