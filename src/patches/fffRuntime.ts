@@ -1,13 +1,16 @@
 import { escapeNonAscii } from '../utils';
+import { buildFffContextRuntime } from './fffContext';
 
 export const buildFffUsageRuntime = (wrapperPath: string): string => {
   const wrapper = escapeNonAscii(JSON.stringify(wrapperPath));
   return (
+    buildFffContextRuntime(wrapperPath) +
     'globalThis.__tweakccFffRecord??=((operation,filePath)=>{' +
     'if(!["read","edit","write"].includes(operation)||typeof filePath!=="string")return;' +
-    'Promise.resolve().then(()=>import("node:child_process")).then(({spawn})=>{' +
-    `let child=spawn(${wrapper},["--record-access",filePath,String(process.pid)],` +
-    '{cwd:process.cwd(),stdio:"ignore",windowsHide:true});' +
+    'let sid=globalThis.__tweakccFffContext?.sid??"",cwd=globalThis.__tweakccFffCwd();' +
+    'Promise.resolve().then(()=>import("node:child_process")).then(({execFile})=>{' +
+    `let child=execFile(${wrapper},["--record-access",filePath,String(process.pid),sid],` +
+    '{cwd,timeout:500,maxBuffer:65536,windowsHide:true},()=>{globalThis.__tweakccFffRefresh(true);});' +
     'child.on("error",()=>{});child.unref();' +
     '}).catch(()=>{});});'
   );

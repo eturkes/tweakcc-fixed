@@ -170,7 +170,7 @@ pub fn rpc(root: &Path, operation: &str, payload: &str) -> Option<(String, i32)>
 /// of colliding with a still-running old-format daemon that holds the old name —
 /// otherwise the new daemon can't bind and the root stays cold until the old one
 /// idle-times-out).
-pub const PROTO: &str = "v9";
+pub const PROTO: &str = "v10";
 
 pub fn socket_path(root: &Path) -> Option<PathBuf> {
     let dir = daemons_dir()?;
@@ -493,6 +493,22 @@ fn handle(mut stream: UnixStream, shared: &SharedFilePicker, last: &Mutex<Instan
             if let Ok(mut timestamp) = last.lock() {
                 *timestamp = Instant::now();
             }
+            let response = format!("0\n{}\n{result}", result.len());
+            let _ = bounded_write(&mut out, response.as_bytes(), Duration::from_millis(250));
+        } else {
+            let _ = bounded_write(&mut out, b"FALLBACK\n", Duration::from_millis(100));
+        }
+        return;
+    }
+    if lines.len() == 3 && lines[0] == PROTO && lines[1] == "scope" {
+        let result = serde_json::from_str::<crate::navigation::ScopeRequest>(lines[2])
+            .ok()
+            .and_then(|request| {
+                let guard = shared.read().ok()?;
+                crate::navigation::scope(guard.as_ref()?, &request)
+            })
+            .and_then(|scope| serde_json::to_string(&scope).ok());
+        if let Some(result) = result {
             let response = format!("0\n{}\n{result}", result.len());
             let _ = bounded_write(&mut out, response.as_bytes(), Duration::from_millis(250));
         } else {

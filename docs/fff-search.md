@@ -36,6 +36,21 @@ ready. The same backend supplements normal `@` autocomplete while preserving
 native commands, directory browsing, external configuration entries, and the
 15-item limit. Autocomplete uses a short timeout and native fallback.
 
+After a successful main-session reactive compaction, fff can append up to eight
+recently used file pointers, ranked by fff's access history. The note contains
+paths only and is capped at 2,048 characters. Candidates must belong to the same
+session and current directory and still exist. Subagent compactions retain their
+own summaries. The bounded local navigation history holds at most 64 files per
+session, with a 24-hour eligibility window.
+
+The Jev effort router can use cached aggregate counts of indexed files, Git
+modifications, and recent session files/directories as weak breadth evidence.
+This metadata adds no paths, patterns, or file contents to the routing request.
+The router does not wait for fff; unavailable or stale data is omitted, and
+optional counts are discarded before task context is trimmed for its budget.
+Counts describe partial coverage and observed navigation, rather than predicting
+how many files a new task will require. Routing criteria remain unchanged.
+
 Daemons are shared by Git worktree root while each request stays scoped to its
 working directory. Shell setup starts warming the index. The daemon requires a
 completed scan and ready watcher before serving, holds a process lock, limits
@@ -45,7 +60,7 @@ monitored circuit breaker, not a kernel allocation limit. An over-budget root
 has a short restart cooldown. Dead sockets are cleaned up.
 
 History and aggregate metrics stay under `~/.tweakcc/fff/state`, with a private
-directory and private receipt/metric files. Metrics contain tool and decision
+directory and private receipt/metric/navigation files. Metrics contain tool and decision
 categories, not search patterns or result content. `RG_FFF_STATE_DIR` selects a
 different local state directory. `RG_FFF_NO_DAEMON=1` disables persistent daemons;
 `RG_FFF_MAX_RSS_MB` and `RG_FFF_IDLE_SECONDS` adjust their budgets. Detailed

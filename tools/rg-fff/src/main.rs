@@ -36,6 +36,7 @@ mod feedback;
 static NO_FALLBACK: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
 mod files;
 mod metrics;
+mod navigation;
 mod ranking;
 
 use serde::{Deserialize, Serialize};
@@ -205,8 +206,34 @@ fn main() {
             let session = argv.get(3).map(String::as_str).unwrap_or("");
             if let Ok(root) = std::env::current_dir() {
                 feedback::record_access(&root, Path::new(path), session);
+                if let Some(context_session) = argv.get(4) {
+                    navigation::record(&root, Path::new(path), context_session);
+                }
             }
         }
+        return;
+    }
+
+    if explicit && argv.get(1).map(String::as_str) == Some("--context") {
+        let session = argv.get(2).map(String::as_str).unwrap_or("");
+        let paths = std::env::current_dir()
+            .ok()
+            .map(|cwd| navigation::pointers(&cwd, session))
+            .unwrap_or_default();
+        println!(
+            "{}",
+            serde_json::to_string(&paths.into_iter().take(8).collect::<Vec<_>>())
+                .unwrap_or_default()
+        );
+        return;
+    }
+
+    if explicit && argv.get(1).map(String::as_str) == Some("--scope") {
+        let session = argv.get(2).map(String::as_str).unwrap_or("");
+        let scope = std::env::current_dir()
+            .ok()
+            .and_then(|cwd| navigation::query_scope(&cwd, session));
+        println!("{}", serde_json::to_string(&scope).unwrap_or_default());
         return;
     }
 

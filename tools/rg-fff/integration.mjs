@@ -78,6 +78,40 @@ try {
   const filenames = run(['files', 'z.ts', '5']);
   assert.match(filenames, /src\/z\.ts -> Read/);
   assert.ok(!filenames.includes('needle();'));
+  run([
+    '--record-access',
+    path.join(root, 'src/z.ts'),
+    'synthetic',
+    'navigation-one',
+  ]);
+  run([
+    '--record-access',
+    path.join(root, 'src/a.ts'),
+    'synthetic',
+    'navigation-one',
+  ]);
+  run([
+    '--record-access',
+    path.join(root, 'test/sample.tsx'),
+    'synthetic',
+    'navigation-two',
+  ]);
+  const pointers = JSON.parse(run(['--context', 'navigation-one']));
+  assert.ok(pointers.includes('src/z.ts'));
+  assert.ok(pointers.includes('src/a.ts'));
+  assert.ok(!pointers.includes('test/sample.tsx'));
+  const narrowed = spawnSync(wrapper, ['--context', 'navigation-one'], {
+    cwd: path.join(root, 'src'),
+    env,
+    encoding: 'utf8',
+  });
+  assert.equal(narrowed.status, 0);
+  assert.ok(JSON.parse(narrowed.stdout).every(item => !item.includes('/')));
+  const foreign = path.join(temp, 'foreign.ts');
+  writeFileSync(foreign, 'PRIVATE_FIXTURE_CONTENT');
+  run(['--record-access', foreign, 'synthetic', 'navigation-one']);
+  assert.ok(!run(['--context', 'navigation-one']).includes('foreign'));
+  assert.equal(run(['--context', 'unused-session']).trim(), '[]');
   writeFileSync(path.join(root, 'src/unicode.ts'), 'needlé needleé\n');
   writeFileSync(
     path.join(root, 'src/long-unicode.ts'),

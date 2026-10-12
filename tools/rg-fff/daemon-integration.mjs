@@ -71,7 +71,7 @@ try {
       socket = readdirSync(dir).find(name => name.endsWith('.sock'));
       if (socket) {
         socket = path.join(dir, socket);
-        if ((await rpc(socket, 'v9\nping\n{}\n')) === '0\n5\nREADY') break;
+        if ((await rpc(socket, 'v10\nping\n{}\n')) === '0\n5\nREADY') break;
       }
     } catch {
       socket = undefined;
@@ -88,6 +88,34 @@ try {
     1
   );
   assert.equal(statSync(socket).mode & 0o777, 0o600);
+  assert.equal(
+    spawnSync(
+      wrapper,
+      [
+        '--record-access',
+        path.join(one, 'a.ts'),
+        'synthetic',
+        'navigation-session',
+      ],
+      { cwd: one, env }
+    ).status,
+    0
+  );
+  const scopeResult = spawnSync(wrapper, ['--scope', 'navigation-session'], {
+    cwd: one,
+    env,
+    encoding: 'utf8',
+  });
+  assert.equal(scopeResult.status, 0);
+  const scope = JSON.parse(scopeResult.stdout);
+  assert.equal(scope.indexedFiles, 2);
+  assert.equal(scope.recentSessionFiles, 1);
+  assert.equal(scope.recentSessionDirectories, 1);
+  assert.ok(
+    Object.values(scope).every(
+      value => Number.isSafeInteger(value) && value >= 0
+    )
+  );
   for (const [cwd, expected] of [
     [path.join(root, 'build'), './ignored.txt:1:needle\n'],
   ]) {
@@ -130,7 +158,7 @@ try {
     )
   );
   assert.equal(await rpc(socket, 'obsolete\nping\n{}\n'), 'FALLBACK\n');
-  assert.equal(await rpc(socket, 'v9\nsearch\nnot-json\n'), 'FALLBACK\n');
+  assert.equal(await rpc(socket, 'v10\nsearch\nnot-json\n'), 'FALLBACK\n');
   writeFileSync(path.join(one, 'fresh.ts'), 'new_symbol\n');
   await new Promise(resolve => setTimeout(resolve, 300));
   const fresh = spawnSync(wrapper, ['-n', 'new_symbol', '.'], {
