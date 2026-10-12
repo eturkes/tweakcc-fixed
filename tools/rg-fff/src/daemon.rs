@@ -34,7 +34,7 @@ use std::time::{Duration, Instant};
 use std::{fs, thread};
 
 use fff_search::file_picker::FilePicker;
-use fff_search::{FFFMode, FilePickerOptions, SharedFilePicker, SharedFrecency};
+use fff_search::{FFFMode, FilePickerOptions, SharedFilePicker};
 
 use crate::{format_results, SearchReq};
 
@@ -57,7 +57,12 @@ fn fnv1a(s: &str) -> u64 {
 
 fn daemons_dir() -> Option<PathBuf> {
     let home = std::env::var("HOME").ok()?;
-    Some(PathBuf::from(home).join(".tweakcc").join("fff").join("daemons"))
+    Some(
+        PathBuf::from(home)
+            .join(".tweakcc")
+            .join("fff")
+            .join("daemons"),
+    )
 }
 
 /// Wire protocol version. Bumped on any breaking change to the request/response
@@ -66,7 +71,7 @@ fn daemons_dir() -> Option<PathBuf> {
 /// of colliding with a still-running old-format daemon that holds the old name —
 /// otherwise the new daemon can't bind and the root stays cold until the old one
 /// idle-times-out).
-pub const PROTO: &str = "v5";
+pub const PROTO: &str = "v6";
 
 pub fn socket_path(root: &Path) -> Option<PathBuf> {
     let dir = daemons_dir()?;
@@ -103,9 +108,7 @@ fn encode_req(req: &SearchReq) -> String {
 pub fn query(root: &Path, req: &SearchReq) -> Option<(String, i32)> {
     // A pattern with an embedded newline can't survive the line protocol; let
     // the cold path (which never serializes it) handle that rare case.
-    if req.pattern.contains('\n')
-        || req.dir_prefixes.iter().any(|d| d.contains('\n'))
-    {
+    if req.pattern.contains('\n') || req.dir_prefixes.iter().any(|d| d.contains('\n')) {
         return None;
     }
     let sock = socket_path(root)?;
@@ -192,7 +195,7 @@ pub fn serve(root_arg: &str) {
     };
 
     let shared = SharedFilePicker::default();
-    let frecency = SharedFrecency::default();
+    let frecency = crate::ranking::shared_frecency();
     if FilePicker::new_with_shared_state(
         shared.clone(),
         frecency.clone(),
@@ -229,10 +232,7 @@ pub fn serve(root_arg: &str) {
         let root = root.clone();
         thread::spawn(move || loop {
             thread::sleep(WATCHDOG_TICK);
-            let idle = last
-                .lock()
-                .map(|t| t.elapsed())
-                .unwrap_or(Duration::ZERO);
+            let idle = last.lock().map(|t| t.elapsed()).unwrap_or(Duration::ZERO);
             if idle > IDLE_TIMEOUT || !root.exists() {
                 let _ = fs::remove_file(&sock);
                 std::process::exit(0);
@@ -325,8 +325,7 @@ fn handle(stream: UnixStream, shared: &SharedFilePicker) {
             // received exactly byte_len bytes — if the daemon is killed mid-write
             // (OOM/pkill), the short read is detected and the client cold-scans
             // instead of silently serving a truncated (under-reporting) result.
-            let _ =
-                out.write_all(format!("{code}\n{}\n", body.len()).as_bytes());
+            let _ = out.write_all(format!("{code}\n{}\n", body.len()).as_bytes());
             let _ = out.write_all(body.as_bytes());
         }
         None => {
