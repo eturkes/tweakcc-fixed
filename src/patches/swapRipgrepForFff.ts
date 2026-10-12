@@ -61,7 +61,7 @@ const FFF_GUIDANCE_MARKER = 'Search backend note (fff):';
 const FFF_GUIDANCE =
   '\n\n' +
   FFF_GUIDANCE_MARKER +
-  ' prefer one bare identifier over regex; results are relevance-ranked, so read the top hit first. A trailing [def] tag flags a line that likely defines the symbol.';
+  ' eligible searches are relevance-ranked using file usage and Git activity. Prefer a bare identifier when locating a symbol; a trailing [def] is an advisory definition hint. After two locating searches, read promising files before broadening the search.';
 
 // ── 4. Bash-description guidance — best-effort (the MAIN agent's only search
 //      surface; it has no Grep tool, so this is where the --fuzzy lever lives).
@@ -73,9 +73,9 @@ const FFF_GUIDANCE =
 const BASH_GUIDANCE_ANCHOR = 'Prefer dedicated tools over';
 const BASH_GUIDANCE_MARKER = 'most-relevant-first';
 const BASH_GUIDANCE =
-  ' grep/find results are ranked ' +
+  ' Eligible grep/rg results served by fff are ranked ' +
   BASH_GUIDANCE_MARKER +
-  ' (read the top hit first); a trailing [def] tag flags a likely definition line, and a grep or find -name that matches nothing automatically lists the closest approximate hits tagged [~approx]. Add --fuzzy to force typo-tolerant or partial matching, e.g. grep --fuzzy SomeName.';
+  ' using file usage and Git activity (read a promising hit first); fallback searches retain native ordering. A trailing [def] is an advisory definition hint. Prefer a bare identifier for symbol lookup and use -F for literal punctuation. After two locating searches, read candidate code before broadening. Add --fuzzy for approximate content matches, e.g. grep --fuzzy SomeName; verify approximate hits by reading the file.';
 
 /** [CRITICAL] Repoint the grep→ugrep / find→bfs shadow at the wrapper. */
 const repointBashSearchShadow = (
@@ -148,16 +148,25 @@ const repointRgResolver = (file: string, wrapperPath: string): string => {
 };
 
 const prewarmShellSearch = (file: string, wrapperPath: string): string => {
-  if (file.includes(' --warmup ')) return file;
+  if (file.includes('function fff {')) return file;
   const anchor =
-    'return["unalias find 2>/dev/null || true","unalias grep 2>/dev/null || true",';
+    '"unalias find 2>/dev/null || true","unalias grep 2>/dev/null || true",';
   const start = file.indexOf(anchor);
   if (start < 0) return file;
   const quoted = "'" + wrapperPath.replaceAll("'", "'\\''") + "'";
-  const command = `${quoted} --warmup "$PWD" >/dev/null 2>&1`;
-  const insertion = escapeNonAscii(JSON.stringify(command)) + ',';
-  const at = start + 'return['.length;
-  return file.slice(0, at) + insertion + file.slice(at);
+  const commands = [
+    ...(!file.includes(' --warmup ')
+      ? [
+          `if [ -x ${quoted} ]; then ${quoted} --warmup "$PWD" >/dev/null 2>&1 || true; fi`,
+        ]
+      : []),
+    'unalias fff 2>/dev/null || true',
+    `function fff { ${quoted} "$@"; }`,
+  ];
+  const insertion =
+    commands.map(command => escapeNonAscii(JSON.stringify(command))).join(',') +
+    ',';
+  return file.slice(0, start) + insertion + file.slice(start);
 };
 
 const skipString = (s: string, i: number): number => {
@@ -275,7 +284,7 @@ export const writeSwapRipgrepForFff = (
   // 1. Bash-search shadow (the 40k grep/find path) — CRITICAL.
   const shadowed = repointBashSearchShadow(oldFile, wrapperPath);
   if (shadowed === null) return null;
-  let file = shadowed;
+  let file = prewarmShellSearch(shadowed, wrapperPath);
 
   // 2. ripgrep resolver (rare rg + subagent Grep tool) — best-effort.
   file = repointRgResolver(file, wrapperPath);
@@ -294,7 +303,10 @@ export const writeSwapRipgrepForFff = (
   file = appendBeforeClosingBacktick(
     file,
     BASH_GUIDANCE_ANCHOR,
-    BASH_GUIDANCE,
+    BASH_GUIDANCE +
+      (file.includes('function fff {')
+        ? ' Use fff files SomeName for fuzzy filename discovery, or fff --stats for local aggregate service counts.'
+        : ''),
     BASH_GUIDANCE_MARKER,
     'Bash description'
   );

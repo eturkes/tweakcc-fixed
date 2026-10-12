@@ -75,6 +75,9 @@ try {
       .filter(line => line === '--').length,
     2
   );
+  const filenames = run(['files', 'z.ts', '5']);
+  assert.match(filenames, /src\/z\.ts -> Read/);
+  assert.ok(!filenames.includes('needle();'));
   writeFileSync(path.join(root, 'src/unicode.ts'), 'needlé needleé\n');
   writeFileSync(
     path.join(root, 'src/long-unicode.ts'),

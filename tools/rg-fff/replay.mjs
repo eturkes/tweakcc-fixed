@@ -33,6 +33,9 @@ export function replay(
     RG_FFF_LOG: '',
     RG_FFF_DEBUG: '',
     RG_FFF_SESSION: '',
+    RIPGREP_CONFIG_PATH: '',
+    GREP_OPTIONS: '',
+    UGREP_OPTIONS: '',
     RG_FFF_NO_DAEMON: '1',
     RG_FFF_FIRST: '0',
     RG_FFF_NO_FUZZY_FALLBACK: '1',
@@ -47,7 +50,7 @@ export function replay(
       !record.argv.every(
         a =>
           typeof a === 'string' &&
-          !/^(--pre|--hostname-bin|--filter|--fff-|--record-access|--daemon|--config|-@)/.test(
+          !/^(--pre|--hostname-bin|--filter|--fff-|--record-access|--daemon|--config|--pager|--view|-@)/.test(
             a
           )
       ) ||

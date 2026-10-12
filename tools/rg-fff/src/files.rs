@@ -103,6 +103,9 @@ pub fn suggest(picker: &FilePicker, request: &FileRequest) -> Option<Vec<Suggest
 }
 
 pub fn query(cwd: &Path, needle: &str, limit: usize) -> Option<Vec<Suggestion>> {
+    if std::env::var_os("RG_FFF_NO_DAEMON").is_some() {
+        return None;
+    }
     let request = FileRequest {
         cwd: std::fs::canonicalize(cwd).ok()?,
         query: needle.to_string(),
@@ -114,4 +117,32 @@ pub fn query(cwd: &Path, needle: &str, limit: usize) -> Option<Vec<Suggestion>> 
         return None;
     }
     serde_json::from_str(&body).ok()
+}
+
+pub fn discover(cwd: &Path, needle: &str, limit: usize) -> Option<Vec<Suggestion>> {
+    if let Some(items) = query(cwd, needle, limit) {
+        return Some(items);
+    }
+    let cwd = std::fs::canonicalize(cwd).ok()?;
+    let shared = fff_search::SharedFilePicker::default();
+    FilePicker::new_with_shared_state(
+        shared.clone(),
+        crate::ranking::shared_frecency(),
+        crate::ranking::picker_options(&cwd, false),
+    )
+    .ok()?;
+    if !shared.wait_for_scan(std::time::Duration::from_secs(15)) {
+        return None;
+    }
+    let guard = shared.read().ok()?;
+    let result = suggest(
+        guard.as_ref()?,
+        &FileRequest {
+            cwd: cwd.clone(),
+            query: needle.to_string(),
+            limit,
+        },
+    );
+    crate::daemon::spawn_detached(&cwd);
+    result
 }

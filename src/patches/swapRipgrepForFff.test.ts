@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { spawnSync } from 'node:child_process';
 import { writeSwapRipgrepForFff } from './swapRipgrepForFff';
 
 const WRAPPER = '/Users/x/.tweakcc/fff/aarch64-apple-darwin/rg-fff';
@@ -80,7 +81,9 @@ describe('swapRipgrepForFff', () => {
     expect(out).toContain('grep --fuzzy SomeName');
     // inserted inside the bullet (after the pristine phrasing), before its closing
     // backtick (no raw backticks)
-    expect(out).toContain('when one fits. grep/find results are ranked');
+    expect(out).toContain(
+      'when one fits. Eligible grep/rg results served by fff'
+    );
     // the structured Grep tool has no --fuzzy flag, so its desc must NOT mention it
     const grepNote = out.slice(out.indexOf('Search backend note (fff):'));
     expect(grepNote.slice(0, 120)).not.toContain('--fuzzy');
@@ -126,6 +129,26 @@ describe('swapRipgrepForFff', () => {
     expect(once).toContain(' --warmup \\"$PWD\\"');
     expect(countOf(once, ' --warmup ')).toBe(1);
     expect(writeSwapRipgrepForFff(once, WRAPPER)).toBe(once);
+  });
+
+  it('defines a shell-safe fff command and advertises it only when available', () => {
+    const generator =
+      ';function snippets(){return["unalias find 2>/dev/null || true","unalias grep 2>/dev/null || true",shadow()]}';
+    const tricky = "/tmp/José/'`x${HOME}/rg-fff";
+    const patched = writeSwapRipgrepForFff(COMBINED + generator, tricky)!;
+    const commands = new Function(
+      'shadow',
+      patched.slice(patched.indexOf('function snippets')) +
+        ';return snippets();'
+    )(() => '') as string[];
+    expect(commands).toContain(
+      "function fff { '/tmp/José/'\\''`x${HOME}/rg-fff' \"$@\"; }"
+    );
+    expect(spawnSync('bash', ['-n', '-c', commands.join('\n')]).status).toBe(0);
+    expect(patched).toContain('Use fff files SomeName');
+    expect(writeSwapRipgrepForFff(COMBINED, WRAPPER)).not.toContain(
+      'Use fff files SomeName'
+    );
   });
 
   it('succeeds on a shadow-only file (rg/guidance are best-effort)', () => {

@@ -1,3 +1,4 @@
+import { FFF_FEATURE_DESCRIPTION, FFF_FEATURE_TITLE } from '../fffDescription';
 import chalk from 'chalk';
 import * as fs from 'node:fs/promises';
 import * as fsSync from 'node:fs';
@@ -570,10 +571,9 @@ const PATCH_DEFINITIONS = [
   },
   {
     id: 'swap-ripgrep-for-fff',
-    name: '[EXPERIMENTAL] fff for Bash search (grep/find/rg → fff)',
+    name: FFF_FEATURE_TITLE,
     group: PatchGroup.FEATURES,
-    description:
-      "[EXPERIMENTAL] Route Claude Code's Bash search through fff (fast file finder). CC 2.1.186 shadows the shell `grep`→embedded ugrep and `find`→embedded bfs (and offers `rg`); the agent uses grep ~136x more than rg. This repoints all three at a per-platform fff wrapper that serves, relevance-ranked from a warm-index daemon: literal, regex (RE2 — the dialect the model writes), case-insensitive (-i), multi-word phrases, context (-A/-B/-C), extension globs (-g/--include '*.ts'), and multi-path (app lib scripts) searches. Anything fff can't serve faithfully — PCRE, multiline/newline- or empty-matching regex, only-matching (-o), single-file, non-recursive grep, --no-ignore, find, non-ASCII, lines over 512 bytes, piped stdin → re-exec the real embedded ugrep/bfs/ripgrep. Every engine still ships; any uncertainty falls back, so results never diverge from the model's intent. Transparent (no prompt-compliance reliance) and CC-scoped (the user's own terminal grep/find/rg are untouched). Installs the wrapper into ~/.tweakcc/fff.",
+    description: FFF_FEATURE_DESCRIPTION,
   },
   {
     id: 'dream-mode',

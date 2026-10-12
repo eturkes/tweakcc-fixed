@@ -27,7 +27,7 @@ def searches(command, cwd):
                     target = Path(segment[1]).expanduser()
                     cwd = str((Path(cwd) / target).resolve())
                 elif segment[0] in ['rg', 'grep'] and not any(
-                    '$' in a or '`' in a or '\n' in a or a.startswith(('--pre', '--hostname-bin', '--filter', '--fff-', '--record-access', '--daemon', '--config', '-@')) for a in segment[1:]
+                    '$' in a or '`' in a or '\n' in a or a.startswith(('--pre', '--hostname-bin', '--filter', '--fff-', '--record-access', '--daemon', '--config', '--pager', '--view', '-@')) for a in segment[1:]
                 ):
                     records.append({'tool': segment[0], 'argv': segment[1:], 'cwd': cwd})
             segment = []
@@ -48,8 +48,8 @@ def main():
     args = parser.parse_args()
     output = args.output.expanduser().resolve()
     repo = Path(subprocess.check_output(['git', 'rev-parse', '--show-toplevel'], text=True).strip()).resolve()
-    if output == repo or repo in output.parents:
-        parser.error('Private replay data must be stored outside the repository')
+    if output == repo or repo in output.parents or any((parent / '.git').exists() for parent in output.parents):
+        parser.error('Private replay data must be stored outside repositories')
     records = []
     files = sorted(args.input.glob('*/*.jsonl'), key=lambda p: p.stat().st_mtime)[-args.sessions:]
     for file in files:

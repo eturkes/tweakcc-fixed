@@ -189,14 +189,18 @@ fn log_decision(tool: Tool, pattern: &Option<String>, decision: &str, nlines: i6
 
 fn main() {
     let argv: Vec<String> = std::env::args().collect();
+    let explicit = argv
+        .first()
+        .map(|a| Tool::from_argv0(a) == Tool::Fff)
+        .unwrap_or(false);
 
-    if argv.get(1).map(|s| s == "--daemon").unwrap_or(false) {
+    if explicit && argv.get(1).map(|s| s == "--daemon").unwrap_or(false) {
         let root = argv.get(2).cloned().unwrap_or_else(|| ".".to_string());
         daemon::serve(&root);
         return;
     }
 
-    if argv.get(1).map(String::as_str) == Some("--record-access") {
+    if explicit && argv.get(1).map(String::as_str) == Some("--record-access") {
         if let Some(path) = argv.get(2) {
             let session = argv.get(3).map(String::as_str).unwrap_or("");
             if let Ok(root) = std::env::current_dir() {
@@ -206,7 +210,7 @@ fn main() {
         return;
     }
 
-    if argv.get(1).map(String::as_str) == Some("--stats") {
+    if explicit && argv.get(1).map(String::as_str) == Some("--stats") {
         println!(
             "{}",
             serde_json::to_string(&metrics::stats()).unwrap_or_default()
@@ -214,14 +218,14 @@ fn main() {
         return;
     }
 
-    if argv.get(1).map(String::as_str) == Some("--warmup") {
+    if explicit && argv.get(1).map(String::as_str) == Some("--warmup") {
         if let Ok(cwd) = std::env::current_dir() {
             daemon::spawn_detached(&daemon::repository_root(&cwd));
         }
         return;
     }
 
-    if argv.get(1).map(String::as_str) == Some("--suggest") {
+    if explicit && argv.get(1).map(String::as_str) == Some("--suggest") {
         let query = argv.get(2).map(String::as_str).unwrap_or("");
         let limit = argv.get(3).and_then(|v| v.parse().ok()).unwrap_or(15);
         if let Ok(cwd) = std::env::current_dir() {
@@ -233,6 +237,29 @@ fn main() {
         }
         println!("[]");
         return;
+    }
+
+    if argv.get(1).map(String::as_str) == Some("files")
+        && argv
+            .first()
+            .map(|a| Tool::from_argv0(a) == Tool::Fff)
+            .unwrap_or(false)
+    {
+        let needle = argv.get(2).map(String::as_str).unwrap_or("");
+        let limit = argv.get(3).and_then(|v| v.parse().ok()).unwrap_or(15);
+        if let Ok(cwd) = std::env::current_dir() {
+            if let Some(items) = files::discover(&cwd, needle, limit) {
+                println!("# fff: ranked fuzzy filenames; verify candidate files by reading them");
+                for item in items {
+                    let dirty = if item.dirty { " [modified]" } else { "" };
+                    let action = if item.directory { "browse" } else { "Read" };
+                    println!("{}{dirty} -> {action}", item.path);
+                }
+                return;
+            }
+        }
+        eprintln!("fff: file discovery unavailable");
+        std::process::exit(2);
     }
 
     let a0 = argv.first().cloned().unwrap_or_default();
