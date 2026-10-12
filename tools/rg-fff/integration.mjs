@@ -66,6 +66,20 @@ try {
   assert.equal(summary.mismatches, 0, JSON.stringify(summary));
   assert.equal(summary.timeouts, 0, JSON.stringify(summary));
   assert.equal(summary.served, cases.length, JSON.stringify(summary));
+  const input = 'needle from stdin\nother text\n';
+  for (const argv of [
+    ['-n', 'needle'],
+    ['-no', 'needle'],
+  ]) {
+    const options = { cwd: root, env, encoding: 'utf8', input, timeout: 5000 };
+    const expected = spawnSync('rg', argv, options);
+    const actual = spawnSync(wrapper, argv, options);
+    assert.ifError(expected.error);
+    assert.ifError(actual.error);
+    for (const key of ['status', 'stdout', 'stderr']) {
+      assert.deepEqual(actual[key], expected[key], `piped stdin: ${key}`);
+    }
+  }
   run(['-n', 'needle']);
   run(['--record-access', path.join(root, 'src/z.ts'), 'synthetic']);
   assert.match(run(['-n', 'needle']), /^src\/z.ts:/);

@@ -335,7 +335,7 @@ fn main() {
 
     let opts = parse(tool, raw);
     NO_FALLBACK.store(opts.no_fallback, std::sync::atomic::Ordering::Relaxed);
-    if let Some(mode) = search_mode(&opts) {
+    if let Some(mode) = search_mode(&opts, stdin_is_pipe()) {
         std::process::exit(run_search(&opts, mode));
     }
     log_decision(opts.tool, &opts.pattern, "fallback-ineligible", -1);
@@ -650,8 +650,8 @@ fn stdin_is_pipe() -> bool {
         && matches!(stat.st_mode & libc::S_IFMT, libc::S_IFIFO | libc::S_IFSOCK)
 }
 
-fn search_mode(o: &Opts) -> Option<Mode> {
-    if o.force_fallback || stdin_is_pipe() {
+fn search_mode(o: &Opts, piped_stdin: bool) -> Option<Mode> {
+    if o.force_fallback || piped_stdin {
         return None;
     }
     let pat = match &o.pattern {
@@ -2145,35 +2145,44 @@ mod tests {
     }
 
     #[test]
+    fn search_mode_defers_piped_stdin() {
+        for tool in [Tool::Rg, Tool::Ugrep, Tool::Fff] {
+            let query = opts(tool, "showDiff", &[]);
+            assert!(matches!(search_mode(&query, false), Some(Mode::Plain)));
+            assert!(search_mode(&query, true).is_none());
+        }
+    }
+
+    #[test]
     fn search_mode_routes_correctly() {
         use Mode::*;
         // literal -> Plain; regex (dialect-ok) -> Regex; fuzzy -> Fuzzy
         assert!(matches!(
-            search_mode(&opts(Tool::Ugrep, "showDiff", &["src"])),
+            search_mode(&opts(Tool::Ugrep, "showDiff", &["src"]), false),
             Some(Plain)
         ));
         assert!(matches!(
-            search_mode(&opts(Tool::Ugrep, "foo.bar", &["src"])),
+            search_mode(&opts(Tool::Ugrep, "foo.bar", &["src"]), false),
             Some(Regex)
         ));
         assert!(matches!(
-            search_mode(&opts(Tool::Rg, "a\\d+", &["src"])),
+            search_mode(&opts(Tool::Rg, "a\\d+", &["src"]), false),
             Some(Regex)
         ));
         let mut f = opts(Tool::Ugrep, "showDiff", &["src"]);
         f.fuzzy = true;
-        assert!(matches!(search_mode(&f), Some(Fuzzy)));
+        assert!(matches!(search_mode(&f, false), Some(Fuzzy)));
         // a literal PHRASE (DSL operators) routes to Regex as an escaped literal
         assert!(matches!(
-            search_mode(&opts(Tool::Ugrep, "export const", &["src"])),
+            search_mode(&opts(Tool::Ugrep, "export const", &["src"]), false),
             Some(Regex)
         ));
         assert!(matches!(
-            search_mode(&opts(Tool::Ugrep, "key: value", &["src"])),
+            search_mode(&opts(Tool::Ugrep, "key: value", &["src"]), false),
             Some(Regex)
         ));
         // MULTI-PATH: several relative dirs serve; to_req builds the prefixes.
-        assert!(search_mode(&opts(Tool::Ugrep, "showDiff", &["src", "target"])).is_some());
+        assert!(search_mode(&opts(Tool::Ugrep, "showDiff", &["src", "target"]), false).is_some());
         let mp = opts(Tool::Ugrep, "showDiff", &["src", "target"]).to_req(Plain);
         assert_eq!(mp.dir_prefixes, vec!["src/", "target/"]);
         // single "." -> no prefixes (whole cwd)
@@ -2184,10 +2193,10 @@ mod tests {
         // -i (any case) routes to Regex (served via a (?i) prefix)
         let mut lo = opts(Tool::Ugrep, "showdiff", &["src"]);
         lo.ignore_case = true;
-        assert!(matches!(search_mode(&lo), Some(Regex)));
+        assert!(matches!(search_mode(&lo, false), Some(Regex)));
         let mut up = opts(Tool::Ugrep, "ShowDiff", &["src"]);
         up.ignore_case = true;
-        assert!(matches!(search_mode(&up), Some(Regex)));
+        assert!(matches!(search_mode(&up, false), Some(Regex)));
     }
 
     fn p(tool: Tool, args: &[&str]) -> Opts {
@@ -2296,31 +2305,31 @@ mod tests {
         // "fn_a+b": byte-equiv ugrep sees no BRE meta -> literal Plain; fff-first
         // sees ERE '+' -> RE2 Regex (the model's intent).
         let mut p = opts(Tool::Ugrep, "fn_a+b", &["src"]);
-        assert!(matches!(search_mode(&p), Some(Plain)));
+        assert!(matches!(search_mode(&p, false), Some(Plain)));
         p.fff_first = true;
-        assert!(matches!(search_mode(&p), Some(Regex)));
+        assert!(matches!(search_mode(&p, false), Some(Regex)));
         // alternation/groups: literal in BRE, regex in fff-first
         let mut alt = opts(Tool::Ugrep, "Grep(Match|Result)", &["src"]);
-        assert!(matches!(search_mode(&alt), Some(Plain)));
+        assert!(matches!(search_mode(&alt, false), Some(Plain)));
         alt.fff_first = true;
-        assert!(matches!(search_mode(&alt), Some(Regex)));
+        assert!(matches!(search_mode(&alt, false), Some(Regex)));
         // CORRECTNESS GATES STILL APPLY in fff-first:
         // \s can match the newline -> defer
         let mut ws = opts(Tool::Ugrep, "fn\\s+x", &["src"]);
         ws.fff_first = true;
-        assert!(search_mode(&ws).is_none());
+        assert!(search_mode(&ws, false).is_none());
         // empty-matching (a* matches the empty string) -> defer
         let mut em = opts(Tool::Ugrep, "a*", &["src"]);
         em.fff_first = true;
-        assert!(search_mode(&em).is_none());
+        assert!(search_mode(&em, false).is_none());
         // non-ascii -> defer; ugrep without -r -> defer (unchanged by fff-first)
         let mut na = opts(Tool::Ugrep, "café+", &["src"]);
         na.fff_first = true;
-        assert!(search_mode(&na).is_none());
+        assert!(search_mode(&na, false).is_none());
         let mut nr = opts(Tool::Ugrep, "a+b", &["src"]);
         nr.fff_first = true;
         nr.recursive = false;
-        assert!(search_mode(&nr).is_none());
+        assert!(search_mode(&nr, false).is_none());
     }
 
     #[test]
@@ -2344,27 +2353,27 @@ mod tests {
     #[test]
     fn search_mode_defers_unsafe() {
         // BRE regex with an ERE-only metachar -> dialect defer
-        assert!(search_mode(&opts(Tool::Ugrep, "foo.bar+", &["src"])).is_none());
+        assert!(search_mode(&opts(Tool::Ugrep, "foo.bar+", &["src"]), false).is_none());
         // empty-matcher / newline regex -> defer
-        assert!(search_mode(&opts(Tool::Rg, "x?", &["src"])).is_none());
-        assert!(search_mode(&opts(Tool::Rg, "a\\s+b", &["src"])).is_none());
+        assert!(search_mode(&opts(Tool::Rg, "x?", &["src"]), false).is_none());
+        assert!(search_mode(&opts(Tool::Rg, "a\\s+b", &["src"]), false).is_none());
         // non-ascii -> defer
-        assert!(search_mode(&opts(Tool::Ugrep, "café", &["src"])).is_none());
+        assert!(search_mode(&opts(Tool::Ugrep, "café", &["src"]), false).is_none());
         // ugrep without -r -> defer
         let mut nr = opts(Tool::Ugrep, "showDiff", &["src"]);
         nr.recursive = false;
-        assert!(search_mode(&nr).is_none());
+        assert!(search_mode(&nr, false).is_none());
         // a non-existent / non-dir path, ./ arg, or absolute arg -> defer
-        assert!(search_mode(&opts(Tool::Ugrep, "showDiff", &["src", "nope_xyz"])).is_none());
-        assert!(search_mode(&opts(Tool::Ugrep, "showDiff", &["./src"])).is_none());
-        assert!(search_mode(&opts(Tool::Ugrep, "showDiff", &["/tmp"])).is_none());
+        assert!(search_mode(&opts(Tool::Ugrep, "showDiff", &["src", "nope_xyz"]), false).is_none());
+        assert!(search_mode(&opts(Tool::Ugrep, "showDiff", &["./src"]), false).is_none());
+        assert!(search_mode(&opts(Tool::Ugrep, "showDiff", &["/tmp"]), false).is_none());
         // "." mixed into a multi-path search -> defer (overlap/double-report)
-        assert!(search_mode(&opts(Tool::Ugrep, "showDiff", &[".", "src"])).is_none());
+        assert!(search_mode(&opts(Tool::Ugrep, "showDiff", &[".", "src"]), false).is_none());
         // force_fallback / short literal -> defer
         let mut ff = opts(Tool::Ugrep, "showDiff", &["src"]);
         ff.force_fallback = true;
-        assert!(search_mode(&ff).is_none());
-        assert!(search_mode(&opts(Tool::Ugrep, "ab", &["src"])).is_none());
+        assert!(search_mode(&ff, false).is_none());
+        assert!(search_mode(&opts(Tool::Ugrep, "ab", &["src"]), false).is_none());
     }
 
     #[test]
