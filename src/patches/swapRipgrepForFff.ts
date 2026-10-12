@@ -147,6 +147,19 @@ const repointRgResolver = (file: string, wrapperPath: string): string => {
   return newFile;
 };
 
+const prewarmShellSearch = (file: string, wrapperPath: string): string => {
+  if (file.includes(' --warmup ')) return file;
+  const anchor =
+    'return["unalias find 2>/dev/null || true","unalias grep 2>/dev/null || true",';
+  const start = file.indexOf(anchor);
+  if (start < 0) return file;
+  const quoted = "'" + wrapperPath.replaceAll("'", "'\\''") + "'";
+  const command = `${quoted} --warmup "$PWD" >/dev/null 2>&1`;
+  const insertion = escapeNonAscii(JSON.stringify(command)) + ',';
+  const at = start + 'return['.length;
+  return file.slice(0, at) + insertion + file.slice(at);
+};
+
 const skipString = (s: string, i: number): number => {
   const q = s[i];
   i++;
@@ -294,6 +307,8 @@ export const writeSwapRipgrepForFff = (
   } else {
     file = observed;
   }
+
+  file = prewarmShellSearch(file, wrapperPath);
 
   return file;
 };

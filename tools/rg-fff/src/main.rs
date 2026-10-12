@@ -135,6 +135,7 @@ impl Opts {
 /// The minimal, serializable request shared by the cold path and the daemon.
 #[derive(Serialize, Deserialize)]
 pub struct SearchReq {
+    pub cwd: String,
     pub word: bool,
     pub only_matching: bool,
     pub expected_files: Option<Vec<String>>,
@@ -209,6 +210,13 @@ fn main() {
             "{}",
             serde_json::to_string(&metrics::stats()).unwrap_or_default()
         );
+        return;
+    }
+
+    if argv.get(1).map(String::as_str) == Some("--warmup") {
+        if let Ok(cwd) = std::env::current_dir() {
+            daemon::spawn_detached(&daemon::repository_root(&cwd));
+        }
         return;
     }
 
@@ -794,6 +802,11 @@ impl Opts {
             })
             .collect();
         SearchReq {
+            cwd: std::env::current_dir()
+                .ok()
+                .and_then(|p| std::fs::canonicalize(p).ok())
+                .map(|p| p.to_string_lossy().into_owned())
+                .unwrap_or_default(),
             word: self.word,
             only_matching: self.only_matching,
             expected_files: None,
@@ -880,7 +893,7 @@ fn fuzzy_fallback_block(
 
 fn run_search(o: &Opts, mode: Mode) -> i32 {
     let mut req = o.to_req(mode);
-    if !o.globs.is_empty() || o.tool == Tool::Ugrep {
+    if !o.globs.is_empty() || o.tool == Tool::Ugrep || o.paths.iter().any(|p| p != ".") {
         let mut args = if o.tool == Tool::Ugrep {
             let mut args = vec!["-rl".into(), "-G".into(), "-e".into(), "".into()];
             if o.raw.iter().any(|a| a == "--ignore-files") {
@@ -958,11 +971,7 @@ fn run_search(o: &Opts, mode: Mode) -> i32 {
     if FilePicker::new_with_shared_state(
         shared.clone(),
         frecency.clone(),
-        FilePickerOptions {
-            base_path: ".".into(),
-            mode: FFFMode::Ai,
-            ..Default::default()
-        },
+        ranking::picker_options(Path::new(&req.cwd), false),
     )
     .is_err()
     {
@@ -971,7 +980,9 @@ fn run_search(o: &Opts, mode: Mode) -> i32 {
         }
         fallback(o.tool, &strip_custom(&o.raw), o.claude_bin.as_deref());
     }
-    shared.wait_for_scan(Duration::from_secs(15));
+    if !shared.wait_for_scan(Duration::from_secs(15)) {
+        fallback(o.tool, &strip_custom(&o.raw), o.claude_bin.as_deref());
+    }
     {
         let guard = match shared.read() {
             Ok(g) => g,
@@ -1142,20 +1153,44 @@ fn line_defines(line: &str, pattern: &str) -> bool {
 /// Grep `picker` per `req` and render tool-compatible output. Shared verbatim by
 /// the cold path and the daemon. Returns None when fff can't serve faithfully.
 pub fn format_results(picker: &FilePicker, req: &SearchReq) -> Option<(String, i32)> {
+    let cwd = if req.cwd.is_empty() {
+        &picker.base_path
+    } else {
+        Path::new(&req.cwd)
+    };
+    if !cwd.starts_with(&picker.base_path) {
+        return None;
+    }
+    let scoped_path = |file: &fff_search::types::FileItem| {
+        file.absolute_path(picker, &picker.base_path)
+            .strip_prefix(cwd)
+            .ok()
+            .map(|p| p.to_string_lossy().into_owned())
+    };
     let expected: Option<HashSet<&str>> = req
         .expected_files
         .as_ref()
         .map(|v| v.iter().map(String::as_str).collect());
     if let Some(files) = &expected {
-        if files.iter().any(|path| {
-            picker
-                .get_file_by_path(picker.base_path.join(path))
-                .is_none()
-        }) {
+        if files
+            .iter()
+            .any(|path| picker.get_file_by_path(cwd.join(path)).is_none())
+        {
             return None;
         }
     }
-    let preferred = feedback::preferred(&picker.base_path, &req.pattern);
+    if cwd != picker.base_path
+        && git2::Repository::discover(&picker.base_path)
+            .ok()
+            .and_then(|repo| {
+                repo.status_should_ignore(cwd.strip_prefix(&picker.base_path).ok()?)
+                    .ok()
+            })
+            .unwrap_or(true)
+    {
+        return None;
+    }
+    let preferred = feedback::preferred(cwd, &req.pattern);
     let grep = |query: &FFFQuery<'_>, opts: &GrepSearchOptions| {
         let mut result = picker.grep(query, opts);
         if req.word
@@ -1283,7 +1318,9 @@ pub fn format_results(picker: &FilePicker, req: &SearchReq) -> Option<(String, i
         .get_files()
         .iter()
         .chain(picker.get_overflow_files())
-        .any(|file| file.size > 10 * 1024 * 1024 && keep(&file.relative_path(picker)))
+        .any(|file| {
+            file.size > 10 * 1024 * 1024 && scoped_path(file).map(|p| keep(&p)).unwrap_or(false)
+        })
     {
         return None;
     }
@@ -1330,7 +1367,9 @@ pub fn format_results(picker: &FilePicker, req: &SearchReq) -> Option<(String, i
             }
             for m in &r.matches {
                 let f = r.files[m.file_index];
-                let path = f.relative_path(picker);
+                let Some(path) = scoped_path(f) else {
+                    continue;
+                };
                 if keep(&path) {
                     let index = *indexes.entry(path.clone()).or_insert_with(|| {
                         counts.push((path, 0));
@@ -1386,7 +1425,9 @@ pub fn format_results(picker: &FilePicker, req: &SearchReq) -> Option<(String, i
             }
             for m in &result.matches {
                 let f = result.files[m.file_index];
-                let path = f.relative_path(picker);
+                let Some(path) = scoped_path(f) else {
+                    continue;
+                };
                 if !keep(&path) {
                     continue;
                 }
@@ -1474,7 +1515,9 @@ pub fn format_results(picker: &FilePicker, req: &SearchReq) -> Option<(String, i
         }
         if req.files_only {
             for f in &result.files {
-                let path = f.relative_path(picker);
+                let Some(path) = scoped_path(f) else {
+                    continue;
+                };
                 if keep(&path) {
                     let _ = writeln!(out, "{out_prefix}{path}");
                     any = true;
@@ -1483,7 +1526,9 @@ pub fn format_results(picker: &FilePicker, req: &SearchReq) -> Option<(String, i
         } else {
             for m in &result.matches {
                 let f = result.files[m.file_index];
-                let path = f.relative_path(picker);
+                let Some(path) = scoped_path(f) else {
+                    continue;
+                };
                 if !keep(&path) {
                     continue;
                 }

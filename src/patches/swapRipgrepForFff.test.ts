@@ -119,6 +119,15 @@ describe('swapRipgrepForFff', () => {
     expect(twice).toBe(once);
   });
 
+  it('warms the runtime working directory when shell setup is sourced', () => {
+    const generator =
+      ';function snippets(){return["unalias find 2>/dev/null || true","unalias grep 2>/dev/null || true",shadow()]}';
+    const once = writeSwapRipgrepForFff(COMBINED + generator, WRAPPER)!;
+    expect(once).toContain(' --warmup \\"$PWD\\"');
+    expect(countOf(once, ' --warmup ')).toBe(1);
+    expect(writeSwapRipgrepForFff(once, WRAPPER)).toBe(once);
+  });
+
   it('succeeds on a shadow-only file (rg/guidance are best-effort)', () => {
     const out = writeSwapRipgrepForFff(SHADOW, WRAPPER);
     expect(out).not.toBeNull();

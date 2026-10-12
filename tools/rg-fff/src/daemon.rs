@@ -25,24 +25,29 @@
 //! The version tag ("v5") makes an older daemon reject a newer client cleanly, and
 //! is embedded in the socket filename so versions never share a socket.
 
-use std::io::{BufRead, BufReader, Read, Write};
+use std::io::{Read, Write};
 use std::net::Shutdown;
+use std::os::fd::AsRawFd;
+use std::os::unix::fs::{FileTypeExt, MetadataExt, OpenOptionsExt, PermissionsExt};
 use std::os::unix::net::{UnixListener, UnixStream};
 use std::path::{Path, PathBuf};
+use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 use std::{fs, thread};
 
 use fff_search::file_picker::FilePicker;
-use fff_search::{FFFMode, FilePickerOptions, SharedFilePicker};
+use fff_search::SharedFilePicker;
 
 use crate::{format_results, SearchReq};
 
 const IDLE_TIMEOUT: Duration = Duration::from_secs(30 * 60);
-const QUERY_READ_TIMEOUT: Duration = Duration::from_secs(20);
+const QUERY_READ_TIMEOUT: Duration = Duration::from_secs(3);
 const SCAN_TIMEOUT: Duration = Duration::from_secs(30);
 const WATCHER_TIMEOUT: Duration = Duration::from_secs(10);
-const WATCHDOG_TICK: Duration = Duration::from_secs(60);
+const WATCHDOG_TICK: Duration = Duration::from_secs(5);
+const MAX_REQUEST: usize = 2 * 1024 * 1024;
+const MAX_RESPONSE: usize = 32 * 1024 * 1024;
 
 /// FNV-1a — deterministic across processes (DefaultHasher is not), so client and
 /// daemon agree on the socket name for a given root.
@@ -56,13 +61,107 @@ fn fnv1a(s: &str) -> u64 {
 }
 
 fn daemons_dir() -> Option<PathBuf> {
-    let home = std::env::var("HOME").ok()?;
-    Some(
-        PathBuf::from(home)
-            .join(".tweakcc")
-            .join("fff")
-            .join("daemons"),
-    )
+    let state = crate::ranking::state_dir()?;
+    let normal = state.join("daemons");
+    let dir = if normal.as_os_str().len() > 65 {
+        PathBuf::from("/tmp")
+            .join(format!(".rg-fff-{}", unsafe { libc::geteuid() }))
+            .join(format!("{:016x}", fnv1a(&state.to_string_lossy())))
+    } else {
+        normal
+    };
+    if dir.starts_with("/tmp") {
+        crate::ranking::private_dir(dir.parent()?)?;
+    }
+    crate::ranking::private_dir(&dir)?;
+    Some(dir)
+}
+
+pub fn repository_root(cwd: &Path) -> PathBuf {
+    git2::Repository::discover(cwd)
+        .ok()
+        .and_then(|repo| repo.workdir().map(Path::to_path_buf))
+        .and_then(|p| fs::canonicalize(p).ok())
+        .unwrap_or_else(|| fs::canonicalize(cwd).unwrap_or_else(|_| cwd.to_path_buf()))
+}
+
+fn connect_result(path: &Path, timeout: Duration) -> std::io::Result<UnixStream> {
+    let socket = socket2::Socket::new(socket2::Domain::UNIX, socket2::Type::STREAM, None)?;
+    socket.connect_timeout(&socket2::SockAddr::unix(path)?, timeout)?;
+    let owned: std::os::fd::OwnedFd = socket.into();
+    Ok(UnixStream::from(owned))
+}
+
+fn connect(path: &Path, timeout: Duration) -> Option<UnixStream> {
+    connect_result(path, timeout).ok()
+}
+
+fn lock_file(sock: &Path) -> Option<fs::File> {
+    let file = fs::OpenOptions::new()
+        .create(true)
+        .read(true)
+        .write(true)
+        .truncate(false)
+        .mode(0o600)
+        .open(sock.with_extension("lock"))
+        .ok()?;
+    if unsafe { libc::flock(file.as_raw_fd(), libc::LOCK_EX | libc::LOCK_NB) } != 0 {
+        return None;
+    }
+    Some(file)
+}
+
+fn bounded_read(stream: &mut UnixStream, limit: usize, timeout: Duration) -> Option<Vec<u8>> {
+    stream.set_nonblocking(true).ok()?;
+    let deadline = Instant::now() + timeout;
+    let mut data = Vec::new();
+    let mut buffer = [0u8; 16 * 1024];
+    while Instant::now() < deadline {
+        match stream.read(&mut buffer) {
+            Ok(0) => return Some(data),
+            Ok(n) => {
+                if data.len() + n > limit {
+                    return None;
+                }
+                data.extend_from_slice(&buffer[..n]);
+            }
+            Err(e) if e.kind() == std::io::ErrorKind::WouldBlock => {
+                thread::sleep(Duration::from_millis(2))
+            }
+            Err(_) => return None,
+        }
+    }
+    None
+}
+
+fn bounded_write(stream: &mut UnixStream, bytes: &[u8], timeout: Duration) -> Option<()> {
+    stream.set_nonblocking(true).ok()?;
+    let deadline = Instant::now() + timeout;
+    let mut offset = 0;
+    while offset < bytes.len() && Instant::now() < deadline {
+        match stream.write(&bytes[offset..]) {
+            Ok(0) => return None,
+            Ok(n) => offset += n,
+            Err(e) if e.kind() == std::io::ErrorKind::WouldBlock => {
+                thread::sleep(Duration::from_millis(2))
+            }
+            Err(_) => return None,
+        }
+    }
+    (offset == bytes.len()).then_some(())
+}
+
+pub fn rpc(root: &Path, operation: &str, payload: &str) -> Option<(String, i32)> {
+    let sock = socket_path(&repository_root(root))?;
+    let mut stream = connect(&sock, Duration::from_millis(150))?;
+    let request = format!("{PROTO}\n{operation}\n{payload}\n");
+    if request.len() > MAX_REQUEST {
+        return None;
+    }
+    bounded_write(&mut stream, request.as_bytes(), Duration::from_secs(1))?;
+    stream.shutdown(Shutdown::Write).ok()?;
+    let response = bounded_read(&mut stream, MAX_RESPONSE, QUERY_READ_TIMEOUT)?;
+    parse_daemon_response(std::str::from_utf8(&response).ok()?)
 }
 
 /// Wire protocol version. Bumped on any breaking change to the request/response
@@ -71,19 +170,12 @@ fn daemons_dir() -> Option<PathBuf> {
 /// of colliding with a still-running old-format daemon that holds the old name —
 /// otherwise the new daemon can't bind and the root stays cold until the old one
 /// idle-times-out).
-pub const PROTO: &str = "v8";
+pub const PROTO: &str = "v9";
 
 pub fn socket_path(root: &Path) -> Option<PathBuf> {
     let dir = daemons_dir()?;
     let key = format!("{:016x}", fnv1a(&root.to_string_lossy()));
     Some(dir.join(format!("{key}-{PROTO}.sock")))
-}
-
-fn encode_req(req: &SearchReq) -> String {
-    format!(
-        "{PROTO}\nsearch\n{}\n",
-        serde_json::to_string(req).unwrap_or_default()
-    )
 }
 
 /// Client: try to satisfy a search via a running daemon for `root`.
@@ -94,22 +186,14 @@ pub fn query(root: &Path, req: &SearchReq) -> Option<(String, i32)> {
     if req.pattern.contains('\n') || req.dir_prefixes.iter().any(|d| d.contains('\n')) {
         return None;
     }
-    let sock = socket_path(root)?;
-    let mut stream = UnixStream::connect(&sock).ok()?;
-    stream.set_read_timeout(Some(QUERY_READ_TIMEOUT)).ok()?;
-    stream.write_all(encode_req(req).as_bytes()).ok()?;
-    stream.flush().ok()?;
-    stream.shutdown(Shutdown::Write).ok()?;
-    let mut resp = String::new();
-    stream.read_to_string(&mut resp).ok()?;
-    parse_daemon_response(&resp)
+    rpc(root, "search", &serde_json::to_string(req).ok()?)
 }
 
 pub fn refresh_access(root: &Path, path: &Path) {
-    let Some(sock) = socket_path(root) else {
+    let Some(sock) = socket_path(&repository_root(root)) else {
         return;
     };
-    let Ok(mut stream) = UnixStream::connect(sock) else {
+    let Some(mut stream) = connect(&sock, Duration::from_millis(100)) else {
         return;
     };
     let _ = stream.set_write_timeout(Some(Duration::from_millis(250)));
@@ -131,7 +215,7 @@ fn parse_daemon_response(resp: &str) -> Option<(String, i32)> {
     let code: i32 = first.trim().parse().ok()?;
     let (len_line, body) = rest.split_once('\n')?;
     let expected: usize = len_line.trim().parse().ok()?;
-    if body.len() != expected {
+    if !matches!(code, 0 | 1) || expected > MAX_RESPONSE || body.len() != expected {
         return None;
     }
     Some((body.to_string(), code))
@@ -142,6 +226,28 @@ fn parse_daemon_response(resp: &str) -> Option<(String, i32)> {
 pub fn spawn_detached(root: &Path) {
     use std::os::unix::process::CommandExt;
     use std::process::{Command, Stdio};
+    if std::env::var_os("RG_FFF_NO_DAEMON").is_some() {
+        return;
+    }
+    let root = repository_root(root);
+    let Some(sock) = socket_path(&root) else {
+        return;
+    };
+    if sock
+        .with_extension("backoff")
+        .metadata()
+        .ok()
+        .and_then(|m| m.modified().ok())
+        .and_then(|t| t.elapsed().ok())
+        .map(|age| age < Duration::from_secs(60))
+        .unwrap_or(false)
+    {
+        return;
+    }
+    let Some(lock) = lock_file(&sock) else {
+        return;
+    };
+    drop(lock);
     let exe = match std::env::current_exe() {
         Ok(e) => e,
         Err(_) => return,
@@ -163,12 +269,58 @@ pub fn spawn_detached(root: &Path) {
     let _ = cmd.spawn();
 }
 
+struct Permit(Arc<AtomicUsize>);
+impl Drop for Permit {
+    fn drop(&mut self) {
+        self.0.fetch_sub(1, Ordering::AcqRel);
+    }
+}
+
+fn resident_bytes() -> Option<u64> {
+    let mut usage: libc::rusage = unsafe { std::mem::zeroed() };
+    if unsafe { libc::getrusage(libc::RUSAGE_SELF, &mut usage) } != 0 {
+        return None;
+    }
+    #[cfg(target_os = "macos")]
+    let scale = 1;
+    #[cfg(not(target_os = "macos"))]
+    let scale = 1024;
+    Some(usage.ru_maxrss as u64 * scale)
+}
+
+fn cleanup_stale(dir: &Path) {
+    let deadline = Instant::now() + Duration::from_secs(1);
+    let Ok(entries) = fs::read_dir(dir) else {
+        return;
+    };
+    for entry in entries.flatten() {
+        if Instant::now() > deadline {
+            break;
+        }
+        let path = entry.path();
+        let Ok(metadata) = fs::symlink_metadata(&path) else {
+            continue;
+        };
+        if path.extension().is_some_and(|ext| ext == "sock")
+            && metadata.file_type().is_socket()
+            && metadata.uid() == unsafe { libc::geteuid() }
+        {
+            if connect_result(&path, Duration::from_millis(50))
+                .err()
+                .is_some_and(|err| err.kind() == std::io::ErrorKind::ConnectionRefused)
+            {
+                let _ = fs::remove_file(path);
+            }
+        }
+    }
+}
+
 /// Daemon entry point. Serves `root` until idle, then exits.
 pub fn serve(root_arg: &str) {
-    let root = match fs::canonicalize(root_arg) {
-        Ok(r) => r,
-        Err(_) => return,
-    };
+    let root = repository_root(Path::new(root_arg));
+    if !root.is_dir() {
+        return;
+    }
     let sock = match socket_path(&root) {
         Some(s) => s,
         None => return,
@@ -182,7 +334,21 @@ pub fn serve(root_arg: &str) {
     // is unlinked, so every client reaches the live socket or cold-scans — never a
     // wrong result — and the orphaned daemon idle-times-out. A flock would close the
     // window but isn't worth it for a bounded, correctness-neutral race.
-    if UnixStream::connect(&sock).is_ok() {
+    let Some(_lock) = lock_file(&sock) else {
+        return;
+    };
+    cleanup_stale(sock.parent().unwrap());
+    if std::env::var_os("RG_FFF_STATE_DIR").is_none() {
+        if let Some(home) = std::env::var_os("HOME") {
+            cleanup_stale(&PathBuf::from(home).join(".tweakcc/fff/daemons"));
+        }
+    }
+    if let Ok(metadata) = fs::symlink_metadata(&sock) {
+        if !metadata.file_type().is_socket() || metadata.uid() != unsafe { libc::geteuid() } {
+            return;
+        }
+    }
+    if connect(&sock, Duration::from_millis(100)).is_some() {
         return;
     }
     let _ = fs::remove_file(&sock); // clear a stale socket
@@ -191,34 +357,7 @@ pub fn serve(root_arg: &str) {
         Err(_) => return,
     };
 
-    let shared = SharedFilePicker::default();
-    let frecency = crate::ranking::shared_frecency();
-    if FilePicker::new_with_shared_state(
-        shared.clone(),
-        frecency.clone(),
-        FilePickerOptions {
-            base_path: root.to_string_lossy().into_owned(),
-            mode: FFFMode::Ai,
-            ..Default::default()
-        },
-    )
-    .is_err()
-    {
-        let _ = fs::remove_file(&sock);
-        return;
-    }
-    shared.wait_for_scan(SCAN_TIMEOUT);
-    // The watcher must be READY before we serve, or file creates/edits made after
-    // startup are missed. The accept loop below is reached only AFTER this wait, so
-    // connections queued during startup are served with a ready index, and fff's
-    // watcher then keeps it live (handle_create_or_modify). CAVEAT: this wait is
-    // time-bounded — if a pathological watcher init TIMES OUT, the daemon proceeds
-    // anyway (liveness over a hung daemon), leaving a brief window where a just-made
-    // edit is missed until the watcher catches up. That is bounded and only ever
-    // costs a redundant Read, never a wrong match (the scanned index is current as
-    // of scan time, and any uncertainty falls back to a cold scan).
-    shared.wait_for_watcher(WATCHER_TIMEOUT);
-
+    let _ = fs::set_permissions(&sock, fs::Permissions::from_mode(0o600));
     let last = Arc::new(Mutex::new(Instant::now()));
 
     // Watchdog: self-terminate when idle or after the root disappears, so no
@@ -230,92 +369,159 @@ pub fn serve(root_arg: &str) {
         thread::spawn(move || loop {
             thread::sleep(WATCHDOG_TICK);
             let idle = last.lock().map(|t| t.elapsed()).unwrap_or(Duration::ZERO);
-            if idle > IDLE_TIMEOUT || !root.exists() {
+            let idle_limit = std::env::var("RG_FFF_IDLE_SECONDS")
+                .ok()
+                .and_then(|v| v.parse().ok())
+                .map(Duration::from_secs)
+                .unwrap_or(IDLE_TIMEOUT);
+            let memory_limit = std::env::var("RG_FFF_MAX_RSS_MB")
+                .ok()
+                .and_then(|v| v.parse::<u64>().ok())
+                .unwrap_or(256)
+                .clamp(32, 1024)
+                * 1024
+                * 1024;
+            let exceeded = resident_bytes()
+                .map(|rss| rss > memory_limit)
+                .unwrap_or(false);
+            if exceeded {
+                let _ = fs::write(sock.with_extension("backoff"), b"memory-budget");
+            }
+            if idle > idle_limit || !root.exists() || exceeded {
                 let _ = fs::remove_file(&sock);
                 std::process::exit(0);
             }
         });
     }
+    let shared = SharedFilePicker::default();
+    let frecency = crate::ranking::shared_frecency();
+    if FilePicker::new_with_shared_state(
+        shared.clone(),
+        frecency.clone(),
+        crate::ranking::picker_options(&root, true),
+    )
+    .is_err()
+    {
+        let _ = fs::remove_file(&sock);
+        return;
+    }
+    if !shared.wait_for_scan(SCAN_TIMEOUT) {
+        let _ = fs::remove_file(&sock);
+        return;
+    }
+    // The watcher must be READY before we serve, or file creates/edits made after
+    // startup are missed. The accept loop below is reached only AFTER this wait, so
+    // connections queued during startup are served with a ready index, and fff's
+    // watcher then keeps it live (handle_create_or_modify). CAVEAT: this wait is
+    // time-bounded — if a pathological watcher init TIMES OUT, the daemon proceeds
+    // anyway (liveness over a hung daemon), leaving a brief window where a just-made
+    // edit is missed until the watcher catches up. That is bounded and only ever
+    // costs a redundant Read, never a wrong match (the scanned index is current as
+    // of scan time, and any uncertainty falls back to a cold scan).
+    if !shared.wait_for_watcher(WATCHER_TIMEOUT) {
+        let _ = fs::remove_file(&sock);
+        return;
+    }
+
     // (No frecency keep-alive needed: new_with_shared_state cloned the Arc into the
     // background scan thread, which owns its own refcount — the local binding is not
     // load-bearing, matching the two main.rs picker sites that just drop it.)
 
+    let active = Arc::new(AtomicUsize::new(0));
     for conn in listener.incoming() {
         let stream = match conn {
             Ok(s) => s,
             Err(_) => continue,
         };
-        if let Ok(mut t) = last.lock() {
-            *t = Instant::now();
+        if active
+            .fetch_update(Ordering::AcqRel, Ordering::Relaxed, |n| {
+                (n < 4).then_some(n + 1)
+            })
+            .is_err()
+        {
+            let mut stream = stream;
+            let _ = bounded_write(&mut stream, b"FALLBACK\n", Duration::from_millis(50));
+            continue;
         }
         let shared = shared.clone();
-        thread::spawn(move || handle(stream, &shared));
+        let permit = Permit(active.clone());
+        let last = last.clone();
+        let _ = thread::Builder::new().spawn(move || {
+            let _permit = permit;
+            handle(stream, &shared, &last);
+        });
     }
 }
 
-fn handle(stream: UnixStream, shared: &SharedFilePicker) {
-    let read_half = match stream.try_clone() {
-        Ok(s) => s,
-        Err(_) => return,
+fn handle(mut stream: UnixStream, shared: &SharedFilePicker, last: &Mutex<Instant>) {
+    let Some(bytes) = bounded_read(&mut stream, MAX_REQUEST, Duration::from_secs(2)) else {
+        return;
     };
-    let mut reader = BufReader::new(read_half);
-    let mut lines: Vec<String> = Vec::with_capacity(9);
-    for _ in 0..3 {
-        let mut l = String::new();
-        match reader.read_line(&mut l) {
-            Ok(0) => break,
-            Ok(_) => lines.push(l.trim_end_matches('\n').to_string()),
-            Err(_) => break,
-        }
-    }
+    let Ok(body) = std::str::from_utf8(&bytes) else {
+        return;
+    };
+    let lines: Vec<&str> = body.lines().collect();
     let mut out = stream;
+    let _ = out.set_nonblocking(false);
+    let _ = out.set_write_timeout(Some(Duration::from_secs(2)));
+    if lines.len() == 3 && lines[0] == PROTO && lines[1] == "ping" {
+        let _ = bounded_write(&mut out, b"0\n5\nREADY", Duration::from_millis(100));
+        return;
+    }
     if lines.len() == 3 && lines[0] == PROTO && lines[1] == "access" {
         let frecency = crate::ranking::shared_frecency();
         if let (Ok(mut guard), Ok(tracker)) = (shared.write(), frecency.read()) {
             if let (Some(picker), Some(tracker)) = (guard.as_mut(), tracker.as_ref()) {
-                let _ = picker.update_single_file_frecency(&lines[2], tracker);
+                let path = Path::new(lines[2]);
+                if path.starts_with(&picker.base_path) {
+                    picker.handle_create_or_modify(path);
+                    let _ = picker.update_single_file_frecency(path, tracker);
+                }
             }
         }
-        let _ = out.write_all(b"0\n0\n");
+        let _ = bounded_write(&mut out, b"0\n0\n", Duration::from_millis(100));
         return;
     }
     if lines.len() != 3 || lines[0] != PROTO || lines[1] != "search" {
-        let _ = out.write_all(b"FALLBACK\n");
+        let _ = bounded_write(&mut out, b"FALLBACK\n", Duration::from_millis(100));
         return;
     }
-    let req: SearchReq = match serde_json::from_str(&lines[2]) {
+    let req: SearchReq = match serde_json::from_str(lines[2]) {
         Ok(req) => req,
         Err(_) => {
-            let _ = out.write_all(b"FALLBACK\n");
+            let _ = bounded_write(&mut out, b"FALLBACK\n", Duration::from_millis(100));
             return;
         }
     };
 
+    if let Ok(mut timestamp) = last.lock() {
+        *timestamp = Instant::now();
+    }
     let guard = match shared.read() {
         Ok(g) => g,
         Err(_) => {
-            let _ = out.write_all(b"FALLBACK\n");
+            let _ = bounded_write(&mut out, b"FALLBACK\n", Duration::from_millis(100));
             return;
         }
     };
     let picker = match guard.as_ref() {
         Some(p) => p,
         None => {
-            let _ = out.write_all(b"FALLBACK\n");
+            let _ = bounded_write(&mut out, b"FALLBACK\n", Duration::from_millis(100));
             return;
         }
     };
     match format_results(picker, &req) {
-        Some((body, code)) => {
+        Some((body, code)) if body.len() <= MAX_RESPONSE - 64 => {
             // Length-framed: `<code>\n<byte_len>\n<body>`. The client verifies it
             // received exactly byte_len bytes — if the daemon is killed mid-write
             // (OOM/pkill), the short read is detected and the client cold-scans
             // instead of silently serving a truncated (under-reporting) result.
-            let _ = out.write_all(format!("{code}\n{}\n", body.len()).as_bytes());
-            let _ = out.write_all(body.as_bytes());
+            let response = format!("{code}\n{}\n{body}", body.len());
+            let _ = bounded_write(&mut out, response.as_bytes(), Duration::from_secs(2));
         }
-        None => {
-            let _ = out.write_all(b"FALLBACK\n");
+        _ => {
+            let _ = bounded_write(&mut out, b"FALLBACK\n", Duration::from_millis(100));
         }
     }
 }

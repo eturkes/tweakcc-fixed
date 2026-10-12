@@ -65,7 +65,11 @@ fn with_receipts(session: &str, update: impl FnOnce(&mut Vec<Receipt>)) -> Optio
     if receipts.len() > 32 {
         receipts.drain(..receipts.len() - 32);
     }
-    let data = serde_json::to_vec(&receipts).ok()?;
+    let mut data = serde_json::to_vec(&receipts).ok()?;
+    while data.len() > 2 * 1024 * 1024 && !receipts.is_empty() {
+        receipts.remove(0);
+        data = serde_json::to_vec(&receipts).ok()?;
+    }
     file.seek(SeekFrom::Start(0)).ok()?;
     file.set_len(0).ok()?;
     file.write_all(&data).ok()?;
