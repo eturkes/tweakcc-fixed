@@ -33,9 +33,12 @@
 
 mod daemon;
 mod feedback;
+static NO_FALLBACK: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+mod metrics;
 mod ranking;
 
-use std::collections::BTreeMap;
+use serde::{Deserialize, Serialize};
+use std::collections::{BTreeMap, HashMap, HashSet};
 use std::fmt::Write as _;
 use std::io::Write as _;
 use std::path::Path;
@@ -80,7 +83,7 @@ impl Tool {
 }
 
 /// Which fff content-search mode a query resolves to (None elsewhere = fall back).
-#[derive(Clone, Copy, PartialEq, Eq)]
+#[derive(Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum Mode {
     Plain,
     Regex,
@@ -98,10 +101,15 @@ struct Opts {
     count: bool,
     recursive: bool,
     fuzzy: bool,
-    ere: bool,                 // -E / egrep / rg — extended-regex dialect (≈ RE2)
-    hidden: bool,              // --hidden — search dotfiles (rg skips by default)
-    before_context: usize,     // -B / -C
-    after_context: usize,      // -A / -C
+    ere: bool,             // -E / egrep / rg — extended-regex dialect (≈ RE2)
+    hidden: bool,          // --hidden — search dotfiles (rg skips by default)
+    before_context: usize, // -B / -C
+    after_context: usize,  // -A / -C
+    only_matching: bool,
+    word: bool,
+    fixed: bool,
+    globs: Vec<String>,
+    exclude_dirs: Vec<String>,
     include_exts: Vec<String>, // -g/--glob/--include "*.ext" -> keep only these
     // extensions (e.g. ".ts"). Only simple extension include globs are served;
     // any other glob (exclude, path glob, char class, brace, **) sets
@@ -125,7 +133,11 @@ impl Opts {
 }
 
 /// The minimal, serializable request shared by the cold path and the daemon.
+#[derive(Serialize, Deserialize)]
 pub struct SearchReq {
+    pub word: bool,
+    pub only_matching: bool,
+    pub expected_files: Option<Vec<String>>,
     pub session: String,
     pub pattern: String,
     pub dir_prefixes: Vec<String>, // canonical "app/","lib/" scopes; empty = cwd
@@ -147,6 +159,7 @@ pub struct SearchReq {
 /// when the env var is unset, so it's zero-cost in normal use and can never break
 /// a search. `nlines` = served result lines, or -1 when unknown (fallback).
 fn log_decision(tool: Tool, pattern: &Option<String>, decision: &str, nlines: i64) {
+    metrics::record(tool.embedded_argv0(), decision);
     let path = match std::env::var("RG_FFF_LOG") {
         Ok(p) if !p.is_empty() => p,
         _ => return,
@@ -191,6 +204,14 @@ fn main() {
         return;
     }
 
+    if argv.get(1).map(String::as_str) == Some("--stats") {
+        println!(
+            "{}",
+            serde_json::to_string(&metrics::stats()).unwrap_or_default()
+        );
+        return;
+    }
+
     let a0 = argv.first().cloned().unwrap_or_default();
     let tool = Tool::from_argv0(&a0);
     let raw: Vec<String> = argv[1..].to_vec();
@@ -232,6 +253,7 @@ fn main() {
     }
 
     let opts = parse(tool, raw);
+    NO_FALLBACK.store(opts.no_fallback, std::sync::atomic::Ordering::Relaxed);
     if let Some(mode) = search_mode(&opts) {
         std::process::exit(run_search(&opts, mode));
     }
@@ -291,7 +313,7 @@ fn parse(tool: Tool, raw: Vec<String>) -> Opts {
         pattern: None,
         paths: Vec::new(),
         ignore_case: false,
-        line_numbers: !matches!(tool, Tool::Ugrep),
+        line_numbers: false,
         files_only: false,
         count: false,
         recursive: false,
@@ -300,6 +322,11 @@ fn parse(tool: Tool, raw: Vec<String>) -> Opts {
         hidden: false,
         before_context: 0,
         after_context: 0,
+        only_matching: false,
+        word: false,
+        fixed: false,
+        globs: Vec::new(),
+        exclude_dirs: Vec::new(),
         include_exts: Vec::new(),
         // fff-first (serve RE2 = the model's intended dialect) is the MAINSTREAM
         // production default: when this wrapper is installed the feature is on and
@@ -310,11 +337,15 @@ fn parse(tool: Tool, raw: Vec<String>) -> Opts {
         claude_bin: None,
         force_fallback: false,
     };
-    let mut explicit_pattern: Option<String> = None;
+    let mut explicit_patterns: Vec<String> = Vec::new();
     let mut positionals: Vec<String> = Vec::new();
     let mut i = 0;
     while i < raw.len() {
         let a = &raw[i];
+        if a == "--" {
+            positionals.extend(raw[i + 1..].iter().cloned());
+            break;
+        }
         match a.as_str() {
             "--fuzzy" => o.fuzzy = true,
             "--no-fallback" => o.no_fallback = true,
@@ -326,18 +357,30 @@ fn parse(tool: Tool, raw: Vec<String>) -> Opts {
                 }
             }
             "-c" | "--count" => o.count = true,
+            "-o" | "--only-matching" => o.only_matching = true,
+            "-w" | "--word-regexp" => o.word = true,
+            "-F" | "--fixed-strings" | "--fixed-regexp" => o.fixed = true,
+            "--no-line-number" => o.line_numbers = false,
             "-n" | "--line-number" => o.line_numbers = true,
-            "-h" | "--no-filename" | "-H" | "--with-filename" | "--color" | "--color=never"
-            | "--color=always" | "--color=auto" => {}
-            "-r" | "-R" | "--recursive" | "--dereference-recursive" => o.recursive = true,
+            "-h" | "--no-filename" | "--color=always" => o.force_fallback = true,
+            "-H" | "--with-filename" | "--color" | "--color=never" | "--color=auto" => {}
+            "-r" | "--recursive" if o.tool == Tool::Ugrep => o.recursive = true,
+            "-r" | "-R" | "--recursive" | "--dereference-recursive" => o.force_fallback = true,
             "--hidden" => o.hidden = true,
             // No-ops for fff: -G/-E dialect handled elsewhere, --ignore-files/-I
             // are fff defaults, --no-config only affects rg's own config file
             // (fff reads none). NB: --no-ignore / --include-dir are NOT here — they
             // change file inclusion in ways fff can't replicate, so they fall
             // through to `other` -> force_fallback (defer), never silently ignored.
-            "-G" | "--basic-regexp" | "--ignore-files" | "-I" | "--no-config" => {}
-            "-E" | "--extended-regexp" => o.ere = true,
+            "-G" | "--basic-regexp" => {
+                o.fixed = false;
+                o.ere = false;
+            }
+            "--ignore-files" | "-I" | "--no-config" => {}
+            "-E" | "--extended-regexp" => {
+                o.ere = true;
+                o.fixed = false;
+            }
             // -A/-B/-C N (space form) — context. A non-numeric value -> defer.
             "-A" | "--after-context" | "-B" | "--before-context" | "-C" | "--context" => {
                 match raw.get(i + 1).and_then(|v| v.parse::<usize>().ok()) {
@@ -356,10 +399,9 @@ fn parse(tool: Tool, raw: Vec<String>) -> Opts {
                 }
             }
             // capability gaps fff can't faithfully serve -> defer.
-            "-P" | "--perl-regexp" | "-o" | "--only-matching" | "-v" | "--invert-match" | "-x"
-            | "--line-regexp" | "-w" | "--word-regexp" | "-z" | "--null-data" | "-U"
-            | "--multiline" | "--multiline-dotall" | "-f" | "--file" | "-m" | "--max-count"
-            | "-t" | "--type" => {
+            "-P" | "--perl-regexp" | "-v" | "--invert-match" | "-x" | "--line-regexp" | "-z"
+            | "--null-data" | "-U" | "--multiline" | "--multiline-dotall" | "-f" | "--file"
+            | "-m" | "--max-count" | "-t" | "--type" => {
                 o.force_fallback = true;
                 if matches!(
                     a.as_str(),
@@ -370,8 +412,10 @@ fn parse(tool: Tool, raw: Vec<String>) -> Opts {
             }
             "-e" | "--regexp" | "--pattern" => {
                 if i + 1 < raw.len() {
-                    explicit_pattern = Some(raw[i + 1].clone());
+                    explicit_patterns.push(raw[i + 1].clone());
                     i += 1;
+                } else {
+                    o.force_fallback = true;
                 }
             }
             // include globs (space form): serve simple "*.ext", defer the rest.
@@ -390,14 +434,18 @@ fn parse(tool: Tool, raw: Vec<String>) -> Opts {
             }
             // VCS dir excludes -> no-op (fff already honors .gitignore).
             "--exclude-dir" => {
-                if i + 1 < raw.len() {
+                if let Some(dir) = raw.get(i + 1) {
+                    o.exclude_dirs.push(dir.clone());
                     i += 1;
+                } else {
+                    o.force_fallback = true;
                 }
             }
             other => {
                 if let Some(cb) = other.strip_prefix("--fff-claude-bin=") {
                     o.claude_bin = Some(cb.to_string());
-                } else if other.strip_prefix("--exclude-dir=").is_some() {
+                } else if let Some(dir) = other.strip_prefix("--exclude-dir=") {
+                    o.exclude_dirs.push(dir.to_string());
                     // CC VCS excludes — fff honors ignores
                 } else if let Some(g) = other
                     .strip_prefix("--include=")
@@ -430,12 +478,24 @@ fn parse(tool: Tool, raw: Vec<String>) -> Opts {
                         for ch in combined.chars() {
                             match ch {
                                 'i' => o.ignore_case = true,
+                                'o' => o.only_matching = true,
+                                'w' => o.word = true,
+                                'F' => o.fixed = true,
                                 'n' => o.line_numbers = true,
                                 'l' => o.files_only = true,
                                 'c' => o.count = true,
-                                'r' | 'R' => o.recursive = true,
-                                'E' => o.ere = true,
-                                'H' | 'h' | 'I' | 'G' => {}
+                                'r' if o.tool == Tool::Ugrep => o.recursive = true,
+                                'r' | 'R' => o.force_fallback = true,
+                                'E' => {
+                                    o.ere = true;
+                                    o.fixed = false;
+                                }
+                                'G' => {
+                                    o.ere = false;
+                                    o.fixed = false;
+                                }
+                                'H' | 'I' => {}
+                                'h' => o.force_fallback = true,
                                 _ => o.force_fallback = true,
                             }
                         }
@@ -448,8 +508,24 @@ fn parse(tool: Tool, raw: Vec<String>) -> Opts {
         i += 1;
     }
 
-    if let Some(p) = explicit_pattern {
-        o.pattern = Some(p);
+    if !explicit_patterns.is_empty() {
+        o.pattern = Some(if explicit_patterns.len() == 1 {
+            explicit_patterns.remove(0)
+        } else {
+            if !o.eff_ere() && !o.fixed {
+                o.force_fallback = true;
+            }
+            o.ere = true;
+            let patterns: Vec<_> = explicit_patterns
+                .iter()
+                .map(|p| {
+                    let body = if o.fixed { regex::escape(p) } else { p.clone() };
+                    format!("(?:{body})")
+                })
+                .collect();
+            o.fixed = false;
+            patterns.join("|")
+        });
         o.paths = positionals;
     } else if !positionals.is_empty() {
         o.pattern = Some(positionals.remove(0));
@@ -464,6 +540,10 @@ fn parse(tool: Tool, raw: Vec<String>) -> Opts {
 /// glob (`/`), char class `[`, brace `{`, `**`, or non-`*.ext` — sets
 /// force_fallback so the search defers rather than silently ignore the glob.
 fn classify_glob(g: &str, o: &mut Opts) {
+    if o.tool == Tool::Rg {
+        o.globs.push(g.to_string());
+        return;
+    }
     if let Some(ext) = g.strip_prefix("*.") {
         if !ext.is_empty() && ext.chars().all(|c| c.is_ascii_alphanumeric() || c == '_') {
             o.include_exts.push(format!(".{ext}"));
@@ -483,8 +563,14 @@ fn attached_ctx(s: &str, prefix: &str) -> Option<usize> {
 
 /// Decide which fff mode (if any) serves this query *faithfully tool-equivalent*.
 /// None => fall back to the real embedded tool.
+fn stdin_is_pipe() -> bool {
+    let mut stat: libc::stat = unsafe { std::mem::zeroed() };
+    (unsafe { libc::fstat(libc::STDIN_FILENO, &mut stat) == 0 })
+        && matches!(stat.st_mode & libc::S_IFMT, libc::S_IFIFO | libc::S_IFSOCK)
+}
+
 fn search_mode(o: &Opts) -> Option<Mode> {
-    if o.force_fallback {
+    if o.force_fallback || stdin_is_pipe() {
         return None;
     }
     let pat = match &o.pattern {
@@ -521,11 +607,14 @@ fn search_mode(o: &Opts) -> Option<Mode> {
         }
         return Some(Mode::Fuzzy);
     }
-    let is_regex_orig = has_regex_meta(pat, o.eff_ere());
+    let is_regex_orig = !o.fixed && has_regex_meta(pat, o.eff_ere());
+    if o.word && !pat.bytes().all(is_ident_byte) {
+        return None;
+    }
     // A literal PHRASE with DSL operators (space/`:`/`/`/`!`) can't go through
     // fff's DSL parser, but it CAN be served as an escaped literal via the
     // DSL-bypassing regex path (byte-identical to a literal grep). Route it there.
-    if o.ignore_case || is_regex_orig || has_dsl_operator(pat) {
+    if o.ignore_case || o.word || is_regex_orig || has_dsl_operator(pat) {
         // Regex mode bypasses the DSL (raw pattern as the needle), so DSL operators
         // in the pattern are fine. -i is served here via a (?i) prefix built in
         // effective_pattern. The dialect gate applies only to a genuine regex
@@ -571,10 +660,15 @@ fn effective_pattern(o: &Opts, mode: Mode) -> String {
     // serve literal PHRASES the DSL can't (spaces/`:`/`/`/`!`) by routing them
     // through the DSL-bypassing regex path as an escaped literal — byte-identical
     // to a literal grep. `-i` adds the inline (?i) flag on top.
-    let body = if has_regex_meta(&pat, o.eff_ere()) {
+    let body = if !o.fixed && has_regex_meta(&pat, o.eff_ere()) {
         pat
     } else {
         regex::escape(&pat)
+    };
+    let body = if o.word {
+        format!(r"\b(?:{body})\b")
+    } else {
+        body
     };
     if o.ignore_case {
         format!("(?i){body}")
@@ -683,7 +777,8 @@ impl Opts {
         };
         // Context only applies to content output (not -l files-only, not -c
         // count, not fuzzy discovery).
-        let ctx = !self.files_only && !self.count && !matches!(mode, Mode::Fuzzy);
+        let ctx =
+            !self.only_matching && !self.files_only && !self.count && !matches!(mode, Mode::Fuzzy);
         // Canonical "dir/" scope prefixes. "." / "" -> none (whole cwd). Multiple
         // relative dirs ("app","lib") -> multiple prefixes; keep iff under any.
         let dir_prefixes: Vec<String> = self
@@ -699,6 +794,9 @@ impl Opts {
             })
             .collect();
         SearchReq {
+            word: self.word,
+            only_matching: self.only_matching,
+            expected_files: None,
             session: std::env::var("RG_FFF_SESSION").unwrap_or_default(),
             pattern: effective_pattern(self, mode),
             dir_prefixes,
@@ -781,7 +879,42 @@ fn fuzzy_fallback_block(
 }
 
 fn run_search(o: &Opts, mode: Mode) -> i32 {
-    let req = o.to_req(mode);
+    let mut req = o.to_req(mode);
+    if !o.globs.is_empty() || o.tool == Tool::Ugrep {
+        let mut args = if o.tool == Tool::Ugrep {
+            let mut args = vec!["-rl".into(), "-G".into(), "-e".into(), "".into()];
+            if o.raw.iter().any(|a| a == "--ignore-files") {
+                args.push("--ignore-files".into());
+            }
+            for ext in &o.include_exts {
+                args.push(format!("--include=*{ext}"));
+            }
+            for dir in &o.exclude_dirs {
+                args.push(format!("--exclude-dir={dir}"));
+            }
+            args
+        } else {
+            vec!["--files".to_string(), "--no-config".to_string()]
+        };
+        if o.hidden {
+            args.push("--hidden".into());
+        }
+        for glob in &o.globs {
+            args.extend(["-g".into(), glob.clone()]);
+        }
+        args.extend(o.paths.clone());
+        match capture_embedded(o.tool, &args, o.claude_bin.as_deref()) {
+            Some((paths, code)) if code <= 1 && paths.len() < 2 * 1024 * 1024 => {
+                req.expected_files = Some(
+                    paths
+                        .lines()
+                        .map(|p| p.trim_start_matches("./").to_string())
+                        .collect(),
+                );
+            }
+            _ => fallback(o.tool, &strip_custom(&o.raw), o.claude_bin.as_deref()),
+        }
+    }
     let daemon_enabled = std::env::var_os("RG_FFF_NO_DAEMON").is_none();
     let debug = std::env::var_os("RG_FFF_DEBUG").is_some();
     let root = std::env::current_dir()
@@ -1009,9 +1142,31 @@ fn line_defines(line: &str, pattern: &str) -> bool {
 /// Grep `picker` per `req` and render tool-compatible output. Shared verbatim by
 /// the cold path and the daemon. Returns None when fff can't serve faithfully.
 pub fn format_results(picker: &FilePicker, req: &SearchReq) -> Option<(String, i32)> {
+    let expected: Option<HashSet<&str>> = req
+        .expected_files
+        .as_ref()
+        .map(|v| v.iter().map(String::as_str).collect());
+    if let Some(files) = &expected {
+        if files.iter().any(|path| {
+            picker
+                .get_file_by_path(picker.base_path.join(path))
+                .is_none()
+        }) {
+            return None;
+        }
+    }
     let preferred = feedback::preferred(&picker.base_path, &req.pattern);
     let grep = |query: &FFFQuery<'_>, opts: &GrepSearchOptions| {
         let mut result = picker.grep(query, opts);
+        if req.word
+            && result
+                .matches
+                .iter()
+                .any(|m| !m.line_content.is_ascii() || m.line_content.len() >= 509)
+        {
+            result.regex_fallback_error =
+                Some("Unicode word boundaries require the real tool".into());
+        }
         if let Some(path) = preferred.as_deref() {
             if opts.max_matches_per_file == 1 {
                 result
@@ -1084,6 +1239,9 @@ pub fn format_results(picker: &FilePicker, req: &SearchReq) -> Option<(String, i
     };
 
     let keep = |path: &str| -> bool {
+        if let Some(files) = &expected {
+            return files.contains(path);
+        }
         // VCS metadata dirs: CC's shadow always injects
         // `--exclude-dir=.git/.svn/.hg/.bzr/.jj/.sl`. fff only auto-excludes .git,
         // and in a git repo it scans the other hidden VCS dirs — so without this,
@@ -1121,6 +1279,15 @@ pub fn format_results(picker: &FilePicker, req: &SearchReq) -> Option<(String, i
         !rel.split('/').any(|s| s.starts_with('.'))
     };
 
+    if picker
+        .get_files()
+        .iter()
+        .chain(picker.get_overflow_files())
+        .any(|file| file.size > 10 * 1024 * 1024 && keep(&file.relative_path(picker)))
+    {
+        return None;
+    }
+
     if is_regex {
         // fff's grep_text() strips a leading backslash when it reads as a
         // constraint-escape; if that (or anything) would alter our exact regex,
@@ -1153,19 +1320,23 @@ pub fn format_results(picker: &FilePicker, req: &SearchReq) -> Option<(String, i
 
     if req.count {
         let mut counts: Vec<(String, usize)> = Vec::new();
+        let mut indexes = HashMap::new();
         let mut file_offset = 0usize;
         loop {
             let opts = grep_opts(gmode, file_offset, false, smart);
             let r = grep(&parsed, &opts);
+            if r.regex_fallback_error.is_some() {
+                return None;
+            }
             for m in &r.matches {
                 let f = r.files[m.file_index];
                 let path = f.relative_path(picker);
                 if keep(&path) {
-                    if let Some((_, count)) = counts.iter_mut().find(|(p, _)| p == &path) {
-                        *count += 1;
-                    } else {
-                        counts.push((path, 1));
-                    }
+                    let index = *indexes.entry(path.clone()).or_insert_with(|| {
+                        counts.push((path, 0));
+                        counts.len() - 1
+                    });
+                    counts[index].1 += 1;
                 }
             }
             if r.next_file_offset == 0 {
@@ -1187,7 +1358,7 @@ pub fn format_results(picker: &FilePicker, req: &SearchReq) -> Option<(String, i
         // Per line: U+FFFD (non-UTF-8) -> defer the whole query (None); a >=509 B
         // line gets the truncation marker; otherwise pass through unchanged.
         let mark = |s: &str| -> Option<String> {
-            if s.contains('\u{FFFD}') {
+            if s.contains('\u{FFFD}') || s.len() >= 509 {
                 return None;
             }
             Some(if s.len() >= 509 {
@@ -1198,6 +1369,7 @@ pub fn format_results(picker: &FilePicker, req: &SearchReq) -> Option<(String, i
         };
         // path -> (line_no -> (is_match, content)); BTreeMap keeps line order.
         let mut per_file: Vec<(String, BTreeMap<u64, (bool, String, bool)>)> = Vec::new();
+        let mut indexes = HashMap::new();
         let mut file_offset = 0usize;
         loop {
             let opts = GrepSearchOptions {
@@ -1206,6 +1378,12 @@ pub fn format_results(picker: &FilePicker, req: &SearchReq) -> Option<(String, i
                 ..grep_opts(gmode, file_offset, false, smart)
             };
             let result = grep(&parsed, &opts);
+            if result.regex_fallback_error.is_some() {
+                return None;
+            }
+            if result.regex_fallback_error.is_some() {
+                return None;
+            }
             for m in &result.matches {
                 let f = result.files[m.file_index];
                 let path = f.relative_path(picker);
@@ -1216,13 +1394,10 @@ pub fn format_results(picker: &FilePicker, req: &SearchReq) -> Option<(String, i
                     Some(x) => x,
                     None => return None, // non-UTF-8 -> defer
                 };
-                let index = per_file
-                    .iter()
-                    .position(|(p, _)| p == &path)
-                    .unwrap_or_else(|| {
-                        per_file.push((path, BTreeMap::new()));
-                        per_file.len() - 1
-                    });
+                let index = *indexes.entry(path.clone()).or_insert_with(|| {
+                    per_file.push((path, BTreeMap::new()));
+                    per_file.len() - 1
+                });
                 let fmap = &mut per_file[index].1;
                 let ln = m.line_number;
                 // fff returns only the context lines that exist, so the first
@@ -1294,6 +1469,9 @@ pub fn format_results(picker: &FilePicker, req: &SearchReq) -> Option<(String, i
     loop {
         let opts = grep_opts(gmode, file_offset, req.files_only, smart);
         let result = grep(&parsed, &opts);
+        if result.regex_fallback_error.is_some() {
+            return None;
+        }
         if req.files_only {
             for f in &result.files {
                 let path = f.relative_path(picker);
@@ -1309,6 +1487,21 @@ pub fn format_results(picker: &FilePicker, req: &SearchReq) -> Option<(String, i
                 if !keep(&path) {
                     continue;
                 }
+                if req.only_matching {
+                    if m.line_content.len() >= 509 || m.line_content.contains('�') {
+                        return None;
+                    }
+                    for &(start, end) in &m.match_byte_offsets {
+                        let text = m.line_content.get(start as usize..end as usize)?;
+                        if req.line_numbers {
+                            let _ = writeln!(out, "{out_prefix}{path}:{}:{text}", m.line_number);
+                        } else {
+                            let _ = writeln!(out, "{out_prefix}{path}:{text}");
+                        }
+                        any = true;
+                    }
+                    continue;
+                }
                 // fff caps line_content at 512 B (MAX_LINE_DISPLAY_LEN, backed up
                 // to a char boundary -> [509,512]) and lossily replaces invalid
                 // UTF-8 with U+FFFD. A 512-byte preview is the right thing for an
@@ -1316,7 +1509,8 @@ pub fn format_results(picker: &FilePicker, req: &SearchReq) -> Option<(String, i
                 // an explicit marker (parser-safe trailing text) rather than the
                 // silent cut fff/OpenCode emit. Non-UTF-8 (U+FFFD) still defers:
                 // raw bytes can't be represented as a String.
-                if !is_fuzzy && m.line_content.contains('\u{FFFD}') {
+                if !is_fuzzy && (m.line_content.contains('\u{FFFD}') || m.line_content.len() >= 509)
+                {
                     return None;
                 }
                 let mark = if m.line_content.len() >= 509 {
@@ -1538,6 +1732,9 @@ fn fuzzy_file_suggestions(q: &FindNameQuery, n: usize) -> Option<String> {
 }
 
 fn fallback(tool: Tool, args: &[String], claude_bin: Option<&str>) -> ! {
+    if NO_FALLBACK.load(std::sync::atomic::Ordering::Relaxed) {
+        std::process::exit(2);
+    }
     use std::os::unix::process::CommandExt;
 
     let claude = claude_bin
@@ -1597,6 +1794,11 @@ mod tests {
             hidden: false,
             before_context: 0,
             after_context: 0,
+            only_matching: false,
+            word: false,
+            fixed: false,
+            globs: Vec::new(),
+            exclude_dirs: Vec::new(),
             include_exts: Vec::new(),
             fff_first: false,
             no_fallback: false,
@@ -1897,22 +2099,19 @@ mod tests {
     }
 
     #[test]
-    fn glob_parsing_serves_extensions_defers_rest() {
+    fn glob_parsing_uses_exact_rg_scope_and_conservative_ugrep_scope() {
         // simple extension include globs -> recorded, served
-        assert_eq!(
-            p(Tool::Rg, &["-g", "*.ts", "x", "src"]).include_exts,
-            vec![".ts"]
-        );
+        assert_eq!(p(Tool::Rg, &["-g", "*.ts", "x", "src"]).globs, vec!["*.ts"]);
         let multi = p(Tool::Rg, &["-g", "*.ts", "-g", "*.tsx", "x", "src"]);
-        assert_eq!(multi.include_exts, vec![".ts", ".tsx"]);
+        assert_eq!(multi.globs, vec!["*.ts", "*.tsx"]);
         assert!(!multi.force_fallback);
         assert_eq!(
             p(Tool::Ugrep, &["--include=*.json", "x", "src"]).include_exts,
             vec![".json"]
         );
         assert_eq!(
-            p(Tool::Rg, &["--glob=*.rs", "x", "src"]).include_exts,
-            vec![".rs"]
+            p(Tool::Rg, &["--glob=*.rs", "x", "src"]).globs,
+            vec!["*.rs"]
         );
         // anything beyond a simple extension glob -> defer (never silently ignore)
         for g in [
@@ -1924,7 +2123,7 @@ mod tests {
             "test_*",
         ] {
             assert!(
-                p(Tool::Rg, &["-g", g, "x", "src"]).force_fallback,
+                p(Tool::Ugrep, &["--include", g, "x", "src"]).force_fallback,
                 "{g} should defer"
             );
         }

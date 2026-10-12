@@ -71,7 +71,7 @@ fn daemons_dir() -> Option<PathBuf> {
 /// of colliding with a still-running old-format daemon that holds the old name —
 /// otherwise the new daemon can't bind and the root stays cold until the old one
 /// idle-times-out).
-pub const PROTO: &str = "v7";
+pub const PROTO: &str = "v8";
 
 pub fn socket_path(root: &Path) -> Option<PathBuf> {
     let dir = daemons_dir()?;
@@ -80,27 +80,9 @@ pub fn socket_path(root: &Path) -> Option<PathBuf> {
 }
 
 fn encode_req(req: &SearchReq) -> String {
-    use crate::Mode;
     format!(
-        "{PROTO}\n{}\n{}{}{}{}{}{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n",
-        match req.mode {
-            Mode::Plain => "plain",
-            Mode::Regex => "regex",
-            Mode::Fuzzy => "fuzzy",
-        },
-        if req.files_only { "l" } else { "-" },
-        if req.line_numbers { "n" } else { "-" },
-        if req.count { "c" } else { "-" },
-        if req.ignore_case { "i" } else { "-" },
-        if req.hidden { "h" } else { "-" },
-        if req.sep_between_files { "s" } else { "-" },
-        req.dir_prefixes.join(","),
-        req.pattern,
-        req.path_prefix,
-        req.before_context,
-        req.after_context,
-        req.include_exts.join(","),
-        req.session,
+        "{PROTO}\nsearch\n{}\n",
+        serde_json::to_string(req).unwrap_or_default()
     )
 }
 
@@ -278,7 +260,7 @@ fn handle(stream: UnixStream, shared: &SharedFilePicker) {
     };
     let mut reader = BufReader::new(read_half);
     let mut lines: Vec<String> = Vec::with_capacity(9);
-    for _ in 0..10 {
+    for _ in 0..3 {
         let mut l = String::new();
         match reader.read_line(&mut l) {
             Ok(0) => break,
@@ -297,38 +279,16 @@ fn handle(stream: UnixStream, shared: &SharedFilePicker) {
         let _ = out.write_all(b"0\n0\n");
         return;
     }
-    if lines.len() < 10 || lines[0] != PROTO {
+    if lines.len() != 3 || lines[0] != PROTO || lines[1] != "search" {
         let _ = out.write_all(b"FALLBACK\n");
         return;
     }
-    let flags = lines[2].as_bytes();
-    let req = SearchReq {
-        session: lines[9].clone(),
-        mode: match lines[1].as_str() {
-            "regex" => crate::Mode::Regex,
-            "fuzzy" => crate::Mode::Fuzzy,
-            _ => crate::Mode::Plain,
-        },
-        files_only: flags.first() == Some(&b'l'),
-        line_numbers: flags.get(1) == Some(&b'n'),
-        count: flags.get(2) == Some(&b'c'),
-        ignore_case: flags.get(3) == Some(&b'i'),
-        hidden: flags.get(4) == Some(&b'h'),
-        sep_between_files: flags.get(5) == Some(&b's'),
-        dir_prefixes: if lines[3].is_empty() {
-            Vec::new()
-        } else {
-            lines[3].split(',').map(String::from).collect()
-        },
-        pattern: lines[4].clone(),
-        path_prefix: lines[5].clone(),
-        before_context: lines[6].parse().unwrap_or(0),
-        after_context: lines[7].parse().unwrap_or(0),
-        include_exts: if lines[8].is_empty() {
-            Vec::new()
-        } else {
-            lines[8].split(',').map(String::from).collect()
-        },
+    let req: SearchReq = match serde_json::from_str(&lines[2]) {
+        Ok(req) => req,
+        Err(_) => {
+            let _ = out.write_all(b"FALLBACK\n");
+            return;
+        }
     };
 
     let guard = match shared.read() {
