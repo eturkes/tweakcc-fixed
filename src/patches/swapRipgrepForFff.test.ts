@@ -82,7 +82,7 @@ describe('swapRipgrepForFff', () => {
     // inserted inside the bullet (after the pristine phrasing), before its closing
     // backtick (no raw backticks)
     expect(out).toContain(
-      'when one fits. Eligible grep/rg results served by fff'
+      'when one fits. For Bash content searches, use the managed grep function'
     );
     // the structured Grep tool has no --fuzzy flag, so its desc must NOT mention it
     const grepNote = out.slice(out.indexOf('Search backend note (fff):'));
@@ -149,6 +149,36 @@ describe('swapRipgrepForFff', () => {
     expect(writeSwapRipgrepForFff(COMBINED, WRAPPER)).not.toContain(
       'Use fff files SomeName'
     );
+  });
+
+  it('includes guidance in lean and full descriptions even when custom bullets are hidden', async () => {
+    const generator =
+      ';function snippets(){return["unalias find 2>/dev/null || true","unalias grep 2>/dev/null || true",shadow()]}';
+    const custom =
+      ';async function lean(hide){let notes=[];if(!hide)notes.push("Prefer the dedicated tool.");return["Executes a bash command and returns its output.",...notes].join("\\n")}' +
+      ';async function full(hide){let notes=[];if(!hide)notes.push("Custom search instructions.");return["Executes a given bash command and returns its output.",...notes].join("\\n")}';
+    const patched = writeSwapRipgrepForFff(
+      SHADOW + generator + custom,
+      WRAPPER
+    )!;
+    const descriptions = new Function(
+      patched.slice(patched.indexOf('async function lean')) +
+        ';return{lean,full}'
+    )() as {
+      lean: (hide: boolean) => Promise<string>;
+      full: (hide: boolean) => Promise<string>;
+    };
+    for (const make of [descriptions.lean, descriptions.full]) {
+      for (const hide of [true, false]) {
+        const description = await make(hide);
+        expect(description).toContain('FFF Bash search:');
+        expect(description).toContain('most-relevant-first');
+        expect(description).toContain('Use fff files SomeName');
+        expect(description.split('FFF Bash search:')).toHaveLength(2);
+      }
+    }
+    expect(countOf(patched, 'FFF Bash search:')).toBe(2);
+    expect(writeSwapRipgrepForFff(patched, WRAPPER)).toBe(patched);
   });
 
   it('succeeds on a shadow-only file (rg/guidance are best-effort)', () => {

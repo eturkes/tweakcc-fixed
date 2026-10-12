@@ -74,7 +74,7 @@ const FFF_GUIDANCE =
 const BASH_GUIDANCE_ANCHOR = 'Prefer dedicated tools over';
 const BASH_GUIDANCE_MARKER = 'most-relevant-first';
 const BASH_GUIDANCE =
-  ' Eligible grep/rg results served by fff are ranked ' +
+  ' For Bash content searches, use the managed grep function so eligible queries go through fff. Eligible grep/rg results served by fff are ranked ' +
   BASH_GUIDANCE_MARKER +
   ' using file usage and Git activity (read a promising hit first); fallback searches retain native ordering. A trailing [def] is an advisory definition hint. Prefer a bare identifier for symbol lookup and use -F for literal punctuation. After two locating searches, read candidate code before broadening. Add --fuzzy for approximate content matches, e.g. grep --fuzzy SomeName; verify approximate hits by reading the file.';
 
@@ -278,6 +278,26 @@ const appendBeforeClosingBacktick = (
   return out;
 };
 
+const appendBashGuidance = (file: string, guidance: string): string => {
+  const marker = 'FFF Bash search:';
+  if (file.includes(marker)) return file;
+  const headers =
+    /return\["Executes (?:a|a given) bash command and returns its output\.",/g;
+  if (headers.test(file)) {
+    return file.replace(
+      headers,
+      header => header + escapeNonAscii(JSON.stringify(marker + guidance)) + ','
+    );
+  }
+  return appendBeforeClosingBacktick(
+    file,
+    BASH_GUIDANCE_ANCHOR,
+    guidance,
+    BASH_GUIDANCE_MARKER,
+    'Bash description'
+  );
+};
+
 export const writeSwapRipgrepForFff = (
   oldFile: string,
   wrapperPath: string
@@ -301,15 +321,12 @@ export const writeSwapRipgrepForFff = (
 
   // 4. Bash-description guidance (main agent: ranking + the --fuzzy lever) —
   //    best-effort.
-  file = appendBeforeClosingBacktick(
+  file = appendBashGuidance(
     file,
-    BASH_GUIDANCE_ANCHOR,
     BASH_GUIDANCE +
       (file.includes('function fff {')
         ? ' Use fff files SomeName for fuzzy filename discovery, or fff --stats for local aggregate service counts.'
-        : ''),
-    BASH_GUIDANCE_MARKER,
-    'Bash description'
+        : '')
   );
 
   const observed = observeFffFileUsage(file, wrapperPath);
