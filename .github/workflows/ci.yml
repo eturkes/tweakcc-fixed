@@ -7,6 +7,24 @@ on:
     branches: [main]
 
 jobs:
+  fff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24.x
+      - uses: dtolnay/rust-toolchain@stable
+      - run: sudo apt-get update && sudo apt-get install -y ripgrep
+      - run: cargo test --locked --manifest-path tools/rg-fff/Cargo.toml
+        env:
+          RG_FFF_STATE_DIR: ${{ runner.temp }}/fff-state
+      - run: cargo build --locked --manifest-path tools/rg-fff/Cargo.toml
+      - run: node tools/rg-fff/integration.mjs
+      - run: node tools/rg-fff/daemon-integration.mjs
+      - run: node tools/rg-fff/viewer-integration.mjs
+      - run: python3 tools/rg-fff/test_export_transcripts.py
+
   lint:
     runs-on: ubuntu-latest
 

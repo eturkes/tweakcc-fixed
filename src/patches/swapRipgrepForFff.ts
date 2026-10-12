@@ -28,6 +28,8 @@
 
 import { debug, escapeNonAscii } from '../utils';
 import { showDiff } from './index';
+import { observeFffFileUsage, useFffAutocomplete } from './fffRuntime';
+import { attachFffCompaction, bindFffSession } from './fffContext';
 
 /** Make a wrapper path safe to splice into the backtick-template shell shadow:
  *  (1) escapeNonAscii so non-ASCII survives Bun's Latin-1 cli.js store as \uXXXX
@@ -60,7 +62,7 @@ const FFF_GUIDANCE_MARKER = 'Search backend note (fff):';
 const FFF_GUIDANCE =
   '\n\n' +
   FFF_GUIDANCE_MARKER +
-  ' prefer one bare identifier over regex; results are relevance-ranked, so read the top hit first. A trailing [def] tag flags a line that likely defines the symbol.';
+  ' eligible searches are relevance-ranked using file usage and Git activity. Prefer a bare identifier when locating a symbol; a trailing [def] is an advisory definition hint. After two locating searches, read promising files before broadening the search.';
 
 // ── 4. Bash-description guidance — best-effort (the MAIN agent's only search
 //      surface; it has no Grep tool, so this is where the --fuzzy lever lives).
@@ -72,9 +74,9 @@ const FFF_GUIDANCE =
 const BASH_GUIDANCE_ANCHOR = 'Prefer dedicated tools over';
 const BASH_GUIDANCE_MARKER = 'most-relevant-first';
 const BASH_GUIDANCE =
-  ' grep/find results are ranked ' +
+  ' For Bash content searches, use the managed grep function so eligible queries go through fff. Eligible grep/rg results served by fff are ranked ' +
   BASH_GUIDANCE_MARKER +
-  ' (read the top hit first); a trailing [def] tag flags a likely definition line, and a grep or find -name that matches nothing automatically lists the closest approximate hits tagged [~approx]. Add --fuzzy to force typo-tolerant or partial matching, e.g. grep --fuzzy SomeName.';
+  ' using file usage and Git activity (read a promising hit first); fallback searches retain native ordering. A trailing [def] is an advisory definition hint. Prefer a bare identifier for symbol lookup and use -F for literal punctuation. After two locating searches, read candidate code before broadening. Add --fuzzy for approximate content matches, e.g. grep --fuzzy SomeName; verify approximate hits by reading the file.';
 
 /** [CRITICAL] Repoint the grep→ugrep / find→bfs shadow at the wrapper. */
 const repointBashSearchShadow = (
@@ -97,6 +99,10 @@ const repointBashSearchShadow = (
     return null;
   }
   let newFile = file.split(SHADOW_TOKEN).join(wp);
+  newFile = newFile.replaceAll(
+    'local _cc_bin=',
+    'export RG_FFF_SESSION="${process.pid}"; local _cc_bin='
+  );
   // Defense-in-depth: the snapshot's guard `if [[ ! -x $_cc_bin ]]; then command
   // ${e} ...; return; fi` checks only the claude binary — but the ARGV0 line now
   // runs the WRAPPER, not $_cc_bin. Also gate on the wrapper being executable, so a
@@ -140,6 +146,28 @@ const repointRgResolver = (file: string, wrapperPath: string): string => {
   const newFile = file.slice(0, start) + replacement + file.slice(end);
   showDiff(file, newFile, replacement, start, end);
   return newFile;
+};
+
+const prewarmShellSearch = (file: string, wrapperPath: string): string => {
+  if (file.includes('function fff {')) return file;
+  const anchor =
+    '"unalias find 2>/dev/null || true","unalias grep 2>/dev/null || true",';
+  const start = file.indexOf(anchor);
+  if (start < 0) return file;
+  const quoted = "'" + wrapperPath.replaceAll("'", "'\\''") + "'";
+  const commands = [
+    ...(!file.includes(' --warmup ')
+      ? [
+          `if [ -x ${quoted} ]; then ${quoted} --warmup "$PWD" >/dev/null 2>&1 || true; fi`,
+        ]
+      : []),
+    'unalias fff 2>/dev/null || true',
+    `function fff { ${quoted} "$@"; }`,
+  ];
+  const insertion =
+    commands.map(command => escapeNonAscii(JSON.stringify(command))).join(',') +
+    ',';
+  return file.slice(0, start) + insertion + file.slice(start);
 };
 
 const skipString = (s: string, i: number): number => {
@@ -250,6 +278,26 @@ const appendBeforeClosingBacktick = (
   return out;
 };
 
+const appendBashGuidance = (file: string, guidance: string): string => {
+  const marker = 'FFF Bash search:';
+  if (file.includes(marker)) return file;
+  const headers =
+    /return\["Executes (?:a|a given) bash command and returns its output\.",/g;
+  if (headers.test(file)) {
+    return file.replace(
+      headers,
+      header => header + escapeNonAscii(JSON.stringify(marker + guidance)) + ','
+    );
+  }
+  return appendBeforeClosingBacktick(
+    file,
+    BASH_GUIDANCE_ANCHOR,
+    guidance,
+    BASH_GUIDANCE_MARKER,
+    'Bash description'
+  );
+};
+
 export const writeSwapRipgrepForFff = (
   oldFile: string,
   wrapperPath: string
@@ -257,7 +305,7 @@ export const writeSwapRipgrepForFff = (
   // 1. Bash-search shadow (the 40k grep/find path) — CRITICAL.
   const shadowed = repointBashSearchShadow(oldFile, wrapperPath);
   if (shadowed === null) return null;
-  let file = shadowed;
+  let file = prewarmShellSearch(shadowed, wrapperPath);
 
   // 2. ripgrep resolver (rare rg + subagent Grep tool) — best-effort.
   file = repointRgResolver(file, wrapperPath);
@@ -273,13 +321,31 @@ export const writeSwapRipgrepForFff = (
 
   // 4. Bash-description guidance (main agent: ranking + the --fuzzy lever) —
   //    best-effort.
-  file = appendBeforeClosingBacktick(
+  file = appendBashGuidance(
     file,
-    BASH_GUIDANCE_ANCHOR,
-    BASH_GUIDANCE,
-    BASH_GUIDANCE_MARKER,
-    'Bash description'
+    BASH_GUIDANCE +
+      (file.includes('function fff {')
+        ? ' Use fff files SomeName for fuzzy filename discovery, or fff --stats for local aggregate service counts.'
+        : '')
   );
+
+  const observed = observeFffFileUsage(file, wrapperPath);
+  if (observed === null) {
+    debug(
+      'patch: swapRipgrepForFff: successful file-operation observer absent'
+    );
+  } else {
+    file = observed;
+  }
+
+  file = prewarmShellSearch(file, wrapperPath);
+  const autocomplete = useFffAutocomplete(file, wrapperPath);
+  if (autocomplete !== null) file = autocomplete;
+
+  const bound = bindFffSession(file, wrapperPath);
+  if (bound !== null) file = bound;
+  const compacted = attachFffCompaction(file);
+  if (compacted !== null) file = compacted;
 
   return file;
 };

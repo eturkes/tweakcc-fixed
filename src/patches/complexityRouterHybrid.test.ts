@@ -108,6 +108,59 @@ async function flush() {
 afterEach(() => vi.useRealTimers());
 
 describe('Jev router generated runtime', () => {
+  it('includes only validated numeric fff scope without changing effort selection', async () => {
+    const h = harness();
+    const counts = {
+      indexedFiles: 40,
+      gitModifiedFiles: 2,
+      recentSessionFiles: 3,
+      recentSessionDirectories: 1,
+    };
+    h.context.__tweakccFffScope = () => ({
+      ...counts,
+      path: 'PRIVATE_FIXTURE_PATH',
+      query: 'PRIVATE_FIXTURE_QUERY',
+    });
+    await h.route('Edit the synthetic component');
+    const body = JSON.parse(h.fetch.mock.calls[0][1].body);
+    expect(body.state.fffScope.counts).toEqual(counts);
+    expect(JSON.stringify(body)).not.toContain('PRIVATE_FIXTURE');
+    expect(h.state().effort).toBe('max');
+    h.context.__tweakccFffScope = () => ({ ...counts, indexedFiles: -1 });
+    await h.route('Next turn');
+    expect(
+      JSON.parse(h.fetch.mock.calls[1][1].body).state.fffScope
+    ).toBeUndefined();
+    h.context.__tweakccFffScope = () => {
+      throw Error('unavailable');
+    };
+    await h.route('Another turn');
+    expect(
+      JSON.parse(h.fetch.mock.calls[2][1].body).state.fffScope
+    ).toBeUndefined();
+  });
+
+  it('drops optional fff scope before trimming substantive context', () => {
+    const h = harness({ contextBudgetBytes: 1700 });
+    const state = h.state();
+    const original = h.context.__tweakccRouterBody(
+      state,
+      'A'.repeat(300),
+      'opus'
+    );
+    h.context.__tweakccRouterSettings.budget =
+      Buffer.byteLength(JSON.stringify(original)) + 10;
+    h.context.__tweakccFffScope = () => ({
+      indexedFiles: 40,
+      gitModifiedFiles: 2,
+      recentSessionFiles: 3,
+      recentSessionDirectories: 1,
+    });
+    expect(
+      h.context.__tweakccRouterBody(state, 'A'.repeat(300), 'opus')
+    ).toEqual(original);
+  });
+
   it('does no routing or summary work for normal model selections', async () => {
     const h = harness();
     h.context.__tweakccRouterSelectedModel = () => null;

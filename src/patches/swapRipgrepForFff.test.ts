@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { spawnSync } from 'node:child_process';
 import { writeSwapRipgrepForFff } from './swapRipgrepForFff';
 
 const WRAPPER = '/Users/x/.tweakcc/fff/aarch64-apple-darwin/rg-fff';
@@ -80,7 +81,9 @@ describe('swapRipgrepForFff', () => {
     expect(out).toContain('grep --fuzzy SomeName');
     // inserted inside the bullet (after the pristine phrasing), before its closing
     // backtick (no raw backticks)
-    expect(out).toContain('when one fits. grep/find results are ranked');
+    expect(out).toContain(
+      'when one fits. For Bash content searches, use the managed grep function'
+    );
     // the structured Grep tool has no --fuzzy flag, so its desc must NOT mention it
     const grepNote = out.slice(out.indexOf('Search backend note (fff):'));
     expect(grepNote.slice(0, 120)).not.toContain('--fuzzy');
@@ -117,6 +120,65 @@ describe('swapRipgrepForFff', () => {
     const once = writeSwapRipgrepForFff(COMBINED, WRAPPER)!;
     const twice = writeSwapRipgrepForFff(once, WRAPPER);
     expect(twice).toBe(once);
+  });
+
+  it('warms the runtime working directory when shell setup is sourced', () => {
+    const generator =
+      ';function snippets(){return["unalias find 2>/dev/null || true","unalias grep 2>/dev/null || true",shadow()]}';
+    const once = writeSwapRipgrepForFff(COMBINED + generator, WRAPPER)!;
+    expect(once).toContain(' --warmup \\"$PWD\\"');
+    expect(countOf(once, ' --warmup ')).toBe(1);
+    expect(writeSwapRipgrepForFff(once, WRAPPER)).toBe(once);
+  });
+
+  it('defines a shell-safe fff command and advertises it only when available', () => {
+    const generator =
+      ';function snippets(){return["unalias find 2>/dev/null || true","unalias grep 2>/dev/null || true",shadow()]}';
+    const tricky = "/tmp/José/'`x${HOME}/rg-fff";
+    const patched = writeSwapRipgrepForFff(COMBINED + generator, tricky)!;
+    const commands = new Function(
+      'shadow',
+      patched.slice(patched.indexOf('function snippets')) +
+        ';return snippets();'
+    )(() => '') as string[];
+    expect(commands).toContain(
+      "function fff { '/tmp/José/'\\''`x${HOME}/rg-fff' \"$@\"; }"
+    );
+    expect(spawnSync('bash', ['-n', '-c', commands.join('\n')]).status).toBe(0);
+    expect(patched).toContain('Use fff files SomeName');
+    expect(writeSwapRipgrepForFff(COMBINED, WRAPPER)).not.toContain(
+      'Use fff files SomeName'
+    );
+  });
+
+  it('includes guidance in lean and full descriptions even when custom bullets are hidden', async () => {
+    const generator =
+      ';function snippets(){return["unalias find 2>/dev/null || true","unalias grep 2>/dev/null || true",shadow()]}';
+    const custom =
+      ';async function lean(hide){let notes=[];if(!hide)notes.push("Prefer the dedicated tool.");return["Executes a bash command and returns its output.",...notes].join("\\n")}' +
+      ';async function full(hide){let notes=[];if(!hide)notes.push("Custom search instructions.");return["Executes a given bash command and returns its output.",...notes].join("\\n")}';
+    const patched = writeSwapRipgrepForFff(
+      SHADOW + generator + custom,
+      WRAPPER
+    )!;
+    const descriptions = new Function(
+      patched.slice(patched.indexOf('async function lean')) +
+        ';return{lean,full}'
+    )() as {
+      lean: (hide: boolean) => Promise<string>;
+      full: (hide: boolean) => Promise<string>;
+    };
+    for (const make of [descriptions.lean, descriptions.full]) {
+      for (const hide of [true, false]) {
+        const description = await make(hide);
+        expect(description).toContain('FFF Bash search:');
+        expect(description).toContain('most-relevant-first');
+        expect(description).toContain('Use fff files SomeName');
+        expect(description.split('FFF Bash search:')).toHaveLength(2);
+      }
+    }
+    expect(countOf(patched, 'FFF Bash search:')).toBe(2);
+    expect(writeSwapRipgrepForFff(patched, WRAPPER)).toBe(patched);
   });
 
   it('succeeds on a shadow-only file (rg/guidance are best-effort)', () => {
