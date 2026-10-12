@@ -71,7 +71,7 @@ fn daemons_dir() -> Option<PathBuf> {
 /// of colliding with a still-running old-format daemon that holds the old name —
 /// otherwise the new daemon can't bind and the root stays cold until the old one
 /// idle-times-out).
-pub const PROTO: &str = "v6";
+pub const PROTO: &str = "v7";
 
 pub fn socket_path(root: &Path) -> Option<PathBuf> {
     let dir = daemons_dir()?;
@@ -82,7 +82,7 @@ pub fn socket_path(root: &Path) -> Option<PathBuf> {
 fn encode_req(req: &SearchReq) -> String {
     use crate::Mode;
     format!(
-        "{PROTO}\n{}\n{}{}{}{}{}{}\n{}\n{}\n{}\n{}\n{}\n{}\n",
+        "{PROTO}\n{}\n{}{}{}{}{}{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n",
         match req.mode {
             Mode::Plain => "plain",
             Mode::Regex => "regex",
@@ -100,6 +100,7 @@ fn encode_req(req: &SearchReq) -> String {
         req.before_context,
         req.after_context,
         req.include_exts.join(","),
+        req.session,
     )
 }
 
@@ -120,6 +121,20 @@ pub fn query(root: &Path, req: &SearchReq) -> Option<(String, i32)> {
     let mut resp = String::new();
     stream.read_to_string(&mut resp).ok()?;
     parse_daemon_response(&resp)
+}
+
+pub fn refresh_access(root: &Path, path: &Path) {
+    let Some(sock) = socket_path(root) else {
+        return;
+    };
+    let Ok(mut stream) = UnixStream::connect(sock) else {
+        return;
+    };
+    let _ = stream.set_write_timeout(Some(Duration::from_millis(250)));
+    if !path.to_string_lossy().contains('\n') {
+        let _ = write!(stream, "{PROTO}\naccess\n{}\n", path.display());
+        let _ = stream.shutdown(Shutdown::Write);
+    }
 }
 
 /// Parse a daemon response: `FALLBACK\n` -> None (cold-scan), or the length-framed
@@ -263,7 +278,7 @@ fn handle(stream: UnixStream, shared: &SharedFilePicker) {
     };
     let mut reader = BufReader::new(read_half);
     let mut lines: Vec<String> = Vec::with_capacity(9);
-    for _ in 0..9 {
+    for _ in 0..10 {
         let mut l = String::new();
         match reader.read_line(&mut l) {
             Ok(0) => break,
@@ -272,12 +287,23 @@ fn handle(stream: UnixStream, shared: &SharedFilePicker) {
         }
     }
     let mut out = stream;
-    if lines.len() < 9 || lines[0] != PROTO {
+    if lines.len() == 3 && lines[0] == PROTO && lines[1] == "access" {
+        let frecency = crate::ranking::shared_frecency();
+        if let (Ok(mut guard), Ok(tracker)) = (shared.write(), frecency.read()) {
+            if let (Some(picker), Some(tracker)) = (guard.as_mut(), tracker.as_ref()) {
+                let _ = picker.update_single_file_frecency(&lines[2], tracker);
+            }
+        }
+        let _ = out.write_all(b"0\n0\n");
+        return;
+    }
+    if lines.len() < 10 || lines[0] != PROTO {
         let _ = out.write_all(b"FALLBACK\n");
         return;
     }
     let flags = lines[2].as_bytes();
     let req = SearchReq {
+        session: lines[9].clone(),
         mode: match lines[1].as_str() {
             "regex" => crate::Mode::Regex,
             "fuzzy" => crate::Mode::Fuzzy,

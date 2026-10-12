@@ -1014,6 +1014,8 @@ dependencies = [
  "fff-search",
  "libc",
  "regex",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]

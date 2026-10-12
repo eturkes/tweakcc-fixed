@@ -28,6 +28,7 @@
 
 import { debug, escapeNonAscii } from '../utils';
 import { showDiff } from './index';
+import { observeFffFileUsage } from './fffRuntime';
 
 /** Make a wrapper path safe to splice into the backtick-template shell shadow:
  *  (1) escapeNonAscii so non-ASCII survives Bun's Latin-1 cli.js store as \uXXXX
@@ -97,6 +98,10 @@ const repointBashSearchShadow = (
     return null;
   }
   let newFile = file.split(SHADOW_TOKEN).join(wp);
+  newFile = newFile.replaceAll(
+    'local _cc_bin=',
+    'export RG_FFF_SESSION="${process.pid}"; local _cc_bin='
+  );
   // Defense-in-depth: the snapshot's guard `if [[ ! -x $_cc_bin ]]; then command
   // ${e} ...; return; fi` checks only the claude binary — but the ARGV0 line now
   // runs the WRAPPER, not $_cc_bin. Also gate on the wrapper being executable, so a
@@ -280,6 +285,15 @@ export const writeSwapRipgrepForFff = (
     BASH_GUIDANCE_MARKER,
     'Bash description'
   );
+
+  const observed = observeFffFileUsage(file, wrapperPath);
+  if (observed === null) {
+    debug(
+      'patch: swapRipgrepForFff: successful file-operation observer absent'
+    );
+  } else {
+    file = observed;
+  }
 
   return file;
 };

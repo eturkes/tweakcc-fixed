@@ -32,6 +32,7 @@
 //! `--daemon <root>` (warm-index daemon, see daemon.rs).
 
 mod daemon;
+mod feedback;
 mod ranking;
 
 use std::collections::BTreeMap;
@@ -125,6 +126,7 @@ impl Opts {
 
 /// The minimal, serializable request shared by the cold path and the daemon.
 pub struct SearchReq {
+    pub session: String,
     pub pattern: String,
     pub dir_prefixes: Vec<String>, // canonical "app/","lib/" scopes; empty = cwd
     pub line_numbers: bool,
@@ -176,6 +178,16 @@ fn main() {
     if argv.get(1).map(|s| s == "--daemon").unwrap_or(false) {
         let root = argv.get(2).cloned().unwrap_or_else(|| ".".to_string());
         daemon::serve(&root);
+        return;
+    }
+
+    if argv.get(1).map(String::as_str) == Some("--record-access") {
+        if let Some(path) = argv.get(2) {
+            let session = argv.get(3).map(String::as_str).unwrap_or("");
+            if let Ok(root) = std::env::current_dir() {
+                feedback::record_access(&root, Path::new(path), session);
+            }
+        }
         return;
     }
 
@@ -687,6 +699,7 @@ impl Opts {
             })
             .collect();
         SearchReq {
+            session: std::env::var("RG_FFF_SESSION").unwrap_or_default(),
             pattern: effective_pattern(self, mode),
             dir_prefixes,
             line_numbers: self.line_numbers,
@@ -787,6 +800,7 @@ fn run_search(o: &Opts, mode: Mode) -> i32 {
                     "served-daemon",
                     out.lines().count() as i64,
                 );
+                feedback::remember(root, &req, &out);
                 let mut w = std::io::stdout().lock();
                 let _ = w.write_all(out.as_bytes());
                 if code == 1 {
@@ -856,6 +870,9 @@ fn run_search(o: &Opts, mode: Mode) -> i32 {
                 fallback(o.tool, &strip_custom(&o.raw), o.claude_bin.as_deref())
             }
         };
+        if let Some(root) = &root {
+            feedback::remember(root, &req, &out);
+        }
         let mut w = std::io::stdout().lock();
         let _ = w.write_all(out.as_bytes());
         if code == 1 {
@@ -992,6 +1009,22 @@ fn line_defines(line: &str, pattern: &str) -> bool {
 /// Grep `picker` per `req` and render tool-compatible output. Shared verbatim by
 /// the cold path and the daemon. Returns None when fff can't serve faithfully.
 pub fn format_results(picker: &FilePicker, req: &SearchReq) -> Option<(String, i32)> {
+    let preferred = feedback::preferred(&picker.base_path, &req.pattern);
+    let grep = |query: &FFFQuery<'_>, opts: &GrepSearchOptions| {
+        let mut result = picker.grep(query, opts);
+        if let Some(path) = preferred.as_deref() {
+            if opts.max_matches_per_file == 1 {
+                result
+                    .files
+                    .sort_by_key(|f| f.absolute_path(picker, &picker.base_path) != path);
+            } else {
+                result.matches.sort_by_key(|m| {
+                    result.files[m.file_index].absolute_path(picker, &picker.base_path) != path
+                });
+            }
+        }
+        result
+    };
     let gmode = match req.mode {
         Mode::Plain => GrepMode::PlainText,
         Mode::Regex => GrepMode::Regex,
@@ -1104,7 +1137,7 @@ pub fn format_results(picker: &FilePicker, req: &SearchReq) -> Option<(String, i
         }
         // Preflight: if fff's engine can't compile the pattern it SILENTLY falls
         // back to literal matching (regex_fallback_error set) -> defer.
-        let probe = picker.grep(&parsed, &grep_opts(gmode, 0, req.files_only, smart));
+        let probe = grep(&parsed, &grep_opts(gmode, 0, req.files_only, smart));
         if let Some(e) = &probe.regex_fallback_error {
             if std::env::var_os("RG_FFF_DEBUG").is_some() {
                 eprintln!("rg-fff: regex defer: regex_fallback_error: {e}");
@@ -1123,7 +1156,7 @@ pub fn format_results(picker: &FilePicker, req: &SearchReq) -> Option<(String, i
         let mut file_offset = 0usize;
         loop {
             let opts = grep_opts(gmode, file_offset, false, smart);
-            let r = picker.grep(&parsed, &opts);
+            let r = grep(&parsed, &opts);
             for m in &r.matches {
                 let f = r.files[m.file_index];
                 let path = f.relative_path(picker);
@@ -1172,7 +1205,7 @@ pub fn format_results(picker: &FilePicker, req: &SearchReq) -> Option<(String, i
                 after_context: req.after_context,
                 ..grep_opts(gmode, file_offset, false, smart)
             };
-            let result = picker.grep(&parsed, &opts);
+            let result = grep(&parsed, &opts);
             for m in &result.matches {
                 let f = result.files[m.file_index];
                 let path = f.relative_path(picker);
@@ -1260,7 +1293,7 @@ pub fn format_results(picker: &FilePicker, req: &SearchReq) -> Option<(String, i
     let mut file_offset = 0usize;
     loop {
         let opts = grep_opts(gmode, file_offset, req.files_only, smart);
-        let result = picker.grep(&parsed, &opts);
+        let result = grep(&parsed, &opts);
         if req.files_only {
             for f in &result.files {
                 let path = f.relative_path(picker);
