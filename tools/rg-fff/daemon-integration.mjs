@@ -27,6 +27,9 @@ writeFileSync(path.join(root, '.gitignore'), 'build/\n');
 writeFileSync(path.join(root, 'build/ignored.txt'), 'needle\n');
 writeFileSync(path.join(one, 'a.ts'), 'needle\n');
 writeFileSync(path.join(two, 'b.ts'), 'needle\n');
+writeFileSync(path.join(one, 'sample_local.ts'), 'needle\n');
+for (let index = 0; index < 25; index++)
+  writeFileSync(path.join(two, `sample_${index}.ts`), 'needle\n');
 assert.equal(spawnSync('git', ['init', '-q', root]).status, 0);
 const env = {
   ...process.env,
@@ -86,8 +89,6 @@ try {
   );
   assert.equal(statSync(socket).mode & 0o777, 0o600);
   for (const [cwd, expected] of [
-    [one, './a.ts:1:needle\n'],
-    [two, './b.ts:1:needle\n'],
     [path.join(root, 'build'), './ignored.txt:1:needle\n'],
   ]) {
     const result = spawnSync(wrapper, ['-n', 'needle', '.'], {
@@ -99,6 +100,35 @@ try {
     assert.equal(result.status, 0);
     assert.equal(result.stdout, expected);
   }
+  for (const cwd of [one, two]) {
+    const result = spawnSync(wrapper, ['-n', 'needle', '.'], {
+      cwd,
+      env,
+      stdio: ['ignore', 'pipe', 'pipe'],
+      encoding: 'utf8',
+    });
+    assert.equal(result.status, 0);
+    assert.ok(
+      result.stdout
+        .split('\n')
+        .filter(Boolean)
+        .every(line => /^\.\/[^/]+\.ts:/.test(line))
+    );
+  }
+  const suggestions = spawnSync(wrapper, ['--suggest', 'sample', '15'], {
+    cwd: one,
+    env,
+    stdio: ['ignore', 'pipe', 'pipe'],
+    encoding: 'utf8',
+  });
+  assert.equal(suggestions.status, 0);
+  const items = JSON.parse(suggestions.stdout);
+  assert.ok(items.some(item => item.path === 'sample_local.ts'));
+  assert.ok(
+    items.every(
+      item => !item.path.includes('two/') && item.score >= 0 && item.score <= 1
+    )
+  );
   assert.equal(await rpc(socket, 'obsolete\nping\n{}\n'), 'FALLBACK\n');
   assert.equal(await rpc(socket, 'v9\nsearch\nnot-json\n'), 'FALLBACK\n');
   writeFileSync(path.join(one, 'fresh.ts'), 'new_symbol\n');

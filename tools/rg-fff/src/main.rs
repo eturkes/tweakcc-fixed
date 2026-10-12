@@ -34,6 +34,7 @@
 mod daemon;
 mod feedback;
 static NO_FALLBACK: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+mod files;
 mod metrics;
 mod ranking;
 
@@ -217,6 +218,20 @@ fn main() {
         if let Ok(cwd) = std::env::current_dir() {
             daemon::spawn_detached(&daemon::repository_root(&cwd));
         }
+        return;
+    }
+
+    if argv.get(1).map(String::as_str) == Some("--suggest") {
+        let query = argv.get(2).map(String::as_str).unwrap_or("");
+        let limit = argv.get(3).and_then(|v| v.parse().ok()).unwrap_or(15);
+        if let Ok(cwd) = std::env::current_dir() {
+            if let Some(items) = files::query(&cwd, query, limit) {
+                println!("{}", serde_json::to_string(&items).unwrap_or_default());
+                return;
+            }
+            daemon::spawn_detached(&cwd);
+        }
+        println!("[]");
         return;
     }
 

@@ -482,6 +482,24 @@ fn handle(mut stream: UnixStream, shared: &SharedFilePicker, last: &Mutex<Instan
         let _ = bounded_write(&mut out, b"0\n0\n", Duration::from_millis(100));
         return;
     }
+    if lines.len() == 3 && lines[0] == PROTO && lines[1] == "suggest" {
+        let result = serde_json::from_str::<crate::files::FileRequest>(lines[2])
+            .ok()
+            .and_then(|request| {
+                let guard = shared.read().ok()?;
+                crate::files::suggest(guard.as_ref()?, &request)
+            });
+        if let Some(result) = result.and_then(|items| serde_json::to_string(&items).ok()) {
+            if let Ok(mut timestamp) = last.lock() {
+                *timestamp = Instant::now();
+            }
+            let response = format!("0\n{}\n{result}", result.len());
+            let _ = bounded_write(&mut out, response.as_bytes(), Duration::from_millis(250));
+        } else {
+            let _ = bounded_write(&mut out, b"FALLBACK\n", Duration::from_millis(100));
+        }
+        return;
+    }
     if lines.len() != 3 || lines[0] != PROTO || lines[1] != "search" {
         let _ = bounded_write(&mut out, b"FALLBACK\n", Duration::from_millis(100));
         return;

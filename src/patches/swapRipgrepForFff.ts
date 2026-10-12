@@ -28,7 +28,7 @@
 
 import { debug, escapeNonAscii } from '../utils';
 import { showDiff } from './index';
-import { observeFffFileUsage } from './fffRuntime';
+import { observeFffFileUsage, useFffAutocomplete } from './fffRuntime';
 
 /** Make a wrapper path safe to splice into the backtick-template shell shadow:
  *  (1) escapeNonAscii so non-ASCII survives Bun's Latin-1 cli.js store as \uXXXX
@@ -309,6 +309,8 @@ export const writeSwapRipgrepForFff = (
   }
 
   file = prewarmShellSearch(file, wrapperPath);
+  const autocomplete = useFffAutocomplete(file, wrapperPath);
+  if (autocomplete !== null) file = autocomplete;
 
   return file;
 };
