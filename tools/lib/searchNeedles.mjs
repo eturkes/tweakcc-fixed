@@ -226,7 +226,13 @@ export const cookedForms = s => {
   const a = unescapeOverride(s);
   let b = a;
   try {
-    b = decodeJsString('`' + s.replace(/`/g, '\\`') + '`');
+    // Escape only the backticks the text leaves bare; an already-escaped one
+    // would otherwise decode with a stray backslash.
+    b = decodeJsString(
+      '`' +
+        s.replace(/(\\*)`/g, (m, bs) => (bs.length % 2 ? m : bs + '\\`')) +
+        '`'
+    );
   } catch {
     /* malformed escape: the plain form stands */
   }
@@ -278,6 +284,7 @@ export const probesOf = p => {
       out.add(uEsc(form, true));
     }
     out.add(w.replace(/`/g, '\\`'));
+    if (w.includes("'")) out.add(w.replace(/'/g, "\\'"));
   }
   return [...out];
 };

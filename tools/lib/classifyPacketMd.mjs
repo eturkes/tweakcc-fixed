@@ -32,11 +32,12 @@ const offsetOf = at => {
   const m = /^(\d+)/.exec(String(at ?? ''));
   return m ? Number(m[1]) : null;
 };
-const fnLabel = f => (f ? `${f.name ? `${f.name} ` : ''}@${f.start}` : '(module scope)');
+const fnLabel = f =>
+  f ? `${f.name ? `${f.name} ` : ''}@${f.start}` : '(module scope)';
 
 // ---- nearest catalogued prompts -------------------------------------------
 const WORD = /[a-z][a-z0-9'-]{2,}/g;
-const wordsOf = s => new Set((String(s).toLowerCase().match(WORD) || []));
+const wordsOf = s => new Set(String(s).toLowerCase().match(WORD) || []);
 
 export function catalogueNeighbourIndex(prompts, { maxDf = 400 } = {}) {
   const entries = [];
@@ -51,7 +52,8 @@ export function catalogueNeighbourIndex(prompts, { maxDf = 400 } = {}) {
   }
   const postings = new Map();
   entries.forEach((e, i) => {
-    for (const w of e.words) (postings.get(w) || postings.set(w, []).get(w)).push(i);
+    for (const w of e.words)
+      (postings.get(w) || postings.set(w, []).get(w)).push(i);
   });
   return {
     nearest(body, { k = 3, min = 0.34 } = {}) {
@@ -67,7 +69,8 @@ export function catalogueNeighbourIndex(prompts, { maxDf = 400 } = {}) {
       for (const [i, inter] of hits) {
         const e = entries[i];
         const score = inter / (ws.size + e.words.size - inter);
-        if (score >= min && e.body !== body) scored.push({ id: e.id, score, body: e.body });
+        if (score >= min && e.body !== body)
+          scored.push({ id: e.id, score, body: e.body });
       }
       scored.sort((a, b) => b.score - a.score);
       const out = [];
@@ -88,7 +91,8 @@ export function rewriteRoles(pairs) {
   const roles = new Map();
   for (const p of pairs) {
     if (p.needle) roles.set(p.needle, 'needle');
-    if (p.replacement && !roles.has(p.replacement)) roles.set(p.replacement, 'replacement');
+    if (p.replacement && !roles.has(p.replacement))
+      roles.set(p.replacement, 'replacement');
   }
   return roles;
 }
@@ -108,7 +112,9 @@ export function snippetBook(src) {
 
 const guardText = (g, propSets, max = 100) => {
   const specific = g.props.filter(p => propSets && propSets.has(p));
-  const props = specific.length ? ` [${specific.map(p => `${p}: ${propSets.get(p)}`).join('; ')}]` : '';
+  const props = specific.length
+    ? ` [${specific.map(p => `${p}: ${propSets.get(p)}`).join('; ')}]`
+    : '';
   return `${g.arm} of ${code(clip(g.test, max))}${props}`;
 };
 
@@ -127,27 +133,46 @@ export function propSetLine(res) {
 export function renderFamilyMd(f, { snip, propSets }) {
   const L = [];
   const n = f.candidateCount;
-  L.push(`## ${f.label} · ${f.fn ? `fn ${fnLabel(f.fn)} [${f.fn.module}] len ${f.fn.end - f.fn.start}` : f.key} — ${n} candidate(s)${f.split ? ` (part ${f.split.part} of ${f.split.of})` : ''}`);
+  L.push(
+    `## ${f.label} · ${f.fn ? `fn ${fnLabel(f.fn)} [${f.fn.module}] len ${f.fn.end - f.fn.start}` : f.key} — ${n} candidate(s)${f.split ? ` (part ${f.split.part} of ${f.split.of})` : ''}`
+  );
   if (f.fn) L.push(code(clip(f.fn.head, 110)));
   if (f.callers && f.callers.levels.length) {
     for (const x of f.callers.levels[0]) {
       const extra = [
         x.roles.length ? `roles ${x.roles.join(', ')}` : '',
         x.jsxType.length ? `JSX component @${x.jsxType.join(',')}` : '',
-        x.hofs.length ? `handed to ${x.hofs.map(h => `${h.hof}@${h.cs}`).join(', ')}` : '',
+        x.hofs.length
+          ? `handed to ${x.hofs.map(h => `${h.hof}@${h.cs}`).join(', ')}`
+          : '',
         x.unresolved.length ? `open: ${x.unresolved.join('; ')}` : '',
       ].filter(Boolean);
-      const calls = x.calls.map(c => `${fnLabel(c.in)}${c.outer ? ` (callback in ${fnLabel(c.outer)})` : ''} @${c.at}${c.guards.length ? ` behind ${c.guards.map(g => guardText(g, propSets, 60)).join(' and ')}` : ''}`);
-      L.push(`Called ${x.total}×${calls.length ? `: ${calls.join('; ')}` : ''}${x.total > x.calls.length ? '; …' : ''}${extra.length ? ` (${extra.join('; ')})` : ''} — deeper: bundleQuery {"callers":${x.fn.start},"depth":3}`);
+      const calls = x.calls.map(
+        c =>
+          `${fnLabel(c.in)}${c.outer ? ` (callback in ${fnLabel(c.outer)})` : ''} @${c.at}${c.guards.length ? ` behind ${c.guards.map(g => guardText(g, propSets, 60)).join(' and ')}` : ''}`
+      );
+      L.push(
+        `Called ${x.total}×${calls.length ? `: ${calls.join('; ')}` : ''}${x.total > x.calls.length ? '; …' : ''}${extra.length ? ` (${extra.join('; ')})` : ''} — deeper: bundleQuery {"callers":${x.fn.start},"depth":3}`
+      );
     }
   }
   if (f.setters && f.setters.length) {
-    L.push(`Setter props of this function (minified local = prop; which one a call uses decides where its value goes): ${f.setters.map(([k, l]) => `${l}=${k}`).join(', ')}`);
+    L.push(
+      `Setter props of this function (minified local = prop; which one a call uses decides where its value goes): ${f.setters.map(([k, l]) => `${l}=${k}`).join(', ')}`
+    );
     for (const w of (f.wiring && f.wiring.sites) || []) {
-      const crosswise = w.props.filter(([k, v]) => /^set[A-Z]/.test(k) && /set[A-Z]\w*$/.test(v) && !v.endsWith(k));
-      L.push(`  - wired ${w.how === 'jsx' ? 'by a JSX render' : 'by a call'} @${w.at} in ${fnLabel(w.in)}: ${w.props.map(([k, v]) => `${k}=${v}`).join(', ') || '(no setter props passed)'}${crosswise.length ? ` — CROSSWISE: ${crosswise.map(([k, v]) => `${k} is ${v}`).join(', ')}` : ''}`);
+      const crosswise = w.props.filter(
+        ([k, v]) =>
+          /^set[A-Z]/.test(k) && /set[A-Z]\w*$/.test(v) && !v.endsWith(k)
+      );
+      L.push(
+        `  - wired ${w.how === 'jsx' ? 'by a JSX render' : 'by a call'} @${w.at} in ${fnLabel(w.in)}: ${w.props.map(([k, v]) => `${k}=${v}`).join(', ') || '(no setter props passed)'}${crosswise.length ? ` — CROSSWISE: ${crosswise.map(([k, v]) => `${k} is ${v}`).join(', ')}` : ''}`
+      );
     }
-    if (f.wiring && f.wiring.total > f.wiring.sites.length) L.push(`  - … ${f.wiring.total - f.wiring.sites.length} more caller(s) (bundleQuery {"aliases":${f.fn ? f.fn.start + 1 : 0}})`);
+    if (f.wiring && f.wiring.total > f.wiring.sites.length)
+      L.push(
+        `  - … ${f.wiring.total - f.wiring.sites.length} more caller(s) (bundleQuery {"aliases":${f.fn ? f.fn.start + 1 : 0}})`
+      );
   }
   if (f.literals) {
     const s = f.literals;
@@ -156,10 +181,15 @@ export function renderFamilyMd(f, { snip, propSets }) {
     if (s.counts.model) parts.push(`${s.counts.model} cached model`);
     if (s.counts.ui) parts.push(`${s.counts.ui} cached ui`);
     if (s.counts.internal) parts.push(`${s.counts.internal} cached internal`);
-    if (s.counts.uncached) parts.push(`${s.counts.uncached} never classified (short/non-prose)`);
+    if (s.counts.uncached)
+      parts.push(`${s.counts.uncached} never classified (short/non-prose)`);
     L.push(`Siblings: ${parts.join(', ')}.`);
-    for (const x of s.shown) L.push(`  - @${x.at} ${x.facing}: ${code(clip(x.text, 90))}`);
-    if (s.more) L.push(`  - … ${s.more} more cached sibling(s) (bundleQuery {"siblings":${f.fn ? f.fn.start : 0}})`);
+    for (const x of s.shown)
+      L.push(`  - @${x.at} ${x.facing}: ${code(clip(x.text, 90))}`);
+    if (s.more)
+      L.push(
+        `  - … ${s.more} more cached sibling(s) (bundleQuery {"siblings":${f.fn ? f.fn.start : 0}})`
+      );
   }
   return L.join('\n');
 }
@@ -170,54 +200,186 @@ export function renderCandidateMd(e, { snip, propSets, src }) {
   if (e.cachedFacing) tags.push(`gate hint: ${e.cachedFacing}`);
   L.push(`### ${e.key} · ${e.hash.slice(0, 12)} · ${tags.join(' · ')}`);
   L.push(quoteBody(e.body));
-  if (e.rewriteRole === 'needle') L.push('**Rewrite table: this body is a NEEDLE** (the match key of a `[[needle, replacement]]` pair) — the model never sees it.');
-  else if (e.rewriteRole === 'replacement') L.push('**Rewrite table: this body is a REPLACEMENT**, rendered into another catalogued description.');
-  if (!e.sites.length) L.push('sites: none located (search the bundle: bundleQuery {"text":…})');
+  if (e.siblingRelations?.length) {
+    const unique = values => [
+      ...new Map(values.map(value => [JSON.stringify(value), value])).values(),
+    ];
+    const canonical = values =>
+      unique(values || []).sort((a, b) =>
+        JSON.stringify(a).localeCompare(JSON.stringify(b))
+      );
+    const relations = unique(
+      e.siblingRelations.map(r => ({
+        ...r,
+        anchors: [...new Set(r.anchors || [])].sort(),
+        anchorSites: canonical(r.anchorSites),
+        flowSites: canonical(r.flowSites),
+        unresolved: canonical(r.unresolved),
+      }))
+    );
+    const flows = canonical(relations.flatMap(r => r.flowSites));
+    const unresolved = canonical(relations.flatMap(r => r.unresolved));
+    const flowRefs = new Map(
+      flows.map((site, index) => [JSON.stringify(site), `F${index + 1}`])
+    );
+    const unresolvedRefs = new Map(
+      unresolved.map((site, index) => [JSON.stringify(site), `U${index + 1}`])
+    );
+    L.push(
+      `Sibling discovery: ${relations.length} relation(s), awaiting emission-route review.`
+    );
+    for (const r of relations) {
+      L.push(
+        `  - ${r.kind} @${r.start}-${r.end}; candidate @${r.site.start}-${r.site.end} via ${r.via}; anchors ${r.anchors.join(', ')}${r.anchorSites.length ? ` (${r.anchorSites.map(a => `${a.id}@${a.start}-${a.end}`).join(', ')})` : ''}`
+      );
+      if (r.flowSites.length)
+        L.push(
+          `    flow provenance: ${r.flowSites.map(site => flowRefs.get(JSON.stringify(site))).join(', ')}`
+        );
+      if (r.unresolved.length)
+        L.push(
+          `    unresolved transport/reachability: ${r.unresolved.map(site => unresolvedRefs.get(JSON.stringify(site))).join(', ')}`
+        );
+    }
+    for (const site of flows)
+      L.push(
+        `  - ${flowRefs.get(JSON.stringify(site))}: ${site.kind} @${site.start}-${site.end}`
+      );
+    for (const site of unresolved)
+      L.push(
+        `  - ${unresolvedRefs.get(JSON.stringify(site))}: @${site.start}-${site.end}: ${code(site.reason)}`
+      );
+    L.push(
+      'A sibling anchor supplies a discovery or input relationship; it does not prove that this branch reaches the model. Unresolved output transport may discard or transform inputs. Trace every canonical occurrence and its reachable callers.'
+    );
+  }
+  if (e.rewriteRole === 'needle')
+    L.push(
+      '**Rewrite table: this body is a NEEDLE** (the match key of a `[[needle, replacement]]` pair) — the model never sees it.'
+    );
+  else if (e.rewriteRole === 'replacement')
+    L.push(
+      '**Rewrite table: this body is a REPLACEMENT**, rendered into another catalogued description.'
+    );
+  if (!e.sites.length)
+    L.push('sites: none located (search the bundle: bundleQuery {"text":…})');
   e.sites.forEach((s, i) => {
-    const flags = [s.kind, s.fragment ? 'fragment' : '', s.textMatch ? 'text match' : ''].filter(Boolean).join(', ');
+    const flags = [
+      s.kind,
+      s.fragment ? 'fragment' : '',
+      s.textMatch ? 'text match' : '',
+    ]
+      .filter(Boolean)
+      .join(', ');
     if (i < 1 && src) {
       const before = src.slice(Math.max(0, s.start - 130), s.start);
       const lit = src.slice(s.start, s.end);
       const after = src.slice(s.end, s.end + 80);
-      L.push(`site @${s.start} (${flags}): ${code(`${before}⟦${lit.length > 70 ? `${lit.slice(0, 34)}…${lit.slice(-30)}` : lit}⟧${after}`)}`);
+      L.push(
+        `site @${s.start} (${flags}): ${code(`${before}⟦${lit.length > 70 ? `${lit.slice(0, 34)}…${lit.slice(-30)}` : lit}⟧${after}`)}`
+      );
       snip(s.start);
     } else L.push(`site @${s.start} (${flags})`);
-    if (s.route) L.push(`  route at this site: ${s.route.verdict || 'open'}${s.route.sinks ? `; ${s.route.sinks.map(k => `${k.kind}[${k.facing ?? 'open'}]@${k.at}`).join(', ')}` : ''}`);
+    if (s.route)
+      L.push(
+        `  route at this site: ${s.route.verdict || 'open'}${s.route.sinks ? `; ${s.route.sinks.map(k => `${k.kind}[${k.facing ?? 'open'}]@${k.at}`).join(', ')}` : ''}`
+      );
   });
-  if (e.siteCount > e.sites.length) L.push(`… ${e.siteCount - e.sites.length} more site(s)`);
-  if (e.inner && e.familyFn && e.inner.start !== e.familyFn) L.push(`in ${fnLabel(e.inner)} ${code(clip(e.inner.head, 80))}`);
+  if (e.siteCount > e.sites.length)
+    L.push(`… ${e.siteCount - e.sites.length} more site(s)`);
+  if (e.inner && e.familyFn && e.inner.start !== e.familyFn)
+    L.push(`in ${fnLabel(e.inner)} ${code(clip(e.inner.head, 80))}`);
   for (const g of e.guards || []) L.push(`guard: ${guardText(g, propSets)}`);
   const r = e.route || {};
-  const head = r.verdict === 'model' ? `model${r.resolved ? '' : ' (other branches open)'}` : r.verdict ? `${r.verdict} (every branch followed)` : `open (${r.openTotal || 0} open branch(es))`;
+  const head =
+    r.verdict === 'model'
+      ? `model${r.resolved ? '' : ' (other branches open)'}`
+      : r.verdict
+        ? `${r.verdict} (every branch followed)`
+        : `open (${r.openTotal || 0} open branch(es))`;
   L.push(`route: ${head}`);
   let undecided = 0;
   for (const s of r.sinks || []) {
     const show = s.facing === 'model' || undecided++ < 2;
-    const al = e.calleeAliases && e.calleeAliases[s.at] ? ` [callee ${e.calleeAliases[s.at]}]` : '';
-    L.push(`- sink ${s.kind} [${s.facing ?? 'undecided'}] @${s.at}${al}${s.command ? ` /${s.command}` : ''}${s.display != null ? ` display:${s.display}` : ''}${s.guarded ? ' (behind an instanceof guard)' : ''}${s.via ? ` via ${s.via}` : ''}${show ? snip(s.at) : ''}`);
+    const al =
+      e.calleeAliases && e.calleeAliases[s.at]
+        ? ` [callee ${e.calleeAliases[s.at]}]`
+        : '';
+    L.push(
+      `- sink ${s.kind} [${s.facing ?? 'undecided'}] @${s.at}${al}${s.command ? ` /${s.command}` : ''}${s.display != null ? ` display:${s.display}` : ''}${s.guarded ? ' (behind an instanceof guard)' : ''}${s.via ? ` via ${s.via}` : ''}${show ? snip(s.at) : ''}`
+    );
   }
-  if (e.outboundControl) L.push(`- **outbound control message nearby** (control_response/control_request in the code at ${e.outboundControl.join(', ')}): a permission deny sent to a remote client is transport, not a local tool_result — confirm the value reaches the local permission result before ruling model.`);
-  for (const g of e.modelPath || []) L.push(`- model path passes ${g.hop}@${g.hopAt} ${guardText(g, propSets)}`);
+  if (e.outboundControl)
+    L.push(
+      `- **outbound control message nearby** (control_response/control_request in the code at ${e.outboundControl.join(', ')}): a permission deny sent to a remote client is transport, not a local tool_result — confirm the value reaches the local permission result before ruling model.`
+    );
+  for (const g of e.modelPath || [])
+    L.push(`- model path passes ${g.hop}@${g.hopAt} ${guardText(g, propSets)}`);
   if (e.sinkEntry) {
     const se = e.sinkEntry;
-    const entries = se.calls.map(c => `${c.how === 'jsx' ? 'rendered as JSX' : 'called'} @${c.at} in ${fnLabel(c.in)}${c.guards.length ? ` behind ${c.guards.map(g => guardText(g, propSets, 70)).join(' and ')}` : ''}`);
-    L.push(`- the model sink's function ${fnLabel(se.fn)} is entered ${se.total}×${entries.length ? `: ${entries.join('; ')}` : ''}${se.total > se.calls.length ? '; …' : ''}`);
+    const entries = se.calls.map(
+      c =>
+        `${c.how === 'jsx' ? 'rendered as JSX' : 'called'} @${c.at} in ${fnLabel(c.in)}${c.guards.length ? ` behind ${c.guards.map(g => guardText(g, propSets, 70)).join(' and ')}` : ''}`
+    );
+    L.push(
+      `- the model sink's function ${fnLabel(se.fn)} is entered ${se.total}×${entries.length ? `: ${entries.join('; ')}` : ''}${se.total > se.calls.length ? '; …' : ''}`
+    );
   }
-  if (r.nonModel) L.push(`- non-model sinks: ${Object.entries(r.nonModel).map(([k, n]) => `${k} ×${n}${r.nonModelAt && r.nonModelAt[k] != null ? ` (@${r.nonModelAt[k]})` : ''}`).join(', ')}`);
+  if (r.nonModel)
+    L.push(
+      `- non-model sinks: ${Object.entries(r.nonModel)
+        .map(
+          ([k, n]) =>
+            `${k} ×${n}${r.nonModelAt && r.nonModelAt[k] != null ? ` (@${r.nonModelAt[k]})` : ''}`
+        )
+        .join(', ')}`
+    );
   (r.open || []).forEach((o, i) => {
     const m = /^(.*) @([\d+?]+)$/.exec(o);
-    const al = m && e.calleeAliases && e.calleeAliases[m[2]] ? ` [callee ${e.calleeAliases[m[2]]}]` : '';
-    L.push(`- open: ${m ? `${m[1]} @${m[2]}${al}${i < 2 ? snip(m[2]) : ''}` : o}`);
+    const al =
+      m && e.calleeAliases && e.calleeAliases[m[2]]
+        ? ` [callee ${e.calleeAliases[m[2]]}]`
+        : '';
+    L.push(
+      `- open: ${m ? `${m[1]} @${m[2]}${al}${i < 2 ? snip(m[2]) : ''}` : o}`
+    );
   });
-  if (r.openTotal > (r.open || []).length) L.push(`- … ${r.openTotal - (r.open || []).length} more open branch(es) (bundleQuery {"trace":${e.sites[0] ? e.sites[0].start : 0}})`);
-  if (e.reusedFrom) L.push(`reusedFrom: **${e.reusedFrom.id}**${e.reusedFrom.similarity != null ? ` (similarity ${e.reusedFrom.similarity})` : ''}${e.reusedFromOldBody != null ? `; old body: ${code(clip(e.reusedFromOldBody, 1500))}` : ''}`);
-  if (e.possibleSuccessorOf) L.push(`possibleSuccessorOf: **${e.possibleSuccessorOf.id}**${e.possibleSuccessorOf.similarity != null ? ` (similarity ${e.possibleSuccessorOf.similarity})` : ''}${e.possibleSuccessorOldBody != null ? `; old body: ${code(clip(e.possibleSuccessorOldBody, 1500))}` : ''}`);
-  for (const l of e.removedIdLeads || []) L.push(`removed-id lead (shares ${l.windows} 25-char run(s); advisory): **${l.id}** — old body: ${code(clip(l.oldBody || '', 600))}`);
-  if (e.piebaldExact) L.push(`piebaldExact: **${e.piebaldExact.id}** — name ${code(e.piebaldExact.name)}, desc ${code(clip(e.piebaldExact.desc, 240))}`);
-  if (e.settingsOracle) L.push(`**Settings oracle:** this text ${e.settingsOracle === 'exact' ? 'IS' : 'is part of'} a settings-schema description in the pristine /update-config capture — the model is sent it (facing model unless it starts with @internal).`);
-  if (e.joinOf) L.push(`**JOIN of fragments:** this body concatenates ${e.joinOf.keys.join(', ')}${e.joinOf.allFragmentsAreCandidates ? '' : ' and literal text that is not a candidate'} — ids belong on fragments: never give this join a fragment's id or the continuity id a fragment lost${e.joinOf.fragmentIds && e.joinOf.fragmentIds.length ? ` (${e.joinOf.fragmentIds.join(', ')})` : ''}; a model-facing join takes its own id.`);
-  if (e.allowedIds && e.allowedIds.length) L.push(`allowedIds (catalogue ids this candidate may keep): ${e.allowedIds.join(', ')}`);
-  if (e.near && e.near.length) L.push(`nearest catalogued: ${e.near.map(n => `${n.id} (${n.score.toFixed(2)}) ${code(clip(n.body, 110))}`).join('; ')}`);
+  if (r.openTotal > (r.open || []).length)
+    L.push(
+      `- … ${r.openTotal - (r.open || []).length} more open branch(es) (bundleQuery {"trace":${e.sites[0] ? e.sites[0].start : 0}})`
+    );
+  if (e.reusedFrom)
+    L.push(
+      `reusedFrom: **${e.reusedFrom.id}**${e.reusedFrom.similarity != null ? ` (similarity ${e.reusedFrom.similarity})` : ''}${e.reusedFromOldBody != null ? `; old body: ${code(clip(e.reusedFromOldBody, 1500))}` : ''}`
+    );
+  if (e.possibleSuccessorOf)
+    L.push(
+      `possibleSuccessorOf: **${e.possibleSuccessorOf.id}**${e.possibleSuccessorOf.similarity != null ? ` (similarity ${e.possibleSuccessorOf.similarity})` : ''}${e.possibleSuccessorOldBody != null ? `; old body: ${code(clip(e.possibleSuccessorOldBody, 1500))}` : ''}`
+    );
+  for (const l of e.removedIdLeads || [])
+    L.push(
+      `removed-id lead (shares ${l.windows} 25-char run(s); advisory): **${l.id}** — old body: ${code(clip(l.oldBody || '', 600))}`
+    );
+  if (e.piebaldExact)
+    L.push(
+      `piebaldExact: **${e.piebaldExact.id}** — name ${code(e.piebaldExact.name)}, desc ${code(clip(e.piebaldExact.desc, 240))}`
+    );
+  if (e.settingsOracle)
+    L.push(
+      `**Settings oracle:** this text ${e.settingsOracle === 'exact' ? 'IS' : 'is part of'} a settings-schema description in the pristine /update-config capture — the model is sent it (facing model unless it starts with @internal).`
+    );
+  if (e.joinOf)
+    L.push(
+      `**JOIN of fragments:** this body concatenates ${e.joinOf.keys.join(', ')}${e.joinOf.allFragmentsAreCandidates ? '' : ' and literal text that is not a candidate'} — ids belong on fragments: never give this join a fragment's id or the continuity id a fragment lost${e.joinOf.fragmentIds && e.joinOf.fragmentIds.length ? ` (${e.joinOf.fragmentIds.join(', ')})` : ''}; a model-facing join takes its own id.`
+    );
+  if (e.allowedIds && e.allowedIds.length)
+    L.push(
+      `allowedIds (catalogue ids this candidate may keep): ${e.allowedIds.join(', ')}`
+    );
+  if (e.near && e.near.length)
+    L.push(
+      `nearest catalogued: ${e.near.map(n => `${n.id} (${n.score.toFixed(2)}) ${code(clip(n.body, 110))}`).join('; ')}`
+    );
   return L.join('\n');
 }
 
@@ -245,7 +407,9 @@ export function renderVerifyMd({ header, families, items }) {
       lastFam = it.family;
     }
     L.push(it.md);
-    L.push(`**Draft (in scope: ${it.why.join('; ')}):** facing ${it.draft.facing}${it.draft.id ? `, id ${it.draft.id}, name ${code(it.draft.name || '')}, desc ${code(it.draft.desc || '')}` : ''}; evidence: ${code(it.draft.evidence || '')}`);
+    L.push(
+      `**Draft (in scope: ${it.why.join('; ')}):** facing ${it.draft.facing}${it.draft.id ? `, id ${it.draft.id}, name ${code(it.draft.name || '')}, desc ${code(it.draft.desc || '')}` : ''}; evidence: ${code(it.draft.evidence || '')}`
+    );
     L.push('');
   }
   return L.join('\n');

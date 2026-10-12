@@ -17,94 +17,29 @@ const WF = path.resolve(
 );
 const has = f => fs.existsSync(path.join(WF, f));
 
-// Run a workflow script with stubbed globals, timing every agent turn so the
-// interleaving is observable. `slow` names the one label that takes long.
-const runShaped = async (file, ctxExtra, slow) => {
-  const src = fs
-    .readFileSync(path.join(WF, file), 'utf8')
-    .replace(/^export const meta/m, 'const meta');
-  const timeline = [];
-  const logs = [];
-  const ctx = {
-    ...ctxExtra,
-    pipeline: async (items, ...stages) =>
-      Promise.all(
-        items.map(async (it, i) => {
-          let v = it;
-          for (const s of stages) {
-            try {
-              v = await s(v, it, i);
-            } catch {
-              return null;
-            }
-          }
-          return v;
-        })
-      ),
-    parallel: async thunks =>
-      Promise.all(thunks.map(t => Promise.resolve().then(t).catch(() => null))),
-    agent: async () => null,
-    phase: () => {},
-    log: m => logs.push(String(m)),
-    console,
-    JSON, Math, Number, Array, Object, String, Error, Set, Map, Promise, RegExp, Date,
-    setTimeout, clearTimeout,
-  };
-  const patched =
-    'globalThis.__t = [];' +
-    src.replace(
-      /async function agentWithRetry\([\s\S]*?\n}\n/,
-      `async function agentWithRetry(prompt, o) {
-         const [which, id] = String(o.label || '').split(':');
-         globalThis.__t.push(which + ':start:' + id);
-         await new Promise(r => setTimeout(r, ${JSON.stringify(slow)} === (which + ':' + id) ? 220 : 25));
-         globalThis.__t.push(which + ':end:' + id);
-         return { id, verdicts: [], filesWritten: [], summary: '', pass: true, issue: '', requiredAction: '' };
-       }\n`
-    );
-  try {
-    await vm.runInNewContext(`(async () => { ${patched} })()`, ctx, { timeout: 20000 });
-  } catch {
-    /* completeness checks over stub data are not what is under test */
-  }
-  timeline.push(...(vm.runInNewContext('globalThis.__t', ctx) || []));
-  return { timeline, logs, at: s => timeline.indexOf(s) };
-};
-
 describe.skipIf(!has('classify-and-name-prompts.workflow.js'))(
-  'classify-and-name-prompts is a per-item pipeline over file handoffs',
+  'classify-and-name-prompts is one classify pass over file handoffs',
   () => {
     const base = {
       version: '9.9.9',
       evidenceDir: '/tmp/classify-evidence-9.9.9',
       chunkCount: 4,
       mdParts: [1, 2, 1, 1],
-      model: 'sonnet',
-      verifyModel: 'opus',
-      classifyEffort: 'high',
-      verifyEffort: 'medium',
+      model: 'opus',
+      effort: 'medium',
       repoDir: '/work/tweakcc-fixed',
     };
     const src = () =>
       fs
         .readFileSync(path.join(WF, 'classify-and-name-prompts.workflow.js'), 'utf8')
         .replace(/^export const meta/m, 'const meta');
-    // Real agentWithRetry, scripted agent receipts.
     const runWith = async (input, reply) => {
       const prompts = [];
       const logs = [];
       const ctx = {
         args: input,
-        agent: async (prompt, o) => { prompts.push({ prompt, label: o.label, agentType: o.agentType }); return reply(o.label, prompt); },
-        pipeline: async (items, ...stages) =>
-          Promise.all(items.map(async it => {
-            let v = it;
-            for (const s of stages) {
-              try { v = await s(v); } catch { return null; }
-            }
-            return v;
-          })),
-        parallel: async () => [],
+        agent: async (prompt, o) => { prompts.push({ prompt, label: o.label, agentType: o.agentType, model: o.model, effort: o.effort }); return reply(o.label, prompt); },
+        parallel: async thunks => Promise.all(thunks.map(t => Promise.resolve().then(t).catch(() => null))),
         phase: () => {},
         log: m => logs.push(String(m)),
         JSON, Math, Number, Array, Object, String, Error, Set, Map, Promise, RegExp,
@@ -112,162 +47,87 @@ describe.skipIf(!has('classify-and-name-prompts.workflow.js'))(
       const out = await vm.runInNewContext(`(async () => { ${src()} })()`, ctx, { timeout: 5000 });
       return { out, prompts, logs };
     };
+    const ok = label => ({ chunk: label.split(':')[1], pass: true, verdicts: 3, note: '' });
 
-    it('verifies one chunk while another is still classifying', async () => {
-      const { timeline, at } = await runShaped(
-        'classify-and-name-prompts.workflow.js',
-        { input: base, args: base },
-        'classify:00'
-      );
-      const firstVerify = timeline.findIndex(e => e.startsWith('verify:start'));
-      const lastClassifyEnd = timeline.reduce(
-        (acc, e, i) => (e.startsWith('classify:end') ? i : acc),
-        -1
-      );
-      expect(firstVerify).toBeGreaterThan(-1);
-      expect(firstVerify).toBeLessThan(lastClassifyEnd);
-      expect(at('verify:end:01')).toBeLessThan(at('classify:end:00'));
+    it('runs one classifier per chunk and no verifier', async () => {
+      const { out, prompts } = await runWith(base, ok);
+      expect(prompts.map(p => p.label).sort()).toEqual(['classify:00', 'classify:01', 'classify:02', 'classify:03']);
+      expect(prompts.every(p => p.agentType === 'showtime-worker' && p.model === 'opus' && p.effort === 'medium')).toBe(true);
+      expect(out).toMatchObject({ classified: 4, chunkCount: 4, notClassified: [] });
     });
 
     it('takes paths and counts only, and refuses anything less before any agent runs', async () => {
-      for (const drop of ['evidenceDir', 'chunkCount', 'mdParts', 'model', 'verifyModel', 'classifyEffort', 'verifyEffort', 'repoDir']) {
+      for (const drop of ['evidenceDir', 'chunkCount', 'mdParts', 'model', 'effort', 'repoDir']) {
         const input = { ...base };
         delete input[drop];
         let spawned = 0;
-        await expect(
-          runWith(input, () => { spawned += 1; return null; })
-        ).rejects.toThrow(new RegExp(drop));
+        await expect(runWith(input, () => { spawned += 1; return null; })).rejects.toThrow(new RegExp(drop));
         expect(spawned).toBe(0);
       }
-      // The old inline-hash contract is not silently accepted.
-      await expect(
-        runWith({ version: '9.9.9', chunks: ['/tmp/c0.json'], expectedHashes: { '/tmp/c0.json': ['0'.repeat(40)] } }, () => null)
-      ).rejects.toThrow(/evidenceDir/);
-      // A part count per chunk, no more and no less.
       await expect(runWith({ ...base, mdParts: [1, 1] }, () => null)).rejects.toThrow(/mdParts/);
       await expect(runWith({ ...base, mdParts: [1, 0, 1, 1] }, () => null)).rejects.toThrow(/mdParts/);
     });
 
-    it('names zero-based padded chunks and points every agent at files, never inline hashes', async () => {
-      const { out, prompts } = await runWith({ ...base, chunkCount: 2, mdParts: [1, 2] }, (label) => {
-        const nn = label.split(':')[1];
-        return label.startsWith('classify')
-          ? { chunk: nn, pass: true, verdicts: 3, scope: 2, verifyParts: nn === '01' ? 2 : 1, note: '' }
-          : { chunk: nn, pass: true, audited: 2, changed: 0, note: '' };
-      });
-      // Every agent is the lean worker type (no skills, no CLAUDE.md).
-      expect(prompts.every(p => p.agentType === 'showtime-worker')).toBe(true);
-      expect(prompts.map(p => p.label).sort()).toEqual(['classify:00', 'classify:01', 'verify:00', 'verify:01']);
+    it('points every agent at its packet parts, the write step and the checker', async () => {
+      const { out, prompts } = await runWith({ ...base, chunkCount: 2, mdParts: [1, 2] }, ok);
       const c0 = prompts.find(p => p.label === 'classify:00').prompt;
-      expect(c0).toContain('/tmp/classify-evidence-9.9.9/chunk-00.json');
+      expect(c0).toContain('/tmp/classify-evidence-9.9.9/chunk-00.md');
       expect(c0).toContain('/tmp/classify-evidence-9.9.9/verdicts-00.json');
-      expect(c0).toContain('checkClassifyVerdicts.mjs /tmp/classify-evidence-9.9.9 00');
-      const v1 = prompts.find(p => p.label === 'verify:01').prompt;
-      expect(v1).toContain('/tmp/classify-evidence-9.9.9/verify-scope-01.json');
-      expect(v1).toContain('--stage verify');
-      // Turn economy: every part of a markdown packet read in one message,
-      // batched bundle queries, write+check in one step.
-      expect(c0).toContain('/tmp/classify-evidence-9.9.9/chunk-00.md in full');
-      expect(c0).toContain('ONE message of Read calls covering every part');
+      expect(c0).toContain('node /work/tweakcc-fixed/tools/writeClassifyVerdicts.mjs /tmp/classify-evidence-9.9.9 00');
+      expect(c0).toContain('node /work/tweakcc-fixed/tools/checkClassifyVerdicts.mjs /tmp/classify-evidence-9.9.9 00');
+      expect(c0).toContain('bundleQuery');
       const c1 = prompts.find(p => p.label === 'classify:01').prompt;
       expect(c1).toContain('/tmp/classify-evidence-9.9.9/chunk-01.part1.md, /tmp/classify-evidence-9.9.9/chunk-01.part2.md');
-      expect(c1).toContain('every Read call in ONE message');
       expect(c1).not.toContain('chunk-01.md');
-      expect(c0).toContain('writeClassifyVerdicts.mjs /tmp/classify-evidence-9.9.9 00');
-      expect(c0).toContain('"verifyParts"');
-      expect(c0).not.toMatch(/load any skill/);
-      expect(c0).toContain('bundleQuery');
-      expect(c0).toContain('confirm the branch that yields this string is reachable from the model-bound caller');
-      expect(c0).toContain('"roleChange"');
-      expect(c0).toContain('Ids belong on FRAGMENTS');
-      expect(c0).toContain('settings-oracle');
-      expect(c0).toContain('"the model can run it" is not a route');
-      expect(c0).toContain("never extend a family ruling to a member without checking THAT member's own sink");
-      expect(c0).toContain('Confirm which local is which before ruling');
-      expect(c0).toContain('A gate on the CALLER side closes a route');
-      expect(c0).toContain('Setter wiring can be crosswise at the CALLER');
-      expect(c0).toContain('Never rule ui or internal while a branch of the route is still open');
-      expect(c0).toContain('check whether ANY reachable caller sets the option');
-      expect(c0).toContain('sent OUTBOUND as a control_response');
-      expect(v1).toContain('/tmp/classify-evidence-9.9.9/verify-01.part1.md, /tmp/classify-evidence-9.9.9/verify-01.part2.md');
-      expect(prompts.find(p => p.label === 'verify:00').prompt).toContain('/tmp/classify-evidence-9.9.9/verify-00.md in full');
-      expect(v1).toContain('writeClassifyVerdicts.mjs /tmp/classify-evidence-9.9.9 01 --stage verify');
-      expect(out).toMatchObject({ classified: 2, verified: 2, chunkCount: 2 });
-      expect(out.next).toContain('harvestClassify.mjs /tmp/classify-evidence-9.9.9');
+      expect(Buffer.byteLength(c1)).toBeLessThanOrEqual(4096);
+      expect(out.next).toContain('classify-harvest 9.9.9');
     });
 
-    it('keeps every facing rule and adds the local-command and metaMessages rules', async () => {
-      const { prompts } = await runWith({ ...base, chunkCount: 1, mdParts: [1] }, (label) =>
-        label.startsWith('classify')
-          ? { chunk: '00', pass: true, verdicts: 1, scope: 1, verifyParts: 1, note: '' }
-          : { chunk: '00', pass: true, audited: 1, changed: 0, note: '' });
-      for (const p of prompts) {
-        expect(p.prompt).toContain('{behavior:"ask", message}');
-        expect(p.prompt).toContain('[runner:warn]');
-        expect(p.prompt).toContain('check the SECOND argument of the onDone call');
-        expect(p.prompt).toContain('starts with \`@internal\`'.replace(/\\/g, ''));
-        expect(p.prompt).toContain('{type:"text", value}');
-        expect(p.prompt).toContain('metaMessages to the model on every branch except');
-        expect(p.prompt).toContain('Never mint an inline- id');
-        expect(p.prompt).toContain('workflow-script-');
-        expect(p.prompt).toContain('possibleSuccessorOf');
-      }
+    it('keeps the facing and naming rules agents get wrong', async () => {
+      const { prompts } = await runWith({ ...base, chunkCount: 1, mdParts: [1] }, ok);
+      const p = prompts[0].prompt;
+      for (const rule of [
+        '{behavior:"ask", message}',
+        'check the SECOND argument',
+        'metaMessages reach the model on every branch except "skip"',
+        '{type:"text", value}',
+        'crosswise at the caller',
+        'A caller-side gate closes a route',
+        'control_response is transport',
+        '@internal',
+        'is not a route',
+        'Never rule ui/internal while a branch is open',
+        'possibleSuccessorOf',
+        'roleChange',
+        'Ids go on fragments, never on a JOIN',
+        'Never mint inline- or workflow-script- ids',
+      ]) expect(p, rule).toContain(rule);
     });
 
-    it('re-asks a chunk whose checker did not pass, and skips verify on an empty scope', async () => {
+    it('re-asks a chunk whose checker did not pass', async () => {
       let tries = 0;
-      const { out, prompts, logs } = await runWith({ ...base, chunkCount: 1, mdParts: [1] }, (label) => {
-        if (label.startsWith('verify')) return { chunk: '00', pass: true, audited: 0, changed: 0, note: '' };
+      const { out, prompts } = await runWith({ ...base, chunkCount: 1, mdParts: [1] }, () => {
         tries += 1;
-        return tries === 1
-          ? { chunk: '00', pass: false, verdicts: 5, scope: 0, note: 'missing 2 hashes' }
-          : { chunk: '00', pass: true, verdicts: 7, scope: 0, note: '' };
+        return tries === 1 ? { chunk: '00', pass: false, verdicts: 5, note: 'missing 2 hashes' } : { chunk: '00', pass: true, verdicts: 7, note: '' };
       });
       expect(tries).toBe(2);
       expect(prompts[1].prompt).toContain('YOUR PREVIOUS ATTEMPT WAS REJECTED');
       expect(prompts[1].prompt).toContain('missing 2 hashes');
-      expect(prompts.some(p => p.label.startsWith('verify'))).toBe(false);
-      expect(logs.join(' ')).toContain('empty scope');
-      expect(out).toMatchObject({ classified: 1, verified: 1 });
+      expect(out).toMatchObject({ classified: 1 });
     });
 
     it('reruns only the chunks it is told to', async () => {
-      const { out, prompts } = await runWith({ ...base, only: ['2', 'chunk-03'] }, (label) => {
-        const nn = label.split(':')[1];
-        return label.startsWith('classify')
-          ? { chunk: nn, pass: true, verdicts: 1, scope: 0, note: '' }
-          : null;
-      });
+      const { out, prompts } = await runWith({ ...base, only: ['2', 'chunk-03'] }, ok);
       expect(prompts.map(p => p.label)).toEqual(['classify:02', 'classify:03']);
       expect(out.ran).toBe(2);
       await expect(runWith({ ...base, only: ['09'] }, () => null)).rejects.toThrow(/outside 0..3/);
     });
 
     it('reports a chunk that never passes instead of throwing the run away', async () => {
-      const { out } = await runWith({ ...base, chunkCount: 2, mdParts: [1, 1] }, (label) => {
-        const nn = label.split(':')[1];
-        if (label === 'classify:01') return { chunk: '01', pass: false, verdicts: 0, scope: 0, note: 'bad' };
-        return label.startsWith('classify')
-          ? { chunk: nn, pass: true, verdicts: 1, scope: 1, verifyParts: 1, note: '' }
-          : { chunk: nn, pass: true, audited: 1, changed: 1, note: '' };
-      });
+      const { out } = await runWith({ ...base, chunkCount: 2, mdParts: [1, 1] }, label =>
+        label === 'classify:01' ? { chunk: '01', pass: false, verdicts: 0, note: 'bad' } : ok(label));
       expect(out.notClassified).toEqual(['01']);
       expect(out.classified).toBe(1);
-      expect(out.changedByVerifier).toBe(1);
-    });
-
-    it('re-asks a receipt that does not relay the verify part count', async () => {
-      let tries = 0;
-      const { prompts } = await runWith({ ...base, chunkCount: 1, mdParts: [1] }, (label) => {
-        if (label.startsWith('verify')) return { chunk: '00', pass: true, audited: 2, changed: 0, note: '' };
-        tries += 1;
-        return tries === 1
-          ? { chunk: '00', pass: true, verdicts: 4, scope: 2, note: '' }
-          : { chunk: '00', pass: true, verdicts: 4, scope: 2, verifyParts: 3, note: '' };
-      });
-      expect(tries).toBe(2);
-      expect(prompts[1].prompt).toContain('receipt has no verifyParts count');
-      expect(prompts.find(p => p.label === 'verify:00').prompt).toContain('verify-00.part3.md');
     });
   }
 );

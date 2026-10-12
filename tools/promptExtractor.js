@@ -3,12 +3,8 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
-const parser = require('@babel/parser');
-const {
-  splitModuleBundle,
-  parseModuleSegment,
-} = require('./lib/moduleBundle.cjs');
-const { buildSettingsIndex } = require('./lib/settingsSchema.cjs');
+const { loadBundleSites } = require('./lib/bundleSites.cjs');
+const { splitModuleBundle } = require('./lib/moduleBundle.cjs');
 
 function slugify(text) {
   return text
@@ -605,7 +601,38 @@ const CURATED_IDENTIFIER_MAPS = {
   // ${h6()?`…`:Aa()?`…`:""}${j}${he}\n\n${M?_e:Me}` in `w8r`, where B is the
   // "give EACH `isolation: \"worktree\"`" sentence. Fuzzy carryover kept every
   // later label on its old slot number, so each one named its left neighbour.
+  // 2.1.294 put the continue note behind a flag: `${g?`To continue … use
+  // ${SendMessage} … A new ${Agent} call`:`… cannot be continued from here.
+  // Every ${Agent} call`}`, so a new slot 6 lands ahead of the tool names and
+  // every later label moves up one.
   'tool-description-agent-usage-notes': [
+    {
+      identifiers: [
+        0, 1, 2, 3, 2, 4, 2, 5, 3, 6, 7, 8, 8, 5, 9, 10, 8, 11, 11, 12, 13, 14,
+        15, 16, 5, 17, 18,
+      ],
+      identifierMap: {
+        0: 'TOOL_BASE_DESCRIPTION',
+        1: 'WHEN_NOT_TO_USE_NOTE',
+        2: 'CAN_RUN_BACKGROUND_AGENTS',
+        3: 'IS_BACKGROUND_AGENTS_OPT_IN',
+        4: 'IS_FORK_SUBAGENT_FEATURE_ENABLED',
+        5: 'CAN_FORK_CONTEXT',
+        6: 'IS_AGENT_CONTINUE_AVAILABLE',
+        7: 'SEND_MESSAGE_TOOL_NAME',
+        8: 'AGENT_TOOL_NAME',
+        9: 'PROCESS_ENV',
+        10: 'IS_DEFAULT_SUBAGENT_STEERING_MODE',
+        11: 'PARALLEL_WORKTREE_ISOLATION_NOTE',
+        12: 'IS_REMOTE_ISOLATION_AVAILABLE_FN',
+        13: 'IS_IN_PROCESS_TEAMMATE_CONTEXT_FN',
+        14: 'IS_TEAMMATE_CONTEXT_FN',
+        15: 'FORK_USAGE_GUIDELINES',
+        16: 'WRITING_SUBAGENT_PROMPTS_GUIDANCE',
+        17: 'FORK_CAPABLE_SUBAGENT_DELEGATION_EXAMPLES',
+        18: 'NON_FORK_SUBAGENT_DELEGATION_EXAMPLES',
+      },
+    },
     {
       identifiers: [
         0, 1, 2, 2, 3, 2, 4, 5, 6, 4, 7, 8, 6, 9, 9, 10, 11, 12, 13, 14, 4, 15,
@@ -639,6 +666,15 @@ const CURATED_IDENTIFIER_MAPS = {
         0: 'CROSS_SESSION_RECIPIENT_ROWS',
         1: 'CROSS_SESSION_SECTION',
         2: 'SHOULD_INCLUDE_LEGACY_PROTOCOL_RESPONSES',
+      },
+    },
+    {
+      identifiers: [0, 1, 0, 2, 3, 0],
+      identifierMap: {
+        0: 'IS_MESSAGING_BEYOND_OWN_AGENTS_DISABLED',
+        1: 'CROSS_SESSION_RECIPIENT_ROWS',
+        2: 'CROSS_SESSION_SECTION',
+        3: 'SHOULD_INCLUDE_LEGACY_PROTOCOL_RESPONSES',
       },
     },
   ],
@@ -732,6 +768,18 @@ const CURATED_IDENTIFIER_MAPS = {
         3: 'STRUCTURED_OUTPUT_TOOL_NAME',
       },
     },
+    {
+      // A later shape appends the verdict-instructions block. Upstream's
+      // 2.1.295 map renames it; the name stays as shipped in 2.8.41.
+      identifiers: [0, 1, 1, 2, 3, 4],
+      identifierMap: {
+        0: 'HOOK_EVALUATION_TASK_PROMPT',
+        1: 'TRANSCRIPT_PATH',
+        2: 'IS_REMOTE_HOOK_CALL',
+        3: 'STRUCTURED_OUTPUT_TOOL_NAME',
+        4: 'AGENT_PROMPT_AGENT_HOOK_VAR_4',
+      },
+    },
   ],
   'agent-prompt-pr-follow-up-cron': [
     {
@@ -809,6 +857,58 @@ const CURATED_IDENTIFIER_MAPS = {
         2: 'PASTED_CONTENT_TRUST_RULE_BLOCK',
         3: 'EMPTY_STRING',
         4: 'EMPTY_SESSION_RULE_SLOT',
+      },
+    },
+  ],
+  // Upstream's 2.1.295 maps rename these generated slot names under an
+  // unchanged layout. The names stay as shipped in 2.8.41 so overrides written
+  // against it keep binding.
+  'system-reminder-remote-chrome-browser-extension-not-connected': [
+    {
+      identifiers: [0, 1],
+      identifierMap: {
+        0: 'CHROME_EXTENSION_URL',
+        1: 'SYSTEM_REMINDER_REMOTE_CHROME_BROWSER_EXTENSION_NOT_CONNECTED_VAR_1',
+      },
+    },
+  ],
+  'agent-prompt-hook-condition-evaluator': [
+    {
+      identifiers: [0],
+      identifierMap: { 0: 'AGENT_PROMPT_HOOK_CONDITION_EVALUATOR_VAR_0' },
+    },
+  ],
+  'agent-prompt-hook-condition-evaluator-stop': [
+    {
+      identifiers: [0],
+      identifierMap: { 0: 'AGENT_PROMPT_HOOK_CONDITION_EVALUATOR_STOP_VAR_0' },
+    },
+  ],
+  // CC 2.1.295 split the AskUserQuestion description: the base keeps the old
+  // id and this plan-mode arm renders it through slot 0. Upstream names the
+  // same layout under the base id, so adoption cannot reach it.
+  'tool-description-askuserquestion-plan-mode-note': [
+    {
+      identifiers: [0, 1, 2],
+      identifierMap: {
+        0: 'ASKUSERQUESTION_BASE_DESCRIPTION',
+        1: 'ENTER_PLAN_MODE_TOOL_NAME',
+        2: 'EXIT_PLAN_MODE_TOOL_NAME',
+      },
+    },
+  ],
+  // CC 2.1.295 reworded the body past fuzzy carryover, so the classification
+  // cache restored the id with generated names. The slots are unchanged.
+  'tool-description-artifact-design-skill-loading-guidance-app-wording-2': [
+    {
+      identifiers: [0, 1, 2, 0, 3, 4, 5],
+      identifierMap: {
+        0: 'ARTIFACT_DESIGN_SKILL_NAME',
+        1: 'WORKSHOP_SKILL_NAME',
+        2: 'ARTIFACT_DIAGRAMMING_SKILL_NAME',
+        3: 'TOOL_DESCRIPTION_ARTIFACT_DESIGN_SKILL_LOADING_GUIDANCE_APP_WORDING_2_VAR_3',
+        4: 'TOOL_DESCRIPTION_ARTIFACT_DESIGN_SKILL_LOADING_GUIDANCE_APP_WORDING_2_VAR_4',
+        5: 'TOOL_DESCRIPTION_ARTIFACT_DESIGN_SKILL_LOADING_GUIDANCE_APP_WORDING_2_VAR_5',
       },
     },
   ],
@@ -1446,7 +1546,9 @@ const NEW_PROMPT_ASSIGNMENTS = [
       'Model-facing framing tag wrapping a forked/local slash-command\'s stdout into a user-role message sent to the model ("<local-command-stdout>\\n${out}\\n</local-command-stdout>"); present whenever a local command produces output that is fed back to the model.',
   },
   {
-    matcher: t => t.includes('Stop hook feedback:'),
+    // The model-facing framing puts the feedback on its own line; the
+    // terminal row renderer's `Stop hook feedback: ${…}` is ui (CC 2.1.296).
+    matcher: t => /^Stop hook feedback:\s*\n/.test(t),
     name: 'Stop Hook Feedback Framing',
     id: 'system-prompt-stop-hook-feedback-framing',
     description:
@@ -3471,13 +3573,14 @@ function leadShowsModelFacingContext(lead, text = '') {
 // (b) Lead-in context that marks a NON-model-facing emission site. All STABLE
 // JS keywords / built-ins / library method names (NOT minified identifiers), so
 // they keep working across versions. A match drops the string regardless of how
-// prompt-like its prose is (the emission site overrides the tone).
+// prompt-like its prose is (the emission site overrides the tone) — unless a
+// classification-cache verdict, read at this exact emission site, says the
+// model sees it (see shouldCapture).
+//
+// Only sites whose output can never reach the model belong here. Exception
+// messages used to: they do not (see leadShowsExceptionContext).
 function leadShowsDropContext(lead) {
   const tail = lead.slice(-120);
-  // Thrown exception messages (internal): `throw ...`, `throw new X(`, `new
-  // <Anything>Error|Exception(`.
-  if (/\bthrow\s+(?:new\s+)?[$\w.]*\(?\s*$/.test(tail)) return true;
-  if (/\bnew\s+[$\w]*(?:Error|Exception)[$\w]*\(\s*$/.test(tail)) return true;
   // Console / leveled-logger diagnostics (internal).
   if (/\bconsole\.(?:log|error|warn|info|debug|trace)\(\s*$/.test(tail))
     return true;
@@ -3502,13 +3605,6 @@ function leadShowsDropContext(lead) {
   // jsxs() call).
   if (/\bchildren:\s*\[?\s*$/.test(tail)) return true;
   if (/\bchildren:\s*\[[^\]]*,\s*$/.test(tail)) return true;
-  // Subclass constructor delegation — `super("...")` is an Error-subclass
-  // message (internal) at every observed site.
-  if (/\bsuper\(\s*$/.test(tail)) return true;
-  // Rejected-promise reasons (internal error strings).
-  if (/\bPromise\.reject\(\s*(?:new\s+[$\w.]*\(\s*)?$/.test(tail)) return true;
-  // Zod `.refine({..., message: "..."})` — validation failure copy (internal).
-  if (/\.refine\((?:[^()]|\([^()]*\))*message:\s*$/.test(tail)) return true;
   // highlight.js language-definition grammar keys — keyword lists and lexer
   // regexes for the markdown code-highlighter, never model-facing. All keys
   // are stable hljs API vocabulary.
@@ -3518,6 +3614,32 @@ function leadShowsDropContext(lead) {
     )
   )
     return true;
+  return false;
+}
+
+// (b2) Lead-in context that marks an EXCEPTION message: `throw …`, `new
+// <Anything>Error|Exception(`, `super(` (Error-subclass constructors),
+// `Promise.reject(`, and a zod `.refine(…, {message:})`. These used to drop
+// outright, but an error thrown inside a tool's call path becomes the
+// tool_result the model reads (the gh stand-in's "{owner}/{repo} would be the
+// repository of …" reaches Bash stderr; EnterWorktree's "Cannot enter
+// worktree: … is the current working directory." is the whole result). Zod
+// refine messages reach the model too: a tool-input validation failure is
+// returned to it as an InputValidationError tool_result, and settings
+// validation errors are surfaced to it as well.
+//
+// The site alone cannot say which route a given message takes, so it decides
+// nothing about facing. It only withholds direct capture: an unclassified
+// string here becomes a classification candidate (when it reads as prose), and
+// the classifier's verdict — model, ui or internal — is what the next
+// extraction acts on.
+function leadShowsExceptionContext(lead) {
+  const tail = lead.slice(-120);
+  if (/\bthrow\s+(?:new\s+)?[$\w.]*\(?\s*$/.test(tail)) return true;
+  if (/\bnew\s+[$\w]*(?:Error|Exception)[$\w]*\(\s*$/.test(tail)) return true;
+  if (/\bsuper\(\s*$/.test(tail)) return true;
+  if (/\bPromise\.reject\(\s*(?:new\s+[$\w.]*\(\s*)?$/.test(tail)) return true;
+  if (/\.refine\((?:[^()]|\([^()]*\))*message:\s*$/.test(tail)) return true;
   return false;
 }
 
@@ -3628,7 +3750,9 @@ function loadSlotLiterals() {
   return _slotLiterals;
 }
 // Debug seam: `TWEAKCC_DUMP_CANDIDATES=<path>` writes one JSON line per string
-// node the extractor considers, as {start, end, kind, cacheBody}.
+// node the extractor considers, as {start, end, kind, cacheBody}, plus
+// `legacyCacheBodies` for a template an earlier extractor cut differently (the
+// further bodies classifyByCache looks it up under).
 //
 // It exists because the cache key for a TEMPLATE literal is not the text anyone
 // reading the binary would write down. `cacheBody` is `pieces.join('')` — the
@@ -3793,14 +3917,25 @@ function* cacheLookupForms(body) {
   }
 }
 
-function classifyByCache(body) {
+// `legacyBodies` are the bodies a template had in an earlier extractor's slot
+// shape (tools/lib/bundleSites.cjs); verdicts recorded against them still bind.
+// A single body string is accepted too.
+function classifyByCache(body, legacyBodies) {
   const cache = loadClassificationCache();
-  for (const form of cacheLookupForms(body)) {
-    const hit = cache[sha1Hex(form)];
-    if (hit) return hit;
+  const bodies = [body, ...[].concat(legacyBodies || []).filter(Boolean)];
+  for (const b of bodies) {
+    for (const form of cacheLookupForms(b)) {
+      const hit = cache[sha1Hex(form)];
+      if (hit) return hit;
+    }
   }
   return null;
 }
+
+const legacyBodiesOf = p =>
+  (p.legacyShapes || []).map(l =>
+    l.pieces.filter(x => typeof x === 'string').join('')
+  );
 
 // Serialize the cache in the repo's canonical one-entry-per-line format (the
 // showtime driver's classify-merge writes the same bytes).
@@ -3914,7 +4049,19 @@ function proseOutsideSlots(text) {
   return out;
 }
 
+// One bare word: an enum value, key or pluralised noun (`error`, `read_file`).
+// Model-facing only as a value inside a catalogued prompt's slot, which the
+// slot-literal gate covers. Never a catalogue entry of its own: the cache is
+// keyed on content, so a `model` verdict earned at one site catalogues every
+// `e==="error"` comparison in the bundle (3,837 entries on CC 2.1.296), and an
+// override would rewrite all of them.
+const BARE_TOKEN = /^[A-Za-z_$][\w$-]*$/;
+function isBareToken(text) {
+  return BARE_TOKEN.test(text.trim());
+}
+
 function isHardExcluded(text) {
+  if (isBareToken(text)) return true;
   // No prose at all — a template that is only interpolation scaffolding
   // (`${x}\n\n${y()}`, `${a}, ${b}`). Nothing model-facing is authored here,
   // so an override can only ever be "unchanged", while the regex built from
@@ -3967,14 +4114,6 @@ function isHardExcluded(text) {
     return true;
   // Runtime-hardening IIFEs the bundler emits (executable code).
   if (text.startsWith('(() => {')) return true;
-  // claude-in-chrome file_upload tool description (kept out of the catalogue
-  // for baseline consistency — no sibling browser tool is catalogued).
-  if (
-    text.startsWith(
-      'Upload one or multiple files to a file input element on the page'
-    )
-  )
-    return true;
   // A general-purpose-agent fragment with no working override target (a
   // nested/clobbered span; see the inline notes in validateInput's history).
   if (
@@ -4055,6 +4194,26 @@ function looksLikeEnglishProse(text) {
   return /[.,:;!?)](\s|$)/.test(text) || /\n/.test(text.trim());
 }
 
+// The prose bar for an EXCEPTION message. Error text is often a single clause
+// with no terminal punctuation ("comments could not be read reliably right now
+// — try again"), which looksLikeEnglishProse rejects for want of a sentence
+// boundary. This accepts a run of real words instead: interpolations removed,
+// at least three lowercase-bodied words making up most of the tokens, and one
+// function word. Identifiers, paths and schema paths are one token; regex
+// sources and keyword tables fail the word share or carry no function word.
+const ERROR_WORD = /^[("'`]?[A-Za-z][a-z]+(?:['’-][a-z]+)*[)"'`.,:;!?]*$/;
+function looksLikeErrorPhrase(text) {
+  const plain = text.replace(/\$\{[^}]*\}/g, ' ');
+  const ascii = plain.replace(/[^\x20-\x7e\n\t]/g, '');
+  if (ascii.length / plain.length < 0.9) return false;
+  const tokens = plain.split(/\s+/).filter(Boolean);
+  const words = tokens.filter(t => ERROR_WORD.test(t));
+  if (words.length < 3 || words.length / tokens.length < 0.6) return false;
+  return words.some(w =>
+    PROSE_STOPWORDS.has(w.toLowerCase().replace(/[^a-z]/g, ''))
+  );
+}
+
 // Strings rejected ONLY by the prose-quality gates (they cleared the drop
 // contexts, the hard excludes, and the floor) that read like English prose.
 // These are the classification candidates the prose gates used to eat
@@ -4063,24 +4222,67 @@ function looksLikeEnglishProse(text) {
 // verdict and the NEXT extraction acts on it (capture + name for 'model',
 // permanent drop for 'ui'/'internal'). Collected during extractStrings,
 // filtered against the final catalogue, and written as a sidecar by the CLI.
-const _gateCandidates = new Map(); // body -> flattened lead
-function recordGateCandidate(body, lead) {
-  if (!_gateCandidates.has(body)) {
-    _gateCandidates.set(body, lead.slice(-120).replace(/\n/g, ' '));
+//
+// Each candidate keeps the ranges it was rejected at, because whether it still
+// needs a verdict is a question about SITES, not text: it needs none only when
+// every one of its sites lies inside a captured prompt. The 80-char prefix test
+// this replaced dropped any candidate whose OPENING a captured prompt shared;
+// on CC 2.1.294 it discarded all 321 candidates, 107 of them at sites no
+// captured prompt covers, among them the resume-only tail of the
+// orphaned-agents notification, whose first 89 chars are its relaunch
+// sibling's. Full-body containment is no better: 56 of the 107 are text some
+// captured prompt also contains, emitted from a site of their own.
+const _gateCandidates = new Map(); // body -> { lead, ranges }
+function recordGateCandidate(body, lead, range) {
+  let rec = _gateCandidates.get(body);
+  if (!rec) {
+    rec = { lead: lead.slice(-120).replace(/\n/g, ' '), ranges: [] };
+    _gateCandidates.set(body, rec);
   }
+  if (range && typeof range.start === 'number') rec.ranges.push(range);
+}
+
+// A candidate whose every site sits inside (or is) a captured prompt is that
+// prompt's text and needs no verdict of its own. A candidate recorded without a
+// range (a direct shouldCapture call) is kept.
+function uncoveredGateCandidates(captured) {
+  const exact = new Set(captured.map(item => `${item.start}:${item.end}`));
+  const isNested = nestedRangeIndex(
+    captured.map(item => [item.start, item.end])
+  );
+  const covered = r =>
+    exact.has(`${r.start}:${r.end}`) || isNested(r.start, r.end);
+  const out = [];
+  for (const [body, rec] of _gateCandidates) {
+    if (rec.ranges.length && rec.ranges.every(covered)) continue;
+    out.push({
+      hash: crypto.createHash('sha1').update(body).digest('hex'),
+      len: body.length,
+      lead: rec.lead,
+      body,
+    });
+  }
+  return out;
 }
 
 // The capture decision for one emission site. Order:
-//   1. Structural drop contexts (jsx children, throw, console, hljs grammar…)
-//      always drop — candidates are never recorded from these sites, so no
-//      cache verdict can exist to argue with them.
-//   2. A classification-cache verdict is authoritative for everything else —
-//      it was produced by reading this exact content's emission site — so a
-//      'model' verdict rescues a string the prose gates would drop, and a
-//      'ui'/'internal' verdict drops a string the gates would admit. Hard
-//      structural excludes still win over a 'model' verdict.
-//   3. No verdict -> the static gates decide; a prose-gate-only rejection
-//      that looks like English prose becomes a classification candidate.
+//   1. UI-only drop contexts (jsx children, console, terminal writes, --help
+//      builders, hljs grammar) always drop. Their output provably never reaches
+//      the model, and no verdict can argue with that: the cache is keyed on
+//      CONTENT, not site, so a 'model' verdict earned at a tool-result site
+//      would otherwise catalogue every Ink copy of the same words ("Auto-compact
+//      is currently disabled (see /config)" is UI-only in 2.1.291 yet carries a
+//      model verdict). A string that is model-facing at some other site is
+//      caught there, or by the identical-site backfill.
+//   2. Curated verdicts (slot-literal `catalogue`, settings-schema
+//      descriptions), then the classification cache — authoritative for
+//      everything else, exception sites included: a 'model' verdict captures, a
+//      'ui'/'internal' verdict drops. Hard structural excludes still win.
+//   3. Exception sites (throw, new XError(, super(, Promise.reject(, zod
+//      refine) are never captured unclassified: a prose string there becomes
+//      a classification candidate, so the classifier decides its facing.
+//   4. Otherwise the static gates decide; a prose-gate-only rejection that
+//      looks like English prose becomes a classification candidate.
 function shouldCapture(text, cacheBody, lead, minLength, opts = {}) {
   if (leadShowsDropContext(lead)) return false;
   // A slot-literal `catalogue` verdict says a human read this exact string at
@@ -4089,14 +4291,30 @@ function shouldCapture(text, cacheBody, lead, minLength, opts = {}) {
   // kind of curated decision NEW_PROMPT_ASSIGNMENTS encodes, so it wins over
   // the cache and the prose gate alike. Hard structural excludes still win over
   // it, exactly as they do over a cached 'model'.
-  if (opts.slotLiteral) return !isHardExcluded(text);
+  if (opts.slotLiteral) {
+    if (isHardExcluded(text)) return false;
+    // A quasi's verdict was read at one host, and the same quasi recurs in
+    // other templates (CC 2.1.296: " isn't available in this session." closes
+    // both the in-session refusal and a CLI-only `claude plugin` error). A
+    // verdict on THIS template's whole body is the more specific ruling.
+    // The veto is a cache verdict, so the curated rulings that outrank the
+    // cache (a settings-schema description, a NEW_PROMPT_ASSIGNMENTS pin)
+    // outrank it here too.
+    if (opts.slotLiteral === 'quasi' && !opts.settingsDescription) {
+      const own = classifyByCache(cacheBody, opts.legacyCacheBodies);
+      if (own && own.facing !== 'model' && !lookupNewPromptAssignment(text))
+        return false;
+    }
+    return true;
+  }
   // A settings-schema description is found structurally (the model reads the
   // whole schema via /update-config and settings validation errors), which
   // survives a reword that would orphan any per-string cache row.
   if (opts.settingsDescription) return !isHardExcluded(text);
-  const cls = classifyByCache(cacheBody);
+  const cls = classifyByCache(cacheBody, opts.legacyCacheBodies);
   if (cls) {
     if (isHardExcluded(text)) return false;
+    if (cls.facing === 'model') return true;
     // A CURATED assignment outranks the cached verdict. The cache is written by
     // an LLM classification pass reading each string's emission site, and it is
     // right often enough to be the authority for below-floor capture — but it is
@@ -4109,9 +4327,18 @@ function shouldCapture(text, cacheBody, lead, minLength, opts = {}) {
     // tool description: the model reads it on every session that exposes the
     // tool. Naming a prompt in NEW_PROMPT_ASSIGNMENTS is a human decision about
     // one specific string, so it wins; everything else still defers to the cache.
-    if (cls.facing !== 'model' && !lookupNewPromptAssignment(text))
-      return false;
-    if (cls.facing === 'model') return true;
+    if (!lookupNewPromptAssignment(text)) return false;
+  }
+  if (leadShowsExceptionContext(lead)) {
+    // No length floor: a short tool error ("Path does not exist: ${p}") is
+    // the whole tool_result. The prose bars keep identifiers and enums out.
+    if (
+      validateInput(text, 1, { bypassQuality: true }) &&
+      (looksLikeEnglishProse(cacheBody) || looksLikeErrorPhrase(cacheBody))
+    ) {
+      recordGateCandidate(cacheBody, lead, opts.range);
+    }
+    return false;
   }
   const signalled = leadShowsModelFacingContext(lead, text);
   const eff = signalled ? 1 : Math.min(minLength, ADMIT_FLOOR);
@@ -4122,7 +4349,7 @@ function shouldCapture(text, cacheBody, lead, minLength, opts = {}) {
     validateInput(text, eff, { bypassQuality: true }) &&
     looksLikeEnglishProse(cacheBody)
   ) {
-    recordGateCandidate(cacheBody, lead);
+    recordGateCandidate(cacheBody, lead, opts.range);
   }
   return false;
 }
@@ -4436,134 +4663,8 @@ function validateInput(text, minLength = 500, opts = {}) {
   return true;
 }
 
-// Decode JS unicode/hex escape sequences in template-literal raw source.
-// Surgical: only handles \uHHHH, \u{X+}, \xHH. Preserves `\\` so literal
-// `\\uHHHH` source (= backslash + u + four hex chars at runtime) isn't
-// accidentally interpreted as an escape. Other escapes (\n, \t, \", \`)
-// are kept raw to match the storage format Piebald's published JSONs use.
-function decodeUnicodeEscapesInPiece(s) {
-  let out = '';
-  let i = 0;
-  while (i < s.length) {
-    if (s[i] === '\\' && i + 1 < s.length) {
-      // Double-backslash: copy both literally so the next char isn't read as an escape.
-      if (s[i + 1] === '\\') {
-        out += '\\\\';
-        i += 2;
-        continue;
-      }
-      if (s[i + 1] === 'u') {
-        if (s[i + 2] === '{') {
-          const close = s.indexOf('}', i + 3);
-          if (close > -1) {
-            const hex = s.substring(i + 3, close);
-            if (/^[0-9a-fA-F]+$/.test(hex)) {
-              out += String.fromCodePoint(parseInt(hex, 16));
-              i = close + 1;
-              continue;
-            }
-          }
-        } else if (i + 6 <= s.length) {
-          const hex = s.substring(i + 2, i + 6);
-          if (/^[0-9a-fA-F]{4}$/.test(hex)) {
-            out += String.fromCharCode(parseInt(hex, 16));
-            i += 6;
-            continue;
-          }
-        }
-      }
-      if (s[i + 1] === 'x' && i + 4 <= s.length) {
-        const hex = s.substring(i + 2, i + 4);
-        if (/^[0-9a-fA-F]{2}$/.test(hex)) {
-          out += String.fromCharCode(parseInt(hex, 16));
-          i += 4;
-          continue;
-        }
-      }
-    }
-    out += s[i];
-    i++;
-  }
-  return out;
-}
-
-// ---------------------------------------------------------------------------
-// Multi-node composites
-//
-// A prompt can be ONE string semantically but N nodes syntactically:
-//   ttp = ["Do not call the AgentTool…","Do not use workflows…"].join("\n")
-//   .describe("Invokes an MCP tool " + "via the subprocess MCP client.")
-// Gating each node alone can never see it — every fragment is short and its
-// lead (`["`, `,"`, `+`) carries no model-facing signal, so it falls under the
-// floor and is not even offered to the classification phase. That is how the
-// Opus 5 anti-delegation pair and chunks of the bundled keybindings skill
-// stayed uncaptured through 2.1.218/219/220.
-//
-// The assembled text is EVIDENCE ONLY, never a stored prompt: the joined form
-// exists at runtime, not in cli.js, so a regex built from it could never match
-// and every apply would report "Could not find" (the same reasoning
-// isHardExcluded already applies to unspliceable model-facing text). Each
-// FRAGMENT is a real literal, so the fragments are what get captured.
-// ---------------------------------------------------------------------------
-
-const literalOf = node => {
-  if (!node) return null;
-  if (node.type === 'StringLiteral') return node.value;
-  if (node.type === 'TemplateLiteral' && node.expressions.length === 0) {
-    return node.quasis[0].value.cooked;
-  }
-  return null;
-};
-
-// Leaf NODES of a `"a" + "b" + "c"` chain, or null if any leaf is not a literal.
-const concatLeafNodes = node => {
-  if (node.type === 'BinaryExpression' && node.operator === '+') {
-    const l = concatLeafNodes(node.left);
-    const r = concatLeafNodes(node.right);
-    return l !== null && r !== null ? [...l, ...r] : null;
-  }
-  return literalOf(node) === null ? null : [node];
-};
-
-// { text, nodes } for a composite node, else null.
-function assembleComposite(node) {
-  const fromArray = (elements, sep) => {
-    const nodes = elements || [];
-    const parts = nodes.map(literalOf);
-    if (parts.length < 2 || !parts.every(p => typeof p === 'string'))
-      return null;
-    return { text: parts.join(sep), nodes };
-  };
-
-  // `[...].join(sep)` — the separator is known, so the text is exact.
-  if (
-    node.type === 'CallExpression' &&
-    node.callee?.type === 'MemberExpression' &&
-    node.callee.property?.name === 'join' &&
-    node.callee.object?.type === 'ArrayExpression'
-  ) {
-    const sepArg = node.arguments.length ? literalOf(node.arguments[0]) : ',';
-    return fromArray(
-      node.callee.object.elements,
-      typeof sepArg === 'string' ? sepArg : ','
-    );
-  }
-
-  // A bare array of string literals. The separator is unknown (joined
-  // elsewhere, or spread into a builder), so assume a newline — every observed
-  // case in cli.js is line-oriented markdown or instruction text.
-  if (node.type === 'ArrayExpression') return fromArray(node.elements, '\n');
-
-  if (node.type === 'BinaryExpression' && node.operator === '+') {
-    const nodes = concatLeafNodes(node);
-    if (nodes === null || nodes.length < 2) return null;
-    const parts = nodes.map(literalOf);
-    if (!parts.every(p => typeof p === 'string')) return null;
-    return { text: parts.join(''), nodes };
-  }
-
-  return null;
-}
+// Template decoding and multi-node composite assembly live in
+// lib/bundleSites.cjs with the rest of the bundle-only site collection.
 
 // A prompt that is byte-identical at several sites needs ONE CATALOGUE ENTRY
 // PER SITE: the apply consumes one site per entry, and when the binary matches
@@ -4632,7 +4733,53 @@ function sameVarPattern(template, node, code) {
   return true;
 }
 
-function backfillIdenticalSites(stringData, ast, code) {
+// Whether a range sits strictly inside one of `ranges` (equal bounds do not
+// count). Built once per backfill: the plain scan was O(captures) per node and
+// ran over every node of the bundle. Reproduces that scan for any input:
+// `start >= s && end <= e && !(start === s && end === e)`, where an end that is
+// not a number compares through ToNumber and is never `===` the query.
+function nestedRangeIndex(ranges) {
+  const usable = [];
+  for (const [s, e] of ranges) {
+    const end = Number(e);
+    // NaN fails every relational comparison, so such a range nests nothing.
+    if (typeof s !== 'number' || Number.isNaN(s) || Number.isNaN(end)) continue;
+    usable.push({ s, end, strict: typeof e === 'number' });
+  }
+  usable.sort((a, b) => a.s - b.s);
+  const starts = usable.map(r => r.s);
+  const prefixMaxEnd = [];
+  let max = -Infinity;
+  for (const r of usable) {
+    max = Math.max(max, r.end);
+    prefixMaxEnd.push(max);
+  }
+  // Per start: the largest end, and the ends that can never be `===` a query.
+  const atStart = new Map();
+  for (const r of usable) {
+    let slot = atStart.get(r.s);
+    if (!slot) {
+      slot = { max: -Infinity, loose: new Set() };
+      atStart.set(r.s, slot);
+    }
+    slot.max = Math.max(slot.max, r.end);
+    if (!r.strict) slot.loose.add(r.end);
+  }
+  return (start, end) => {
+    let lo = 0;
+    let hi = starts.length;
+    while (lo < hi) {
+      const mid = (lo + hi) >> 1;
+      if (starts[mid] < start) lo = mid + 1;
+      else hi = mid;
+    }
+    if (lo > 0 && prefixMaxEnd[lo - 1] >= end) return true;
+    const slot = atStart.get(start);
+    return Boolean(slot) && (slot.max > end || slot.loose.has(end));
+  };
+}
+
+function backfillIdenticalSites(stringData, sites, code) {
   // A StringLiteral twin is identified by its VALUE — quoting may differ between
   // sites and the search regex matches the value either way.
   //
@@ -4652,17 +4799,11 @@ function backfillIdenticalSites(stringData, ast, code) {
   // for the 6 matchable sites of `Permission to use ${} with command ${} has
   // been denied.` — entries with nowhere to splice, the same cardinality failure
   // this exists to remove, pointed the other way.
-  const capturedRanges = stringData
-    .filter(item => typeof item.start === 'number')
-    .map(item => [item.start, item.end])
-    .sort((a, b) => a[0] - b[0]);
-  const isNested = node =>
-    capturedRanges.some(
-      ([start, end]) =>
-        node.start >= start &&
-        node.end <= end &&
-        !(node.start === start && node.end === end)
-    );
+  const isNested = nestedRangeIndex(
+    stringData
+      .filter(item => typeof item.start === 'number')
+      .map(item => [item.start, item.end])
+  );
 
   const byValue = new Map();
   const bySource = new Map();
@@ -4680,8 +4821,8 @@ function backfillIdenticalSites(stringData, ast, code) {
 
   const takenStarts = new Set(stringData.map(item => item.start));
   const added = new Map();
-  const clone = (template, node) => {
-    takenStarts.add(node.start);
+  const clone = (template, site) => {
+    takenStarts.add(site.start);
     const body = (template.pieces || []).join('');
     added.set(body, (added.get(body) || 0) + 1);
     stringData.push({
@@ -4691,408 +4832,462 @@ function backfillIdenticalSites(stringData, ast, code) {
       pieces: [...template.pieces],
       identifiers: [...(template.identifiers || [])],
       identifierMap: { ...(template.identifierMap || {}) },
-      start: node.start,
-      end: node.end,
+      start: site.start,
+      end: site.end,
+      ...(template.legacyShapes && { legacyShapes: template.legacyShapes }),
     });
   };
 
-  const visit = node => {
-    if (!node || typeof node !== 'object') return;
-    if (Array.isArray(node)) {
-      for (const child of node) visit(child);
-      return;
+  for (const site of sites) {
+    if (site.kind === 'composite') continue;
+    if (takenStarts.has(site.start) || isNested(site.start, site.end)) continue;
+    if (site.kind === 'string') {
+      if (byValue.has(site.value)) clone(byValue.get(site.value), site);
+      continue;
     }
-    if (!takenStarts.has(node.start) && !isNested(node)) {
-      if (node.type === 'StringLiteral' && byValue.has(node.value)) {
-        clone(byValue.get(node.value), node);
-      } else if (node.type === 'TemplateLiteral') {
-        const key = templateKey(code.slice(node.start, node.end));
-        const template = key ? bySource.get(key) : null;
-        if (template && sameVarPattern(template, node, code)) {
-          clone(template, node);
-        }
-      }
+    const key = templateKey(code.slice(site.start, site.end));
+    const template = key ? bySource.get(key) : null;
+    if (template && sameVarPattern(template, templateExprNode(site), code)) {
+      clone(template, site);
     }
-    for (const key of Object.keys(node)) {
-      if (key === 'loc' || key === 'leadingComments') continue;
-      const child = node[key];
-      if (child && typeof child === 'object') visit(child);
-    }
-  };
-  visit(ast);
+  }
 
   for (const [body, count] of added) {
     console.log(
-      `Backfilled ${count} identical site(s) for "${body.slice(0, 60).replace(/\n/g, ' ')}${body.length > 60 ? '\u2026' : ''}"`
+      `Backfilled ${count} identical site(s) for "${body.slice(0, 60).replace(/\n/g, ' ')}${body.length > 60 ? '…' : ''}"`
     );
   }
+}
+
+// The `{ expressions: [{ start, end }] }` view of a template site that
+// sameVarPattern reads.
+function templateExprNode(site) {
+  const expressions = [];
+  for (let i = 0; i < site.expressions.length; i += 2) {
+    expressions.push({
+      start: site.expressions[i],
+      end: site.expressions[i + 1],
+    });
+  }
+  return { expressions };
+}
+
+function literalSiteRecord(site) {
+  const range = { start: site.start, end: site.end, kind: site.kind };
+  if (site.kind === 'composite')
+    return {
+      ...range,
+      cacheBody: site.text,
+      fragments: site.fragments.map(f => ({
+        start: f.start,
+        end: f.end,
+        body: f.value,
+      })),
+    };
+  if (site.kind === 'string') return { ...range, cacheBody: site.value };
+  return {
+    ...range,
+    cacheBody: site.pieces.join(''),
+    ...(site.legacyShapes && {
+      legacyCacheBodies: site.legacyShapes.map(l => l.pieces.join('')),
+    }),
+  };
+}
+
+// `opts.cache` reuses the bundle-only site collection from the on-disk cache
+// (tools/lib/bundleSites.cjs). The CLI and collectLiteralSites turn it on;
+// TWEAKCC_EXTRACT_NO_CACHE=1 forces a cold collection either way.
+// Text-asset segments of a virtual bundle (src/nativeTextAssets.ts): a module
+// whose whole body is one template literal holding the asset's text. Keyed by
+// the literal's start offset.
+function textAssetSegments(code) {
+  const out = new Map();
+  for (const seg of splitModuleBundle(code) || []) {
+    if (!seg.source.startsWith('`')) continue;
+    out.set(seg.start, {
+      name: seg.name,
+      end: seg.start + seg.source.length,
+    });
+  }
+  return out;
+}
+
+// `/$bunfs/root/state-library.js-wy8y4843.txt` -> `state-library.js`: the
+// file name without the loader extension, `.zst`, or Bun's per-build content
+// hash, so the id survives a rebuild.
+function assetStem(modulePath) {
+  return modulePath
+    .split('/')
+    .pop()
+    .replace(/\.zst$/, '')
+    .replace(/\.(?:md|txt)$/, '')
+    .replace(/-[a-z0-9]{8}(?=\.[A-Za-z0-9]+$|$)/, '');
+}
+
+function assetHeading(text) {
+  const heading =
+    text.match(/^#{1,3}[ \t]+(.+)$/m) ||
+    text.match(/<title>([^<]+)<\/title>/i) ||
+    text.match(/^\s*(\S.*)$/m);
+  return heading ? heading[1].trim() : '';
+}
+
+// The catalogue before CC 2.1.246 moved these docs into text assets. Its ids
+// are the ones their overrides were written under, so a doc it holds keeps
+// its old id instead of getting a new one.
+const ASSET_HISTORY_CATALOGUE = path.join(
+  __dirname,
+  '..',
+  'data',
+  'prompts',
+  'prompts-2.1.241.json'
+);
+
+function loadAssetHistory() {
+  if (!fs.existsSync(ASSET_HISTORY_CATALOGUE)) return [];
+  try {
+    return (
+      JSON.parse(fs.readFileSync(ASSET_HISTORY_CATALOGUE, 'utf-8')).prompts ||
+      []
+    );
+  } catch {
+    return [];
+  }
+}
+
+// Name the captured text assets that are still anonymous, or only carry the
+// id inferPromptIdentity guessed from SKILL.md frontmatter. Order: the
+// reference catalogue's id for the same document (full body, then its
+// opening), the pre-split catalogue's id, the frontmatter skill name, and
+// finally `data-<file stem>`, with the document's heading added when several
+// assets share a stem (README, tool-use, template.html).
+function applyAssetNames(prompts, upstreamPrompts = [], historyPrompts = []) {
+  const norm = s =>
+    s
+      .replace(/\\([`$\\])/g, '$1')
+      .replace(/\s+/g, ' ')
+      .trim();
+  const body = p =>
+    (p.pieces || []).filter(x => typeof x === 'string').join('');
+  const PREFIX = 160;
+  const index = list => {
+    const full = new Map();
+    const prefix = new Map();
+    for (const u of list) {
+      if (!u.id) continue;
+      const b = norm(body(u));
+      if (!full.has(b)) full.set(b, u);
+      const k = b.slice(0, PREFIX);
+      if (k.length < PREFIX) continue;
+      const seen = prefix.get(k);
+      if (seen === undefined) prefix.set(k, u);
+      else if (seen && seen.id !== u.id) prefix.set(k, null);
+    }
+    return { full, prefix };
+  };
+  const up = index(upstreamPrompts);
+  const hist = index(historyPrompts);
+
+  const fresh = [];
+  const unmatched = [];
+  let adopted = 0;
+  let restored = 0;
+  for (const p of prompts) {
+    if (!p.asset) continue;
+    const text = body(p);
+    const inferred = inferPromptIdentity(text);
+    if (p.id && !(inferred && p.id === inferred.id)) continue;
+    const b = norm(text);
+    const k = b.slice(0, PREFIX);
+    const fromUp = up.full.get(b) || up.prefix.get(k);
+    const hit =
+      up.full.get(b) || hist.full.get(b) || fromUp || hist.prefix.get(k);
+    if (hit) {
+      p.id = hit.id;
+      p.name = hit.name || '';
+      p.description = hit.description || '';
+      if (hit === fromUp || hit === up.full.get(b)) adopted++;
+      else restored++;
+    } else {
+      unmatched.push({ p, b });
+    }
+  }
+
+  // A doc edited since the split no longer matches its old opening. Fall back
+  // to how much of the old body survives: evenly spaced 60-char windows of it,
+  // most of which must occur in the asset. Each old id goes to at most one
+  // asset, best score first, and a tie between two old ids names neither.
+  const taken = new Set(prompts.map(p => p.id).filter(Boolean));
+  const scored = [];
+  for (const h of historyPrompts) {
+    if (!h.id || taken.has(h.id)) continue;
+    const hb = norm(body(h));
+    if (hb.length < 200) continue;
+    const step = Math.max(1, Math.floor((hb.length - 60) / 8));
+    const windows = [];
+    for (let i = 0; i + 60 <= hb.length && windows.length < 9; i += step)
+      windows.push(hb.slice(i, i + 60));
+    for (const u of unmatched) {
+      if (u.b.length < hb.length / 2 || u.b.length > hb.length * 2) continue;
+      const hits = windows.filter(w => u.b.includes(w)).length;
+      if (hits * 2 >= windows.length && hits >= 4)
+        scored.push({ u, h, score: hits / windows.length });
+    }
+  }
+  scored.sort((a, b) => b.score - a.score);
+  const claimed = new Set();
+  for (const { u, h, score } of scored) {
+    if (u.named || claimed.has(h.id)) continue;
+    const rival = scored.find(
+      s => s.u === u && s.h.id !== h.id && s.score === score
+    );
+    if (rival) continue;
+    u.named = true;
+    claimed.add(h.id);
+    u.p.id = h.id;
+    u.p.name = h.name || '';
+    u.p.description = h.description || '';
+    restored++;
+  }
+  for (const u of unmatched) if (!u.named && !u.p.id) fresh.push(u.p);
+
+  const slug = s =>
+    s
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  const baseId = p => `data-${slug(assetStem(p.asset))}`;
+  const stems = new Map();
+  for (const p of fresh) stems.set(baseId(p), (stems.get(baseId(p)) || 0) + 1);
+  for (const p of fresh) {
+    const stem = assetStem(p.asset);
+    const heading = assetHeading(body(p).replace(/\\([`$\\])/g, '$1'));
+    const headingSlug = slug(heading).split('-').slice(0, 6).join('-');
+    p.id =
+      stems.get(baseId(p)) > 1 && headingSlug
+        ? `${baseId(p)}-${headingSlug}`
+        : baseId(p);
+    p.name = `Data: ${stem}${stems.get(baseId(p)) > 1 && heading ? ` (${heading.slice(0, 60)})` : ''}`;
+    p.description = `Text asset ${stem} that Claude Code loads by path from its bundle.`;
+  }
+  console.log(
+    `Named ${adopted + restored + fresh.length} text asset(s): ${adopted} from the reference catalogue, ${restored} from the pre-split catalogue, ${fresh.length} from their file name`
+  );
+  return prompts;
 }
 
 function extractStrings(filepath, minLength = 500, opts = {}) {
   _gateCandidates.clear(); // idempotent across calls
   const code = fs.readFileSync(filepath, 'utf-8');
-  const settingsIndex = buildSettingsIndex(code);
-  const settingsAt = node => {
-    const hit = settingsIndex.get(node.start);
+  const bundle = loadBundleSites(code, { useCache: Boolean(opts.cache) });
+  if (bundle.cache !== 'off') {
+    console.log(
+      bundle.cache === 'hit'
+        ? `extractStrings: site cache hit (${bundle.file})`
+        : `extractStrings: site cache miss, collected and stored (${bundle.file})`
+    );
+  }
+  if (opts.sitesOnly) {
+    for (const site of bundle.sites) {
+      if (site.kind === 'composite' && !_collectComposites) continue;
+      dumpCandidate(literalSiteRecord(site));
+    }
+    return null;
+  }
+  const settingsIndex = new Map(bundle.settings);
+  const settingsAt = site => {
+    const hit = settingsIndex.get(site.start);
     return hit && hit.safe ? hit : null;
   };
-
-  const segments = splitModuleBundle(code);
-  const ast = segments
-    ? null
-    : parser.parse(code, {
-        sourceType: 'module',
-        plugins: ['jsx', 'typescript'],
-      });
+  const leadOf = start => code.slice(Math.max(0, start - 600), start);
 
   const stringData = [];
 
-  const traverse = node => {
-    if (!node || typeof node !== 'object') return;
+  // Multi-node composites only ever emit FRAGMENTS (never the joined text —
+  // see the note in lib/bundleSites.cjs), each at its own range, so nothing
+  // already captured is enclosed or retired.
+  const decideComposite = site => {
+    if (_siteCollector && _collectComposites)
+      dumpCandidate(literalSiteRecord(site));
+    const fragCaptured = site.fragments.map(frag => {
+      const v = frag.value;
+      return shouldCapture(v, v, leadOf(frag.start), minLength, {
+        settingsDescription: Boolean(settingsAt(frag)),
+        range: frag,
+      });
+    });
+    const lead = leadOf(site.start);
+    // Model-facing if a sibling already made it into the catalogue, or if
+    // the assembled text carries a cache verdict / clears the gate.
+    const modelFacing =
+      fragCaptured.some(Boolean) ||
+      classifyByCache(site.text)?.facing === 'model' ||
+      shouldCapture(site.text, site.text, lead, minLength, { range: site });
+    if (!modelFacing) return;
 
-    // Multi-node composites. Runs before the per-node branches, but only ever
-    // emits FRAGMENTS (never the joined text — see the note above), each at its
-    // own range, so nothing already captured is enclosed or retired.
-    {
-      const composite = assembleComposite(node);
-      if (composite !== null) {
-        if (_siteCollector && _collectComposites)
-          _siteCollector.push({
-            start: node.start,
-            end: node.end,
-            kind: 'composite',
-            cacheBody: composite.text,
-            fragments: composite.nodes.map(n => ({
-              start: n.start,
-              end: n.end,
-              body: literalOf(n),
-            })),
-          });
-        const fragCaptured = composite.nodes.map(frag => {
-          const v = literalOf(frag);
-          const fragLead = code.slice(
-            Math.max(0, frag.start - 600),
-            frag.start
-          );
-          return shouldCapture(v, v, fragLead, minLength, {
-            settingsDescription: Boolean(settingsAt(frag)),
-          });
-        });
-        const lead = code.slice(Math.max(0, node.start - 600), node.start);
-        // Model-facing if a sibling already made it into the catalogue, or if
-        // the assembled text carries a cache verdict / clears the gate.
-        const modelFacing =
-          fragCaptured.some(Boolean) ||
-          classifyByCache(composite.text)?.facing === 'model' ||
-          shouldCapture(composite.text, composite.text, lead, minLength);
-
-        if (modelFacing) {
-          composite.nodes.forEach((frag, i) => {
-            if (fragCaptured[i]) return; // the normal path already took it
-            const v = literalOf(frag);
-            if (!v) return;
-            // The cache stays authoritative here exactly as inside
-            // shouldCapture: a 'ui'/'internal' verdict must be able to drop a
-            // fragment, a 'model' verdict admits it outright.
-            const verdict = classifyByCache(v);
-            if (verdict) {
-              if (verdict.facing !== 'model' || isHardExcluded(v)) return;
-            } else {
-              // Deliberately NOT looksLikeEnglishProse: these fragments are
-              // mid-sentence by construction (one sentence split across array
-              // elements), so a full-sentence test rejects exactly the ones
-              // worth rescuing. The captured sibling is the evidence the array
-              // is model-facing; here we only exclude markdown scaffolding
-              // ("```json", "", "- ") and code.
-              const words = v.trim().split(/\s+/).length;
-              if (
-                v.trim().length < ADMIT_FLOOR ||
-                words < 5 ||
-                !/[a-z]/.test(v) ||
-                isHardExcluded(v)
-              ) {
-                return;
-              }
-            }
-            stringData.push({
-              name: '',
-              id: '',
-              description: '',
-              pieces: [v],
-              identifiers: [],
-              identifierMap: {},
-              start: frag.start,
-              end: frag.end,
-            });
-          });
+    site.fragments.forEach((frag, i) => {
+      if (fragCaptured[i]) return; // the normal path already took it
+      const v = frag.value;
+      if (!v) return;
+      // The cache stays authoritative here exactly as inside shouldCapture: a
+      // 'ui'/'internal' verdict must be able to drop a fragment, a 'model'
+      // verdict admits it outright.
+      const verdict = classifyByCache(v);
+      if (verdict) {
+        if (verdict.facing !== 'model' || isHardExcluded(v)) return;
+      } else {
+        // Deliberately NOT looksLikeEnglishProse: these fragments are
+        // mid-sentence by construction (one sentence split across array
+        // elements), so a full-sentence test rejects exactly the ones worth
+        // rescuing. The captured sibling is the evidence the array is
+        // model-facing; here we only exclude markdown scaffolding ("```json",
+        // "", "- ") and code.
+        const words = v.trim().split(/\s+/).length;
+        if (
+          v.trim().length < ADMIT_FLOOR ||
+          words < 5 ||
+          !/[a-z]/.test(v) ||
+          isHardExcluded(v)
+        ) {
+          return;
         }
       }
-    }
-
-    // Extract string literals. shouldCapture folds together the drop
-    // contexts, the classification cache (authoritative — a 'model' verdict
-    // rescues prose-gate rejections, a 'ui'/'internal' verdict drops), the
-    // static gates, and candidate recording. NAMES are applied post-merge so
-    // established fuzzy-carryover ids win over cache names (applyCacheNames).
-    if (node.type === 'StringLiteral') {
-      // 600 chars of lead: the last 120 (tail) drive most rules; the wide
-      // window exists for the nudge-catalog compound rules, whose sibling
-      // keys sit beyond a long preceding string value.
-      const lead = code.slice(Math.max(0, node.start - 600), node.start);
-      const slotLiteral = Boolean(slotLiteralVerdict(node.value));
-      const settings = settingsAt(node);
-      dumpCandidate({
-        start: node.start,
-        end: node.end,
-        kind: 'string',
-        cacheBody: node.value,
+      stringData.push({
+        name: '',
+        id: '',
+        description: '',
+        pieces: [v],
+        identifiers: [],
+        identifierMap: {},
+        start: frag.start,
+        end: frag.end,
       });
-      if (
-        shouldCapture(node.value, node.value, lead, minLength, {
-          slotLiteral,
-          settingsDescription: Boolean(settings),
-        })
-      ) {
-        stringData.push({
-          name: '',
-          id: '',
-          description: '',
-          pieces: [node.value],
-          identifiers: [],
-          identifierMap: {},
-          start: node.start,
-          end: node.end,
-          slotLiteral,
-          ...(settings && { settings }),
-        });
-      }
-    }
+    });
+  };
 
-    // Extract template literals
-    if (node.type === 'TemplateLiteral') {
-      const { expressions } = node;
-
-      // Extract the entire template content directly from source (excluding backticks)
-      const contentStart = node.start + 1; // After opening backtick
-      const contentEnd = node.end - 1; // Before closing backtick
-      const fullContent = code.substring(contentStart, contentEnd);
-
-      // 600 chars of lead: the last 120 (tail) drive most rules; the wide
-      // window exists for the nudge-catalog compound rules, whose sibling
-      // keys sit beyond a long preceding string value.
-      const lead = code.slice(Math.max(0, node.start - 600), node.start);
-
-      // No early return here (pre-2.7.0 this `return`ed on any gate
-      // rejection, which also skipped the recursion at the bottom — hiding
-      // every string NESTED inside a rejected template from capture
-      // entirely). The identifier walk now runs first because a template's
-      // cache key is its DECODED piece content (tbody); shouldCapture then
-      // folds in the drop contexts, the classification cache, the static
-      // gates, and candidate recording. The walk on never-captured templates
-      // is cheap and side-effect-free.
-
-      // Collect all identifiers with their positions
-      const allIdentifiers = []; // Array of {name, start, end} sorted by position
-
-      for (let i = 0; i < expressions.length; i++) {
-        const expr = expressions[i];
-
-        const traverseExpr = (exprNode, isTopLevel = true) => {
-          if (!exprNode || typeof exprNode !== 'object') return;
-
-          if (exprNode.type === 'Identifier' && isTopLevel) {
-            allIdentifiers.push({
-              name: exprNode.name,
-              start: exprNode.start - contentStart,
-              end: exprNode.end - contentStart,
-            });
-          }
-
-          if (exprNode.type === 'CallExpression') {
-            traverseExpr(exprNode.callee, true);
-            if (exprNode.arguments) {
-              exprNode.arguments.forEach(arg => traverseExpr(arg, true));
-            }
-            return;
-          }
-
-          if (exprNode.type === 'MemberExpression') {
-            traverseExpr(exprNode.object, true);
-            return;
-          }
-
-          if (exprNode.type === 'TemplateLiteral') {
-            if (exprNode.expressions) {
-              exprNode.expressions.forEach(nestedExpr =>
-                traverseExpr(nestedExpr, true)
-              );
-            }
-            return;
-          }
-
-          if (exprNode.type === 'ObjectExpression') {
-            if (exprNode.properties) {
-              exprNode.properties.forEach(prop => {
-                if (prop.value) {
-                  traverseExpr(prop.value, false);
-                }
-              });
-            }
-            return;
-          }
-
-          for (const key in exprNode) {
-            if (key === 'loc' || key === 'start' || key === 'end') continue;
-            const value = exprNode[key];
-            if (Array.isArray(value)) {
-              value.forEach(v => traverseExpr(v, true));
-            } else if (value && typeof value === 'object') {
-              traverseExpr(value, true);
-            }
-          }
-        };
-
-        traverseExpr(expr, true);
-      }
-
-      // Sort identifiers by position
-      allIdentifiers.sort((a, b) => a.start - b.start);
-
-      // Build pieces array by splitting around identifiers, keeping ${ and }
-      const pieces = [];
-      const identifierList = [];
-      const identifierMap = {};
-
-      let lastPos = 0;
-
-      for (const id of allIdentifiers) {
-        // Find the ${ before this identifier (search backwards from id.start)
-        let beforeIdentifier = fullContent.substring(lastPos, id.start);
-
-        // Find the } after this identifier (search forwards from id.end)
-        // We need to find the matching closing brace for the interpolation
-        let afterIdentifierStart = id.end;
-
-        // Add the piece including everything up to and including just before the identifier
-        pieces.push(beforeIdentifier);
-
-        // Add identifier to the list
-        identifierList.push(id.name);
-
-        // Add to map if not already there
-        if (!identifierMap[id.name]) {
-          identifierMap[id.name] = '';
-        }
-
-        lastPos = id.end;
-      }
-
-      // Add the final piece after the last identifier
-      pieces.push(fullContent.substring(lastPos));
-
-      // Decode unicode/hex escapes in each piece. Template-literal raw source
-      // stores `—` as 6 literal chars; the cooked runtime value is the
-      // em-dash. Decoding here keeps our pieces[] byte-aligned with the
-      // pristine prompt content in cli.js's parse tree — same format Piebald's
-      // pipeline produces, so merge name-carryover works across versions.
-      for (let pi = 0; pi < pieces.length; pi++) {
-        pieces[pi] = decodeUnicodeEscapesInPiece(pieces[pi]);
-      }
-
-      // Label encode the identifiers
-      const uniqueVars = [...new Set(identifierList)];
-      const varToLabel = {};
-      uniqueVars.forEach((varName, idx) => {
-        varToLabel[varName] = idx;
+  // shouldCapture folds together the drop contexts, the classification cache
+  // (authoritative — a 'model' verdict rescues prose-gate rejections, a
+  // 'ui'/'internal' verdict drops), the static gates, and candidate recording.
+  // NAMES are applied post-merge so established fuzzy-carryover ids win over
+  // cache names (applyCacheNames).
+  //
+  // 600 chars of lead: the last 120 (tail) drive most rules; the wide window
+  // exists for the nudge-catalog compound rules, whose sibling keys sit beyond
+  // a long preceding string value.
+  const decideString = site => {
+    const lead = leadOf(site.start);
+    const slotLiteral = Boolean(slotLiteralVerdict(site.value));
+    const settings = settingsAt(site);
+    dumpCandidate(literalSiteRecord(site));
+    if (
+      shouldCapture(site.value, site.value, lead, minLength, {
+        slotLiteral,
+        settingsDescription: Boolean(settings),
+        range: site,
+      })
+    ) {
+      stringData.push({
+        name: '',
+        id: '',
+        description: '',
+        pieces: [site.value],
+        identifiers: [],
+        identifierMap: {},
+        start: site.start,
+        end: site.end,
+        slotLiteral,
+        ...(settings && { settings }),
       });
-
-      const labelEncodedIdentifiers = identifierList.map(
-        varName => varToLabel[varName]
-      );
-      const labelEncodedMap = {};
-      Object.keys(varToLabel).forEach(varName => {
-        labelEncodedMap[varToLabel[varName]] = '';
-      });
-
-      const tbody = pieces.join('');
-      // NAMES are applied post-merge so established fuzzy-carryover ids win
-      // over cache names (applyCacheNames). Gate checks (raw source) use
-      // fullContent — the same text pre-2.7.0 validated — while the cache
-      // key and prose heuristic use the decoded tbody.
-      // A template's slot literal is one of its QUASIS, not the whole raw
-      // source: `\n- Task list: ${e.taskListPath}` was hashed as its leading
-      // quasi. Any quasi carrying a `catalogue` verdict captures the template,
-      // because the template is the unit that can be overridden.
-      const slotLiteral = (node.quasis || []).some(q =>
-        Boolean(slotLiteralVerdict(q.value.cooked ?? q.value.raw))
-      );
-      const settings = settingsAt(node);
-      dumpCandidate({
-        start: node.start,
-        end: node.end,
-        kind: 'template',
-        cacheBody: tbody,
-      });
-      if (
-        shouldCapture(fullContent, tbody, lead, minLength, {
-          slotLiteral,
-          settingsDescription: Boolean(settings),
-        })
-      ) {
-        stringData.push({
-          name: '',
-          id: '',
-          description: '',
-          pieces,
-          identifiers: labelEncodedIdentifiers,
-          identifierMap: labelEncodedMap,
-          start: node.start,
-          end: node.end,
-          slotLiteral,
-          ...(settings && { settings }),
-        });
-      }
-    }
-
-    // Recursively traverse
-    for (const key in node) {
-      if (key === 'loc' || key === 'start' || key === 'end') continue;
-
-      const value = node[key];
-      if (Array.isArray(value)) {
-        value.forEach(traverse);
-      } else if (value && typeof value === 'object') {
-        traverse(value);
-      }
     }
   };
 
-  if (segments) {
-    // Two passes, each discarding its AST, because holding 1,400 ASTs at once
-    // costs several GB. The second pass is what keeps `backfillIdenticalSites`
-    // cross-module: it needs the full capture set before it can look for
-    // identical sites of it.
-    let parsed = 0;
-    for (const seg of segments) {
-      const segAst = parseModuleSegment(seg);
-      if (!segAst) continue;
-      parsed++;
-      traverse(segAst);
+  // A template's gate checks run on its raw source (fullContent), while the
+  // cache key and prose heuristic use the decoded pieces (tbody). A rejected
+  // template does not hide the literals nested inside it: those are sites of
+  // their own.
+  const decideTemplate = site => {
+    const fullContent = code.substring(site.start + 1, site.end - 1);
+    const lead = leadOf(site.start);
+    const tbody = site.pieces.join('');
+    // A template's slot literal is one of its QUASIS, not the whole raw
+    // source: `\n- Task list: ${e.taskListPath}` was hashed as its leading
+    // quasi. Any quasi carrying a `catalogue` verdict captures the template,
+    // because the template is the unit that can be overridden — unless the
+    // template's own body carries a ui/internal verdict (see shouldCapture).
+    // With no substitution the lone quasi IS the template, so the verdict is a
+    // ruling on this exact text and outranks the cache like a string's does.
+    const slotLiteral = !site.quasis.some(q => Boolean(slotLiteralVerdict(q)))
+      ? false
+      : site.quasis.length === 1
+        ? true
+        : 'quasi';
+    const settings = settingsAt(site);
+    dumpCandidate(literalSiteRecord(site));
+    if (
+      shouldCapture(fullContent, tbody, lead, minLength, {
+        slotLiteral,
+        settingsDescription: Boolean(settings),
+        legacyCacheBodies:
+          site.legacyShapes && site.legacyShapes.map(l => l.pieces.join('')),
+        range: site,
+      })
+    ) {
+      const identifierMap = {};
+      for (let label = 0; label < site.labels; label++)
+        identifierMap[label] = '';
+      stringData.push({
+        name: '',
+        id: '',
+        description: '',
+        pieces: [...site.pieces],
+        identifiers: [...site.identifiers],
+        identifierMap,
+        start: site.start,
+        end: site.end,
+        slotLiteral,
+        ...(settings && { settings }),
+        ...(site.legacyShapes && { legacyShapes: site.legacyShapes }),
+      });
     }
-    console.log(
-      `extractStrings: parsed ${parsed}/${segments.length} bundle modules`
-    );
-    if (opts.sitesOnly) return null;
-    for (const seg of segments) {
-      const segAst = parseModuleSegment(seg);
-      if (!segAst) continue;
-      backfillIdenticalSites(stringData, segAst, code);
-    }
-  } else {
-    traverse(ast);
-    if (opts.sitesOnly) return null;
-    backfillIdenticalSites(stringData, ast, code);
+  };
+
+  // A text asset (a skill file, a reference doc) is one whole document: it is
+  // captured as a unit, past the prose gates, and only a cache verdict can drop
+  // it. Without a verdict it is also handed to classification, so its facing
+  // gets decided like any other new string.
+  const assets = textAssetSegments(code);
+  const decideAsset = (site, asset) => {
+    dumpCandidate(literalSiteRecord(site));
+    const tbody = site.pieces.join('');
+    const cls = classifyByCache(tbody);
+    if (cls && cls.facing !== 'model') return;
+    if (!cls) recordGateCandidate(tbody, leadOf(site.start));
+    stringData.push({
+      name: '',
+      id: '',
+      description: '',
+      pieces: [...site.pieces],
+      identifiers: [],
+      identifierMap: {},
+      start: site.start,
+      end: site.end,
+      asset: asset.name,
+    });
+  };
+
+  for (const site of bundle.sites) {
+    const asset = site.kind === 'template' && assets.get(site.start);
+    if (asset && asset.end === site.end) decideAsset(site, asset);
+    else if (site.kind === 'composite') decideComposite(site);
+    else if (site.kind === 'string') decideString(site);
+    else decideTemplate(site);
   }
+  if (bundle.modules) {
+    console.log(
+      `extractStrings: parsed ${bundle.modules.parsed}/${bundle.modules.total} bundle modules`
+    );
+  }
+  backfillIdenticalSites(stringData, bundle.sites, code);
 
   // Filter out strings that are subsets of other strings
   // Step 1: Sort by start index (ascending), then by end index (descending)
@@ -5145,14 +5340,10 @@ function extractStrings(filepath, minLength = 500, opts = {}) {
     }
   }
 
-  const gateCandidates = [..._gateCandidates.entries()].map(([body, lead]) => ({
-    hash: crypto.createHash('sha1').update(body).digest('hex'),
-    len: body.length,
-    lead,
-    body,
-  }));
-
-  return { prompts: filteredData, gateCandidates };
+  return {
+    prompts: filteredData,
+    gateCandidates: uncoveredGateCandidates(filteredData),
+  };
 }
 
 // Post-merge per-id normalization. One JSON entry per code-site is correct —
@@ -5172,20 +5363,21 @@ function extractStrings(filepath, minLength = 500, opts = {}) {
 //    entry's own old version, so a site Anthropic restructured gets the new
 //    version while its untouched twins keep the old one) make the .md sync
 //    restamp ccVersion to whichever entry writes last — seen as the
-//    cross-session reminder override flip-flopping 2.1.167↔2.1.169. The
-//    id-level "content last changed at" is the group's max; stamp every entry
-//    with it.
+//    cross-session reminder override flip-flopping 2.1.167↔2.1.169. Sites of
+//    one body take the newest stamp among them; a different body on the id is
+//    split off by disambiguateIdCollisions and keeps its own.
 // Fill names for still-anonymous prompts from the classification cache. Runs
-// AFTER mergeWithExisting's fuzzy carryover, so an established id (carried from
-// the previous JSON) always wins over a cache name — the cache only NAMES
-// genuinely-new model-facing captures. (Facing/keep-drop already happened in
+// AFTER mergeWithExisting, so an id the previous JSON gave this exact body
+// always wins over a cache name — the cache only NAMES genuinely-new
+// model-facing captures. A fuzzy carry yields to a cached id (the merge skips
+// it), since a body the classifier named is not an edit of its sibling. (Facing/keep-drop already happened in
 // extractStrings.) See [[reference_below_floor_classification_cache]].
 function applyCacheNames(prompts) {
   const body = p =>
     (p.pieces || []).filter(x => typeof x === 'string').join('');
   for (const p of prompts) {
     if (p.id) continue; // established/fuzzy-carried name wins
-    const cls = classifyByCache(body(p));
+    const cls = classifyByCache(body(p), legacyBodiesOf(p));
     if (cls && cls.facing === 'model' && cls.id) {
       p.id = cls.id;
       p.name = cls.name || '';
@@ -5209,8 +5401,10 @@ function applySlotLiteralNames(prompts) {
     const pieces = (p.pieces || []).filter(x => typeof x === 'string');
     // Whole body first (a StringLiteral capture IS the literal), then each
     // piece, longest first, so a template naming from its most specific quasi.
+    const legacyPieces = (p.legacyShapes || []).flatMap(l => l.pieces);
     const probes = [pieces.join('')].concat(
-      pieces.slice().sort((a, b) => b.length - a.length)
+      pieces.slice().sort((a, b) => b.length - a.length),
+      legacyPieces.slice().sort((a, b) => b.length - a.length)
     );
     let hit = null;
     for (const probe of probes) {
@@ -5334,60 +5528,140 @@ function loadUpstreamPrompts() {
   }
 }
 
-// Disambiguate DIFFERENT-content strings that landed on the SAME id (a below-floor
-// capture named by the classification cache can collide with an established
-// prompt's id, or two new captures can collide). Same-content same-id entries are
-// intentional multi-site splices and are left alone. The bare id stays with any
-// content present in the PREVIOUS JSON (so existing override targets — and
-// pre-existing verbose/concise variant pairs — are preserved); genuinely-new
-// colliding content gets a -N suffix so every prompt stays independently
-// overridable. Battleproof: handles collisions from any naming source.
+// Disambiguate DIFFERENT-content strings that landed on the SAME id (a curated
+// matcher or the classification cache can give several distinct sites one id).
+// Same-content same-id entries are intentional multi-site splices and are left
+// alone. Distinct bodies of one family (the id and its `-N` suffixes) get
+// their ids from the PREVIOUS catalogue, never from bundle order: Bun's module
+// layout reorders sites between releases, and a positional suffix then moves
+// to a different body under the same id (CC 2.1.292 and 2.1.294 swapped the
+// `<local-command-stdout>` wrappers' -2 and -3). A body keeps the id it had;
+// an edited body keeps the id of the unclaimed member it uniquely fingerprints
+// to; anything else takes a suffix no current or previous body of the family
+// has used, so a removed body's id is never handed to a different body.
+//
+// Bodies compare byte for byte. Pieces are already cooked string values, so a
+// backslash in them is real text: `\server` and `\\server` are two prompts.
 function disambiguateIdCollisions(prompts, existingData) {
-  const body = p =>
+  const text = p =>
     (p.pieces || []).filter(x => typeof x === 'string').join('');
-  const established = new Map(); // id -> Set(content) from the seed/previous JSON
-  for (const p of (existingData && existingData.prompts) || []) {
-    if (!p.id) continue;
-    if (!established.has(p.id)) established.set(p.id, new Set());
-    established.get(p.id).add(body(p));
-  }
-  const allIds = new Set(prompts.filter(p => p.id).map(p => p.id));
-  const uniqueSuffix = base => {
-    let n = 2;
-    while (allIds.has(`${base}-${n}`)) n++;
-    const id = `${base}-${n}`;
-    allIds.add(id);
-    return id;
+  const shape = p =>
+    JSON.stringify([
+      (p.pieces || []).map(x => (typeof x === 'string' ? x : null)),
+      p.identifiers || [],
+    ]);
+  const fingerprint = p => {
+    const fp = text(p).slice(0, 100);
+    return fp.length >= 60 ? fp : null;
   };
+  const previous = ((existingData && existingData.prompts) || []).filter(
+    p => p.id
+  );
+  const idShapes = new Map();
+  for (const p of prompts) {
+    if (!p.id) continue;
+    if (!idShapes.has(p.id)) idShapes.set(p.id, new Set());
+    idShapes.get(p.id).add(shape(p));
+  }
   const byId = new Map();
   for (const p of prompts) {
     if (!p.id) continue;
     if (!byId.has(p.id)) byId.set(p.id, []);
     byId.get(p.id).push(p);
   }
+  const familyRe = id =>
+    new RegExp(`^${id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?:-\\d+)?$`);
   for (const [id, group] of byId) {
-    const clusters = new Map(); // content -> [prompts]
+    const clusters = new Map(); // shape -> [prompts]
     for (const p of group) {
-      const c = body(p);
-      if (!clusters.has(c)) clusters.set(c, []);
-      clusters.get(c).push(p);
+      const k = shape(p);
+      if (!clusters.has(k)) clusters.set(k, []);
+      clusters.get(k).push(p);
     }
-    if (clusters.size < 2) continue; // single content (multi-site) is fine
-    const est = established.get(id);
-    const keepBare = new Set(
-      [...clusters.keys()].filter(c => est && est.has(c))
-    );
-    if (keepBare.size === 0) {
-      // all-new collision: longest content keeps the bare id.
-      keepBare.add([...clusters.keys()].sort((a, b) => b.length - a.length)[0]);
+    const inFamily = familyRe(id);
+    const family = previous.filter(p => inFamily.test(p.id));
+    const familyIds = new Set(family.map(p => p.id));
+    // One body on an id is a multi-site splice and needs nothing, unless the id
+    // headed a family last release: then that body may be a sibling that now
+    // lands on the bare id (it keeps its suffix), or a new body that must not
+    // inherit the bare id of a removed one.
+    if (clusters.size < 2 && ![...familyIds].some(f => f !== id)) continue;
+    const prevIdOf = new Map(); // shape -> previous id
+    for (const p of family) {
+      const k = shape(p);
+      if (!prevIdOf.has(k)) prevIdOf.set(k, p.id);
     }
-    for (const [c, members] of clusters) {
-      if (keepBare.has(c)) continue;
-      const newId = uniqueSuffix(id);
-      for (const p of members) p.id = newId;
-      console.log(
-        `Disambiguated id collision: "${id}" -> "${newId}" (distinct content not established)`
+    // An id can be granted to a body only if no other body holds it now.
+    const groupShapes = new Set(clusters.keys());
+    const heldByOther = (cand, k) =>
+      [...(idShapes.get(cand) || [])].some(
+        s => s !== k && !(cand === id && groupShapes.has(s))
       );
+    const assigned = new Map(); // shape -> id
+    const claimed = new Set();
+    const grant = (k, cand) => {
+      if (claimed.has(cand) || heldByOther(cand, k)) return false;
+      assigned.set(k, cand);
+      claimed.add(cand);
+      return true;
+    };
+    for (const k of clusters.keys()) {
+      if (prevIdOf.has(k)) grant(k, prevIdOf.get(k));
+    }
+    const unclaimedByFp = new Map(); // fingerprint -> Set(previous id)
+    for (const p of family) {
+      const fp = fingerprint(p);
+      if (!fp || claimed.has(p.id)) continue;
+      if (!unclaimedByFp.has(fp)) unclaimedByFp.set(fp, new Set());
+      unclaimedByFp.get(fp).add(p.id);
+    }
+    const pending = [...clusters.keys()].filter(k => !assigned.has(k));
+    const pendingFps = pending.map(k => fingerprint(clusters.get(k)[0]));
+    pending.forEach((k, i) => {
+      const fp = pendingFps[i];
+      const ids = fp && unclaimedByFp.get(fp);
+      if (!ids || ids.size !== 1) return;
+      if (pendingFps.filter(f => f === fp).length !== 1) return;
+      grant(k, [...ids][0]);
+    });
+    const rest = [...clusters.keys()]
+      .filter(k => !assigned.has(k))
+      .sort((a, b) => {
+        const la = text(clusters.get(a)[0]).length;
+        const lb = text(clusters.get(b)[0]).length;
+        return lb - la || (a < b ? -1 : a > b ? 1 : 0);
+      });
+    if (rest.length && !familyIds.has(id) && !claimed.has(id)) {
+      // all-new family: longest content keeps the bare id.
+      grant(rest.shift(), id);
+    }
+    for (const k of rest) {
+      let n = 2;
+      while (
+        idShapes.has(`${id}-${n}`) ||
+        familyIds.has(`${id}-${n}`) ||
+        claimed.has(`${id}-${n}`)
+      )
+        n++;
+      assigned.set(k, `${id}-${n}`);
+      claimed.add(`${id}-${n}`);
+      console.log(
+        `Disambiguated id collision: "${id}" -> "${id}-${n}" (distinct content not established)`
+      );
+    }
+    idShapes.set(
+      id,
+      new Set([...idShapes.get(id)].filter(k => assigned.get(k) === id))
+    );
+    for (const [k, newId] of assigned) {
+      for (const p of clusters.get(k)) p.id = newId;
+      if (!idShapes.has(newId)) idShapes.set(newId, new Set());
+      idShapes.get(newId).add(k);
+      if (newId !== id && prevIdOf.get(k) === newId) {
+        console.log(
+          `Kept id collision member: "${id}" -> "${newId}" (body matches the previous catalogue)`
+        );
+      }
     }
   }
   return prompts;
@@ -5429,24 +5703,308 @@ function normalizeIdGroups(prompts) {
         );
       }
     }
-    const kept = group.filter(p => !dropped.has(p));
-    const maxVersion = kept.reduce(
-      (v, p) =>
-        p.version && (!v || semverNewer(p.version, v)) ? p.version : v,
-      ''
-    );
-    if (!maxVersion) continue;
-    for (const p of kept) {
-      if (p.version !== maxVersion) {
-        console.log(
-          `Normalized "${id}" entry version ${p.version} → ${maxVersion} (id-group max)`
-        );
-        p.version = maxVersion;
+    // Only sites of one body share a version. A different body on the same id
+    // is split off by disambiguateIdCollisions next, and lifting the unchanged
+    // body to the newcomer's version would flag every override of it as
+    // drifted although its text did not change.
+    const byBody = new Map();
+    for (const p of group) {
+      if (dropped.has(p)) continue;
+      const k = JSON.stringify([p.pieces || [], p.identifiers || []]);
+      if (!byBody.has(k)) byBody.set(k, []);
+      byBody.get(k).push(p);
+    }
+    for (const sites of byBody.values()) {
+      const maxVersion = sites.reduce(
+        (v, p) =>
+          p.version && (!v || semverNewer(p.version, v)) ? p.version : v,
+        ''
+      );
+      if (!maxVersion) continue;
+      for (const p of sites) {
+        if (p.version !== maxVersion) {
+          console.log(
+            `Normalized "${id}" entry version ${p.version} → ${maxVersion} (same-body max)`
+          );
+          p.version = maxVersion;
+        }
       }
     }
   }
 
   return prompts.filter(p => !dropped.has(p));
+}
+
+// Slot identity across catalogues. A catalogue entry's labels name slots only
+// within the slot shape its extractor cut: two shapes of one template can hold
+// equal `identifiers` arrays over different slots (drop a destructuring key and
+// promote a later name, and [0,1,2] still reads [0,1,2]). So a name never moves
+// label-to-label between entries; it moves slot-to-slot, through the shape the
+// old entry was cut in and that shape's `occurrences` into the current slots.
+//
+// The shapes a fresh item can be matched in: its own, then each earlier
+// extractor's (tools/lib/bundleSites.cjs `legacyShapes`).
+function itemShapes(item) {
+  const ids = item.identifiers || [];
+  return [
+    {
+      pieces: item.pieces || [],
+      identifiers: ids,
+      occurrences: ids.map((_, i) => i),
+    },
+    ...(item.legacyShapes || []),
+  ];
+}
+
+// `oldItem`'s names for the slots `pairs` ([oldSlot, shapeSlot], …) aligns
+// with `shape`, keyed by the new item's labels. A shape slot that is no longer
+// a slot drops its name; a pairing that is not one-to-one between old and new
+// labels drops both rather than guess.
+function remapThroughShape(oldItem, newItem, shape, pairs) {
+  const oldMap = oldItem.identifierMap || {};
+  const links = [];
+  for (const [oi, si] of pairs) {
+    const slot = shape.occurrences[si];
+    if (slot === undefined || slot < 0) continue;
+    links.push([
+      String(oldItem.identifiers[oi]),
+      String(newItem.identifiers[slot]),
+    ]);
+  }
+  const fan = (from, to) => {
+    const m = new Map();
+    for (const l of links) {
+      if (!m.has(l[from])) m.set(l[from], new Set());
+      m.get(l[from]).add(l[to]);
+    }
+    return m;
+  };
+  const outOf = fan(0, 1);
+  const into = fan(1, 0);
+  const map = {};
+  for (const [o, n] of links) {
+    if (outOf.get(o).size !== 1 || into.get(n).size !== 1) continue;
+    if (oldMap[o]) map[n] = oldMap[o];
+  }
+  return map;
+}
+
+// The shape among `shapes` that `oldItem` was cut in, when its pieces and
+// labels are exactly that shape's (`norm` folds formatting the two pipelines
+// disagree on). Index into `shapes`, or -1.
+function exactShapeIndex(oldItem, shapes, norm = x => x) {
+  const key = item =>
+    JSON.stringify([(item.pieces || []).map(norm), item.identifiers || []]);
+  const k = key(oldItem);
+  return shapes.findIndex(sh => key(sh) === k);
+}
+
+const ALL_SLOTS = item => (item.identifiers || []).map((_, i) => [i, i]);
+
+// Each slot's surroundings: the text up to ANCHOR chars either side, with every
+// other slot written as `sep`. Two shapes of one template differ exactly there
+// (a name is slot or text), so equal surroundings mean the same slot, and an
+// edit elsewhere in a long prompt leaves them alone.
+const ANCHOR = 24;
+function slotAnchors(pieces, sep, norm) {
+  let text = '';
+  const at = [];
+  pieces.forEach((p, i) => {
+    text += norm(p);
+    if (i < pieces.length - 1) {
+      at.push(text.length);
+      text += sep;
+    }
+  });
+  return at.map(q => [
+    text.slice(Math.max(0, q - ANCHOR), q),
+    text.slice(q + 1, q + 1 + ANCHOR),
+  ]);
+}
+
+// Order-preserving pairing of `oldItem`'s slots with `shape`'s, maximizing the
+// number of matching surroundings (a pair needs at least one side equal).
+//
+// A name moves only along a pair that every optimal pairing makes. Repeated
+// surroundings tie several pairings (three slots in identical sentences, one
+// deleted, leave no way to tell which went), and picking one of them binds
+// names to the wrong variables with nothing to show for it; an unnamed slot is
+// caught by the orphan check instead. Between two such pairs (or a pair and an
+// end of the text), a lone old slot facing a lone new slot is the same slot
+// with its text rewritten on both sides, so it pairs too. A wider gap could be
+// one slot deleted and another inserted, so it stays unnamed. `complete`
+// counts only the evidenced pairs.
+function alignSlots(oldItem, shape, norm) {
+  const all = [...(oldItem.pieces || []), ...shape.pieces];
+  let sep = '\u0000';
+  for (let c = 0xe000; all.some(p => p.includes(sep)); c++)
+    sep = String.fromCharCode(c);
+  const A = slotAnchors(oldItem.pieces || [], sep, norm);
+  const B = slotAnchors(shape.pieces, sep, norm);
+  const w = (i, j) => (A[i][0] === B[j][0]) + (A[i][1] === B[j][1]);
+  const m = A.length;
+  const n = B.length;
+  const table = () =>
+    Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+  // suffix[i][j]: best score of old i.. against shape j..; prefix[i][j]: best
+  // of old ..i-1 against shape ..j-1.
+  const suffix = table();
+  for (let i = m - 1; i >= 0; i--)
+    for (let j = n - 1; j >= 0; j--) {
+      const wij = w(i, j);
+      suffix[i][j] = Math.max(
+        suffix[i + 1][j],
+        suffix[i][j + 1],
+        wij ? wij + suffix[i + 1][j + 1] : 0
+      );
+    }
+  const prefix = table();
+  for (let i = 1; i <= m; i++)
+    for (let j = 1; j <= n; j++) {
+      const wij = w(i - 1, j - 1);
+      prefix[i][j] = Math.max(
+        prefix[i - 1][j],
+        prefix[i][j - 1],
+        wij ? wij + prefix[i - 1][j - 1] : 0
+      );
+    }
+  const best = suffix[0][0];
+  const certain = [];
+  for (let i = 0; i < m; i++) {
+    // Some optimal pairing leaves old slot i unpaired: it splits at a column.
+    let canSkip = false;
+    for (let j = 0; j <= n && !canSkip; j++)
+      canSkip = prefix[i][j] + suffix[i + 1][j] === best;
+    if (canSkip) continue;
+    const partners = [];
+    for (let j = 0; j < n; j++) {
+      const wij = w(i, j);
+      if (wij && prefix[i][j] + wij + suffix[i + 1][j + 1] === best)
+        partners.push(j);
+    }
+    if (partners.length === 1) certain.push([i, partners[0]]);
+  }
+  const pairs = [];
+  const bounds = [[-1, -1], ...certain, [m, n]];
+  for (let k = 1; k < bounds.length; k++) {
+    const [pi, pj] = bounds[k - 1];
+    const [qi, qj] = bounds[k];
+    if (qi - pi === 2 && qj - pj === 2) pairs.push([pi + 1, pj + 1]);
+    if (k < bounds.length - 1) pairs.push(bounds[k]);
+  }
+  return {
+    pairs,
+    score: best,
+    complete: certain.length === m && m === n,
+  };
+}
+
+// `oldItem`'s identifierMap for `newItem`'s slots when the bodies differ (a
+// fuzzy carry, or upstream's entry for another build): the slots are paired by
+// their surroundings in whichever shape fits the old entry best, and names
+// move only along those pairs. Shapes that fit equally well keep only the
+// names they agree on. `complete` is whether every old slot and every slot of
+// the chosen shape paired on matching surroundings, so a partial map names
+// only slots it is sure of and the rest are left for the synthetic fill.
+function alignedIdentifierMap(oldItem, newItem, norm = x => x) {
+  const shapes = itemShapes(newItem);
+  const fits = shapes.map(sh => ({ sh, ...alignSlots(oldItem, sh, norm) }));
+  const best = Math.max(...fits.map(f => f.score));
+  const top = fits.filter(f => f.score === best);
+  const maps = top.map(f => remapThroughShape(oldItem, newItem, f.sh, f.pairs));
+  const map = {};
+  for (const [k, v] of Object.entries(maps[0]))
+    if (maps.every(m => m[k] === v)) map[k] = v;
+  return { map, complete: top.length === 1 && top[0].complete };
+}
+
+// Upstream's extractor cuts slots in our 'base' shape (no promotion, keys as
+// slots). Its names move to the slots they named; slots upstream does not
+// name keep ours unless the name is taken by an adopted one.
+function adoptUpstreamIdentifierMap(p, u) {
+  if (!u || !u.identifierMap) return false;
+  const shapes = itemShapes(p);
+  const norm = x => x.replace(/\\(['"`\\])/g, '$1');
+  const exact = exactShapeIndex(u, shapes, norm);
+  let adopted;
+  if (exact >= 0) {
+    adopted = remapThroughShape(u, p, shapes[exact], ALL_SLOTS(u));
+  } else {
+    const { map, complete } = alignedIdentifierMap(u, p, norm);
+    if (!complete) return false;
+    adopted = map;
+  }
+  const taken = new Set(Object.values(adopted));
+  const live = new Set((p.identifiers || []).map(String));
+  const kept = {};
+  for (const [k, v] of Object.entries(p.identifierMap || {}))
+    if (live.has(k) && !(k in adopted) && v && !taken.has(v)) kept[k] = v;
+  p.identifierMap = { ...kept, ...adopted };
+  return true;
+}
+
+// Fills every blank identifierMap name of one prompt with a stable synthetic
+// name and drops names of slots that left. See the call site in the CLI.
+function fillSlotNames(p) {
+  if (!p.identifierMap) return;
+  // Two sites of one collision-disambiguated id inherit the SAME carried map
+  // object by reference, so the slot-pruning below runs twice over one object:
+  // the site with fewer slots deletes names its sibling still uses, and that
+  // sibling's override then binds nothing and is skipped whole. Seen 2.1.273
+  // on tool-description-artifact-watching-unavailable, whose `-2` site
+  // (identifiers [0,1,2]) deleted VAR_3 from the 4-slot base site.
+  p.identifierMap = { ...p.identifierMap };
+  const slug =
+    String(p.id || 'prompt')
+      .replace(/[^A-Za-z0-9]+/g, '_')
+      .replace(/^_+|_+$/g, '')
+      .toUpperCase() || 'PROMPT';
+  // A content change can add interpolation slots: the fresh `identifiers`
+  // array picks them up but a carried-over `identifierMap` won't, leaving
+  // those labels with no entry -> applyIdentifierMapping's UNKNOWN_<slot>
+  // fallback. Seed every label used in `identifiers` so the fill below names
+  // it (seen 2.1.196: code-review-routing slots 10/11, review-pr slot 3).
+  for (const lbl of p.identifiers || []) {
+    if (!(lbl in p.identifierMap)) p.identifierMap[lbl] = '';
+  }
+  // The reverse case: a slot that LEFT the prompt keeps its carried name
+  // otherwise, and the sync then writes a phantom `variables:` entry that an
+  // override can reference with nothing behind it (git-guidance-block on
+  // 2.1.257 carried a VAR_3 for a fourth slot that no longer existed).
+  const live = new Set((p.identifiers || []).map(String));
+  for (const k of Object.keys(p.identifierMap)) {
+    if (!live.has(String(k))) delete p.identifierMap[k];
+  }
+  // A promoted slot must not renumber the others: each unpromoted slot is
+  // named from its label in the newest earlier shape, so an override written
+  // before promotion keeps binding, and promoted slots take the next unused
+  // index.
+  const legacy = (p.legacyShapes || [])[0];
+  const legacyLabel = new Map();
+  if (legacy) {
+    legacy.occurrences.forEach((slot, i) => {
+      if (slot >= 0)
+        legacyLabel.set(String(p.identifiers[slot]), legacy.identifiers[i]);
+    });
+  }
+  const used = new Set(Object.values(p.identifierMap).filter(Boolean));
+  let spare = legacy
+    ? new Set(legacy.identifiers).size
+    : Object.keys(p.identifierMap).length;
+  for (const k of Object.keys(p.identifierMap)) {
+    if (p.identifierMap[k] || !legacyLabel.has(k)) continue;
+    const name = `${slug}_VAR_${legacyLabel.get(k)}`;
+    if (used.has(name)) continue;
+    used.add(name);
+    p.identifierMap[k] = name;
+  }
+  for (const k of Object.keys(p.identifierMap)) {
+    if (p.identifierMap[k]) continue;
+    let name = `${slug}_VAR_${legacy ? spare++ : k}`;
+    while (used.has(name)) name = `${slug}_VAR_${spare++}`;
+    used.add(name);
+    p.identifierMap[k] = name;
+  }
 }
 
 function mergeWithExisting(newData, oldData, currentVersion) {
@@ -5512,22 +6070,83 @@ function mergeWithExisting(newData, oldData, currentVersion) {
     }
   }
 
+  // Exact-match index: the FIRST old item per (pieces, label-encoded
+  // identifiers), the same item a linear find over oldData.prompts returns.
+  // Pieces, not their joined text: the split is where the slots are, and
+  // labels only mean the same slots when it is identical.
+  const exactKey = item =>
+    JSON.stringify([item.pieces || [], item.identifiers || []]);
+  const exactOld = new Map();
+  const oldKeysById = new Map();
+  for (const oldItem of oldData.prompts) {
+    const key = exactKey(oldItem);
+    if (!exactOld.has(key)) exactOld.set(key, oldItem);
+    if (!oldItem.id) continue;
+    if (!oldKeysById.has(oldItem.id)) oldKeysById.set(oldItem.id, new Set());
+    oldKeysById.get(oldItem.id).add(key);
+  }
+  // A fuzzy carry renames an edited body. When the id's previous body is still
+  // in this extraction it was not edited: the fuzzy match is a new sibling
+  // sharing its opening, and the previous owner keeps the id.
+  const currentKeys = new Set();
+  for (const item of newData.prompts) {
+    for (const shape of itemShapes(item)) currentKeys.add(exactKey(shape));
+  }
+  const ownerStillPresent = id =>
+    [...(oldKeysById.get(id) || [])].some(k => currentKeys.has(k));
+
   const newPrompts = newData.prompts.map((newItem, idx) => {
     const newContent = reconstructContent(newItem);
+    const shapes = itemShapes(newItem);
 
-    // Try to find a matching old item by content and label-encoded identifiers
-    const matchingOld = oldData.prompts.find(oldItem => {
-      const oldContent = reconstructContent(oldItem);
-      if (newContent !== oldContent) return false;
+    // Try to find a matching old item by pieces and label-encoded identifiers,
+    // in the current shape and then in each earlier extractor's, since the old
+    // catalogue may have been cut by one of them.
+    let shapeIndex = -1;
+    let exactHit;
+    for (let k = 0; k < shapes.length && !exactHit; k++) {
+      exactHit = exactOld.get(exactKey(shapes[k]));
+      if (exactHit) shapeIndex = k;
+    }
+    const currentOld = shapeIndex === 0 ? exactHit : undefined;
+    const legacyOld = shapeIndex > 0 ? exactHit : undefined;
 
-      // Also compare label-encoded identifiers
-      if (newItem.identifiers.length !== oldItem.identifiers.length)
-        return false;
-      return (
-        JSON.stringify(newItem.identifiers) ===
-        JSON.stringify(oldItem.identifiers)
+    if (legacyOld) {
+      // The prompt text is unchanged, but its pristine body now names a slot
+      // the override still spells as a literal minified name. Restamp it so
+      // the override is flagged for realignment rather than passing as current.
+      const assignedFromMap = lookupNewPromptAssignment(newContent);
+      const overlaidIdentifierMap = overlayAssignmentMap(
+        remapThroughShape(
+          legacyOld,
+          newItem,
+          shapes[shapeIndex],
+          ALL_SLOTS(legacyOld)
+        ),
+        assignedFromMap && assignedFromMap.identifierMap,
+        newItem.identifiers,
+        (assignedFromMap && assignedFromMap.id) || legacyOld.id
       );
-    });
+      console.log(
+        `Re-cut slot(s) in "${legacyOld.id || legacyOld.name}": identifiers ${JSON.stringify(legacyOld.identifiers)} → ${JSON.stringify(newItem.identifiers)}`
+      );
+      return {
+        ...newItem,
+        name: (assignedFromMap && assignedFromMap.name) || legacyOld.name,
+        id:
+          (assignedFromMap && assignedFromMap.id) ||
+          legacyOld.id ||
+          slugify(legacyOld.name),
+        description:
+          (assignedFromMap && assignedFromMap.description) ||
+          legacyOld.description,
+        identifierMap: overlaidIdentifierMap,
+        ...(legacyOld.platforms ? { platforms: legacyOld.platforms } : {}),
+        version: currentVersion,
+      };
+    }
+
+    const matchingOld = currentOld;
 
     // If we found a match, copy over the metadata
     if (matchingOld) {
@@ -5567,8 +6186,33 @@ function mergeWithExisting(newData, oldData, currentVersion) {
     // Fuzzy match: same prompt across versions, content shifted by a few
     // chars. Carry over the identity (name/id/description/identifierMap)
     // and bump version since pieces changed.
-    const fp = fpNormalize(newContent).slice(0, FUZZY_PREFIX);
-    const fuzzyOld = fp.length >= FUZZY_MIN ? fpToOld.get(fp) : undefined;
+    const fuzzyFor = content => {
+      const fp = fpNormalize(content).slice(0, FUZZY_PREFIX);
+      return fp.length >= FUZZY_MIN ? fpToOld.get(fp) : undefined;
+    };
+    let fuzzyCandidate;
+    for (const shape of shapes) {
+      fuzzyCandidate = fuzzyCandidate || fuzzyFor(shape.pieces.join(''));
+    }
+    // A body the classifier already named is a prompt of its own; applyCacheNames
+    // gives it that name. Carrying a sibling's id onto it would leave its
+    // verdict unused and hand it a positional suffix of the sibling.
+    const cached =
+      fuzzyCandidate && classifyByCache(newContent, legacyBodiesOf(newItem));
+    const cachedId =
+      cached && cached.facing === 'model' && cached.id ? cached.id : null;
+    let fuzzyOld = fuzzyCandidate;
+    if (fuzzyOld && cachedId && cachedId !== fuzzyOld.id) {
+      console.log(
+        `Fuzzy carry of "${fuzzyOld.id}" onto item ${idx} skipped: the classification cache names it "${cachedId}"`
+      );
+      fuzzyOld = undefined;
+    } else if (fuzzyOld && ownerStillPresent(fuzzyOld.id)) {
+      console.log(
+        `Fuzzy carry of "${fuzzyOld.id}" onto item ${idx} skipped: its previous body is still present`
+      );
+      fuzzyOld = undefined;
+    }
     if (fuzzyOld) {
       const oldLen = reconstructContent(fuzzyOld).length;
       console.log(
@@ -5576,7 +6220,7 @@ function mergeWithExisting(newData, oldData, currentVersion) {
       );
       const assignedFromMap = lookupNewPromptAssignment(newContent);
       const overlaidIdentifierMap = overlayAssignmentMap(
-        fuzzyOld.identifierMap,
+        alignedIdentifierMap(fuzzyOld, newItem).map,
         assignedFromMap && assignedFromMap.identifierMap,
         newItem.identifiers,
         (assignedFromMap && assignedFromMap.id) || fuzzyOld.id
@@ -5742,20 +6386,29 @@ if (require.main === module) {
     );
   };
 
+  const replaceVersionInPieces = (pieces, versionStr) =>
+    pieces.map(piece => {
+      let result = piece;
+      // Replace BUILD_TIME first (always)
+      result = replaceBuildTimeInString(result);
+      // Then replace version if provided
+      if (versionStr) {
+        result = replaceVersionInString(result, versionStr);
+      }
+      return result;
+    });
+
   const replaceVersionInPrompts = (data, versionStr) => {
     return {
       ...data,
       prompts: data.prompts.map(prompt => ({
         ...prompt,
-        pieces: prompt.pieces.map(piece => {
-          let result = piece;
-          // Replace BUILD_TIME first (always)
-          result = replaceBuildTimeInString(result);
-          // Then replace version if provided
-          if (versionStr) {
-            result = replaceVersionInString(result, versionStr);
-          }
-          return result;
+        pieces: replaceVersionInPieces(prompt.pieces, versionStr),
+        ...(prompt.legacyShapes && {
+          legacyShapes: prompt.legacyShapes.map(l => ({
+            ...l,
+            pieces: replaceVersionInPieces(l.pieces, versionStr),
+          })),
         }),
       })),
     };
@@ -5765,7 +6418,7 @@ if (require.main === module) {
   // <<CCVERSION>>-normalized form of version-containing content.
   setCcVersionForCacheLookups(version);
 
-  const result = extractStrings(filepath);
+  const result = extractStrings(filepath, 500, { cache: true });
   // Replace version in newly extracted strings BEFORE merging
   const versionReplacedResult = replaceVersionInPrompts(result, version);
 
@@ -5780,6 +6433,11 @@ if (require.main === module) {
   mergedResult.prompts = applySettingsDescriptionNames(
     mergedResult.prompts,
     loadUpstreamPrompts()
+  );
+  mergedResult.prompts = applyAssetNames(
+    mergedResult.prompts,
+    loadUpstreamPrompts(),
+    loadAssetHistory()
   );
   mergedResult.prompts = normalizeIdGroups(mergedResult.prompts);
   mergedResult.prompts = disambiguateIdCollisions(
@@ -5827,15 +6485,7 @@ if (require.main === module) {
       for (const p of up.prompts || []) if (p.id) upById.set(p.id, p);
       let adopted = 0;
       for (const p of mergedResult.prompts) {
-        const u = p.id && upById.get(p.id);
-        if (
-          u &&
-          u.identifierMap &&
-          JSON.stringify(u.identifiers) === JSON.stringify(p.identifiers)
-        ) {
-          p.identifierMap = { ...u.identifierMap };
-          adopted++;
-        }
+        if (adoptUpstreamIdentifierMap(p, p.id && upById.get(p.id))) adopted++;
       }
       console.log(
         `Adopted upstream identifierMap for ${adopted} shared prompt(s)`
@@ -5883,42 +6533,7 @@ if (require.main === module) {
   // name. Synthetic name = <ID_SLUG>_VAR_<slot>: unique per prompt+slot and
   // stable across re-extraction, so overrides referencing it keep binding.
   // Curated/real names always win (this only fills blanks).
-  for (const p of mergedResult.prompts) {
-    if (!p.identifierMap) continue;
-    // Two sites of one collision-disambiguated id inherit the SAME carried map
-    // object by reference, so the slot-pruning below runs twice over one object:
-    // the site with fewer slots deletes names its sibling still uses, and that
-    // sibling's override then binds nothing and is skipped whole. Seen 2.1.273
-    // on tool-description-artifact-watching-unavailable, whose `-2` site
-    // (identifiers [0,1,2]) deleted VAR_3 from the 4-slot base site.
-    p.identifierMap = { ...p.identifierMap };
-    const slug =
-      String(p.id || 'prompt')
-        .replace(/[^A-Za-z0-9]+/g, '_')
-        .replace(/^_+|_+$/g, '')
-        .toUpperCase() || 'PROMPT';
-    // A content change can add interpolation slots: the fresh `identifiers`
-    // array picks them up but a carried-over `identifierMap` won't, leaving
-    // those labels with no entry -> applyIdentifierMapping's UNKNOWN_<slot>
-    // fallback. Seed every label used in `identifiers` so the fill below names
-    // it (seen 2.1.196: code-review-routing slots 10/11, review-pr slot 3).
-    for (const lbl of p.identifiers || []) {
-      if (!(lbl in p.identifierMap)) p.identifierMap[lbl] = '';
-    }
-    // The reverse case: a slot that LEFT the prompt keeps its carried name
-    // otherwise, and the sync then writes a phantom `variables:` entry that an
-    // override can reference with nothing behind it (git-guidance-block on
-    // 2.1.257 carried a VAR_3 for a fourth slot that no longer existed).
-    const live = new Set((p.identifiers || []).map(String));
-    for (const k of Object.keys(p.identifierMap)) {
-      if (!live.has(String(k))) delete p.identifierMap[k];
-    }
-    for (const k of Object.keys(p.identifierMap)) {
-      if (!p.identifierMap[k]) {
-        p.identifierMap[k] = `${slug}_VAR_${k}`;
-      }
-    }
-  }
+  for (const p of mergedResult.prompts) fillSlotNames(p);
 
   // A name that labels two distinct slots of one prompt is unaddressable from an
   // override and has already shipped a ReferenceError once (2.1.257). Refuse to
@@ -5945,9 +6560,11 @@ if (require.main === module) {
     return contentA.localeCompare(contentB);
   });
 
-  // Remove extraction bookkeeping before writing
+  // Remove extraction bookkeeping before writing. `asset` stays: the apply
+  // keeps a text-asset prompt inside its own asset and every other prompt out
+  // of the assets (src/virtualBundle.ts BundleRegions).
   mergedResult.prompts = mergedResult.prompts.map(
-    ({ start, end, settings, ...rest }) => rest
+    ({ start, end, settings, legacyShapes, ...rest }) => rest
   );
 
   // Add version as top-level field
@@ -5962,18 +6579,17 @@ if (require.main === module) {
   console.log(`Written to ${outputFile}`);
 
   // Sidecar: prose-gate-rejected English-prose strings that still need a
-  // classification verdict. Filtered against the FINAL catalogue (a candidate
-  // whose text already lives inside a captured prompt needs no verdict).
-  // `driver.mjs classify-candidates` merges these into the chunk files the
-  // classification workflow consumes; classify-merge writes the verdicts and
-  // the next extraction acts on them.
-  const catalogueBlob = mergedResult.prompts
-    .map(p => p.pieces.join(''))
-    .join('\x00');
-  const gateCandidates = (result.gateCandidates || []).filter(
-    c => !catalogueBlob.includes(c.body.slice(0, 80))
-  );
-  const sidecarPath = '/tmp/tweakcc-gate-candidates.json';
+  // classification verdict. extractStrings already dropped the ones whose every
+  // site lies inside a captured prompt. `driver.mjs classify-candidates` merges
+  // these into the chunk files the classification workflow consumes;
+  // classify-merge writes the verdicts and the next extraction acts on them.
+  const gateCandidates = result.gateCandidates || [];
+  const sidecarPath =
+    process.env.TWEAKCC_GATE_CANDIDATES ||
+    path.join(
+      process.env.SHOWTIME_TMP || '/tmp',
+      'tweakcc-gate-candidates.json'
+    );
   fs.writeFileSync(
     sidecarPath,
     JSON.stringify(
@@ -5998,7 +6614,7 @@ function collectLiteralSites(filepath, { composites = false } = {}) {
   _siteCollector = [];
   _collectComposites = composites;
   try {
-    extractStrings(filepath, 500, { sitesOnly: true });
+    extractStrings(filepath, 500, { sitesOnly: true, cache: true });
     return _siteCollector;
   } finally {
     _siteCollector = null;
@@ -6009,15 +6625,19 @@ function collectLiteralSites(filepath, { composites = false } = {}) {
 module.exports = extractStrings;
 module.exports.collectLiteralSites = collectLiteralSites;
 module.exports.normalizeIdGroups = normalizeIdGroups;
+module.exports.disambiguateIdCollisions = disambiguateIdCollisions;
 // Exported for the test suite (below-floor capture rules — battleproof guarantee).
 module.exports.leadShowsModelFacingContext = leadShowsModelFacingContext;
 module.exports.leadShowsDropContext = leadShowsDropContext;
+module.exports.leadShowsExceptionContext = leadShowsExceptionContext;
 module.exports.contentIsModelFacingShortPrompt =
   contentIsModelFacingShortPrompt;
 module.exports.validateInput = validateInput;
+module.exports.isBareToken = isBareToken;
 module.exports.ADMIT_FLOOR = ADMIT_FLOOR;
 module.exports.shouldCapture = shouldCapture;
 module.exports.looksLikeEnglishProse = looksLikeEnglishProse;
+module.exports.looksLikeErrorPhrase = looksLikeErrorPhrase;
 module.exports.isHardExcluded = isHardExcluded;
 // Exposed so a test can assert that no curated assignment claims a document that
 // merely QUOTES a prompt — the failure mode that force-captured the changelog.
@@ -6028,6 +6648,9 @@ module.exports._setClassificationCacheForTests =
 // Test seam: fuzzy-carryover collision policy (same-id multi-site vs
 // genuinely-ambiguous cross-id) is behavior worth locking down.
 module.exports.mergeWithExisting = mergeWithExisting;
+module.exports.fillSlotNames = fillSlotNames;
+module.exports.adoptUpstreamIdentifierMap = adoptUpstreamIdentifierMap;
+module.exports.alignedIdentifierMap = alignedIdentifierMap;
 module.exports.classifyByCache = classifyByCache;
 module.exports.rawCacheForms = rawCacheForms;
 module.exports.cacheLookupForms = cacheLookupForms;
@@ -6045,4 +6668,9 @@ module.exports._setSlotLiteralsForTests = _setSlotLiteralsForTests;
 module.exports.slotLiteralCandidates = slotLiteralCandidates;
 module.exports.slotLiteralVerdict = slotLiteralVerdict;
 module.exports.applySlotLiteralNames = applySlotLiteralNames;
+module.exports.applyCacheNames = applyCacheNames;
 module.exports.applySettingsDescriptionNames = applySettingsDescriptionNames;
+module.exports.applyAssetNames = applyAssetNames;
+module.exports.assetStem = assetStem;
+module.exports.textAssetSegments = textAssetSegments;
+module.exports.nestedRangeIndex = nestedRangeIndex;

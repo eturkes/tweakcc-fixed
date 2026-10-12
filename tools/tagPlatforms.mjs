@@ -8,130 +8,97 @@
 // not see this: the darwin bundle matches every darwin-extracted regex by
 // construction (memory: platform-specific-catalogue-entries).
 //
-// For each `<platform>=<pristine cli.js>` given, this runs the real apply
-// (tools/applySafetyHarness.mjs, sandboxed, the active set) against that
-// bundle, reads the names it could not find, and records on each such prompt
-// the list of platforms whose build DOES carry it. The apply then skips a
-// prompt quietly on a platform outside that list. A prompt every bundle
-// carries gets no tag.
-//
 //   node tools/tagPlatforms.mjs <prompts.json> darwin=/tmp/cli-X.Y.Z.js linux=/tmp/cli-remote-X.Y.Z.js …
 //
 // Node `process.platform` values are the keys (darwin, linux, win32). Two
 // bundles of the same platform (linux-x64 and linux-arm64) both map to `linux`;
 // a prompt missing from either is treated as missing from the platform.
-import { execFileSync } from 'node:child_process';
-import { createRequire } from 'node:module';
+//
 import fs from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { readBundle, scanInWorkers } from './checkBakedIdentifiers.mjs';
 
-const require = createRequire(import.meta.url);
-const { parseOverrideArgs, appliedPromptsDir } = require('./lib/overrideSets.cjs');
-
-const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const parsed = parseOverrideArgs(process.argv.slice(2));
-const [jsonPath, ...specs] = parsed.rest;
-if (!jsonPath || specs.length === 0) {
+const usage = msg => {
+  if (msg) console.error(`tagPlatforms: ${msg}`);
   console.error('usage: tagPlatforms.mjs <prompts.json> <platform>=<cli.js> …');
   process.exit(2);
+};
+
+let workerLimit = process.env.TWEAKCC_TAG_JOBS;
+const args = process.argv.slice(2).filter(a => {
+  if (!a.startsWith('--jobs=')) return !a.startsWith('--set=');
+  workerLimit = a.slice('--jobs='.length);
+  return false;
+});
+if (workerLimit !== undefined) {
+  workerLimit = Number(workerLimit);
+  if (!Number.isInteger(workerLimit) || workerLimit < 1)
+    usage('bad --jobs: want a positive integer');
 }
-const bundles = specs.map(s => {
+const [jsonPath, ...specArgs] = args;
+if (!jsonPath || specArgs.length === 0) usage();
+const specs = specArgs.map(s => {
   const i = s.indexOf('=');
-  if (i === -1) {
-    console.error(`bad spec ${s}: want <platform>=<path>`);
-    process.exit(2);
-  }
+  if (i <= 0) usage(`bad spec ${s}: want <platform>=<path>`);
+  if (!['darwin', 'linux', 'win32'].includes(s.slice(0, i)))
+    usage(`unknown platform ${s.slice(0, i)}`);
   return { platform: s.slice(0, i), file: s.slice(i + 1) };
 });
-for (const b of bundles) {
-  if (!fs.existsSync(b.file)) {
-    console.error(`missing bundle ${b.file}`);
-    process.exit(2);
-  }
-}
 
 const data = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
-const platforms = [...new Set(bundles.map(b => b.platform))];
-
-let appliedSet = null;
-try {
-  appliedSet = fs.realpathSync(appliedPromptsDir());
-} catch {
-  appliedSet = null;
-}
-
-// name -> set of platforms that could not find it
-const missing = new Map();
-for (const b of bundles) {
-  let out = '';
-  const harnessArgs = [path.join(REPO, 'tools', 'applySafetyHarness.mjs')];
-  if (appliedSet) harnessArgs.push(`--set=${appliedSet}`);
-  harnessArgs.push(b.file);
+for (const s of specs) {
   try {
-    out = execFileSync('node', harnessArgs, {
-      cwd: REPO,
-      encoding: 'utf8',
-      maxBuffer: 256 * 1024 * 1024,
-    });
-  } catch (e) {
-    out = String(e.stdout ?? '') + String(e.stderr ?? '');
-  }
-  const names = new Set();
-  for (const m of out.matchAll(/Could not find system prompt "([^"]+)" in cli\.js/g)) names.add(m[1]);
-  console.log(`${b.platform} (${path.basename(b.file)}): ${names.size} prompt name(s) not found`);
-  for (const n of names) {
-    if (!missing.has(n)) missing.set(n, new Set());
-    missing.get(n).add(b.platform);
+    readBundle(s.file, s.platform);
+  } catch (err) {
+    usage(err.message);
   }
 }
 
-// `applySafetyHarness` applies through the ACTIVE override set, so the name it
-// prints is the OVERRIDE's front-matter `name:` — which drifts from the
-// catalogue name, because `syncPrompt` never rewrites an existing file's header.
-// Keying the lookup on `p.name` alone therefore silently skips those prompts:
-// on CC 2.1.261 two darwin-only computer-use results stayed untagged that way and
-// only the cross-platform gate caught them, one step before publishing. Map every
-// override's front-matter name to its id as a second key.
-const overrideNameToId = new Map();
-try {
-  const activeSet = appliedSet || fs.realpathSync(appliedPromptsDir());
-  for (const f of fs.readdirSync(activeSet)) {
-    if (!f.endsWith('.md')) continue;
-    const head = fs.readFileSync(path.join(activeSet, f), 'utf8').slice(0, 4000);
-    const m = /^name:\s*'?"?(.*?)'?"?\s*$/m.exec(head);
-    if (m) overrideNameToId.set(m[1], f.slice(0, -3));
+const perFile = await scanInWorkers(
+  data.prompts,
+  specs,
+  workerLimit,
+  'presence'
+);
+const errors = [];
+const missing = data.prompts.map((p, i) => {
+  const miss = new Set();
+  for (const s of specs) {
+    const r = perFile.get(s.file)[i];
+    if (r.error) errors.push(`${p.id || p.name || i} in ${s.file}: ${r.error}`);
+    else if (r.count === 0) miss.add(s.platform);
   }
-} catch {
-  /* no active set: the catalogue name is the only key we have */
+  return miss;
+});
+if (errors.length) {
+  for (const e of errors) console.error(`tagPlatforms: ${e}`);
+  console.error(
+    `tagPlatforms: ${errors.length} entr(ies) could not be matched; not writing tags`
+  );
+  process.exit(2);
 }
-const missingById = new Map();
-for (const [n, plats] of missing) {
-  const id = overrideNameToId.get(n);
-  if (!id) continue;
-  if (!missingById.has(id)) missingById.set(id, new Set());
-  for (const pl of plats) missingById.get(id).add(pl);
+
+const platforms = [...new Set(specs.map(s => s.platform))];
+for (const s of specs) {
+  const n = missing.filter(m => m.has(s.platform)).length;
+  console.log(`${s.platform} (${s.file}): ${n} entr(ies) not carried`);
 }
 
 let tagged = 0;
 let cleared = 0;
-for (const p of data.prompts) {
-  const miss = missing.get(p.name) ?? missingById.get(p.id);
-  const carried = platforms.filter(pl => !miss || !miss.has(pl));
-  if (miss && carried.length < platforms.length) {
-    if (carried.length === 0) {
-      // Not found anywhere we looked — genuine drift, not a platform split.
-      // Leave untagged so the apply keeps warning about it.
-      continue;
-    }
-    const next = carried.sort();
-    if (JSON.stringify(p.platforms ?? null) !== JSON.stringify(next)) tagged++;
-    p.platforms = next;
+data.prompts.forEach((p, i) => {
+  const carried = platforms.filter(pl => !missing[i].has(pl)).sort();
+  if (carried.length === 0) return;
+  if (carried.length < platforms.length) {
+    if (JSON.stringify(p.platforms ?? null) !== JSON.stringify(carried))
+      tagged++;
+    p.platforms = carried;
   } else if (p.platforms) {
     delete p.platforms;
     cleared++;
   }
-}
+});
 fs.writeFileSync(jsonPath, JSON.stringify(data, null, 2) + '\n');
 const total = data.prompts.filter(p => p.platforms).length;
-console.log(`platforms: ${total} prompt(s) tagged as platform-specific (${tagged} changed, ${cleared} cleared)`);
+console.log(
+  `platforms: ${total} prompt(s) tagged as platform-specific (${tagged} changed, ${cleared} cleared)`
+);

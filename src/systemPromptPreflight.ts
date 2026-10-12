@@ -32,6 +32,7 @@ import {
   bodyCarriedBy,
   changedSpan,
   delimiterBefore,
+  detachedSlice,
   detectUnicodeEscaping,
   extractBuildTime,
   introducedRawNonAscii,
@@ -46,6 +47,8 @@ import {
   SpanClaim,
 } from './systemPromptSites';
 import { applyInlineBlobOverrides } from './patches/inlineBlobOverrides';
+import { textAssetVisible } from './nativeTextAssets';
+import { BundleRegions, matchesInRegion } from './virtualBundle';
 import { REMINDER_REGISTRY } from './patches/systemReminderOverrides';
 import {
   loadReminderOverride,
@@ -143,6 +146,7 @@ interface PromptLanding {
   order: number;
   getInterpolatedContent: (match: RegExpMatchArray) => string;
   shouldSkip: (interpolatedContent: string, delimiter: string) => boolean;
+  asset: boolean;
 }
 
 type PromptLandingMap = Map<SpanClaim, PromptLanding>;
@@ -163,6 +167,8 @@ export interface PromptReplayPlan {
   order: number;
   getInterpolatedContent: (match: RegExpMatchArray) => string;
   shouldSkip?: (interpolatedContent: string, delimiter: string) => boolean;
+  /** The entry is a whole text asset: its sites lie inside one asset. */
+  asset?: boolean;
 }
 
 export interface PromptReplayMutation {
@@ -188,6 +194,9 @@ export const replayPromptPlans = async (
   escapeNonAscii: boolean
 ): Promise<PromptReplayResult> => {
   const working = new MutableText(content);
+  const regions = BundleRegions.of(content);
+  const siteKey = (plan: PromptReplayPlan): string =>
+    (plan.asset ? 'asset:' : 'js:') + plan.regex;
   const catalog = new PromptPieceMatcherCatalog([
     ...new Map(plans.map(plan => [plan.regex, plan.spec])).values(),
   ]);
@@ -212,10 +221,8 @@ export const replayPromptPlans = async (
   // narrowed differently the preflight linted spans the apply never visited.
   const planMultiplicity = new Map<string, number>();
   for (const plan of orderedPlans) {
-    planMultiplicity.set(
-      plan.regex,
-      (planMultiplicity.get(plan.regex) ?? 0) + 1
-    );
+    const key = siteKey(plan);
+    planMultiplicity.set(key, (planMultiplicity.get(key) ?? 0) + 1);
   }
   const planRetained = new Map<string, number>();
   const planSpliced = new Map<string, number>();
@@ -224,11 +231,15 @@ export const replayPromptPlans = async (
     for (const expired of expiring.get(planIndex - 1) ?? []) {
       catalog.delete(expired);
     }
-    const matches = await catalog.matchCurrent(plan.regex, working);
-    const retained = planRetained.get(plan.regex) ?? 0;
+    const matches = matchesInRegion(
+      await catalog.matchCurrent(plan.regex, working),
+      regions,
+      Boolean(plan.asset)
+    );
+    const key = siteKey(plan);
+    const retained = planRetained.get(key) ?? 0;
     const remaining =
-      (planMultiplicity.get(plan.regex) ?? 1) -
-      (planSpliced.get(plan.regex) ?? 0);
+      (planMultiplicity.get(key) ?? 1) - (planSpliced.get(key) ?? 0);
     const { match } = selectSpliceSiteAt(matches, remaining, retained, index =>
       working.charAt(index)
     );
@@ -244,7 +255,7 @@ export const replayPromptPlans = async (
     const interpolatedContent = plan.getInterpolatedContent(match);
     if (plan.shouldSkip?.(interpolatedContent, delimiter)) {
       landed.set(plan.claim, false);
-      planRetained.set(plan.regex, retained + 1);
+      planRetained.set(key, retained + 1);
       continue;
     }
     const encoded = encodeReplacementForDelimiter(
@@ -254,7 +265,7 @@ export const replayPromptPlans = async (
     );
     if (encoded.incomplete) {
       landed.set(plan.claim, false);
-      planRetained.set(plan.regex, retained + 1);
+      planRetained.set(key, retained + 1);
       continue;
     }
     landed.set(plan.claim, true);
@@ -262,10 +273,10 @@ export const replayPromptPlans = async (
     delimiters.set(plan.claim, delimiter);
     if (encoded.content === match[0]) {
       destinations.set(plan.claim, span);
-      planRetained.set(plan.regex, retained + 1);
+      planRetained.set(key, retained + 1);
       continue;
     }
-    planSpliced.set(plan.regex, (planSpliced.get(plan.regex) ?? 0) + 1);
+    planSpliced.set(key, (planSpliced.get(key) ?? 0) + 1);
     const actualClaim: SpanClaim = {
       ...plan.claim,
       ...mapper.spanToPristine(span),
@@ -287,6 +298,7 @@ export const replayPromptPlans = async (
       );
     }
     working.splice(span.start, span.end, encoded.content);
+    regions?.recordSplice(span.start, span.end, encoded.content.length);
     mapper.record(span, encoded.content.length);
     catalog.recordSplice(working, {
       start: span.start,
@@ -315,6 +327,40 @@ export const replayPromptPlans = async (
 };
 
 /**
+ * The claim one surface makes by turning `working` into `next`, recorded in
+ * `mapper`, or null when it changed nothing.
+ *
+ * Every surface yields a whole new copy of cli.js and the claims outlive it,
+ * so the replacement is copied out rather than sliced: a V8 slice is a view
+ * that keeps its parent alive, and 75 surfaces each pinning a 50 MB bundle
+ * (100 MB once a two-byte splice widens it) is what ran the apply out of heap.
+ */
+export const surfaceClaim = (
+  working: string,
+  next: string,
+  mapper: OffsetMapper,
+  surface: SpanClaim['surface'],
+  id: string,
+  body: string
+): SpanClaim | null => {
+  const span = changedSpan(working, next);
+  if (!span) return null;
+  const newLen = span.end - span.start + (next.length - working.length);
+  const claim: SpanClaim = {
+    ...mapper.spanToPristine(span),
+    surface,
+    id,
+    site: 0,
+    mutates: true,
+    body,
+    delimiter: '',
+    replacement: detachedSlice(next, span.start, span.start + newLen),
+  };
+  mapper.record(span, newLen);
+  return claim;
+};
+
+/**
  * Spans the inline-blob and system-reminder surfaces claim, measured the way
  * `--apply` measures them: sequentially, each anchor searched in the content
  * the previous surface left behind (two blobs sharing an anchor land on
@@ -334,23 +380,11 @@ const claimOverrideSurfaces = async (
     body: string,
     next: string
   ): void => {
-    const span = changedSpan(working, next);
+    const claim = surfaceClaim(working, next, mapper, surface, id, body);
     // No change means the anchor did not resolve, or the override is a pristine
     // passthrough. Neither takes ownership of bytes away from anyone.
-    if (!span) return;
-    const newLen = span.end - span.start + (next.length - working.length);
-    const claim: SpanClaim = {
-      ...mapper.spanToPristine(span),
-      surface,
-      id,
-      site: 0,
-      mutates: true,
-      body,
-      delimiter: '',
-      replacement: next.slice(span.start, span.start + newLen),
-    };
+    if (!claim) return;
     claims.push(claim);
-    mapper.record(span, newLen);
     working = next;
   };
 
@@ -437,11 +471,11 @@ export const runSystemPromptPreflight = async ({
   const escapeNonAscii = detectUnicodeEscaping(pristine);
   const buildTime = extractBuildTime(pristine);
 
-  const prompts = await loadSystemPromptsWithRegex(
-    version,
-    escapeNonAscii,
-    buildTime
-  );
+  // A `.zst` asset this Node cannot decode is not in the bundle; the apply
+  // skips its prompts too (see applySystemPrompts).
+  const prompts = (
+    await loadSystemPromptsWithRegex(version, escapeNonAscii, buildTime)
+  ).filter(entry => textAssetVisible(entry.asset));
   // No prompt data preloaded for this version: the apply will skip system
   // prompts entirely, so there is nothing to validate. The CLI turns this into
   // a hard failure — a dry run that saw no input must never read as clean —
@@ -465,30 +499,42 @@ export const runSystemPromptPreflight = async ({
     string,
     Array<{ order: number; entry: (typeof prompts)[number] }>
   >();
+  // Keyed by region as well: an asset entry only ever lands inside its own
+  // text asset and a JS entry only in JS (see BundleRegions), so the two never
+  // share a candidate set even when their text is identical.
   prompts.forEach((entry, order) => {
     if (patchFilter && !patchFilter.includes(entry.promptId)) return;
-    const group = groups.get(entry.regex);
+    const key = (entry.asset ? 'asset:' : 'js:') + entry.regex;
+    const group = groups.get(key);
     if (group) group.push({ order, entry });
-    else groups.set(entry.regex, [{ order, entry }]);
+    else groups.set(key, [{ order, entry }]);
   });
+  const pristineRegions = BundleRegions.of(pristine);
 
   const promptClaims: Array<{ order: number; claim: SpanClaim }> = [];
   const promptLandings: PromptLandingMap = new Map();
   let sitesChecked = 0;
   const groupMatches = await findAllPromptPieceMatchesBatch(
-    [...groups].map(([regex, entries]) => ({
-      regex,
-      pieces: entries[0].entry.pieces,
-      version,
-      buildTime,
-    })),
+    [
+      ...new Map(
+        [...groups.values()].map(([{ entry }]) => [
+          entry.regex,
+          { regex: entry.regex, pieces: entry.pieces, version, buildTime },
+        ])
+      ).values(),
+    ],
     pristine,
     foldPromptMatchContent(pristine)
   );
 
-  for (const [regex, entries] of groups) {
+  for (const entries of groups.values()) {
+    const { regex, asset } = entries[0].entry;
     const multiplicity = entries.length;
-    const matches = groupMatches.get(regex) ?? [];
+    const matches = matchesInRegion(
+      groupMatches.get(regex) ?? [],
+      pristineRegions,
+      Boolean(asset)
+    );
     const resolved = resolveCandidateSites(pristine, matches, multiplicity);
     // More sites than entries with no way to tell which are ours: the apply
     // refuses to splice at all (selectSpliceSiteAt), so claiming spans here
@@ -656,6 +702,7 @@ export const runSystemPromptPreflight = async ({
         order,
         getInterpolatedContent: entry.getInterpolatedContent,
         shouldSkip,
+        asset: Boolean(entry.asset),
       });
       promptClaims.push({ order, claim });
     }
@@ -677,6 +724,7 @@ export const runSystemPromptPreflight = async ({
         order: landing.order,
         getInterpolatedContent: landing.getInterpolatedContent,
         shouldSkip: landing.shouldSkip,
+        asset: landing.asset,
       },
     ];
   });

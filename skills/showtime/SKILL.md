@@ -112,7 +112,7 @@ the driver verifies their _result_.
 ```bash
 # the driver resolves the repo itself — run from anywhere in the checkout
 node .claude/skills/showtime/driver.mjs versions   # installed CC vs repo's latest prompts JSON
-node .claude/skills/showtime/driver.mjs extract     # extract cli.js from the native binary -> /tmp/cli-<ver>.js
+node .claude/skills/showtime/driver.mjs extract     # extract cli.js from the native binary -> $SHOWTIME_TMP/cli-<ver>.js
 node .claude/skills/showtime/driver.mjs report 2.1.160   # run + parse the version-bump report (old -> current)
 node .claude/skills/showtime/driver.mjs check       # FULL health check: version + stale-backup guard + idempotent --apply hygiene + smoke
 ```
@@ -158,6 +158,16 @@ only; our extractor is canonical — see §5).
 
 ## §4 — Phase 1: update CC + detect the new version
 
+Set a unique run name before any producing command. Reuse that name when resuming the same run; independent same-version runs in one checkout need different names.
+
+```bash
+export SHOWTIME_RUN_ID="bump-X.Y.Z"
+export SHOWTIME_RUN_ROOT="$(node .claude/skills/showtime/driver.mjs run-dir)"
+export SHOWTIME_TMP="$SHOWTIME_RUN_ROOT"
+export TWEAKCC_GATE_CANDIDATES="$SHOWTIME_TMP/tweakcc-gate-candidates.json"
+export TWEAKCC_CLASSIFY_DIR="$SHOWTIME_TMP"
+```
+
 ```bash
 claude update                 # native installer; safe no-op if already current
 claude --version              # confirm
@@ -188,8 +198,8 @@ no count regressions, the data-anthropic-cli VERSION false-positive`.
 git fetch upstream                                   # fetch only — NEVER merge
 # upstream's published JSON = comparison signal ONLY (count named, diff id-sets):
 # Upstream often publishes day-zero to a PER-VERSION branch, not main — try it first:
-git show upstream/prompts/X.Y.Z:data/prompts/prompts-X.Y.Z.json > /tmp/upstream-X.Y.Z.json \
-  || git show upstream/main:data/prompts/prompts-X.Y.Z.json > /tmp/upstream-X.Y.Z.json
+git show upstream/prompts/X.Y.Z:data/prompts/prompts-X.Y.Z.json > $SHOWTIME_TMP/upstream-X.Y.Z.json \
+  || git show upstream/main:data/prompts/prompts-X.Y.Z.json > $SHOWTIME_TMP/upstream-X.Y.Z.json
 ```
 
 **Source-of-truth policy:** **our** extractor is canonical; upstream is a
@@ -206,7 +216,7 @@ anchor drift)`. Don't go looking at upstream for a newer matcher — ours are al
 equal-or-newer on every patch.
 
 There is **no merge commit** in the pipeline — Phase 2 produces no tree changes,
-only `/tmp/upstream-X.Y.Z.json` for the §6 comparison.
+only `$SHOWTIME_TMP/upstream-X.Y.Z.json` for the §6 comparison.
 
 ---
 
@@ -214,19 +224,19 @@ only `/tmp/upstream-X.Y.Z.json` for the §6 comparison.
 
 ```bash
 # 1. Extract a fresh cli.js from the PRISTINE native binary (no patching):
-node .claude/skills/showtime/driver.mjs extract /tmp/cli-X.Y.Z.js
+node .claude/skills/showtime/driver.mjs extract $SHOWTIME_TMP/cli-X.Y.Z.js
 # (or manually via the dist nativeInstallation module — the driver wraps exactly that)
 
 # 2. Set up the extractor's temp dir + SEED from OUR OWN latest prompts JSON:
-mkdir -p /tmp/cc-X.Y.Z && printf '{"name":"@anthropic-ai/claude-code","version":"X.Y.Z"}' > /tmp/cc-X.Y.Z/package.json
-cp /tmp/cli-X.Y.Z.js /tmp/cc-X.Y.Z/cli.js
+mkdir -p $SHOWTIME_TMP/cc-X.Y.Z && printf '{"name":"@anthropic-ai/claude-code","version":"X.Y.Z"}' > $SHOWTIME_TMP/cc-X.Y.Z/package.json
+cp $SHOWTIME_TMP/cli-X.Y.Z.js $SHOWTIME_TMP/cc-X.Y.Z/cli.js
 cp data/prompts/prompts-<prev>.json data/prompts/prompts-X.Y.Z.json     # seed = OUR latest, NOT upstream
 # Upstream's JSON: the extractor takes its identifierMap for every shared prompt
 # (whose identifiers array matches), so an override's ${NAME} binds to the right
 # slot automatically — net-new prompts keep our generated names. Without this the
 # maps drift and overrides silently mis-bind.
-git show upstream/main:data/prompts/prompts-X.Y.Z.json > /tmp/upstream-X.Y.Z.json
-TWEAKCC_UPSTREAM_JSON=/tmp/upstream-X.Y.Z.json node tools/promptExtractor.js /tmp/cc-X.Y.Z/cli.js data/prompts/prompts-X.Y.Z.json
+git show upstream/main:data/prompts/prompts-X.Y.Z.json > $SHOWTIME_TMP/upstream-X.Y.Z.json
+TWEAKCC_UPSTREAM_JSON=$SHOWTIME_TMP/upstream-X.Y.Z.json node tools/promptExtractor.js $SHOWTIME_TMP/cc-X.Y.Z/cli.js data/prompts/prompts-X.Y.Z.json
 ```
 
 **The fuzzy-carryover miss** (`REFERENCE.md → Fuzzy-carryover miss &
@@ -236,7 +246,7 @@ rename, or wrapping it in a `${flag()?A:B}` conditional), the fingerprint change
 and the name silently drops → the prompt extracts **anonymous**. This is **not** a
 removal. To distinguish:
 
-- grep the _distinctive content_ of the "removed" id against `/tmp/cli-X.Y.Z.js`.
+- grep the _distinctive content_ of the "removed" id against `$SHOWTIME_TMP/cli-X.Y.Z.js`.
 - **0 hits** → real removal → archive the override (it's a different decision; see §7).
 - **hits present** → fuzzy-miss → add a `NEW_PROMPT_ASSIGNMENTS` entry in
   `tools/promptExtractor.js` to restore the name, re-seed + re-run the extractor.
@@ -272,7 +282,7 @@ node .claude/skills/showtime/driver.mjs report <prev>   # parses the 6 counters
 > still the _old_ version (you extracted to `/tmp` but haven't `--apply`'d yet),
 > the report's "fresh extraction differs from committed" blocking issue is a
 > **false positive** — refresh orig.js to the new version first
-> (`cp /tmp/cli-X.Y.Z.js ~/.tweakcc/native-claudejs-orig.js`) and re-run.
+> (`cp $SHOWTIME_TMP/cli-X.Y.Z.js ~/.tweakcc/native-claudejs-orig.js`) and re-run.
 
 Then:
 
@@ -417,18 +427,18 @@ After realigning: re-run `driver.mjs check` → **0 conflicts**.
 > and backticks inside the double-quoted message** → `bad substitution` → the
 > commit silently doesn't happen. Pipeline messages are full of `${VAR}`,
 > `${?...}`, backticked code. **Always write the message to a file and use
-> `git commit -F /tmp/msg.txt`.** Verify HEAD afterward (`git log -1`). See
+> `git commit -F $SHOWTIME_TMP/msg.txt`.** Verify HEAD afterward (`git log -1`). See
 > `REFERENCE.md → Commit-message bad-substitution gotcha`.
 
 ```bash
 # tweakcc-fixed: commit each logical change separately (NO merge commit — we don't merge upstream)
-git add data/prompts/prompts-X.Y.Z.json tools/promptExtractor.js && git commit -F /tmp/prompts-msg.txt
+git add data/prompts/prompts-X.Y.Z.json tools/promptExtractor.js && git commit -F $SHOWTIME_TMP/prompts-msg.txt
 # + any patch shape-drift fixes (src/patches/*) as their own commit, if a patch needed adapting
-git add README.md && git commit -F /tmp/readme-msg.txt
+git add README.md && git commit -F $SHOWTIME_TMP/readme-msg.txt
 git push origin main
 
 # LCC (your overrides repo): the realignment
-git -C <overrides-repo> add system-prompts-<model>/ && git -C <overrides-repo> commit -F /tmp/lcc-msg.txt && git -C <overrides-repo> push origin main
+git -C <overrides-repo> add system-prompts-<model>/ && git -C <overrides-repo> commit -F $SHOWTIME_TMP/lcc-msg.txt && git -C <overrides-repo> push origin main
 ```
 
 ### Phase 9: publish to npm (if your fork is distributed as an npm package)
@@ -473,8 +483,8 @@ four** are zero. See `REFERENCE.md → The four zeros (the completion bar)`.
    crash, invisible to four-zeros + smoke. STRONGER than a slot-count check: it catches
    **complete-but-mislabeled** maps too (named == distinct, names at wrong slots). Dump
    upstream first (per-version branch, falling back to main): `git show
-   upstream/prompts/<ver>:data/prompts/prompts-<ver>.json > /tmp/upstream-<ver>.json ||
-   git show upstream/main:data/prompts/prompts-<ver>.json > /tmp/upstream-<ver>.json`.
+   upstream/prompts/<ver>:data/prompts/prompts-<ver>.json > $SHOWTIME_TMP/upstream-<ver>.json ||
+   git show upstream/main:data/prompts/prompts-<ver>.json > $SHOWTIME_TMP/upstream-<ver>.json`.
    Fix = adopt upstream's identifierMap (identifiers array must match first). See
    `REFERENCE.md → Bug class: mis-bind (override resolves to a wrong-but-valid var) + the
 auditMisbinds gate`. A `named < distinct` jq is a weaker backstop for prompts upstream
@@ -494,7 +504,7 @@ Each row links the full diagnostic in `REFERENCE.md`.
 | Gotcha                                                                 | What bites                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | Fix / REFERENCE.md section                                                                                                                                                                                                                                                                                                                                                                          |
 | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Stale-backup downgrade**                                             | `claude update` pulls a new pristine binary but the tweakcc backup stays old; `--restore` (and `--apply`'s restore-first on native) then copies the OLD binary over the new one → silent CC **downgrade**.                                                                                                                                                                                                                                                                                                   | `rm` the trio (`native-binary.backup` + `native-claudejs-orig.js` + `native-claudejs-patched.js`) — **`rm`, not `mv` to `.stale-*`**. `--apply` re-extracts from the live binary. Driver `check` flags this. `REFERENCE.md → Stale-backup downgrade gotcha`.                                                                                                                                        |
-| **Commit-message bad-substitution**                                    | `git commit -m "…${VAR}…"` → shell "bad substitution" → commit silently doesn't run.                                                                                                                                                                                                                                                                                                                                                                                                                         | `git commit -F /tmp/msg.txt`; verify `git log -1`. `REFERENCE.md → Commit-message bad-substitution gotcha`.                                                                                                                                                                                                                                                                                         |
+| **Commit-message bad-substitution**                                    | `git commit -m "…${VAR}…"` → shell "bad substitution" → commit silently doesn't run.                                                                                                                                                                                                                                                                                                                                                                                                                         | `git commit -F $SHOWTIME_TMP/msg.txt`; verify `git log -1`. `REFERENCE.md → Commit-message bad-substitution gotcha`.                                                                                                                                                                                                                                                                                |
 | **`data-anthropic-cli ${VERSION}`**                                    | validator flags it UNBOUND every bump.                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | **Benign** — the prompt is a _double-quoted_ string in cli.js, so `${VERSION}` is inert literal text. Never escape it. `REFERENCE.md → Upstream comparison: … the data-anthropic-cli VERSION false-positive`.                                                                                                                                                                                       |
 | **`inline-*` validator false positives**                               | a naïve orphan-var scan flags `inline-*` overrides (their `${H}`/`${GJH}` are minified idents) and `data-anthropic-cli`.                                                                                                                                                                                                                                                                                                                                                                                     | inline-blob overrides aren't in the prompts JSON and use positional remapping — don't check them against the identifierMap. `REFERENCE.md → The three override surfaces (named-prompt, inline-blob, system-reminders)`.                                                                                                                                                                             |
 | **Fuzzy-carryover miss**                                               | a renamed/re-opened prompt extracts anonymous and looks "removed".                                                                                                                                                                                                                                                                                                                                                                                                                                           | grep its content in cli.js; if present → `NEW_PROMPT_ASSIGNMENTS`, not an archive. §6. `REFERENCE.md → Fuzzy-carryover miss & NEW_PROMPT_ASSIGNMENTS`.                                                                                                                                                                                                                                              |
@@ -545,3 +555,11 @@ repo's `CLAUDE.md` (lobotomization rules + the prompting checklist) carry the re
 
 If you finish a bump and discover a _new_ gotcha, add it to §11 here **and** to the
 matching `REFERENCE.md` section — the skill is the runbook, REFERENCE.md is the record.
+
+## Run handoffs
+
+Every driver command writes its bundles and handoff files to one directory per
+checkout and run id: `node skills/showtime/driver.mjs run-dir` prints it. Set
+`SHOWTIME_RUN_ID` to a distinct name when two runs share a checkout (a bump and
+its follow-up campaign), and keep it when resuming a run. The directory's
+`run.json` rejects another checkout or run claiming it.

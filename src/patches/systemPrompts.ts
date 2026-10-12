@@ -21,6 +21,8 @@ import {
   PromptPieceMatcherCatalog,
   PromptMatchSpec,
 } from '../systemPromptPieceMatcher';
+import { textAssetVisible } from '../nativeTextAssets';
+import { BundleRegions, matchesInRegion } from '../virtualBundle';
 
 export { isTweakccHumanName } from '../systemPromptSites';
 
@@ -68,12 +70,38 @@ export const applySystemPrompts = async (
   }
 
   // Load system prompts and generate regexes
-  const systemPrompts = await loadSystemPromptsWithRegex(
+  const loadedPrompts = await loadSystemPromptsWithRegex(
     version,
     shouldEscapeNonAscii,
     buildTime
   );
-  debug(`Loaded ${systemPrompts.length} system prompts with regexes`);
+  debug(`Loaded ${loadedPrompts.length} system prompts with regexes`);
+  // A `.zst` text asset is absent from the bundle on a Node without zstd, so
+  // its prompts have nowhere to land. Say so once instead of once per prompt.
+  const invisible = loadedPrompts.filter(
+    entry => !textAssetVisible(entry.asset)
+  );
+  const systemPrompts = loadedPrompts.filter(entry =>
+    textAssetVisible(entry.asset)
+  );
+  if (invisible.length > 0) {
+    console.log(
+      chalk.yellow(
+        `Skipping ${invisible.length} prompt(s) stored in zstd-compressed text ` +
+          `assets: this Node (${process.version}) has no zstd. Node 22.15+ ` +
+          'or 23.8+ can apply them.'
+      )
+    );
+  }
+  // Which region of a virtual bundle each prompt may land in (JS vs its own
+  // text asset). Kept current through every splice below.
+  const regions = BundleRegions.of(content);
+  const pristineRegions =
+    pristineContent === undefined ? null : BundleRegions.of(pristineContent);
+  // Site accounting is per region as well as per shape: an asset entry and a
+  // JS entry with the same text never compete for the same sites.
+  const siteKey = (entry: { regex: string; asset?: string }): string =>
+    (entry.asset ? 'asset:' : 'js:') + entry.regex;
   const matchSpecs = new Map<string, PromptMatchSpec>();
   for (const entry of systemPrompts) {
     matchSpecs.set(entry.regex, {
@@ -130,7 +158,8 @@ export const applySystemPrompts = async (
   const groupMultiplicity = new Map<string, number>();
   for (const sp of systemPrompts) {
     if (patchFilter && !patchFilter.includes(sp.promptId)) continue;
-    groupMultiplicity.set(sp.regex, (groupMultiplicity.get(sp.regex) ?? 0) + 1);
+    const key = siteKey(sp);
+    groupMultiplicity.set(key, (groupMultiplicity.get(key) ?? 0) + 1);
   }
   const groupRetained = new Map<string, number>();
   const groupSpliced = new Map<string, number>();
@@ -167,10 +196,6 @@ export const applySystemPrompts = async (
     }
 
     debug(`Applying system prompt: ${prompt.name}`);
-    // 's' for dotAll. No 'i': escapeNonAsciiForRegex already matches both hex
-    // casings of a `\uXXXX` escape, and a case-insensitive prompt regex
-    // over-matches its own prose (see foldPromptMatchContent).
-    const pattern = new RegExp(regex, 's');
 
     // Some short prompts (e.g. tool-description-bash-git-never-skip-hooks) hold
     // text that Anthropic also inlines verbatim into a longer prompt
@@ -178,10 +203,15 @@ export const applySystemPrompts = async (
     // inlined one; the standalone variable lives later. Pick the match that
     // looks like a complete string-literal value (surrounded by matching
     // " ' or ` delimiters) when more than one occurrence exists.
-    const allMatches = await matchCatalog.matchCurrent(regex, working);
-    const multiplicity = groupMultiplicity.get(regex) ?? 1;
-    const retained = groupRetained.get(regex) ?? 0;
-    const remaining = multiplicity - (groupSpliced.get(regex) ?? 0);
+    const allMatches = matchesInRegion(
+      await matchCatalog.matchCurrent(regex, working),
+      regions,
+      Boolean(entry.asset)
+    );
+    const key = siteKey(entry);
+    const multiplicity = groupMultiplicity.get(key) ?? 1;
+    const retained = groupRetained.get(key) ?? 0;
+    const remaining = multiplicity - (groupSpliced.get(key) ?? 0);
     const { match, ambiguous, disambiguated } = selectSpliceSiteAt(
       allMatches,
       remaining,
@@ -235,7 +265,7 @@ export const applySystemPrompts = async (
         debug(
           `"${prompt.name}": still vanilla \u2014 leaving cli.js untouched`
         );
-        groupRetained.set(regex, retained + 1);
+        groupRetained.set(key, retained + 1);
         appliedHashUpdates[promptId] = computeMD5Hash(prompt.content);
         results.push({
           id: promptId,
@@ -264,7 +294,7 @@ export const applySystemPrompts = async (
               `${error instanceof Error ? error.message : String(error)} - skipping`
           )
         );
-        groupRetained.set(regex, retained + 1);
+        groupRetained.set(key, retained + 1);
         results.push({
           id: promptId,
           name: prompt.name,
@@ -326,7 +356,7 @@ export const applySystemPrompts = async (
           debug(
             `"${prompt.name}": placeholders resolve via a same-id sibling shape — leaving this site pristine`
           );
-          groupRetained.set(regex, retained + 1);
+          groupRetained.set(key, retained + 1);
           results.push({
             id: promptId,
             name: prompt.name,
@@ -359,7 +389,7 @@ export const applySystemPrompts = async (
               `Unresolved placeholder \${${leaked[0]}} in "${prompt.name}" (markdown vocabulary out of sync with CC ${version} prompt data) - skipping`
             )
           );
-          groupRetained.set(regex, retained + 1);
+          groupRetained.set(key, retained + 1);
           results.push({
             id: promptId,
             name: prompt.name,
@@ -393,7 +423,7 @@ export const applySystemPrompts = async (
               'match boundary) and its content needs delimiter-specific escaping - skipping'
           )
         );
-        groupRetained.set(regex, retained + 1);
+        groupRetained.set(key, retained + 1);
         results.push({
           id: promptId,
           name: prompt.name,
@@ -424,7 +454,7 @@ export const applySystemPrompts = async (
             `Incomplete backtick escaping for "${prompt.name}" (unclosed interpolation) - skipping`
           )
         );
-        groupRetained.set(regex, retained + 1);
+        groupRetained.set(key, retained + 1);
         results.push({
           id: promptId,
           name: prompt.name,
@@ -446,11 +476,16 @@ export const applySystemPrompts = async (
       // so the disambiguation above isn't undone by replace() always matching
       // the first hit.
       if (replacementContent !== match[0]) {
-        groupSpliced.set(regex, (groupSpliced.get(regex) ?? 0) + 1);
+        groupSpliced.set(key, (groupSpliced.get(key) ?? 0) + 1);
         working.splice(
           matchIndex,
           matchIndex + matchLength,
           replacementContent
+        );
+        regions?.recordSplice(
+          matchIndex,
+          matchIndex + matchLength,
+          replacementContent.length
         );
         contentChanged = true;
         matchCatalog.recordSplice(working, {
@@ -461,7 +496,7 @@ export const applySystemPrompts = async (
       } else {
         // Same bytes: the site keeps matching, so the group's next entry must
         // index past it rather than resolve to it again.
-        groupRetained.set(regex, retained + 1);
+        groupRetained.set(key, retained + 1);
       }
 
       // Store the hash of the applied prompt content
@@ -522,7 +557,11 @@ export const applySystemPrompts = async (
         try {
           const spec = matchSpecs.get(regex);
           const matchedPristine = spec
-            ? await findAllPromptPieceMatches(spec, pristineContent)
+            ? matchesInRegion(
+                await findAllPromptPieceMatches(spec, pristineContent),
+                pristineRegions,
+                Boolean(entry.asset)
+              )
             : [];
           clobberedByEarlierSplice = matchedPristine.length > 0;
         } catch {
@@ -575,9 +614,15 @@ export const applySystemPrompts = async (
         !prompt.name.startsWith('Data:') &&
         prompt.name !== 'Skill: Build with Claude API'
       ) {
+        // A text asset's regex is the whole document (up to ~350K chars):
+        // name the asset instead of printing it.
         console.log(
           chalk.yellow(
-            `Could not find system prompt "${prompt.name}" in cli.js (using regex ${stringifyRegex(pattern)})`
+            entry.asset
+              ? `Could not find system prompt "${prompt.name}" in cli.js (text asset ${entry.asset})`
+              : // 's' for dotAll, as the matcher searches. No 'i': see
+                // foldPromptMatchContent.
+                `Could not find system prompt "${prompt.name}" in cli.js (using regex ${stringifyRegex(new RegExp(regex, 's'))})`
           )
         );
       }

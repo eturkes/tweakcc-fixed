@@ -76,13 +76,17 @@ describe('probeCacheKey', () => {
     const [d] = matches;
     const variants = d.keys.map(k => k.variant);
     expect(variants).toEqual(expect.arrayContaining(['raw', 'ccversion', 'build-time', 'ccversion+build-time']));
+    // The bracket index is a promoted slot, so the current body is already the
+    // index-free form; the pre-promotion body still binds as `legacy`.
     const idx = probe(cli, { text: 'policy helper' }).matches[0];
-    expect(idx.keys.map(k => k.variant)).toEqual(['raw', 'bracket-index']);
-    expect(idx.keys[1].key).toBe(sha1('Item ${[]} is ignored by the policy helper in this build'));
-    for (const m of [d, idx]) {
+    expect(idx.keys.map(k => k.variant)).toEqual(['raw', 'legacy']);
+    expect(idx.keys[0].key).toBe(sha1('Item ${[]} is ignored by the policy helper in this build'));
+    const legacyIdx = 'Item ${[Ye]} is ignored by the policy helper in this build';
+    expect(idx.keys[1].key).toBe(sha1(legacyIdx));
+    for (const [m, legacy] of [[d], [idx, legacyIdx]]) {
       for (const k of m.keys) {
         ex._setClassificationCacheForTests({ [k.key]: { facing: k.variant } });
-        expect(ex.classifyByCache(m.cacheBody), k.variant).toEqual({ facing: k.variant });
+        expect(ex.classifyByCache(m.cacheBody, legacy), k.variant).toEqual({ facing: k.variant });
       }
     }
     ex._setClassificationCacheForTests(null);

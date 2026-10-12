@@ -277,6 +277,33 @@ export const harnessVerdict = ({
   parses &&
   wfScriptErrors.length === 0;
 
+// A failed apply has to show why. The one-line summary below only catches lines
+// containing "Error" or "unbalanced", so a crash that prints anything else left
+// the run with `apply ran: false (exit 1)` and nothing to go on.
+export const applyFailureTail = (log, lines = 40) => {
+  const all = String(log ?? '').replace(/\s+$/, '').split('\n');
+  if (all.length === 1 && all[0] === '') return [];
+  return all.slice(-lines);
+};
+
+// The "Could not find" block: a count of the apply-log lines that say it,
+// each line, then the count again as an end marker. tagPlatforms reads the
+// names between the two counts and treats a block without its end marker, or
+// with a different number of lines, as output cut short. Counting lines (not
+// occurrences) keeps the counts honest when one line says it twice, as a
+// prompt that itself contains "Could not find" does.
+export const couldNotFindBlock = log => {
+  const lines = String(log ?? '')
+    .split('\n')
+    .filter((l) => /Could not find/.test(l))
+    .map((l) => `  ${l.trim()}`);
+  return [
+    `Could not find:    ${lines.length}`,
+    ...lines,
+    `Could not find (listed): ${lines.length}`,
+  ];
+};
+
 const runHarness = () => {
 const parsed = parseOverrideArgs(process.argv.slice(2));
 // Verify a specific per-model override set WITHOUT moving the live
@@ -384,6 +411,7 @@ try {
     });
   } catch (e) {
     log = (e.stdout || '') + (e.stderr || '');
+    if (!log && e.message) log = e.message;
     applyExit = e.status ?? 1;
   }
   // Positive marker + exit code: absence of error lines is not evidence the
@@ -392,7 +420,8 @@ try {
     applyExit === 0 && /Customizations applied/.test(log);
 
   const patched = fs.readFileSync(cliCopy, 'utf8');
-  const cnf = (log.match(/Could not find/g) || []).length;
+  const cnfBlock = couldNotFindBlock(log);
+  const cnf = cnfBlock.length - 2;
   const cannotApply = (log.match(/cannot apply safely/gi) || []).length;
 
   const introduced = [];
@@ -528,13 +557,21 @@ try {
   console.log('=== apply-safety harness ===');
   console.log(`pristine:          ${PRISTINE}`);
   console.log(`apply ran:         ${applyOk}${applyOk ? '' : `  (exit ${applyExit}${/unbalanced|Error/.test(log) ? ', ' + (log.match(/^.*(?:Error|unbalanced).*$/m) || [''])[0].slice(0, 120) : ''})`}`);
-  console.log(`Could not find:    ${cnf}`);
+  if (!applyOk) {
+    const tail = applyFailureTail(log);
+    console.log(
+      tail.length
+        ? `--- apply output (last ${tail.length} lines) ---`
+        : '--- apply produced no output ---'
+    );
+    for (const line of tail) console.log(`  ${line}`);
+    if (tail.length) console.log('--- end apply output ---');
+  }
   // Naming them is the whole point when this runs as the cross-platform gate:
   // a bare count tells you a one-platform prompt exists but not which one, and
   // the bundle it failed against is a temp file that is gone by the time you
   // think to look.
-  for (const line of log.split('\n').filter((l) => /Could not find/.test(l)))
-    console.log(`  ${line.trim()}`);
+  for (const line of cnfBlock) console.log(line);
   console.log(`cannot apply safely (warns): ${cannotApply}`);
   console.log(`introduced minified \${var}: ${introduced.length}  ${introduced.slice(0, 12).join(' ')}`);
   console.log(`introduced unresolved \${NAME}: ${humanNames.length}  ${humanNames.slice(0, 12).join(' ')}`);

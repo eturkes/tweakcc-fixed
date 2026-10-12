@@ -1,6 +1,10 @@
 export class MutableText {
   private chunks: string[];
   length: number;
+  // The chunk charAt() last landed in. Matchers read forward from one site,
+  // so resuming here keeps a read O(1) instead of a walk over every splice.
+  private cursorChunk = 0;
+  private cursorOffset = 0;
 
   constructor(content: string) {
     this.chunks = content ? [content] : [];
@@ -9,11 +13,21 @@ export class MutableText {
 
   charAt(index: number): string {
     if (index < 0 || index >= this.length) return '';
-    let offset = 0;
-    for (const chunk of this.chunks) {
-      const end = offset + chunk.length;
-      if (index < end) return chunk[index - offset];
+    let chunk = this.cursorChunk;
+    let offset = this.cursorOffset;
+    if (index < offset) {
+      chunk = 0;
+      offset = 0;
+    }
+    while (chunk < this.chunks.length) {
+      const end = offset + this.chunks[chunk].length;
+      if (index < end) {
+        this.cursorChunk = chunk;
+        this.cursorOffset = offset;
+        return this.chunks[chunk][index - offset];
+      }
       offset = end;
+      chunk++;
     }
     return '';
   }
@@ -69,9 +83,18 @@ export class MutableText {
     if (!inserted && replacement) next.push(replacement);
     this.chunks = next;
     this.length += replacement.length - (to - from);
+    this.cursorChunk = 0;
+    this.cursorOffset = 0;
   }
 
+  // Joining is a full copy of the text. Keep the result as the only chunk so
+  // a second call before the next splice reuses it instead of copying again.
   toString(): string {
-    return this.chunks.join('');
+    if (this.chunks.length > 1) {
+      this.chunks = [this.chunks.join('')];
+      this.cursorChunk = 0;
+      this.cursorOffset = 0;
+    }
+    return this.chunks[0] ?? '';
   }
 }

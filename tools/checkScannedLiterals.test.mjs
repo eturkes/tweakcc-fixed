@@ -4,12 +4,20 @@
 // CC 2.1.226 minified shapes.
 
 import { describe, it, expect } from 'vitest';
+import { spawnSync } from 'node:child_process';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import {
   literalOf,
   bodyOf,
+  createEvidenceMatcher,
   matchEvidence,
   sentenceSurvives,
 } from './checkScannedLiterals.mjs';
+
+const HERE = path.dirname(fileURLToPath(import.meta.url));
 
 // The `/loop` classifier, verbatim from the 2.1.226 bundle.
 const LOOP_SITE =
@@ -58,6 +66,182 @@ describe('checkScannedLiterals: needle detection', () => {
     expect(
       matchEvidence(src, "The user doesn't want to take this action right now.")
     ).toEqual(['Cz -> .startsWith()']);
+  });
+});
+
+// The pre-index implementation, verbatim: up to ~20 full-bundle scans per
+// literal. The indexed matcher must agree with it on every input.
+const MATCHERS = [
+  'includes',
+  'startsWith',
+  'endsWith',
+  'indexOf',
+  'lastIndexOf',
+  'split',
+  'search',
+];
+const quoted = (lit, q) =>
+  q +
+  lit
+    .replace(/\\/g, '\\\\')
+    .replace(new RegExp(q, 'g'), '\\' + q)
+    .replace(/\n/g, '\\n') +
+  q;
+const assignedOnce = (src, name) => {
+  let count = 0;
+  for (
+    let i = src.indexOf(name + '=');
+    i !== -1;
+    i = src.indexOf(name + '=', i + 1)
+  ) {
+    const before = src[i - 1];
+    const after = src[i + name.length + 1];
+    if (before && /[\w$]/.test(before)) continue;
+    if (after === '=') continue;
+    if (++count > 1) return false;
+  }
+  return count === 1;
+};
+const naiveMatchEvidence = (src, lit) => {
+  const found = [];
+  for (const q of ['"', "'"]) {
+    const needle = quoted(lit, q);
+    if (!src.includes(needle)) continue;
+    for (const fn of MATCHERS) {
+      if (src.includes(`.${fn}(${needle})`)) found.push(`inline .${fn}()`);
+    }
+    const names = new Set();
+    let i = src.indexOf(needle);
+    for (let n = 0; i !== -1 && n < 20; n++, i = src.indexOf(needle, i + 1)) {
+      const pre = src.slice(Math.max(0, i - 40), i).trimEnd();
+      if (!pre.endsWith('=')) continue;
+      const m = pre
+        .slice(0, -1)
+        .trimEnd()
+        .match(/[$\w]+$/);
+      if (m && m[0].length <= 12) names.add(m[0]);
+    }
+    for (const name of names) {
+      if (!assignedOnce(src, name)) continue;
+      for (const fn of MATCHERS) {
+        if (
+          src.includes(`.${fn}(${name})`) ||
+          src.includes(`.${fn}(${name},`)
+        ) {
+          found.push(`${name} -> .${fn}()`);
+        }
+      }
+    }
+  }
+  return [...new Set(found)];
+};
+
+describe('checkScannedLiterals: indexed matcher agrees with the scan', () => {
+  // Shapes that stress the index: needles shorter and longer than its prefix
+  // bucket, buckets shared by several needles, overlapping occurrences, a
+  // needle at offset 0, escaped quotes, backslashes and newlines, more than 20
+  // occurrences, `==` comparisons, consts assigned once and twice, and the
+  // `.fn(name,` second-argument form.
+  const LITERALS = [
+    'a',
+    'ab',
+    'abcde',
+    'abcdef',
+    '<bash-input>',
+    '<bash-input> and more',
+    '<bash-output>',
+    "don't",
+    'say "hi"',
+    'C:\\path\\x',
+    'line one\nline two',
+    'x',
+    'shared prefix one',
+    'shared prefix two',
+    'never present',
+    'twenty',
+  ];
+  const SRC = [
+    '"a".includes(q);',
+    'if(s.startsWith("a")){}',
+    'var Ab=\'ab\',Cd="abcde";u.endsWith(Ab);w.indexOf(Cd,1);',
+    'Cd=2;',
+    'let Ef="abcdef";t.split(Ef);',
+    'z.includes("<bash-input>");z.includes("<bash-input> and more");',
+    'var Bo="<bash-output>";l.lastIndexOf(Bo);',
+    "var Dn='don\\'t';m.search(Dn);",
+    'var Sh="say \\"hi\\"";if(Sh==="x"){}g.includes(Sh);',
+    'var P="C:\\\\path\\\\x";h.includes(P);',
+    'var L="line one\\nline two";k.startsWith(L);',
+    '"x"x"x".endsWith("x")',
+    'var S1="shared prefix one",S2="shared prefix two";a.includes(S2);',
+    Array.from({ length: 25 }, (_, i) => `v${i}="twenty";`).join(''),
+    'var Tw="twenty";n.includes(Tw);',
+  ].join('\n');
+
+  it('returns the same evidence for every literal', () => {
+    const indexed = createEvidenceMatcher(SRC, LITERALS);
+    for (const lit of LITERALS) {
+      expect([lit, indexed(lit)]).toEqual([lit, naiveMatchEvidence(SRC, lit)]);
+    }
+  });
+
+  it('finds evidence the scan finds, so the comparison is not vacuous', () => {
+    const indexed = createEvidenceMatcher(SRC, LITERALS);
+    const hits = LITERALS.filter(lit => indexed(lit).length > 0);
+    expect(hits.length).toBeGreaterThanOrEqual(8);
+    expect(indexed('never present')).toEqual([]);
+  });
+
+  it('agrees on randomized bundles', () => {
+    let seed = 7;
+    const rand = n => {
+      seed = (seed * 1103515245 + 12345) & 0x7fffffff;
+      return seed % n;
+    };
+    const ATOMS = [
+      '"',
+      "'",
+      '\\',
+      'ab',
+      'a',
+      '=',
+      '==',
+      ';',
+      ',',
+      ')',
+      '(',
+      '.includes(',
+      '.startsWith(',
+      '.split(',
+      'Q',
+      'Qz',
+      ' ',
+      '\\n',
+      'xyzxyzxy',
+    ];
+    const lits = [
+      'a',
+      'ab',
+      'Q',
+      'xyzxyzxy',
+      'xyzxyzxyab',
+      "a'b",
+      'a"b',
+      'a\\b',
+    ];
+    for (let round = 0; round < 300; round++) {
+      let src = '';
+      const len = 20 + rand(120);
+      for (let k = 0; k < len; k++) src += ATOMS[rand(ATOMS.length)];
+      const indexed = createEvidenceMatcher(src, lits);
+      for (const lit of lits) {
+        expect([src, lit, indexed(lit)]).toEqual([
+          src,
+          lit,
+          naiveMatchEvidence(src, lit),
+        ]);
+      }
+    }
   });
 });
 
@@ -112,5 +296,229 @@ describe('sentenceSurvives (rewrite-table needles)', () => {
         'Each document is addressed at most once. Prefer it over individual writes whenever you write more than a couple of documents.'
       )
     ).toBe(true);
+  });
+});
+
+// CC 2.1.296's core-prompt rewriter THROWS when its text lacks a needle
+// ("a lifted paragraph lacks a spelling it rewrites"), so an override that
+// drops one makes tool.prompt() fail on every turn. These run the gate end to
+// end over fixture bundles shaped like the real call sites; each shape was
+// invisible to the inline-table scan.
+describe('checkScannedLiterals: throwing rewriters', () => {
+  const REWRITER =
+    'function Oq(e,a){let t=e;for(let[n,r]of a){if(!t.includes(n))throw Error("core prompt: a lifted paragraph lacks a spelling it rewrites");t=t.replaceAll(n,r)}return t}';
+  const PARA =
+    'Claude publishes a page when it reads clearer than terminal text for the person.';
+  const ID = 'tool-description-para';
+  const frontmatter = '<!--\nname: X\nccVersion: 2.1.296\n-->\n\n';
+
+  const run = ({ bundle, prompts, overrides }) => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'throwing-rewriters-'));
+    const set = path.join(dir, 'system-prompts-test');
+    fs.mkdirSync(set);
+    fs.writeFileSync(path.join(dir, 'cli.js'), bundle);
+    fs.writeFileSync(
+      path.join(dir, 'prompts.json'),
+      JSON.stringify({ version: '2.1.296', prompts })
+    );
+    for (const [id, body] of Object.entries(overrides))
+      fs.writeFileSync(path.join(set, `${id}.md`), frontmatter + body + '\n');
+    const r = spawnSync(
+      process.execPath,
+      [
+        path.join(HERE, 'checkScannedLiterals.mjs'),
+        path.join(dir, 'cli.js'),
+        path.join(dir, 'prompts.json'),
+        `--set=${set}`,
+      ],
+      { encoding: 'utf8' }
+    );
+    fs.rmSync(dir, { recursive: true, force: true });
+    return { status: r.status, out: r.stdout + r.stderr };
+  };
+  const para = (pieces = [PARA], id = ID) => ({
+    name: id,
+    id,
+    pieces,
+    identifiers: [],
+    identifierMap: {},
+  });
+  const reworded = PARA.replace('terminal text', 'plain text');
+
+  it('fails a named table, resolved through its module const', () => {
+    const bundle = `${REWRITER}var fZn=[["clearer than terminal text","clearer than text in the conversation"]],hZn=${JSON.stringify(PARA)};export function head(){return Oq(hZn,fZn)}`;
+    const r = run({ bundle, prompts: [para()], overrides: { [ID]: reworded } });
+    expect(r.status).toBe(1);
+    expect(r.out).toContain(`THROWING REWRITE   system-prompts-test/${ID}`);
+    expect(r.out).toContain('"clearer than terminal text"');
+  });
+
+  it('fails a table passed through a wrapper like cZe(cond,text,table)', () => {
+    const bundle = `${REWRITER}var fZn=[["clearer than terminal text","clearer than text in the conversation"]],hZn=${JSON.stringify(PARA)};function cZe(e,t,s){return e?Oq(t,s):t}export function um(e){return[cZe(e.coworkHost,hZn,fZn)]}`;
+    const r = run({ bundle, prompts: [para()], overrides: { [ID]: reworded } });
+    expect(r.status).toBe(1);
+    expect(r.out).toContain('cZe(e.coworkHost,hZn,fZn)');
+  });
+
+  it('fails when the rewritten text is a call result', () => {
+    const bundle = `${REWRITER}var hZn=${JSON.stringify(PARA)};function DKr(e){return\`\${hZn}\${e}\`}export function T(e){return Oq(DKr(e.rail),[["clearer than terminal text","clearer"]])}`;
+    const r = run({ bundle, prompts: [para()], overrides: { [ID]: reworded } });
+    expect(r.status).toBe(1);
+    expect(r.out).toContain(`system-prompts-test/${ID}`);
+  });
+
+  it('cooks a template-literal needle that carries a backtick', () => {
+    const text = 'Pass `action: "comments"` with the url to read them.';
+    const bundle = `${REWRITER}var P=${JSON.stringify(text)};export function T(){return Oq(P,[[\`\\\`action: "comments"\\\`\`,'\`action: "read"\`']])}`;
+    // Pieces are template-literal source: the catalogue keeps the \` escapes.
+    const pieces = [text.replace(/`/g, '\\`')];
+    const ok = run({
+      bundle,
+      prompts: [para(pieces)],
+      overrides: { [ID]: pieces[0] },
+    });
+    expect(ok.status).toBe(0);
+    const r = run({
+      bundle,
+      prompts: [para(pieces)],
+      overrides: {
+        [ID]: 'Pass \\`action: "list"\\` with the url to read them.',
+      },
+    });
+    expect(r.status).toBe(1);
+    expect(r.out).toContain('"`action: \\"comments\\"`"');
+  });
+
+  it('fails an empty override instead of treating it as a suppression', () => {
+    const bundle = `${REWRITER}var P=${JSON.stringify(PARA)};export function T(){return Oq(P,[["clearer than terminal text","clearer"]])}`;
+    const r = run({ bundle, prompts: [para()], overrides: { [ID]: '' } });
+    expect(r.status).toBe(1);
+    expect(r.out).toContain('the override is empty');
+  });
+
+  it('fails a deleted sentence instead of noting it', () => {
+    const two = `Publishing is private by default. ${PARA}`;
+    const bundle = `${REWRITER}var P=${JSON.stringify(two)};export function T(){return Oq(P,[["clearer than terminal text","clearer"]])}`;
+    const r = run({
+      bundle,
+      prompts: [para([two])],
+      overrides: { [ID]: 'Publishing is private by default.' },
+    });
+    expect(r.status).toBe(1);
+    expect(r.out).toContain('THROWING REWRITE');
+  });
+
+  it('follows a table imported from another chunk and a conditional pick', () => {
+    const mod = (n, name) => `\n/*@@TWEAKCC_MODULE:${n}:${name}@@*/\n`;
+    const bundle =
+      mod(1, '/$bunfs/root/chunk-a.js') +
+      `${REWRITER}var O4o=[["clearer than terminal text","x"]],H4o=[["for the person","y"]];export{Oq,O4o,H4o};` +
+      mod(2, '/$bunfs/root/chunk-b.js') +
+      `import{Oq as q,O4o,H4o}from"/$bunfs/root/chunk-a.js";var jGt=${JSON.stringify(PARA)};export function ke(c){return q(jGt,c?O4o:H4o)}`;
+    expect(
+      run({ bundle, prompts: [para()], overrides: { [ID]: PARA } }).status
+    ).toBe(0);
+    const r = run({
+      bundle,
+      prompts: [para()],
+      overrides: { [ID]: PARA.replace(' for the person', '') },
+    });
+    expect(r.status).toBe(1);
+    expect(r.out).toContain('"for the person"');
+  });
+
+  it('resolves a `${CONST}` hole in a needle against an override slot', () => {
+    const bundle = `${REWRITER}var TS="artifact-capabilities",P=\`Load the \\\`\${TS}\\\` skill lists first.\`;export function D(){return Oq(P,[[\`the \\\`\${TS}\\\` skill lists\`,"the skill"]])}`;
+    const pieces = ['Load the \\`${', '}\\` skill lists first.'];
+    const p = { ...para(pieces), identifiers: ['TS'] };
+    expect(
+      run({
+        bundle,
+        prompts: [p],
+        overrides: {
+          [ID]: 'Load the \\`${CAPABILITIES_SKILL}\\` skill lists first.',
+        },
+      }).status
+    ).toBe(0);
+    expect(
+      run({
+        bundle,
+        prompts: [p],
+        overrides: { [ID]: 'Load the skill first.' },
+      }).status
+    ).toBe(1);
+  });
+
+  it('fails an edit to a catalogued needle its paragraph does not follow', () => {
+    const needle = 'these actions read and write it as the user.';
+    const text = `Artifacts keep a database; ${needle} Pass a url.`;
+    const bundle = `${REWRITER}var A=[[${JSON.stringify(needle)},"this tool reads and writes it."]],P=${JSON.stringify(text)};export function y(){return Oq(P,A)}`;
+    const spelling = para([needle], 'data-core-spelling');
+    const prompts = [para([text]), spelling];
+    const edited = 'these actions read and edit it as the user.';
+    const r = run({
+      bundle,
+      prompts,
+      overrides: { 'data-core-spelling': edited },
+    });
+    expect(r.status).toBe(1);
+    expect(r.out).toContain(`system-prompts-test/${ID}`);
+    expect(r.out).toContain('data-core-spelling rewrote the needle');
+    expect(
+      run({
+        bundle,
+        prompts,
+        overrides: {
+          'data-core-spelling': edited,
+          [ID]: text.replace(needle, edited),
+        },
+      }).status
+    ).toBe(0);
+  });
+
+  it('compares an ordinary rewrite needle with a backtick against cooked text', () => {
+    const text = 'Pass `action: "comments"` with the url to read them.';
+    const bundle = `function m(e,s){let t=e.description??"";for(let[n,f]of s)t=t.replace(n,f);return e.describe(t)}var P=${JSON.stringify(text)};export function z(n){return{a:m(n.a,[['\`action: "comments"\` with the url','\`action: "read"\` with the url']])}}`;
+    const pieces = [text.replace(/`/g, '\\`')];
+    const r = run({
+      bundle,
+      prompts: [para(pieces)],
+      overrides: {
+        [ID]: 'Pass \\`action: "list"\\` with the url to read them.',
+      },
+    });
+    expect(r.status).toBe(1);
+    expect(r.out).toContain('BROKEN REWRITE');
+  });
+
+  it('fails a rewriter written as a forEach, and one it cannot read', () => {
+    const tail = `var P=${JSON.stringify(PARA)},T=[["clearer than terminal text","clearer"]];export function g(){return Oq(P,T)}`;
+    const forEach =
+      'function Oq(e,a){let t=e;a.forEach(([n,r])=>{if(!t.includes(n))throw Error("x");t=t.replaceAll(n,r)});return t}';
+    const r = run({
+      bundle: forEach + tail,
+      prompts: [para()],
+      overrides: { [ID]: reworded },
+    });
+    expect(r.status).toBe(1);
+    expect(r.out).toContain(`THROWING REWRITE   system-prompts-test/${ID}`);
+    const indexed =
+      'function Oq(e,a){let t=e;for(let i=0;i<a.length;i++){let n=a[i][0];if(!t.includes(n))throw Error("x");t=t.replaceAll(n,a[i][1])}return t}';
+    const u = run({
+      bundle: indexed + tail,
+      prompts: [para()],
+      overrides: { [ID]: PARA },
+    });
+    expect(u.status).toBe(1);
+    expect(u.out).toContain('UNRECOGNISED REWRITER');
+  });
+
+  it('keeps a non-throwing rewriter on the old rules', () => {
+    const bundle = `function m(e,s){let t=e.description??"";for(let[n,f]of s)t=t.replace(n,f);return e.describe(t)}var P=${JSON.stringify(PARA)};export function z(n){return{a:m(n.a,[["clearer than terminal text","clearer"]])}}`;
+    // An empty override is a deliberate suppression for a rewrite that only
+    // restates; nothing throws.
+    expect(
+      run({ bundle, prompts: [para()], overrides: { [ID]: '' } }).status
+    ).toBe(0);
   });
 });

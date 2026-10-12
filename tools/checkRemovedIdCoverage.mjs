@@ -44,6 +44,15 @@
  * rather than eyeballed, and reviewed removals are recorded in the allowlist so
  * a stable removal stops being re-reported every bump.
  *
+ * `in-catalogue` is a claim about the WHOLE body, not one window. CC 2.1.294
+ * lost the resume-only arm of the orphaned-agents tail; its relaunch sibling
+ * shares the opening clause, so the first 25-char window matched the sibling,
+ * the id was called renamed to it, and the gate passed. A removed id counts as
+ * renamed only when the catalogue carries most of its distinctive prose (slot
+ * syntax stripped, so the shared `${x.length===1?…}` scaffolding is not
+ * evidence), and even then a distinctive run the bundle holds more often than
+ * the catalogue does is a site no successor covers: IN-BUNDLE.
+ *
  * Two things the 25-char window has to get right, both of them §12 rows that
  * have cost a bump before:
  *
@@ -66,6 +75,8 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
+import { parseExpressionAt, tokenizer, tokTypes } from 'acorn';
+import { loadMatcherCore } from './checkBakedIdentifiers.mjs';
 
 const WINDOW = 25;
 const STRIDE = 5;
@@ -154,6 +165,13 @@ const shortRuns = p =>
         !MINIFIED_BRACKET_KEY.test(s)
     );
 
+// The share of an old body's distinctive units the catalogue must carry for the
+// id to count as renamed or reshuffled. On 2.1.294 the resume-only tail scored
+// 0.33 against its sibling and a reworded removal 0.23 against the prompt that
+// absorbed it; the four genuine renames scored 0.73-1.00.
+const RENAME_SHARE = 0.6;
+const UNIT_MIN = 12;
+
 const allPresent = (runs, haystack) =>
   runs.length > 0 && runs.every(s => haystack.includes(s));
 
@@ -214,9 +232,99 @@ const midBodyProbes = p => {
   return mid.slice(0, BUNDLE_PROBE_COUNT);
 };
 
+// A body's prose: each piece with its slot syntax stripped, one entry per line.
+// The slot expressions are not evidence of identity — sibling arms of one
+// ternary share `${x.length===1?"Agent":"Agents"}` and differ only in prose.
+const proseLines = p => {
+  const pieces = p.pieces || [];
+  const lines = [];
+  for (let i = 0; i < pieces.length; i++) {
+    if (typeof pieces[i] !== 'string') continue;
+    for (const raw of proseOfPiece(pieces[i], i, pieces.length).split('\n')) {
+      const line = raw.trim();
+      if (/[A-Za-z]{3,}/.test(line)) lines.push(line);
+    }
+  }
+  return lines;
+};
+
+// What "most of the old body" is measured in: word trigrams of its prose. A
+// literal Anthropic turned into a slot (`with SendMessage` -> `with ${…}`)
+// costs only the trigrams that touch it, where a 25-char window loses every
+// window spanning it; on 2.1.294 that alone took a real rename from 0.73 to
+// 0.36. A line too short for a trigram counts whole.
+const shareUnits = p => {
+  const units = new Set();
+  for (const line of proseLines(p)) {
+    const words = line.split(/\s+/);
+    if (words.length < 3) {
+      if (line.length >= UNIT_MIN) units.add(line);
+      continue;
+    }
+    for (let i = 0; i + 3 <= words.length; i++) {
+      units.add(words.slice(i, i + 3).join(' '));
+    }
+  }
+  return [...units];
+};
+
+// What is counted in the bundle: 25-char windows of the prose, long enough that
+// a surplus is a site and not a common phrase.
+const strayProbes = p => {
+  const units = new Set();
+  for (const line of proseLines(p)) {
+    if (line.length < WINDOW) continue;
+    for (let off = 0; off + WINDOW <= line.length; off += STRIDE) {
+      units.add(line.slice(off, off + WINDOW));
+    }
+    units.add(line.slice(line.length - WINDOW));
+  }
+  return [...units];
+};
+
+const countOf = (haystack, needle) => {
+  let n = 0;
+  for (let i = haystack.indexOf(needle); i >= 0; i = haystack.indexOf(needle, i + 1)) n++;
+  return n;
+};
+
 const cli = fs.readFileSync(cliPath, 'utf8');
 const prev = readPrompts(prevPath);
 const cur = readPrompts(curPath);
+const core = await loadMatcherCore();
+const coverageBody = body => {
+  let out = '';
+  let cursor = 0;
+  for (let i = 0; i < body.length; i++) {
+    if (body[i] !== '$' || body[i + 1] !== '{') continue;
+    let backslashes = 0;
+    for (let j = i - 1; j >= 0 && body[j] === '\\'; j--) backslashes++;
+    if (backslashes % 2) continue;
+    try {
+      const expression = parseExpressionAt(body, i + 2, {
+        ecmaVersion: 'latest',
+        preserveParens: true,
+        allowAwaitOutsideFunction: true,
+        allowSuperOutsideMethod: true,
+        checkPrivateFields: false,
+      });
+      const close = tokenizer(body.slice(expression.end), {
+        ecmaVersion: 'latest',
+      }).getToken();
+      if (close.type !== tokTypes.braceR) continue;
+      const end = expression.end + close.end;
+      out += body.slice(cursor, i);
+      out += core
+        .generalizeExpressionIdentifiers(['${', body.slice(i + 2, end)])
+        .join('');
+      cursor = end;
+      i = end - 1;
+    } catch {
+      continue;
+    }
+  }
+  return out + body.slice(cursor);
+};
 
 const curIds = new Set(cur.map(p => p.id).filter(Boolean));
 const curBlob = cur.map(reconstruct).join('\n');
@@ -226,9 +334,48 @@ const curBlob = cur.map(reconstruct).join('\n');
 // answer wrong. Report the successor.
 const curBodies = cur
   .filter(p => p.id)
-  .map(p => ({ id: p.id, body: reconstruct(p) }));
-const successorOf = window => {
-  for (const { id, body } of curBodies) if (body.includes(window)) return id;
+  .map(p => ({
+    id: p.id,
+    body: reconstruct(p),
+    coverageBody: coverageBody(reconstruct(p)),
+  }));
+const namedSites = (run, lines) => {
+  const holders = curBodies.filter(b => b.body.includes(run));
+  return holders
+    .filter(
+      (b, i) =>
+        !holders.some(
+          (o, j) =>
+            j !== i &&
+            o.coverageBody.length > b.coverageBody.length &&
+            o.coverageBody.includes(b.coverageBody)
+        )
+    )
+    .reduce(
+      (n, b) =>
+        n + (lines ? countSites(b.body, run, lines) : countOf(b.body, run)),
+      0
+    );
+};
+// The current id carrying the largest share of `units`, and that share.
+const bestSuccessor = units => {
+  let best = null;
+  let bestShare = 0;
+  for (const { id, body } of curBodies) {
+    let hit = 0;
+    for (const u of units) if (body.includes(u)) hit++;
+    const share = hit / units.length;
+    if (share > bestShare) {
+      bestShare = share;
+      best = id;
+    }
+  }
+  return { id: best, share: bestShare };
+};
+const successorOfAll = runs => {
+  for (const { id, body } of curBodies) {
+    if (runs.every(r => body.includes(r))) return id;
+  }
   return null;
 };
 
@@ -236,7 +383,7 @@ const successorOf = window => {
 // The directory is overridable so a test can be hermetic — reading the real
 // `/tmp` would let whatever bump is in flight decide the answer.
 const sidecarBlob = (() => {
-  const dir = process.env.TWEAKCC_CLASSIFY_DIR || '/tmp';
+  const dir = process.env.TWEAKCC_CLASSIFY_DIR || process.env.SHOWTIME_TMP || '/tmp';
   let blob = '';
   let files = [];
   try {
@@ -273,28 +420,190 @@ const allowlist = fs.existsSync(ALLOWLIST)
   ? JSON.parse(fs.readFileSync(ALLOWLIST, 'utf8'))
   : {};
 
+// A window is 25 chars of the old prose, and 25 chars is short enough to land
+// inside unrelated text: ` Claude Code configuratio` ends a removed clause and
+// also sits in a desktop admin-policy description, so the bundle held one more
+// copy than the catalogue and the id read IN-BUNDLE on CC 2.1.295. A surplus of
+// one window is weak evidence on its own; what a coincidence cannot do is keep
+// matching the old prose past the window. So each occurrence is extended in both
+// directions along the old line it came from, and it counts as a site only when
+// the run reaches two windows (a phrase that common is not one clause of ours)
+// or the whole old line, whichever is shorter. A genuine survivor keeps its line.
+const siteRunMin = line => Math.min(line.length, 2 * WINDOW);
+
+// The bundle stores the old line's characters in JS-literal source form: an em
+// dash is `\u2014`, a middle dot `\xB7`, a quote inside a quoted string `\"`.
+// Comparing raw source against the decoded line stops the run at the first such
+// character, so a genuine survivor with an em dash in it read as a coincidence.
+// Every encoding the bundle may use for `ch`: its escapes first, so a source
+// backslash is read as the start of an escape, then the character itself.
+const SIMPLE_ESCAPES = {
+  '\n': ['\\n'],
+  '\r': ['\\r'],
+  '\t': ['\\t'],
+  '"': ['\\"'],
+  "'": ["\\'"],
+  '`': ['\\`'],
+  '\\': ['\\\\'],
+  $: ['\\$'],
+};
+const encodingsCache = new Map();
+const encodingsOf = ch => {
+  let out = encodingsCache.get(ch);
+  if (out) return out;
+  const code = ch.charCodeAt(0);
+  const hex4 = code.toString(16).padStart(4, '0');
+  const hex2 = code.toString(16).padStart(2, '0');
+  out = [...(SIMPLE_ESCAPES[ch] || [])];
+  for (const h of new Set([hex4.toUpperCase(), hex4.toLowerCase()])) {
+    out.push(`\\u${h}`);
+  }
+  out.push(`\\u{${code.toString(16)}}`, `\\u{${code.toString(16).toUpperCase()}}`);
+  if (code < 0x100) {
+    for (const h of new Set([hex2.toUpperCase(), hex2.toLowerCase()])) {
+      out.push(`\\x${h}`);
+    }
+  }
+  out = [...new Set(out), ch];
+  encodingsCache.set(ch, out);
+  return out;
+};
+
+// How many old-line characters, starting at `off`, the haystack continues from
+// `at` (forward) or ends with before `at` (backward), escape-aware.
+const extendForward = (hay, at, line, off) => {
+  let n = 0;
+  let j = at;
+  while (off + n < line.length && j < hay.length) {
+    const enc = encodingsOf(line[off + n]).find(e => hay.startsWith(e, j));
+    if (enc === undefined) break;
+    j += enc.length;
+    n++;
+  }
+  return n;
+};
+// Walking backward, an escape ending at `j` is real only when the backslash
+// that opens it is not itself escaped (an even run of backslashes before it).
+const escapeOpensAt = (hay, i) => {
+  let k = i;
+  while (k > 0 && hay[k - 1] === '\\') k--;
+  return (i - k) % 2 === 0;
+};
+const extendBackward = (hay, at, line, off) => {
+  let n = 0;
+  let j = at;
+  while (off - n > 0 && j > 0) {
+    const enc = encodingsOf(line[off - n - 1]).find(
+      e =>
+        e.length <= j &&
+        hay.startsWith(e, j - e.length) &&
+        (e.length === 1 || escapeOpensAt(hay, j - e.length))
+    );
+    if (enc === undefined) break;
+    j -= enc.length;
+    n++;
+  }
+  return n;
+};
+
+const runAround = (hay, at, line, off) =>
+  extendBackward(hay, at, line, off) +
+  WINDOW +
+  extendForward(hay, at + WINDOW, line, off + WINDOW);
+
+// Occurrences of `u` in `hay` that continue some old line that holds it.
+const countSites = (hay, u, lines) => {
+  const contexts = [];
+  for (const line of lines) {
+    for (let o = line.indexOf(u); o >= 0; o = line.indexOf(u, o + 1)) {
+      contexts.push({ line, off: o });
+    }
+  }
+  let n = 0;
+  for (let i = hay.indexOf(u); i >= 0; i = hay.indexOf(u, i + 1)) {
+    if (
+      contexts.some(
+        ({ line, off }) => runAround(hay, i, line, off) >= siteRunMin(line)
+      )
+    ) {
+      n++;
+    }
+  }
+  return n;
+};
+
+// Distinctive units the bundle holds more often than the catalogue and the
+// classify sidecar together. Each catalogue entry is one bundle site, so a
+// surplus is a site carrying the old text that nothing catalogues. Only
+// single-line ASCII units are countable in the bundle (see the header).
+const strayUnits = (probes, lines) =>
+  probes.filter(
+    u =>
+      isAscii(u) &&
+      countSites(cli, u, lines) >
+        namedSites(u, lines) + countSites(sidecarBlob, u, lines)
+  );
+
+const share = (units, haystack) =>
+  units.filter(u => haystack.includes(u)).length / units.length;
+
 const classify = id => {
   const entries = prevById.get(id) || [];
-  for (const p of entries) {
-    for (const run of literalRuns(p)) {
-      for (let off = 0; off + WINDOW <= run.length; off += STRIDE) {
-        const w = run.slice(off, off + WINDOW);
-        if (!isAscii(w)) continue;
-        if (curBlob.includes(w)) return { bucket: 'in-catalogue', to: successorOf(w) };
-        if (sidecarBlob.includes(w)) return { bucket: 'in-sidecar' };
-      }
+  const units = [...new Set(entries.flatMap(shareUnits))];
+  // The closest current id, reported as an advisory when the old id does not
+  // clear the bar, so a reword is reviewed against it rather than archived blind.
+  const best = units.length ? bestSuccessor(units) : { id: null, share: 0 };
+  const near = best.share > 0 ? best : null;
+  const windows = [...new Set(entries.flatMap(strayProbes))];
+  if (units.length) {
+    const to = best.share >= RENAME_SHARE ? best.id : null;
+    // A prompt Anthropic split keeps its long runs intact in each half, so the
+    // union test uses 25-char windows: union coverage by trigrams is satisfied
+    // by any short body of common phrasing ("which is not", "is not what").
+    const split =
+      !to && windows.length > 0 && share(windows, curBlob) >= RENAME_SHARE;
+    const pending =
+      !to &&
+      !split &&
+      (share(units, sidecarBlob) >= RENAME_SHARE ||
+        (windows.length > 0 &&
+          share(windows, `${curBlob}\n${sidecarBlob}`) >= RENAME_SHARE));
+    if (to || split || pending) {
+      const stray = strayUnits(
+        windows,
+        entries.flatMap(proseLines)
+      );
+      if (stray.length) return { bucket: 'IN-BUNDLE', to, stray, near };
+      if (pending) return { bucket: 'in-sidecar' };
+      return { bucket: 'in-catalogue', to, share: best.share, split };
     }
   }
   const probes = entries.flatMap(midBodyProbes);
   if (probes.length) {
-    return { bucket: probes.some(pr => cli.includes(pr)) ? 'IN-BUNDLE' : 'gone' };
+    // A run that named ids hold as often as the bundle does is text existing
+    // ids carry (a body spread over several successors, none of which clears
+    // RENAME_SHARE). Plain counts, not strayUnits: its context-site test drops
+    // a short line whose surroundings changed, and anonymous captures and the
+    // sidecar are pending classification, not coverage.
+    // Every live run of the body, not only the probes: the probes skip its
+    // head and tail. A fragment id nested in a composite parent's body is the
+    // same bundle site, so only the outermost bodies holding a run count.
+    const runs = [
+      ...new Set([
+        ...probes,
+        ...entries.flatMap(proseLines).flatMap(asciiRunsOnLine),
+      ]),
+    ];
+    const live = runs.filter(r => cli.includes(r));
+    const uncovered = live.filter(r => countOf(cli, r) > namedSites(r));
+    return { bucket: uncovered.length ? 'IN-BUNDLE' : 'gone', near };
   }
   for (const p of entries) {
     for (const run of literalRuns(p)) {
       for (let off = 0; off + WINDOW <= run.length; off += STRIDE) {
         const w = run.slice(off, off + WINDOW);
         if (!isAscii(w)) continue;
-        if (cli.includes(w)) return { bucket: 'IN-BUNDLE' };
+        if (cli.includes(w)) return { bucket: 'IN-BUNDLE', near };
       }
     }
   }
@@ -303,7 +612,7 @@ const classify = id => {
   // recommending an archive the gate never actually tested.
   const shorts = entries.flatMap(shortRuns);
   if (allPresent(shorts, curBlob)) {
-    return { bucket: 'in-catalogue', to: successorOf(shorts[0]) };
+    return { bucket: 'in-catalogue', to: successorOfAll(shorts) };
   }
   if (allPresent(shorts, sidecarBlob)) return { bucket: 'in-sidecar' };
   if (allPresent(shorts, cli)) return { bucket: 'IN-BUNDLE' };
@@ -319,11 +628,25 @@ const buckets = {
   gone: [],
 };
 const renamedTo = {};
+const split = [];
+const strayOf = {};
+const shareOf = {};
+const nearOf = {};
 for (const id of [...prevById.keys()].filter(i => !curIds.has(i)).sort()) {
-  const { bucket, to } = classify(id);
-  buckets[bucket].push(id);
-  if (to) renamedTo[id] = to;
+  const r = classify(id);
+  buckets[r.bucket].push(id);
+  if (r.bucket === 'in-catalogue' && r.to) {
+    renamedTo[id] = r.to;
+    shareOf[id] = r.share ?? 1;
+  }
+  if (r.bucket === 'in-catalogue' && r.split) split.push(id);
+  if (r.stray) strayOf[id] = r;
+  if (r.near && (r.bucket === 'IN-BUNDLE' || r.bucket === 'gone')) nearOf[id] = r.near;
 }
+const nearNote = id =>
+  nearOf[id]
+    ? `  (closest current id: ${nearOf[id].id}, ${nearOf[id].share.toFixed(2)} of its prose — review before archiving)`
+    : '';
 // A catalogue correction that rules a shipped id NOT model-facing leaves its
 // text in the bundle, so it reads as IN-BUNDLE forever. The resolution is the
 // classify verdict itself: an `archived` row naming the `facing` it was ruled
@@ -376,6 +699,18 @@ buckets['no-probe-surface'] = buckets['no-probe-surface'].filter(
 // The rename map is what an operator has to act on — an override keyed by the
 // old id has to be re-mapped by CONTENT to the successor, and every set that
 // has the file has to move with it.
+if (Object.keys(renamedTo).length) {
+  console.log('\nrenamed (share of the old prose the successor carries):');
+  for (const [id, to] of Object.entries(renamedTo)) {
+    console.log(`  ${id} -> ${to} (${shareOf[id].toFixed(2)})`);
+  }
+}
+if (split.length) {
+  console.log(
+    `\nsplit across several current ids (no single successor carries ${RENAME_SHARE * 100}% of the text):`
+  );
+  for (const id of split) console.log(`  ${id}`);
+}
 if (buckets['in-catalogue'].length) {
   fs.writeFileSync(
     RENAME_MAP,
@@ -385,9 +720,11 @@ if (buckets['in-catalogue'].length) {
 
 // `no-probe-surface` needs a decision too: the gate could not test it, and
 // leaving it out of this count is what makes an untested id read as settled.
+// An archived `gone` id is decided, so it leaves the count; it stays in the
+// "truly removed" total.
 const removed =
   buckets['IN-BUNDLE'].length +
-  buckets.gone.length +
+  buckets.gone.filter(id => allowlist[id]?.verdict !== 'archived').length +
   buckets['no-probe-surface'].length;
 console.log(
   `removed-id coverage: ${prevById.size - curIds.size >= 0 ? '' : ''}` +
@@ -443,7 +780,16 @@ if (reclassifiedMismatch.length) {
 }
 if (buckets['IN-BUNDLE'].length) {
   console.log('\nSTILL IN BUNDLE — model-facing text that lost its id:');
-  for (const id of buckets['IN-BUNDLE']) console.log(`  ${id}`);
+  for (const id of buckets['IN-BUNDLE']) {
+    const r = strayOf[id];
+    if (!r) {
+      console.log(`  ${id}${nearNote(id)}`);
+      continue;
+    }
+    console.log(
+      `  ${id}  (text also at a site ${r.to ? `${r.to} does not cover` : 'no current id covers'}: "${r.stray[0]}")`
+    );
+  }
   console.log(
     '\nRead the emission site. If the prompt survived a refactor, record a\n' +
       'classification-cache "model" verdict REUSING this id (probe the exact key\n' +
@@ -452,7 +798,7 @@ if (buckets['IN-BUNDLE'].length) {
 }
 if (unreviewedGone.length) {
   console.log('\ntruly removed, no recorded verdict:');
-  for (const id of unreviewedGone) console.log(`  ${id}`);
+  for (const id of unreviewedGone) console.log(`  ${id}${nearNote(id)}`);
   console.log(
     '\nArchive each override to ~/.tweakcc/orphans-removed-for-<ver>/ and record\n' +
       '{"verdict":"archived"} in data/removed-id-allowlist.json.'

@@ -159,9 +159,36 @@ const buildAnchorPlan = (tokens: MatchToken[]): AnchorPlan | null => {
   return best;
 };
 
+// A prompt with no long word run (a template fragment such as
+// `\n</ax-summary>` or `  ${…}.path} → ${…}`) still has exact literal
+// characters to narrow on. Without an anchor every lookup fell back to the
+// RegExp over the whole bundle, which on a MutableText also meant joining the
+// whole bundle into a fresh string first: ~1,500 of those per apply.
+const buildLiteralAnchorPlan = (tokens: MatchToken[]): AnchorPlan | null => {
+  let best: AnchorPlan | null = null;
+  let runStart = 0;
+  let run = '';
+  for (let i = 0; i <= tokens.length; i++) {
+    const token = tokens[i];
+    if (token?.kind === 'literal') {
+      if (run.length === 0) runStart = i;
+      run += token.value;
+      continue;
+    }
+    if (run.length > 0 && (!best || run.length > best.anchor.length)) {
+      best = { anchor: run, tokenIndex: runStart };
+    }
+    run = '';
+  }
+  return best;
+};
+
 const compileMatcher = (spec: PromptMatchSpec): CompiledPromptMatcher => {
   const tokens = compileTokens(spec.pieces, spec.version, spec.buildTime);
-  return { tokens, plan: buildAnchorPlan(tokens) };
+  return {
+    tokens,
+    plan: buildAnchorPlan(tokens) ?? buildLiteralAnchorPlan(tokens),
+  };
 };
 
 const isWord = (value: string | undefined): boolean => {
@@ -524,59 +551,157 @@ const tokenMatches = (
   return nonOverlapping;
 };
 
-const batchOccurrences = (
-  foldedContent: string,
-  anchors: string[]
-): Map<string, number[] | null> => {
-  const unique = [...new Set(anchors)];
-  const found = new Map<string, number[] | null>(
-    unique.map(anchor => [anchor, []])
-  );
-  if (foldedContent.length < MIN_ANCHOR) return found;
-  const base = 16777619;
-  const byHash = new Map<number, string[]>();
-  const hashText = (text: string): number => {
-    let hash = 0;
-    for (let i = 0; i < MIN_ANCHOR; i++) {
-      hash = (Math.imul(hash, base) + text.charCodeAt(i)) >>> 0;
-    }
-    return hash;
-  };
-  for (const anchor of unique) {
-    const hash = hashText(anchor);
-    const current = byHash.get(hash);
-    if (current) current.push(anchor);
-    else byHash.set(hash, [anchor]);
+// Anchor occurrences are found with a rolling hash over a fixed window: the
+// first MIN_ANCHOR chars for a long anchor, the first SHORT_WINDOW for a short
+// one (from buildLiteralAnchorPlan), so one pass over the bundle serves every
+// anchor of a kind. An anchor shorter than SHORT_WINDOW is searched on its own.
+const SHORT_WINDOW = 4;
+const HASH_BASE = 16777619;
+
+const hashWindowFor = (anchor: string): number =>
+  anchor.length >= MIN_ANCHOR
+    ? MIN_ANCHOR
+    : anchor.length >= SHORT_WINDOW
+      ? SHORT_WINDOW
+      : 0;
+
+const windowHash = (text: string, window: number): number => {
+  let hash = 0;
+  for (let i = 0; i < window; i++) {
+    hash = (Math.imul(hash, HASH_BASE) + text.charCodeAt(i)) >>> 0;
   }
+  return hash;
+};
+
+const windowPower = (window: number): number => {
   let power = 1;
-  for (let i = 1; i < MIN_ANCHOR; i++) {
-    power = Math.imul(power, base) >>> 0;
-  }
-  let hash = hashText(foldedContent);
-  const last = foldedContent.length - MIN_ANCHOR;
+  for (let i = 1; i < window; i++) power = Math.imul(power, HASH_BASE) >>> 0;
+  return power;
+};
+
+const addHashedAnchor = (
+  byHash: Map<number, string[]>,
+  anchor: string,
+  window: number
+): void => {
+  const hash = windowHash(anchor, window);
+  const current = byHash.get(hash);
+  if (current) current.push(anchor);
+  else byHash.set(hash, [anchor]);
+};
+
+const removeHashedAnchor = (
+  byHash: Map<number, string[]>,
+  anchor: string,
+  window: number
+): void => {
+  const hash = windowHash(anchor, window);
+  const remaining = byHash.get(hash)?.filter(item => item !== anchor);
+  if (remaining && remaining.length > 0) byHash.set(hash, remaining);
+  else byHash.delete(hash);
+};
+
+const recordOccurrence = (
+  found: Map<string, number[] | null>,
+  anchor: string,
+  index: number
+): void => {
+  const positions = found.get(anchor);
+  if (positions === null) return;
+  if (positions === undefined) found.set(anchor, [index]);
+  else if (positions.length === MAX_OCCURRENCES) found.set(anchor, null);
+  else positions.push(index);
+};
+
+// Every position of every hashed anchor in `content`, overlapping ones
+// included, added to `found`; an anchor past MAX_OCCURRENCES becomes null.
+const scanHashedAnchors = (
+  content: string,
+  window: number,
+  byHash: Map<number, string[]>,
+  found: Map<string, number[] | null>
+): void => {
+  if (byHash.size === 0 || content.length < window) return;
+  const power = windowPower(window);
+  let hash = windowHash(content, window);
+  const last = content.length - window;
   for (let index = 0; index <= last; index++) {
     const candidates = byHash.get(hash);
     if (candidates) {
       for (const anchor of candidates) {
-        if (foldedContent.startsWith(anchor, index)) {
-          const positions = found.get(anchor);
-          if (positions === null || positions === undefined) continue;
-          if (positions.length === MAX_OCCURRENCES) found.set(anchor, null);
-          else positions.push(index);
+        if (content.startsWith(anchor, index)) {
+          recordOccurrence(found, anchor, index);
         }
       }
     }
     if (index === last) break;
     hash =
       (Math.imul(
-        (hash - Math.imul(foldedContent.charCodeAt(index), power)) >>> 0,
-        base
+        (hash - Math.imul(content.charCodeAt(index), power)) >>> 0,
+        HASH_BASE
       ) +
-        foldedContent.charCodeAt(index + MIN_ANCHOR)) >>>
+        content.charCodeAt(index + window)) >>>
       0;
   }
-  return found;
 };
+
+const scanTinyAnchor = (
+  content: string,
+  anchor: string,
+  found: Map<string, number[] | null>
+): void => {
+  for (
+    let at = content.indexOf(anchor);
+    at !== -1 && found.get(anchor) !== null;
+    at = content.indexOf(anchor, at + 1)
+  ) {
+    recordOccurrence(found, anchor, at);
+  }
+};
+
+class AnchorIndex {
+  private long = new Map<number, string[]>();
+  private short = new Map<number, string[]>();
+  private tiny = new Set<string>();
+
+  add(anchor: string): void {
+    const window = hashWindowFor(anchor);
+    if (window === 0) this.tiny.add(anchor);
+    else
+      addHashedAnchor(
+        window === MIN_ANCHOR ? this.long : this.short,
+        anchor,
+        window
+      );
+  }
+
+  remove(anchor: string): void {
+    const window = hashWindowFor(anchor);
+    if (window === 0) this.tiny.delete(anchor);
+    else
+      removeHashedAnchor(
+        window === MIN_ANCHOR ? this.long : this.short,
+        anchor,
+        window
+      );
+  }
+
+  // Occurrences of the indexed anchors in `content`. `skip` names anchors
+  // already known to be too common; only the per-anchor tiny search can use
+  // it, since a hashed pass serves all of its anchors at once.
+  scan(
+    content: string,
+    found = new Map<string, number[] | null>(),
+    skip?: (anchor: string) => boolean
+  ): Map<string, number[] | null> {
+    scanHashedAnchors(content, MIN_ANCHOR, this.long, found);
+    scanHashedAnchors(content, SHORT_WINDOW, this.short, found);
+    for (const anchor of this.tiny) {
+      if (!skip?.(anchor)) scanTinyAnchor(content, anchor, found);
+    }
+    return found;
+  }
+}
 
 /**
  * Identity. Kept so the callers that used to hand the matcher a case-folded
@@ -594,6 +719,17 @@ const batchOccurrences = (
  */
 export const foldPromptMatchContent = (content: string): string => content;
 
+/**
+ * The apply's token matcher on its own, without the regex fallback: the
+ * matches, or null when the prompt has no usable anchor (or the anchor is too
+ * common) and only the regex can decide. Synchronous, and it never compiles
+ * the prompt regex, which V8 cannot do for the largest text assets.
+ */
+export const findPromptPieceMatchesByTokens = (
+  spec: PromptMatchSpec,
+  content: string
+): RegExpExecArray[] | null => tokenMatches(compileMatcher(spec), content);
+
 export const findAllPromptPieceMatches = async (
   spec: PromptMatchSpec,
   content: string
@@ -607,7 +743,7 @@ export class PromptPieceMatcherCatalog {
   private specs = new Map<string, PromptMatchSpec>();
   private compiled = new Map<string, CompiledPromptMatcher>();
   private anchorRegexes = new Map<string, string[]>();
-  private anchorHashes = new Map<number, string[]>();
+  private anchors = new AnchorIndex();
   private anchorOccurrences = new Map<string, number[] | null>();
   private anchorLengthCounts = new Map<number, number>();
   private maxAnchorLength = MIN_ANCHOR;
@@ -630,12 +766,7 @@ export class PromptPieceMatcherCatalog {
         this.maxAnchorLength = Math.max(this.maxAnchorLength, anchor.length);
       }
     }
-    for (const anchor of this.anchorRegexes.keys()) {
-      const hash = anchorPrefixHash(anchor);
-      const anchors = this.anchorHashes.get(hash);
-      if (anchors) anchors.push(anchor);
-      else this.anchorHashes.set(hash, [anchor]);
-    }
+    for (const anchor of this.anchorRegexes.keys()) this.anchors.add(anchor);
   }
 
   delete(regex: string): void {
@@ -662,12 +793,7 @@ export class PromptPieceMatcherCatalog {
         ...this.anchorLengthCounts.keys()
       );
     }
-    const hash = anchorPrefixHash(anchor);
-    const anchors = this.anchorHashes
-      .get(hash)
-      ?.filter(item => item !== anchor);
-    if (anchors && anchors.length > 0) this.anchorHashes.set(hash, anchors);
-    else this.anchorHashes.delete(hash);
+    this.anchors.remove(anchor);
   }
 
   index(
@@ -678,10 +804,10 @@ export class PromptPieceMatcherCatalog {
       this.anchorOccurrences.clear();
       return;
     }
-    this.anchorOccurrences = batchOccurrences(
+    this.anchorOccurrences = this.anchors.scan(
       foldedContent,
-      [...this.compiled.values()].flatMap(value =>
-        value.plan ? [value.plan.anchor] : []
+      new Map<string, number[] | null>(
+        [...this.anchorRegexes.keys()].map(anchor => [anchor, []])
       )
     );
   }
@@ -724,11 +850,13 @@ export class PromptPieceMatcherCatalog {
       content.length,
       splice.start + splice.replacementLength + this.maxAnchorLength - 1
     );
-    const local = content.slice(localStart, localEnd);
-    for (const [anchor, positions] of indexedAnchorOccurrences(
-      foldPromptMatchContent(local),
-      this.anchorHashes
-    )) {
+    const local = foldPromptMatchContent(content.slice(localStart, localEnd));
+    const rescanned = this.anchors.scan(
+      local,
+      undefined,
+      anchor => this.anchorOccurrences.get(anchor) === null
+    );
+    for (const [anchor, positions] of rescanned) {
       const current = this.anchorOccurrences.get(anchor);
       if (current === null || positions === null) {
         this.anchorOccurrences.set(anchor, null);
@@ -775,53 +903,6 @@ export class PromptPieceMatcherCatalog {
     return results;
   }
 }
-
-const ANCHOR_HASH_BASE = 16777619;
-let anchorHashPower = 1;
-for (let i = 1; i < MIN_ANCHOR; i++) {
-  anchorHashPower = Math.imul(anchorHashPower, ANCHOR_HASH_BASE) >>> 0;
-}
-
-const anchorPrefixHash = (text: string): number => {
-  let hash = 0;
-  for (let i = 0; i < MIN_ANCHOR; i++) {
-    hash = (Math.imul(hash, ANCHOR_HASH_BASE) + text.charCodeAt(i)) >>> 0;
-  }
-  return hash;
-};
-
-const indexedAnchorOccurrences = (
-  foldedContent: string,
-  byHash: Map<number, string[]>
-): Map<string, number[] | null> => {
-  const found = new Map<string, number[] | null>();
-  if (foldedContent.length < MIN_ANCHOR) return found;
-  let hash = anchorPrefixHash(foldedContent);
-  const last = foldedContent.length - MIN_ANCHOR;
-  for (let index = 0; index <= last; index++) {
-    const candidates = byHash.get(hash);
-    if (candidates) {
-      for (const anchor of candidates) {
-        if (!foldedContent.startsWith(anchor, index)) continue;
-        const positions = found.get(anchor);
-        if (positions === null) continue;
-        if (positions === undefined) found.set(anchor, [index]);
-        else if (positions.length === MAX_OCCURRENCES) found.set(anchor, null);
-        else positions.push(index);
-      }
-    }
-    if (index === last) break;
-    hash =
-      (Math.imul(
-        (hash - Math.imul(foldedContent.charCodeAt(index), anchorHashPower)) >>>
-          0,
-        ANCHOR_HASH_BASE
-      ) +
-        foldedContent.charCodeAt(index + MIN_ANCHOR)) >>>
-      0;
-  }
-  return found;
-};
 
 export const findAllPromptPieceMatchesBatch = async (
   specs: PromptMatchSpec[],

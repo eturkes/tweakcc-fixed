@@ -5,7 +5,7 @@
 // siblings might already carry the claim — so the packet assembles all of it
 // once, and the fan-out spends its budget on judgment instead of lookup.
 //
-//   node tools/buildAuditPacket.mjs <prompts.json> <ids-file> <outDir> [--ids-per-agent N]
+//   node tools/buildAuditPacket.mjs <prompts.json> <ids-file> <outDir> [--ids-per-agent N] [--no-capture]
 //
 // <ids-file> is one prompt id per line. Writes <outDir>/audit-packet-NN.md —
 // the whole markdown packet the stage-1 agent reads (tools/lib/auditPacketMd.mjs:
@@ -32,6 +32,12 @@
 // same function and the nearest deployed bodies. On CC 2.1.288 the 441-id
 // packets carried ~187k characters of override frontmatter that no verdict
 // used.
+//
+// Each tool carrier is marked always-on or DEFERRED from a turnProbe wire
+// capture (TWEAKCC_CAPTURES, else the one `driver check` recorded for the
+// version). Without one every tool carrier goes to stage 1 unmarked, so the
+// build exits 2 unless --no-capture (or TWEAKCC_NO_CAPTURE=1) says the run is
+// deliberate; the manifest's `capture` stays null then.
 import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
@@ -73,6 +79,12 @@ import {
 import { fileURLToPath } from 'node:url';
 import { partitionContiguous, agentsFor } from './lib/packByWeight.mjs';
 import { writeMarkdownParts, partByteCap } from './lib/packetParts.mjs';
+import {
+  resolveCaptureDir,
+  capturedTools,
+  makeToolStatus,
+  captureLine,
+} from './lib/deferredTools.mjs';
 
 // Ids one stage-1 agent audits. Set from the 2.1.288 batching replay (see
 // memory showtime-token-cost): per-agent cost there was dominated by the fixed
@@ -83,16 +95,18 @@ const parsed = parseOverrideArgs(process.argv.slice(2));
 const resolved = resolveOverrideSets(parsed, { fallback: 'applied' });
 const flagArgs = [];
 const posArgs = [];
+let noCapture = ['1', 'true'].includes(process.env.TWEAKCC_NO_CAPTURE);
 for (let i = 0; i < parsed.rest.length; i++) {
   const a = parsed.rest[i];
-  if (a === '--ids-per-agent') flagArgs.push(['ids-per-agent', parsed.rest[++i]]);
+  if (a === '--no-capture') noCapture = true;
+  else if (a === '--ids-per-agent') flagArgs.push(['ids-per-agent', parsed.rest[++i]]);
   else if (a.startsWith('--ids-per-agent=')) flagArgs.push(['ids-per-agent', a.slice(16)]);
   else posArgs.push(a);
 }
 const [jsonPath, idsPath, outDirArg, staleGroupSize] = posArgs;
 if (!jsonPath || !idsPath) {
   console.error(
-    'usage: buildAuditPacket.mjs <prompts.json> <ids-file> [outDir] [--ids-per-agent N]'
+    'usage: buildAuditPacket.mjs <prompts.json> <ids-file> [outDir] [--ids-per-agent N] [--no-capture]'
   );
   process.exit(2);
 }
@@ -115,7 +129,7 @@ if (!(Number.isInteger(idsPerAgent) && idsPerAgent > 0)) {
   console.error('buildAuditPacket: --ids-per-agent must be a positive integer');
   process.exit(2);
 }
-const outDir = outDirArg || '/tmp';
+const outDir = outDirArg || process.env.SHOWTIME_TMP || '/tmp';
 // Namespacing the packets per version is what keeps a previous bump's leftovers
 // from being harvested as this one's result, so the tool has to be able to
 // create the directory it was pointed at rather than failing at the first write.
@@ -141,7 +155,17 @@ const activeSet = active ? active.dir : '';
 const allSets = setEntries.map(s => s.name);
 printAuditedSets(setEntries);
 
-const prompts = JSON.parse(fs.readFileSync(jsonPath, 'utf8')).prompts;
+const catalogueJson = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+const prompts = catalogueJson.prompts;
+// Checked before the corpus index is built: a missing capture is a setup error,
+// not something to find out after the packets are written.
+const guardDir = noCapture ? null : resolveCaptureDir(catalogueJson.version);
+if (!noCapture && !(guardDir && capturedTools(guardDir))) {
+  console.error(
+    `buildAuditPacket: no usable turnProbe capture for CC ${catalogueJson.version} (none found, or no request with a non-empty tools[]) — every tool carrier would reach stage 1 unmarked (always-on vs DEFERRED). Run \`driver check\` first (it records the capture), or point TWEAKCC_CAPTURES at a capture dir holding req-*.json. Pass --no-capture (or TWEAKCC_NO_CAPTURE=1) only for a deliberate run without one.`
+  );
+  process.exit(2);
+}
 // The realign workflow's prompt tells the agent to read "the complete old
 // pristine -> new pristine change", and the packet never carried the old body:
 // the agent had to go find one id inside a 3 MB previous-version JSON, or judge
@@ -362,6 +386,23 @@ const packetFor = id => {
 const toolsDir = path.dirname(fileURLToPath(import.meta.url));
 const version = JSON.parse(fs.readFileSync(jsonPath, 'utf8')).version;
 const absOut = path.resolve(outDir);
+
+// Which tool carriers are always-on (lib/deferredTools.mjs): the turnProbe
+// capture's tools[] (TWEAKCC_CAPTURES, else the one `driver check` recorded for
+// this version). Only a --no-capture run gets here without one; the packet then
+// says so and marks nothing.
+const captureDir = resolveCaptureDir(version);
+const capture = captureDir ? capturedTools(captureDir) : null;
+const toolStatus = makeToolStatus(
+  capture,
+  id => (byId.get(id) || [{}])[0].name || '',
+  id => {
+    const i = index ? index.byId.get(id) : undefined;
+    if (i !== undefined) return [index.docs[i].body || ''];
+    return (byId.get(id) || []).map(reconstructPristine);
+  }
+);
+const captureNote = captureLine(captureDir, capture);
 const corpusBlock = {
   catalogue,
   activeSet,
@@ -426,7 +467,13 @@ for (const id of ids) {
   entryOf.set(id, entry);
   models.set(
     id,
-    mdModel({ index, src: cliSrc, prompt: entry, entries: byId.get(id) })
+    mdModel({
+      index,
+      src: cliSrc,
+      prompt: entry,
+      entries: byId.get(id),
+      toolStatus,
+    })
   );
 }
 const catalogueVersion = id => {
@@ -492,6 +539,7 @@ const renderMd = (n, slice) => {
           id: cid,
           claims,
           inGroup: false,
+          toolStatus,
         })
       );
     }
@@ -501,6 +549,7 @@ const renderMd = (n, slice) => {
     group: `g${n}`,
     version,
     count: slice.length,
+    captureNote,
     paths: {
       'verdicts file': p.verdicts,
       'active set': activeSet,
@@ -611,6 +660,11 @@ console.log(
           : ' (no bundle: coRender hints unresolved)')
     : 'corpus index: none (no active set resolved)'
 );
+console.log(
+  capture
+    ? `tool carriers: capture ${capture.file} (${capture.names.length} always-on tools)`
+    : 'tool carriers: NO turnProbe capture for this version — tool carriers unmarked (run driver check, or set TWEAKCC_CAPTURES)'
+);
 console.log(`active set: ${activeSet}`);
 console.log(`reminders: ${remindersDir || 'none'}`);
 console.log(`sets: ${allSets.join(', ')}`);
@@ -628,6 +682,9 @@ fs.writeFileSync(
       idsFile: path.resolve(idsPath),
       corpus: corpusBlock,
       bundleSha: index ? index.bundleSha : null,
+      capture: capture
+        ? { dir: captureDir, file: capture.file, tools: capture.names }
+        : null,
       packing: { idsPerAgent, agents, partBytes },
       groupCount: groups.length,
       groups,

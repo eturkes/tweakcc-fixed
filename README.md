@@ -6,7 +6,7 @@
 
 [![npm](https://img.shields.io/npm/v/tweakcc-fixed?color=cb3837&label=npm&logo=npm&style=flat-square)](https://www.npmjs.com/package/tweakcc-fixed)
 [![downloads](https://img.shields.io/npm/dt/tweakcc-fixed?color=cb3837&style=flat-square)](https://www.npmjs.com/package/tweakcc-fixed)
-[![Claude Code](https://img.shields.io/badge/Claude%20Code-2.0.98%20%E2%86%92%202.1.288-d97757?style=flat-square)](https://github.com/anthropics/claude-code)
+[![Claude Code](https://img.shields.io/badge/Claude%20Code-2.0.98%20%E2%86%92%202.1.296-d97757?style=flat-square)](https://github.com/anthropics/claude-code)
 [![license](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](#credit--license)
 
 **[Install](#install) · [Customize](#what-you-can-customize) · [The fork](#what-this-fork-adds) · [How it works](#how-it-works)**
@@ -57,8 +57,8 @@ The biggest difference is coverage. Its extractor pulls over ten times the promp
 
 |                              | tweakcc-fixed | upstream  |
 | ---------------------------- | :-----------: | :-------: |
-| Prompt sites (CC 2.1.288)    |  **10,248**   |    827    |
-| Unique prompt IDs            |   **9,743**   |    827    |
+| Prompt sites (CC 2.1.296)    |  **11,981**   |    896    |
+| Unique prompt IDs            |  **11,329**   |    896    |
 | Patches                      |    **64**     |    49     |
 | Overrides on native installs |    **yes**    | gated off |
 
@@ -98,6 +98,8 @@ Each patch is tagged with how it behaves on `--apply`: **`[default on]`** applie
 - `fix-summarize-from-here` **`[default on]`** — "summarize from here" starts at the rewind point, not the top
 - `strip-empty-system-reminders` **`[always]`** — drop the empty `<system-reminder>` blocks left after empty tool output
 - `read-default-lines` **`[always]`** — an env-gated cap on the default `Read` line count
+- `attached-background-interactive` **`[opt-in]`** — a background session with a client attached offers what an interactive one does: ProposeGoal, usage-limit auto-resume, and the auto mode and workflow prompts; one nobody is attached to is unchanged; ProposeGoal also needs its flag, served by Anthropic or forced by `enable-propose-goal` (`settings.misc.attachedBackgroundInteractive`)
+- `enable-propose-goal` **`[opt-in]`** — force the ProposeGoal tool's rollout flag on, in every session kind its own checks allow; "Claude-proposed goals" in `/config` sets whether it asks first (`settings.misc.enableProposeGoal`)
 - `suppress-deferred-tools` **`[opt-in]`** — drop the deferred-tools announcement
 - `multi-skill-invocation` **`[opt-in]`** — invoke every `/skill` you type in one message ("`/a /b do X`") directly, not just the leading one (real user invocations, no model round-trip)
 

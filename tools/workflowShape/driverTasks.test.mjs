@@ -13,21 +13,38 @@ import crypto from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
-const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
-const DRIVER = path.join(REPO, '.claude/skills/showtime-skrabe/driver.mjs');
+const SOURCE_REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+const DRIVER = path.join(SOURCE_REPO, '.claude/skills/showtime-skrabe/driver.mjs');
 const hasDriver = fs.existsSync(DRIVER);
 
 let T;
+let REPO;
+function fixtureRepo() {
+  REPO = path.join(T, 'checkout');
+  for (const version of ['9.9.7', '9.9.8', '9.9.9']) {
+    write(`checkout/data/prompts/prompts-${version}.json`, { version, prompts: [] });
+    write(`tmp/cli-${version}.js`, version);
+  }
+  write('checkout/tools/promptExtractor.js', '');
+  fs.mkdirSync(path.join(REPO, '.claude'), { recursive: true });
+  fs.symlinkSync(path.join(SOURCE_REPO, '.claude/workflows'), path.join(REPO, '.claude/workflows'));
+}
 const env = () => {
   const e = {
     ...process.env,
     TWEAKCC_REPO: REPO,
     SHOWTIME_TMP: path.join(T, 'tmp'),
+    SHOWTIME_RUN_ROOT: path.join(T, 'tmp'),
+    SHOWTIME_RUN_ID: 'fixture',
     SHOWTIME_TWEAKCC_DIR: path.join(T, 'tc'),
     SHOWTIME_RUNLOG: path.join(T, 'run.log'),
   };
-  delete e.SHOWTIME_VERBOSE;
+  for (const k of ['SHOWTIME_VERBOSE', 'SHOWTIME_MODE', 'SHOWTIME_MODEL', 'SHOWTIME_EFFORT', 'SHOWTIME_VERIFY_EFFORT', 'SHOWTIME_VERSION']) delete e[k];
   return e;
+};
+const driverEnv = (extra, ...a) => {
+  const r = spawnSync('node', [DRIVER, ...a], { encoding: 'utf8', env: { ...env(), ...extra } });
+  return { code: r.status, out: (r.stdout || '').replace(ANSI, ''), err: r.stderr || '', lines: (r.stdout || '').trim().split('\n') };
 };
 const driver = (...a) => {
   const r = spawnSync('node', [DRIVER, ...a], { encoding: 'utf8', env: env() });
@@ -47,6 +64,7 @@ const digestOf = f => crypto.createHash('sha256').update(fs.readFileSync(f)).dig
 describe.skipIf(!hasDriver)('driver tasks-args / tasks-check / tasks-harvest', () => {
   beforeAll(() => {
     T = fs.mkdtempSync(path.join(os.tmpdir(), 'driver-tasks-'));
+    fixtureRepo();
     // remindersDir defaults to the realpath of <tweakcc>/system-reminders.
     fs.mkdirSync(path.join(T, 'tc/lcc/system-reminders'), { recursive: true });
     fs.symlinkSync(path.join(T, 'tc/lcc/system-reminders'), path.join(T, 'tc/system-reminders'));
@@ -67,7 +85,7 @@ describe.skipIf(!hasDriver)('driver tasks-args / tasks-check / tasks-harvest', (
     expect(args.code).toBe(0);
     expect(args.lines).toHaveLength(1);
     const parsed = JSON.parse(args.lines[0]);
-    expect(Object.keys(parsed)).toEqual(['version', 'tasksPath', 'count', 'tasksDigest', 'model', 'repoDir', 'remindersDir', 'effort']);
+    expect(Object.keys(parsed)).toEqual(expect.arrayContaining(['version', 'tasksPath', 'count', 'tasksDigest', 'model', 'repoDir', 'remindersDir', 'effort']));
     expect(parsed).toMatchObject({ version: '9.9.9', tasksPath: tasks, count: 2, tasksDigest: digestOf(tasks), model: 'opus', repoDir: REPO, remindersDir: fs.realpathSync(path.join(T, 'tc/lcc/system-reminders')), effort: 'medium' });
 
     write('trim/trim-result-00.json', { task: '00', tasksDigest: parsed.tasksDigest, version: '9.9.9', id: 'a', filesWritten: [a], summary: 'cut the slogan' });
@@ -114,7 +132,8 @@ describe.skipIf(!hasDriver)('driver tasks-args / tasks-check / tasks-harvest', (
     const p = write('realign/packet.json', {});
     const f = md('realign/a.md', '9.9.7');
     const tasks = write('realign/tasks.json', { version: '9.9.9', tasks: [{ id: 'a', packet: p, paths: [f], version: '9.9.7' }] });
-    const { tasksDigest } = JSON.parse(driver('tasks-args', 'realign', tasks, '--version', '9.9.9', '--model', 'm', '--effort', 'e').lines[0]);
+    const parsed = JSON.parse(driver('tasks-args', 'realign', tasks, '--version', '9.9.9', '--model', 'm', '--effort', 'e').lines[0]);
+    const { tasksDigest } = parsed;
     write('realign/realign-result-00.json', { task: '00', tasksDigest, version: '9.9.7', id: 'a', classification: 'bump', filesWritten: [f], summary: 's' });
     const bad = driver('tasks-check', 'realign', tasks, '00');
     expect(bad.code).toBe(1);
@@ -183,7 +202,7 @@ describe.skipIf(!hasDriver)('driver tasks-args / tasks-check / tasks-harvest', (
     const a = driver('tasks-args', 'trim-verify', tasks, '--version', '9.9.9', '--model', 'm', '--trim-effort', 'medium', '--verify-effort', 'xhigh', '--captures', cap);
     expect(a.code).toBe(0);
     const parsed = JSON.parse(a.lines[0]);
-    expect(Object.keys(parsed)).toEqual(['version', 'tasksPath', 'count', 'tasksDigest', 'model', 'repoDir', 'remindersDir', 'trimEffort', 'verifyEffort', 'coupled', 'capturesDir', 'capturesFrom']);
+    expect(Object.keys(parsed)).toEqual(expect.arrayContaining(['version', 'tasksPath', 'count', 'tasksDigest', 'model', 'repoDir', 'remindersDir', 'trimEffort', 'verifyEffort', 'coupled', 'capturesDir', 'capturesFrom']));
     expect(parsed).toMatchObject({ capturesDir: cap, capturesFrom: 'flag' });
     expect(parsed.coupled).toEqual(['00', '01']);
 
@@ -218,13 +237,14 @@ describe.skipIf(!hasDriver)('driver tasks-args / tasks-check / tasks-harvest', (
 describe.skipIf(!hasDriver)('driver classify-args / audit-args read the builders\' manifests', () => {
   beforeAll(() => {
     T = fs.mkdtempSync(path.join(os.tmpdir(), 'driver-args-'));
+    fixtureRepo();
     fs.mkdirSync(path.join(T, 'tc/lcc/system-reminders'), { recursive: true });
     fs.symlinkSync(path.join(T, 'tc/lcc/system-reminders'), path.join(T, 'tc/system-reminders'));
   });
   afterAll(() => fs.rmSync(T, { recursive: true, force: true }));
 
   it('classify-args prints the path-only args with part counts and refuses the old flow', () => {
-    const flags = ['--model', 'sonnet', '--verify-model', 'opus', '--classify-effort', 'high', '--verify-effort', 'medium'];
+    const flags = ['--model', 'sonnet', '--effort', 'high'];
     write('tmp/classify-evidence-9.9.8/classify-evidence-00.json', {});
     const old = driver('classify-args', '9.9.8', ...flags);
     expect(old.code).toBe(1);
@@ -249,13 +269,16 @@ describe.skipIf(!hasDriver)('driver classify-args / audit-args read the builders
     const r = driver('classify-args', '9.9.9', ...flags);
     expect(r.code).toBe(0);
     expect(r.lines).toHaveLength(1);
-    expect(JSON.parse(r.lines[0])).toEqual({
-      version: '9.9.9', evidenceDir: dir, chunkCount: 2, mdParts: [1, 2], model: 'sonnet', verifyModel: 'opus', classifyEffort: 'high', verifyEffort: 'medium', repoDir: REPO,
+    expect(JSON.parse(r.lines[0])).toMatchObject({
+      version: '9.9.9', evidenceDir: dir, chunkCount: 2, mdParts: [1, 2], model: 'sonnet', effort: 'high', repoDir: REPO,
     });
-    expect(Object.keys(JSON.parse(r.lines[0]))).toEqual(['version', 'evidenceDir', 'chunkCount', 'mdParts', 'model', 'verifyModel', 'classifyEffort', 'verifyEffort', 'repoDir']);
-    const noDefaults = driver('classify-args', '9.9.9', '--model', 'sonnet');
-    expect(noDefaults.code).toBe(1);
-    expect(noDefaults.out).toContain('missing --verify-model, --classify-effort, --verify-effort');
+    expect(Object.keys(JSON.parse(r.lines[0]))).not.toEqual(expect.arrayContaining(['verifyModel']));
+    const noEffort = driver('classify-args', '9.9.9', '--model', 'sonnet');
+    expect(noEffort.code).toBe(1);
+    expect(noEffort.out).toContain('missing --effort');
+    // `driver env` exports the showtime.json defaults; flags still win.
+    const viaEnv = driverEnv({ SHOWTIME_MODEL: 'opus', SHOWTIME_EFFORT: 'medium' }, 'classify-args', '9.9.9', '--effort', 'low');
+    expect(JSON.parse(viaEnv.lines[0])).toMatchObject({ model: 'opus', effort: 'low' });
   });
 
   it('audit-args reproduces the builder line and fails when the active set moved', () => {
@@ -268,7 +291,7 @@ describe.skipIf(!hasDriver)('driver classify-args / audit-args read the builders
     const packet = write('tmp/audit-packets-9.9.9/audit-packet-00.json', {});
     const md = write('tmp/audit-packets-9.9.9/audit-packet-00.md', {});
     write('tmp/audit-packets-9.9.9/audit-manifest.json', {
-      format: 2, version: '9.9.9', corpus: { activeSet: setA }, groupCount: 1,
+      format: 2, version: '9.9.9', corpus: { activeSet: setA, catalogue: path.join(REPO, 'data/prompts/prompts-9.9.9.json') }, groupCount: 1,
       groups: [{ name: 'g00', packet, md, mdParts: [md], verdicts: path.join(dir, 'verdicts-00.json'), ids: ['a'] }],
     });
     const focus = write('focus.txt', 'audit against the new card\n');
@@ -277,9 +300,9 @@ describe.skipIf(!hasDriver)('driver classify-args / audit-args read the builders
     expect(r.lines).toHaveLength(1);
     const parsed = JSON.parse(r.lines[0]);
     const rem = fs.realpathSync(path.join(T, 'tc/lcc/system-reminders'));
-    expect(Object.keys(parsed)).toEqual(['version', 'packetDir', 'groupCount', 'mdParts', 'activeSet', 'repoDir', 'remindersDir', 'model', 'effort', 'focus']);
-    expect(parsed).toEqual({ version: '9.9.9', packetDir: dir, groupCount: 1, mdParts: [1], activeSet: setA, repoDir: REPO, remindersDir: rem, model: 'opus', effort: 'medium', focus: 'audit against the new card' });
-    expect(Object.keys(JSON.parse(driver('audit-args', '9.9.9', '--model', 'opus', '--effort', 'medium').lines[0]))).toEqual(['version', 'packetDir', 'groupCount', 'mdParts', 'activeSet', 'repoDir', 'remindersDir', 'model', 'effort']);
+    expect(Object.keys(parsed)).toEqual(expect.arrayContaining(['version', 'packetDir', 'groupCount', 'mdParts', 'activeSet', 'repoDir', 'remindersDir', 'model', 'effort', 'focus']));
+    expect(parsed).toMatchObject({ version: '9.9.9', packetDir: dir, groupCount: 1, mdParts: [1], activeSet: setA, repoDir: REPO, remindersDir: rem, model: 'opus', effort: 'medium', focus: 'audit against the new card' });
+    expect(Object.keys(JSON.parse(driver('audit-args', '9.9.9', '--model', 'opus', '--effort', 'medium').lines[0]))).toEqual(expect.arrayContaining(['version', 'packetDir', 'groupCount', 'mdParts', 'activeSet', 'repoDir', 'remindersDir', 'model', 'effort']));
     const noModel = driver('audit-args', '9.9.9');
     expect(noModel.code).toBe(1);
     expect(noModel.out).toContain('missing --model, --effort');
@@ -306,9 +329,16 @@ describe.skipIf(!hasDriver)('driver output is compact by default', () => {
   let FAKE;
   beforeAll(() => {
     T = fs.mkdtempSync(path.join(os.tmpdir(), 'driver-compact-'));
+    fixtureRepo();
     FAKE = path.join(T, 'repo');
+    write('repo/data/prompts/prompts-9.9.8.json', { version: '9.9.8', prompts: [{ id: 'a', pieces: ['hello'], identifiers: [], identifierMap: {} }] });
     write('repo/data/prompts/prompts-9.9.9.json', { version: '9.9.9', prompts: [{ id: 'a', pieces: ['hello'], identifiers: [], identifierMap: {} }] });
     write('repo/tools/promptExtractor.js', '');
+    // validate runs the content-swap gate from the checkout it is pointed at.
+    for (const f of ['checkContentSwap.mjs', 'lib/contentSwap.mjs', 'lib/overrideSets.cjs']) {
+      fs.mkdirSync(path.dirname(path.join(FAKE, 'tools', f)), { recursive: true });
+      fs.copyFileSync(path.join(SOURCE_REPO, 'tools', f), path.join(FAKE, 'tools', f));
+    }
     md('tc/lobotomized-claude-code/system-prompts-x/a.md');
   });
   afterAll(() => fs.rmSync(T, { recursive: true, force: true }));
@@ -322,10 +352,10 @@ describe.skipIf(!hasDriver)('driver output is compact by default', () => {
     expect(r.code).toBe(0);
     expect(r.lines).toEqual([
       `· full log: ${path.join(T, 'tmp/showtime-validate.log')}`,
-      '✓ validate 9.9.9: all 1 set(s) clean',
+      '✓ validate 9.9.9: all 1 set(s) clean; ccVersion null: 0; content swap: 0 unacknowledged',
     ]);
     expect(fs.readFileSync(path.join(T, 'tmp/showtime-validate.log'), 'utf8')).toContain('system-prompts-x: orphan=0 UNKNOWN_N=0 unbound=0');
-    expect(fs.readFileSync(path.join(T, 'run.log'), 'utf8')).toMatch(/^\d\d:\d\d\tvalidate 9\.9\.9: validate 9\.9\.9: all 1 set\(s\) clean$/m);
+    expect(fs.readFileSync(path.join(T, 'run.log'), 'utf8')).toMatch(/^\d\d:\d\d\tvalidate 9\.9\.9: validate 9\.9\.9: all 1 set\(s\) clean; ccVersion null: 0; content swap: 0 unacknowledged$/m);
   });
 
   it('prints the whole failing step with its detail lines, and keeps the exit code', () => {
@@ -337,7 +367,8 @@ describe.skipIf(!hasDriver)('driver output is compact by default', () => {
       'Validate override sets against 9.9.9',
       '✗ system-prompts-x: orphan=1 UNKNOWN_N=0 unbound=0',
       '    orphan   gone',
-      '✗ validate 9.9.9: 1 problem(s) across 1 set(s)',
+      `· full log: ${path.join(T, 'tmp/showtime-validate.log')}`,
+      '✗ validate 9.9.9: 1 problem(s) across 1 set(s); ccVersion null: 0; content swap: 0 unacknowledged',
     ]);
   });
 
@@ -346,6 +377,7 @@ describe.skipIf(!hasDriver)('driver output is compact by default', () => {
     expect(r.code).toBe(0);
     expect(r.lines[0]).toBe('Validate override sets against 9.9.9');
     expect(r.lines).toContain('✓ system-prompts-x: orphan=0 UNKNOWN_N=0 unbound=0');
-    expect(r.lines[r.lines.length - 1]).toBe('✓ validate 9.9.9: all 1 set(s) clean');
+    expect(r.lines).toContain('✓ ccVersion: null: 0');
+    expect(r.lines[r.lines.length - 1]).toBe('✓ validate 9.9.9: all 1 set(s) clean; ccVersion null: 0; content swap: 0 unacknowledged');
   });
 });

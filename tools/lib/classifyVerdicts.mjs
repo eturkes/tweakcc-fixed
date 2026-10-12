@@ -73,8 +73,11 @@ export function normalizeChunk(m, arg) {
   return hit.chunk;
 }
 
-// Bundle and corpus must be the ones the packets were built from; a verdict
-// produced against another bundle is not evidence for this one.
+// The bundle must be the one the packets were built from; a verdict produced
+// against another bundle is not evidence for this one. The catalogue is not
+// pinned the same way: every re-extract rewrites it during a run, and what it
+// guards, an id landing on two bodies, is checked against the live catalogue
+// (loadCatalogue), which also catches ids added after the evidence was built.
 export function digestProblems(m, { checkFiles = true } = {}) {
   const out = [];
   if (!checkFiles) return out;
@@ -82,14 +85,31 @@ export function digestProblems(m, { checkFiles = true } = {}) {
     const now = sha256(fs.readFileSync(m.bundle.path));
     if (now !== m.bundle.sha256) out.push(`bundle ${m.bundle.path} changed since the evidence was built (sha256 ${now.slice(0, 12)} != ${m.bundle.sha256.slice(0, 12)}); rebuild the evidence`);
   }
-  if (m.corpus && m.corpus.promptsJson && fs.existsSync(m.corpus.promptsJson)) {
-    const now = sha256(fs.readFileSync(m.corpus.promptsJson)).slice(0, 16);
-    if (now !== m.corpus.digest) out.push(`catalogue ${m.corpus.promptsJson} changed since the evidence was built (digest ${now} != ${m.corpus.digest}); rebuild the evidence`);
-  }
   return out;
 }
 
-function fieldProblems(v, cand, where) {
+// Every live id and the sha1 of each body it names.
+export function catalogueIndex(prompts) {
+  const index = {};
+  for (const p of prompts) {
+    if (!p.id) continue;
+    const body = (p.pieces || []).filter(x => typeof x === 'string').join('') || p.content || '';
+    const h = crypto.createHash('sha1').update(body).digest('hex');
+    (index[p.id] ||= []);
+    if (!index[p.id].includes(h)) index[p.id].push(h);
+  }
+  return index;
+}
+
+// A body in the form the catalogue stores it: the extractor writes pieces with
+// the build stamp and the CC version replaced by placeholders, while a
+// candidate's hash is the sha1 of its raw body.
+export function catalogueForm(body, version) {
+  const stamped = body.replace(/BUILD_TIME:"(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z)"/g, 'BUILD_TIME:"<<BUILD_TIME>>"');
+  return version ? stamped.split(version).join('<<CCVERSION>>') : stamped;
+}
+
+export function fieldProblems(v, cand, where) {
   const out = [];
   const h = v.hash;
   if (!FACINGS.has(v.facing)) out.push(`${where} ${h}: facing must be model|ui|internal, got ${JSON.stringify(v.facing)}`);
@@ -99,7 +119,10 @@ function fieldProblems(v, cand, where) {
       if (typeof v[f] !== 'string' || NULLISH.has(v[f].trim().toLowerCase())) out.push(`${where} ${h}: facing:model needs a non-empty ${f} (a reused id needs name and desc too)`);
     }
     if (typeof v.id === 'string') {
-      if (!ID_RE.test(v.id)) out.push(`${where} ${h}: id ${JSON.stringify(v.id)} is not kebab-case [a-z0-9-]`);
+      // Older catalogue ids keep underscores from tool/parameter names; reusing
+      // one verbatim is required, so only a newly minted id must be kebab-case.
+      const reused = ((cand && cand.allowedIds) || []).includes(v.id);
+      if (!reused && !ID_RE.test(v.id)) out.push(`${where} ${h}: id ${JSON.stringify(v.id)} is not kebab-case [a-z0-9-]`);
       const pre = RESERVED_PREFIXES.find(p => v.id.startsWith(p));
       if (pre) out.push(`${where} ${h}: id ${v.id} uses the reserved ${pre} prefix — mint a catalogue id instead`);
     }
@@ -108,7 +131,6 @@ function fieldProblems(v, cand, where) {
       if (v[f] !== null) out.push(`${where} ${h}: facing:${v.facing} must set ${f} to JSON null (not ${JSON.stringify(v[f])})`);
     }
   }
-  void cand;
   return out;
 }
 
@@ -150,7 +172,7 @@ export function checkVerdictSet(file, { m, nn, expected, cands, label }) {
 // One id = one body. An id already in the catalogue may be kept only by the
 // candidate whose own body carries it, or the one licensed to reuse it
 // (reusedFrom / possibleSuccessorOf / piebaldExact).
-export function collisionProblems(merged, { cands, catalogue, label }) {
+export function collisionProblems(merged, { cands, catalogue, label, version }) {
   const out = [];
   const byId = new Map();
   for (const v of merged) {
@@ -159,8 +181,8 @@ export function collisionProblems(merged, { cands, catalogue, label }) {
     if (prev && prev !== v.hash) out.push(`${label}: id ${v.id} is given to two different hashes (${prev.slice(0, 10)}, ${v.hash.slice(0, 10)}) — keep it on the body the previous one opens with and name the other for what distinguishes it`);
     else byId.set(v.id, v.hash);
     const live = catalogue[v.id];
-    if (live && !live.includes(v.hash)) {
-      const cand = cands.get(v.hash) || {};
+    const cand = cands.get(v.hash) || {};
+    if (live && !live.includes(v.hash) && !(typeof cand.body === 'string' && live.includes(sha1(catalogueForm(cand.body, version))))) {
       if (!(cand.allowedIds || []).includes(v.id)) {
         out.push(`${label}: ${v.hash.slice(0, 10)} reuses catalogue id ${v.id}, which is live on a different body and is not this candidate's reusedFrom/possibleSuccessorOf/piebaldExact id — text that reads like an existing prompt but interpolates different expressions is a DIFFERENT prompt; mint a sibling id`);
       }
@@ -175,7 +197,11 @@ export function loadChunk(dir, m, nn) {
   return { packet, cands };
 }
 
+// The live catalogue when its file is there, else the snapshot the evidence
+// was built with.
 export function loadCatalogue(dir, m) {
+  const live = m.corpus && m.corpus.promptsJson;
+  if (live && fs.existsSync(live)) return catalogueIndex(readJson(live).prompts || []);
   const f = path.join(dir, m.catalogueIndex || 'catalogue-index.json');
   return fs.existsSync(f) ? readJson(f) : {};
 }
@@ -203,7 +229,7 @@ export function evaluateChunk(dir, m, nn, { stage = 'classify', checkFiles = tru
       merged = merged.map(v => audited.get(v.hash) || v);
     }
   }
-  problems.push(...collisionProblems(merged, { cands, catalogue, label: stage }));
+  problems.push(...collisionProblems(merged, { cands, catalogue, label: stage, version: m.version }));
   problems.push(...identityProblems(merged, { cands, label: stage, fragmentVerdicts: fragmentVerdictsFor(dir, m, nn, cands, merged) }));
   if (otherChunks) problems.push(...crossChunkProblems(dir, m, nn, merged));
   result.merged = merged;

@@ -17,6 +17,7 @@
 
 import { execSync, execFileSync } from 'node:child_process';
 import fs from 'node:fs';
+import { runNamespace } from './runState.mjs';
 import { createRequire } from 'node:module';
 import os from 'node:os';
 import path from 'node:path';
@@ -62,6 +63,15 @@ function findRepo() {
   process.exit(2);
 }
 const REPO = findRepo();
+const RUN = runNamespace(REPO);
+const TMP = RUN.root;
+process.env.TWEAKCC_REPO = RUN.repoDir;
+process.env.SHOWTIME_RUN_ID = RUN.runId;
+process.env.SHOWTIME_RUN_ROOT = TMP;
+process.env.SHOWTIME_TMP = TMP;
+process.env.TWEAKCC_GATE_CANDIDATES = path.join(TMP, 'tweakcc-gate-candidates.json');
+process.env.TWEAKCC_CLASSIFY_DIR = TMP;
+
 const require = createRequire(import.meta.url);
 const { appliedPromptsDir, pristineCliPath } = require(path.join(REPO, 'tools/lib/overrideSets.cjs'));
 const ORIG_JS = pristineCliPath();
@@ -161,7 +171,7 @@ async function cmdExtract(outArg) {
   const ver = ccVersion(bin) || 'unknown';
   const mod = distNativeModule();
   if (!mod) return fail('dist nativeInstallation module not found — run `pnpm build` first');
-  const out = outArg || path.join(os.tmpdir(), `cli-${ver}.js`);
+  const out = outArg || path.join(TMP, `cli-${ver}.js`);
   console.log(C.head(`Extract cli.js (CC ${ver})`));
   console.log(C.info(`binary: ${bin}`));
   const { extractClaudeJsFromNativeInstallation } = await import(mod);
@@ -171,7 +181,21 @@ async function cmdExtract(outArg) {
   const firstVer = (data.toString('utf8').match(/\d+\.\d+\.\d+/) || [])[0];
   console.log(C.ok(`extracted ${(data.length / 1048576).toFixed(1)}MB -> ${out} (clearBytecode=${r?.clearBytecode}, contains ${firstVer})`));
   if (firstVer !== ver) fail(`extracted cli.js version ${firstVer} != installed ${ver}`);
+  else fs.writeFileSync(path.join(TMP, 'extraction.json'), JSON.stringify({ version: ver, cliPath: path.resolve(out) }) + '\n');
   return out;
+}
+
+function reportCli(version) {
+  let extracted;
+  try { extracted = JSON.parse(fs.readFileSync(path.join(TMP, 'extraction.json'), 'utf8')); } catch {}
+  const candidates = extracted?.version === version ? [extracted.cliPath, RUN.cliPath(version), ORIG_JS] : [RUN.cliPath(version), ORIG_JS];
+  for (const file of candidates) {
+    if (typeof file !== 'string' || !fs.existsSync(file)) continue;
+    const content = fs.readFileSync(file, 'utf8');
+    const detected = content.match(/VERSION:"(\d+\.\d+\.\d+)"/)?.[1] || content.match(/\b(\d+\.\d+\.\d+)\b/)?.[1];
+    if (detected === version) return file;
+  }
+  return null;
 }
 
 function cmdReport(oldArg) {
@@ -181,12 +205,15 @@ function cmdReport(oldArg) {
   const old = oldArg || repoVers[repoVers.length - 2];
   const cur = installed && repoVers.includes(installed) ? installed : repoVers[repoVers.length - 1];
   console.log(C.head(`Version-bump report ${old} -> ${cur}`));
+  const cli = reportCli(cur);
+  if (!cli) return fail(`report: no current ${cur} pristine extraction; run driver extract first`);
   let out;
   try {
-    out = execSync(`node tools/versionBumpReport.js ${old} ${cur}`, { cwd: REPO, encoding: 'utf8' });
+    out = execFileSync(process.execPath, ['tools/versionBumpReport.js', old, cur, '--cli', cli], { cwd: REPO, encoding: 'utf8' });
   } catch (e) {
-    out = (e.stdout || '') + (e.stderr || '');
+    return fail(`report subprocess failed: ${String(e.stderr || e.stdout || e.message).trim()}`);
   }
+  out = out.replace(/\x1b\[[0-9;]*m/g, '');
   const grab = (re) => (out.match(re) || [])[1];
   const checks = [
     ['blocking issues', grab(/blocking issues:\s*(\d+)/)],
@@ -204,12 +231,13 @@ function cmdReport(oldArg) {
     ['inline anchor issues', grab(/inline anchor issues:\s*(\d+)/)],
   ];
   for (const [label, val] of checks) {
-    if (val === undefined) console.log(C.info(`${label}: (not reported)`));
+    if (val === undefined) fail(`${label}: NOT PARSED — required report summary missing`);
     else if (val === '0') console.log(C.ok(`${label}: 0`));
     else fail(`${label}: ${val}`);
   }
   const matches = /matchesCommittedJson:\s*true/.test(out);
-  console.log(matches ? C.ok('fresh extraction matches committed prompts JSON') : C.info('matchesCommittedJson: not true (refresh ~/.tweakcc/native-claudejs-orig.js to current CC first)'));
+  if (matches) console.log(C.ok('fresh extraction matches committed prompts JSON'));
+  else fail('fresh extraction does not match committed prompts JSON');
 }
 
 function cmdCheck() {
@@ -230,7 +258,7 @@ function cmdCheck() {
 
   // 2. apply hygiene (idempotent re-apply, parse the log)
   console.log(C.head('Apply hygiene (idempotent re-apply)'));
-  const log = path.join(os.tmpdir(), 'tweakcc-driver-apply.log');
+  const log = path.join(TMP, 'tweakcc-driver-apply.log');
   let applyOk = false;
   try {
     execSync(`node dist/index.mjs --apply > ${log} 2>&1`, { cwd: REPO });
@@ -277,7 +305,7 @@ function cmdCheck() {
   //    to a valid-but-wrong var (wrong content, no crash); four-zeros + smoke miss it.
   console.log(C.head('Mis-bind audit (override placeholders vs upstream slots)'));
   {
-    const pieb = path.join(os.tmpdir(), 'tweakcc-driver-pieb.json');
+    const pieb = path.join(TMP, 'tweakcc-driver-pieb.json');
     const v = ccVersion(ccBinary()) || repoPromptsVersions().slice(-1)[0];
     let out = '', code = 0;
     try { execSync(`git show upstream/main:data/prompts/prompts-${v}.json > ${pieb} 2>/dev/null`, { cwd: REPO }); } catch { /* no upstream ref; audit skips */ }
@@ -319,7 +347,7 @@ function cmdCheck() {
       try { out = execSync(`node tools/checkScannedLiterals.mjs ${ORIG_JS} ${jsonPath} --set=${set} 2>&1`, { cwd: REPO, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 }); }
       catch (e) { out = (e.stdout || '') + (e.stderr || ''); code = e.status || 1; }
       if (code === 0) console.log(C.ok(out.split('\n').filter((l) => /^✓/.test(l)).join(' ').replace(/^✓\s*/, '')));
-      else fail(`predicate literals: ${out.split('\n').filter((l) => /BLANKED PREDICATE/.test(l)).slice(0, 4).join(' | ').slice(0, 240)}`);
+      else fail(`predicate literals: ${out.split('\n').filter((l) => /BLANKED PREDICATE|BROKEN REWRITE|THROWING REWRITE|UNRESOLVED REWRITE TABLE/.test(l)).slice(0, 4).join(' | ').slice(0, 240) || `checkScannedLiterals exited ${code}: ${out.trim().split('\n').slice(-3).join(' | ').slice(0, 240)}`}`);
     }
   }
   console.log('');
@@ -333,11 +361,16 @@ function cmdCheck() {
   console.log(C.head('Every patch vs. pristine cli.js (bun parse oracle)'));
   {
     let out = '', code = 0;
-    try { out = execSync('pnpm test:pristine 2>&1', { cwd: REPO, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 }); }
+    const intendedCli = RUN.cliPath(installed);
+    try {
+      if (!fs.existsSync(intendedCli)) throw new Error(`missing intended pristine bundle ${intendedCli}`);
+      out = execSync('pnpm test:pristine 2>&1', { cwd: REPO, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024, env: { ...process.env, TWEAKCC_PRISTINE_CLI: intendedCli } });
+    }
     catch (e) { out = (e.stdout || '') + (e.stderr || ''); code = e.status || 1; }
     const skipped = /\d+ skipped/.test(out) && !/Tests\s+\d+ passed/.test(out);
     const passed = out.match(/Tests\s+(\d+) passed/);
     if (code !== 0) fail(`pristine patch sweep: ${out.split('\n').filter((l) => /FAIL|Error/.test(l)).slice(0, 3).join(' | ').slice(0, 240)}`);
+    else if (!out.replace(/\x1b\[[0-9;]*m/g, '').split('\n').some(line => line.trim() === `pristine: ${intendedCli}`)) fail('pristine patch sweep graded the wrong bundle or emitted no path');
     else if (skipped) fail('pristine patch sweep SKIPPED — no pristine cli.js or no bun; this gate silently passes when it cannot run');
     else console.log(C.ok(`${passed ? passed[1] : '?'} patches spliced and parsed clean`));
   }
@@ -360,7 +393,7 @@ function cmdCheck() {
         .split('\n').map((l) => l.match(/prompts-(\d+\.\d+\.\d+)\.json$/)).filter(Boolean).map((m) => m[1]);
       const pick = tags.filter((t) => cmpVer(t, v) <= 0).sort(cmpVer).slice(-1)[0] || tags.sort(cmpVer).slice(-1)[0];
       if (pick) {
-        reference = path.join(os.tmpdir(), `reference-prompts-${pick}.json`);
+        reference = path.join(TMP, `reference-prompts-${pick}.json`);
         fs.writeFileSync(reference, execSync(`git show upstream/main:data/prompts/prompts-${pick}.json`, { cwd: REPO, encoding: 'utf8', maxBuffer: 256 * 1024 * 1024 }));
       }
     } catch { /* no upstream remote fetched — reported below */ }
@@ -439,6 +472,28 @@ function cmdCheck() {
   }
   console.log('');
 
+  console.log(C.head('Sibling output coverage'));
+  {
+    const v = installed || repoPromptsVersions().slice(-1)[0];
+    const json = path.join(REPO, 'data', 'prompts', `prompts-${v}.json`);
+    if (!fs.existsSync(ORIG_JS) || !fs.existsSync(json)) {
+      fail('sibling output coverage requires the pristine cli.js and prompts JSON');
+    } else {
+      let out = '';
+      let status = 0;
+      try {
+        out = execFileSync(process.execPath, [path.join(REPO, 'tools/checkSiblingArms.mjs'), ORIG_JS, json], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+      } catch (error) {
+        out = String(error.stdout || '') + String(error.stderr || '');
+        status = error.status || 1;
+      }
+      const summary = out.split('\n').find(line => line.startsWith('sibling arms:'));
+      if (status === 0 && summary) console.log(C.ok(summary));
+      else fail(summary || `sibling output coverage exited ${status}`);
+    }
+  }
+  console.log('');
+
   console.log(FAILED ? C.bad('HEALTH CHECK FAILED — see above') : C.ok('HEALTH CHECK PASSED — on-version, patched clean, mis-bind-free, injection-sites-intact, predicate-safe, fully-catalogued, boots'));
 }
 
@@ -449,6 +504,7 @@ const run = async () => {
   switch (cmd) {
     case undefined:
     case 'check': cmdCheck(); break;
+    case 'run-dir': fs.writeSync(1, TMP + '\n'); break;
     case 'versions': cmdVersions(); break;
     case 'extract': await cmdExtract(rest[0]); break;
     case 'report': cmdReport(rest[0]); break;

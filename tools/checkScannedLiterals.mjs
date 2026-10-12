@@ -42,6 +42,17 @@ import { createRequire } from 'node:module';
 import fs from 'node:fs';
 import path from 'node:path';
 
+import {
+  containsNeedle,
+  cookedForms,
+  decodeJsString,
+  unescapeOverride,
+} from './lib/searchNeedles.mjs';
+import {
+  analyzeThrowingRewriters,
+  checkThrowingNeedles,
+} from './lib/throwingRewriters.mjs';
+
 const require = createRequire(import.meta.url);
 const {
   parseOverrideArgs,
@@ -99,43 +110,120 @@ const assignedOnce = (src, name) => {
   return count === 1;
 };
 
-// Evidence that the binary treats this literal as a needle: either passed
-// inline to a matcher, or bound to a single-assignment const that is.
-export const matchEvidence = (src, lit) => {
-  const found = [];
-  for (const q of ['"', "'"]) {
-    const needle = quoted(lit, q);
-    if (!src.includes(needle)) continue;
+// Every quoted needle starts with a quote character, so one pass over the
+// bundle's quote positions finds every occurrence of every needle at once.
+// Needles of PREFIX or more chars are bucketed by their first PREFIX chars and
+// confirmed with startsWith; shorter ones are matched whole, per length.
+const PREFIX = 8;
 
-    for (const fn of MATCHERS) {
-      if (src.includes(`.${fn}(${needle})`)) found.push(`inline .${fn}()`);
+const occurrences = (src, needles) => {
+  const long = new Map();
+  const short = new Map();
+  for (const needle of needles) {
+    if (needle.length >= PREFIX) {
+      const key = needle.slice(0, PREFIX);
+      const bucket = long.get(key);
+      if (bucket) bucket.push(needle);
+      else long.set(key, [needle]);
+    } else {
+      let byLen = short.get(needle.length);
+      if (!byLen) short.set(needle.length, (byLen = new Set()));
+      byLen.add(needle);
     }
+  }
+  const shortLens = [...short.keys()];
+  const at = new Map();
+  const hit = (needle, p) => {
+    const list = at.get(needle);
+    if (list) list.push(p);
+    else at.set(needle, [p]);
+  };
+  const n = src.length;
+  for (let p = 0; p < n; p++) {
+    const c = src.charCodeAt(p);
+    if (c !== 34 && c !== 39) continue;
+    const bucket = long.get(src.substr(p, PREFIX));
+    if (bucket) {
+      for (const needle of bucket)
+        if (src.startsWith(needle, p)) hit(needle, p);
+    }
+    for (const len of shortLens) {
+      if (src.charCodeAt(p + len - 1) !== c) continue;
+      const key = src.substr(p, len);
+      if (short.get(len).has(key)) hit(key, p);
+    }
+  }
+  return at;
+};
 
-    const names = new Set();
-    let i = src.indexOf(needle);
-    for (let n = 0; i !== -1 && n < 20; n++, i = src.indexOf(needle, i + 1)) {
-      const pre = src.slice(Math.max(0, i - 40), i).trimEnd();
-      if (!pre.endsWith('=')) continue;
-      const m = pre
-        .slice(0, -1)
-        .trimEnd()
-        .match(/[$\w]+$/);
-      if (m && m[0].length <= 12) names.add(m[0]);
-    }
-    for (const name of names) {
-      if (!assignedOnce(src, name)) continue;
+// Identifiers passed bare to a matcher, as `.fn(name)` or `.fn(name,`.
+const identifierMatcherCalls = src => {
+  const calls = new Set();
+  const re = new RegExp(`\\.(${MATCHERS.join('|')})\\(([$\\w]+)[),]`, 'g');
+  let m;
+  while ((m = re.exec(src)) !== null) {
+    calls.add(`${m[1]}\0${m[2]}`);
+  }
+  return calls;
+};
+
+// Evidence that the binary treats a literal as a needle: either passed inline
+// to a matcher, or bound to a single-assignment const that is. Built once per
+// bundle; the returned function answers each literal from the index.
+export const createEvidenceMatcher = (src, literals) => {
+  const at = occurrences(
+    src,
+    new Set(literals.flatMap(lit => ['"', "'"].map(q => quoted(lit, q))))
+  );
+  let calls = null;
+  const once = new Map();
+  const isAssignedOnce = name => {
+    if (!once.has(name)) once.set(name, assignedOnce(src, name));
+    return once.get(name);
+  };
+
+  return lit => {
+    const found = [];
+    for (const q of ['"', "'"]) {
+      const needle = quoted(lit, q);
+      const positions = at.get(needle);
+      if (!positions) continue;
+
       for (const fn of MATCHERS) {
-        if (
-          src.includes(`.${fn}(${name})`) ||
-          src.includes(`.${fn}(${name},`)
-        ) {
-          found.push(`${name} -> .${fn}()`);
+        const open = `.${fn}(`;
+        const inline = positions.some(
+          i =>
+            i >= open.length &&
+            src.startsWith(open, i - open.length) &&
+            src.charCodeAt(i + needle.length) === 41
+        );
+        if (inline) found.push(`inline .${fn}()`);
+      }
+
+      const names = new Set();
+      for (const i of positions.slice(0, 20)) {
+        const pre = src.slice(Math.max(0, i - 40), i).trimEnd();
+        if (!pre.endsWith('=')) continue;
+        const m = pre
+          .slice(0, -1)
+          .trimEnd()
+          .match(/[$\w]+$/);
+        if (m && m[0].length <= 12) names.add(m[0]);
+      }
+      for (const name of names) {
+        if (!isAssignedOnce(name)) continue;
+        calls ??= identifierMatcherCalls(src);
+        for (const fn of MATCHERS) {
+          if (calls.has(`${fn}\0${name}`)) found.push(`${name} -> .${fn}()`);
         }
       }
     }
-  }
-  return [...new Set(found)];
+    return [...new Set(found)];
+  };
 };
+
+export const matchEvidence = (src, lit) =>
+  createEvidenceMatcher(src, [lit])(lit);
 
 // A SECOND needle shape, new in CC 2.1.265: a rewrite table. CC passes a
 // description through `FN(text, [[needle, replacement], ...])` to restate it for
@@ -150,23 +238,54 @@ export const matchEvidence = (src, lit) => {
 // rewrite a no-op and ships the un-restated wording to the other surface. No
 // other gate sees it: the literal is still in the bundle, the prompt still
 // applies, and nothing errors.
+// A quoted or template string token at `i`: [cooked value, index past it].
+// The value is null for a template carrying `${}` (not a fixed spelling) and
+// undefined when the token never closes.
 const jsString = (src, i) => {
-  const out = [];
   const q = src[i];
-  i += 1;
-  while (i < src.length) {
-    const c = src[i];
+  let k = i + 1;
+  let interpolated = false;
+  while (k < src.length) {
+    const c = src[k];
     if (c === '\\') {
-      out.push(src[i + 1]);
-      i += 2;
+      k += 2;
       continue;
     }
-    if (c === q) return [out.join(''), i + 1];
-    out.push(c);
-    i += 1;
+    if (c === q) {
+      const raw = src.slice(i, k + 1);
+      return [interpolated ? null : decodeJsString(raw), k + 1];
+    }
+    if (q === '`' && c === '$' && src[k + 1] === '{') {
+      interpolated = true;
+      k = skipBraces(src, k + 1);
+      continue;
+    }
+    if (q !== '`' && c === '\n') break;
+    k += 1;
   }
-  return [null, i];
+  return [undefined, k];
 };
+
+// Past the `{...}` opening at `k`, stepping over strings nested inside it.
+const skipBraces = (src, k) => {
+  let depth = 0;
+  for (; k < src.length; k += 1) {
+    const c = src[k];
+    if (c === '"' || c === "'" || c === '`') {
+      [, k] = jsString(src, k);
+      k -= 1;
+      continue;
+    }
+    if (c === '{') depth += 1;
+    else if (c === '}') {
+      depth -= 1;
+      if (depth === 0) return k + 1;
+    }
+  }
+  return k;
+};
+
+const isQuote = c => c === '"' || c === "'" || c === '`';
 
 // Every `[[ "needle", "replacement" ], ...]` table passed as a call argument.
 // A needle missing from an override is only a broken rewrite when the sentence
@@ -205,7 +324,7 @@ export const rewriteTablePairs = src => {
     let k = open;
     for (; k < src.length; k += 1) {
       const c = src[k];
-      if (c === '"' || c === "'") {
+      if (isQuote(c)) {
         [, k] = jsString(src, k);
         k -= 1;
         continue;
@@ -220,15 +339,16 @@ export const rewriteTablePairs = src => {
     const seg = src.slice(open, k + 1);
     const strings = [];
     for (let p = 0; p < seg.length; p += 1) {
-      if (seg[p] === '"' || seg[p] === "'") {
+      if (isQuote(seg[p])) {
         const [v, next] = jsString(seg, p);
-        if (v === null) break;
+        if (v === undefined) break;
         strings.push(v);
         p = next - 1;
       }
     }
     if (strings.length < 2 || strings.length % 2 !== 0) continue;
     for (let a = 0; a < strings.length; a += 2) {
+      if (strings[a] === null) continue;
       pairs.push({ needle: strings[a], replacement: strings[a + 1] });
     }
   }
@@ -276,6 +396,10 @@ const main = () => {
   const seen = new Set();
   const blanked = [];
   const edited = [];
+  const evidenceOf = createEvidenceMatcher(
+    src,
+    prompts.map(literalOf).filter(lit => lit && lit.length <= 4000)
+  );
 
   for (const p of prompts) {
     if (seen.has(p.id)) continue;
@@ -285,7 +409,7 @@ const main = () => {
     if (!lit || lit.length > 4000) continue;
     seen.add(p.id);
 
-    const evidence = matchEvidence(src, lit);
+    const evidence = evidenceOf(lit);
     if (!evidence.length) continue;
 
     for (const set of sets) {
@@ -304,23 +428,49 @@ const main = () => {
     }
   }
 
+  // Needles a THROWING rewriter requires (see lib/throwingRewriters.mjs). Any
+  // override that drops one — reworded, sentence deleted, or wiped empty —
+  // makes tool.prompt() throw on every turn, so each is a hard failure.
+  const throwing = analyzeThrowingRewriters(src, prompts);
+  const throwingNeedles = new Set(throwing.needles.map(n => n.needle));
+  const throwingFailures = [];
+  const throwingNotes = new Set();
+  for (const set of sets) {
+    const overrideOf = id => {
+      const file = path.join(set, `${id}.md`);
+      return fs.existsSync(file) ? bodyOf(fs.readFileSync(file, 'utf8')) : null;
+    };
+    const { failures, notes } = checkThrowingNeedles(
+      throwing,
+      prompts,
+      overrideOf
+    );
+    for (const f of failures)
+      throwingFailures.push({ ...f, set: path.basename(set) });
+    for (const n of notes) throwingNotes.add(n);
+  }
+  const unresolvedTables = throwing.problems;
+
   // Rewrite-table needles: the override must still CONTAIN the needle, because
   // the binary matches it against the override's own text (see rewriteTableNeedles).
+  // Pieces and overrides are template-literal source, so both are compared
+  // cooked: a needle spelled with a backtick never matches the raw `\``.
   const brokenRewrites = [];
   const sentenceDeleted = [];
-  const needles = rewriteTableNeedles(src);
+  const needles = rewriteTableNeedles(src).filter(n => !throwingNeedles.has(n));
   for (const needle of needles) {
     for (const p of prompts) {
       if (!p.id) continue;
-      const body = (p.pieces || []).filter(x => typeof x === 'string').join('');
-      if (!body.includes(needle)) continue;
+      const raw = (p.pieces || []).filter(x => typeof x === 'string').join('');
+      const body = cookedForms(raw).find(f => f.includes(needle));
+      if (body === undefined) continue;
       for (const set of sets) {
         const file = path.join(set, `${p.id}.md`);
         if (!fs.existsSync(file)) continue;
         const ov = bodyOf(fs.readFileSync(file, 'utf8'));
         if (!ov.trim()) continue; // a deliberate suppression emits nothing at all
-        if (ov.includes(needle)) continue;
-        if (!sentenceSurvives(body, needle, ov)) {
+        if (containsNeedle(ov, needle)) continue;
+        if (!sentenceSurvives(body, needle, unescapeOverride(ov))) {
           sentenceDeleted.push({ id: p.id, set: path.basename(set), needle });
           continue;
         }
@@ -344,6 +494,52 @@ const main = () => {
     );
   }
 
+  for (const n of throwingNotes) console.log(`note: ${n}`);
+  for (const d of throwing.dead) {
+    console.log(
+      `note: throwing rewrite table at ${d.where} is dead in this build ` +
+        `(${d.reason}): ${d.call.slice(0, 80)}`
+    );
+  }
+  const PROBLEM_HEAD = {
+    unparsed: [
+      'UNPARSED MODULE',
+      'the gate cannot see what this module does, so a rewriter or a ' +
+        'table in it goes unchecked',
+    ],
+    unrecognised: [
+      'UNRECOGNISED REWRITER',
+      'code throws when its text lacks a value it then rewrites, but its ' +
+        'shape is not one the gate reads, so its needles go unchecked',
+    ],
+    unresolved: [
+      'UNRESOLVED REWRITE TABLE',
+      'a rewriter that throws on a missing needle is fed a table the gate ' +
+        'cannot read, so no override is checked against it',
+    ],
+  };
+  for (const u of unresolvedTables) {
+    const [head, effect] = PROBLEM_HEAD[u.kind] || PROBLEM_HEAD.unresolved;
+    console.error(
+      `${head.padEnd(25)} ${u.where}\n` +
+        `   reason  : ${u.reason}\n` +
+        (u.call ? `   call    : ${u.call.slice(0, 120)}\n` : '') +
+        `   effect  : ${effect}`
+    );
+  }
+  for (const r of throwingFailures) {
+    console.error(
+      `THROWING REWRITE   ${r.set}/${r.id}\n` +
+        `   needle  : ${JSON.stringify(r.needle.slice(0, 100))}\n` +
+        (r.pristineNeedle && r.pristineNeedle !== r.needle
+          ? `   pristine: ${JSON.stringify(r.pristineNeedle.slice(0, 100))}\n`
+          : '') +
+        `   call    : ${r.calls.map(c => c.slice(0, 70)).join(' | ')}\n` +
+        `   effect  : ${r.detail}; the rewriter throws when its text lacks a ` +
+        `needle, so tool.prompt() fails and every turn ends in model_error`
+    );
+  }
+
   for (const r of blanked) {
     console.error(
       `BLANKED PREDICATE  ${r.set}/${r.id}\n` +
@@ -360,20 +556,42 @@ const main = () => {
   }
 
   if (jsonOut) {
-    fs.writeFileSync(jsonOut, JSON.stringify({ blanked, edited }, null, 2));
+    fs.writeFileSync(
+      jsonOut,
+      JSON.stringify(
+        {
+          blanked,
+          edited,
+          brokenRewrites,
+          throwingRewrites: throwingFailures,
+          unresolvedTables,
+        },
+        null,
+        2
+      )
+    );
   }
 
-  if (blanked.length || brokenRewrites.length) {
+  const failed =
+    blanked.length +
+    brokenRewrites.length +
+    throwingFailures.length +
+    unresolvedTables.length;
+  if (failed) {
     console.error(
       `\nscanned literals: ${blanked.length} blanked predicate(s), ` +
-        `${brokenRewrites.length} broken rewrite(s), ${edited.length} rewritten`
+        `${brokenRewrites.length} broken rewrite(s), ` +
+        `${throwingFailures.length} throwing rewrite(s), ` +
+        `${unresolvedTables.length} unresolved rewriter problem(s), ${edited.length} rewritten`
     );
     process.exit(1);
   }
   console.log(
-    `✓ scanned literals: 0 blanked predicates, 0 broken rewrites ` +
-      `(${edited.length} rewritten, ${seen.size} literals examined, ` +
-      `${needles.length} rewrite-table needle(s))`
+    `✓ scanned literals: 0 blanked predicates, 0 broken rewrites, ` +
+      `0 throwing rewrites (${edited.length} rewritten, ${seen.size} literals examined, ` +
+      `${needles.length} rewrite-table needle(s), ` +
+      `${throwingNeedles.size} throwing-rewriter needle(s) across ` +
+      `${throwing.sites.length} call site(s))`
   );
 };
 
