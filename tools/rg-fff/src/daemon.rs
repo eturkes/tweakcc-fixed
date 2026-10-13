@@ -36,6 +36,8 @@ use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 use std::{fs, thread};
 
+mod freshness;
+
 use fff_search::file_picker::FilePicker;
 use fff_search::SharedFilePicker;
 
@@ -430,6 +432,7 @@ pub fn serve(root_arg: &str) {
     // load-bearing, matching the two main.rs picker sites that just drop it.)
 
     let active = Arc::new(AtomicUsize::new(0));
+    let freshness = Arc::new(Mutex::new(freshness::FreshnessCache::default()));
     for conn in listener.incoming() {
         let stream = match conn {
             Ok(s) => s,
@@ -448,14 +451,19 @@ pub fn serve(root_arg: &str) {
         let shared = shared.clone();
         let permit = Permit(active.clone());
         let last = last.clone();
+        let freshness = freshness.clone();
         let _ = thread::Builder::new().spawn(move || {
             let _permit = permit;
-            handle(stream, &shared, &last);
+            handle(stream, &shared, &last, &freshness);
         });
     }
 }
 
-fn refresh_inventory(picker: &mut FilePicker, request: &SearchReq) -> Option<()> {
+fn refresh_inventory(
+    picker: &mut FilePicker,
+    request: &SearchReq,
+    freshness: &mut freshness::FreshnessCache,
+) -> Option<()> {
     let cwd = fs::canonicalize(&request.cwd).ok()?;
     if cwd != Path::new(&request.cwd) || !cwd.is_dir() || !cwd.starts_with(&picker.base_path) {
         return None;
@@ -473,29 +481,22 @@ fn refresh_inventory(picker: &mut FilePicker, request: &SearchReq) -> Option<()>
             return None;
         }
         let path = cwd.join(relative);
-        let canonical = fs::canonicalize(&path).ok()?;
-        if canonical != path
-            || !canonical.starts_with(&cwd)
-            || !canonical.starts_with(&picker.base_path)
-        {
-            return None;
-        }
-        let metadata = fs::metadata(&path).ok()?;
-        if !metadata.is_file() || metadata.len() > 10 * 1024 * 1024 {
-            return None;
-        }
         paths.push(path);
     }
-    for path in paths {
+    freshness.refresh(&paths, |path| {
         if let Some(file) = picker.get_file_by_path(&path) {
             file.set_binary(false);
         }
-        picker.handle_create_or_modify(path)?;
-    }
-    Some(())
+        picker.handle_create_or_modify(path).map(|_| ())
+    })
 }
 
-fn handle(mut stream: UnixStream, shared: &SharedFilePicker, last: &Mutex<Instant>) {
+fn handle(
+    mut stream: UnixStream,
+    shared: &SharedFilePicker,
+    last: &Mutex<Instant>,
+    freshness: &Mutex<freshness::FreshnessCache>,
+) {
     let Some(bytes) = bounded_read(&mut stream, MAX_REQUEST, Duration::from_secs(2)) else {
         return;
     };
@@ -581,7 +582,8 @@ fn handle(mut stream: UnixStream, shared: &SharedFilePicker, last: &Mutex<Instan
     } else {
         shared.write().ok().and_then(|mut guard| {
             let picker = guard.as_mut()?;
-            refresh_inventory(picker, &req)?;
+            let mut inventory = freshness.lock().ok()?;
+            refresh_inventory(picker, &req, &mut inventory)?;
             format_results(picker, &req)
         })
     };

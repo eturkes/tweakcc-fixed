@@ -7,6 +7,7 @@ import {
   readFileSync,
   readdirSync,
   realpathSync,
+  renameSync,
   rmSync,
   statSync,
   symlinkSync,
@@ -168,6 +169,7 @@ try {
   }
   assert.ok(ready, 'Daemon did not become ready');
   await compare('initial warm index');
+  await compare('unchanged warm index');
   const base = path.join(root, 'base.txt');
   for (let index = 0; index < 8; index++) {
     writeFileSync(base, readFileSync(base) + `needle appended${index}\n`);
@@ -179,6 +181,15 @@ try {
   assert.equal(statSync(replacement).size, original.size);
   utimesSync(replacement, original.atime, original.mtime);
   await compare('same-size replacement with original timestamp');
+  const beforeRename = statSync(replacement);
+  const atomic = path.join(root, 'atomic.tmp');
+  writeFileSync(atomic, 'quiet new\n');
+  utimesSync(atomic, beforeRename.atime, beforeRename.mtime);
+  renameSync(atomic, replacement);
+  assert.notEqual(statSync(replacement).ino, beforeRename.ino);
+  await compare('atomic inode replacement with restored timestamp');
+  chmodSync(base, (statSync(base).mode & 0o777) ^ 0o100);
+  await compare('permissions change on a cached matching file');
   const nonmatching = path.join(root, 'nonmatching.txt');
   writeFileSync(nonmatching, 'needle other\n');
   await compare('previously nonmatching file becomes matching');

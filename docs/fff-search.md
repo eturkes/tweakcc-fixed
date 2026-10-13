@@ -4,6 +4,11 @@ Enable **fff search and file autocomplete** in the miscellaneous settings, then
 apply the patch. This is opt-in. It affects Claude Code's Bash search functions,
 embedded ripgrep resolver, and normal `@` file suggestions.
 
+Development checkouts use the newest executable local build and compare its
+content before installing it. Local builds have separate provenance from
+published releases, so a development binary cannot satisfy a release-version
+check. Bash-read learning also requires the main fff patch to apply successfully.
+
 Eligible searches use fff 0.11. Exact symbol searches collect all result pages
 before ordering files: declarations of the queried symbol come first, followed
 by query-to-file preferences, access/Git activity, modification time, and path.
@@ -45,10 +50,12 @@ either setting. Your terminal outside Claude Code retains its normal viewers.
 The wrapper supports literal/regex searches, case-insensitive matching, context,
 counts, filenames, multiple `-e` patterns, `-F`, and common `-o`/`-w` queries.
 Ripgrep globs use the real engine's file inventory to preserve their inclusion
-rules. Binary files, ignored scopes, unsupported word-boundary behavior, long lines, or
+rules. BOM-encoded files, binary files, ignored scopes, unsupported word-boundary behavior, long lines, or
 unsupported options can require fallback. PCRE, multiline search, stdin filters,
 overlapping directory scopes, conflicting grep matcher flags,
-and individual-file searches continue through the original embedded tool.
+regular-file stdin, matching-only output with context, and individual-file searches
+continue through the original embedded tool. Invalid or unsupported options also
+reach that tool, preserving its diagnostics and exit status.
 `find` retains its original results, with optional fuzzy suggestions on an empty
 simple filename lookup.
 
@@ -56,7 +63,9 @@ Grep preserves its native basic-regex syntax; use `grep -E` for extended regex
 or `grep -F` for literal punctuation. Ripgrep retains ripgrep syntax. Unsupported
 regex dialect features use the original engine. Exact searches preserve Unicode
 matching and CRLF content. Searches exceeding the collector budget or reaching
-the per-file match ceiling fall back rather than silently omit results. The legacy `RG_FFF_FIRST`
+the per-file match ceiling fall back rather than silently omit results. Rendered
+output has its own 32 MiB budget, including repeated path prefixes; exceeding it
+falls back before any partial output is printed. The legacy `RG_FFF_FIRST`
 environment variable no longer overrides command semantics. Fuzzy content suggestions are approximate and
 marked accordingly. `[def]` is a navigation hint; read the code to confirm it.
 
@@ -92,13 +101,19 @@ how many files a new task will require. Routing criteria remain unchanged.
 Daemons are shared by Git worktree root while each request stays scoped to its
 working directory. Shell setup starts warming the index. The daemon requires a
 completed scan and ready watcher before serving. Exact searches also enumerate
-the current scope with the native tool and synchronously refresh its fff entries
-before matching, including files that previously had no matches. This prevents
-watcher lag from hiding recent edits. The daemon holds a process lock, limits
+the current scope with the native tool and check each file before matching,
+including files that previously had no matches. Changed files are synchronously
+refreshed; unchanged entries retain their index and content cache. Cache reuse
+requires matching file identity, size, and nanosecond modification/change times;
+coarse change timestamps force a refresh. This prevents watcher lag from hiding
+recent edits. The daemon holds a process lock, limits
 concurrent requests and protocol sizes, caps cached content at 64 MiB, and exits
 when its RSS budget is exceeded. The default RSS budget is 256 MiB; it is a
 monitored circuit breaker, not a kernel allocation limit. An over-budget root
 has a short restart cooldown. Dead sockets are cleaned up.
+
+History learning is best-effort: a busy receipt lock is skipped so a history
+writer cannot hold up search output.
 
 History and aggregate metrics stay under `~/.tweakcc/fff/state`, with a private
 directory and private receipt/metric/navigation files. Metrics contain tool and decision
@@ -115,6 +130,9 @@ cargo test --manifest-path tools/rg-fff/Cargo.toml
 node tools/rg-fff/integration.mjs
 node tools/rg-fff/compatibility-integration.mjs
 node tools/rg-fff/semantic-integration.mjs
+node tools/rg-fff/edge-integration.mjs
+node tools/rg-fff/output-integration.mjs
+node tools/rg-fff/history-integration.mjs
 node tools/rg-fff/relevance-integration.mjs
 node tools/rg-fff/daemon-integration.mjs
 node tools/rg-fff/freshness-integration.mjs
