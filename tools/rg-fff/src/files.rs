@@ -48,7 +48,7 @@ pub fn suggest(picker: &FilePicker, request: &FileRequest) -> Option<Vec<Suggest
         vec![Constraint::Glob(&scope)]
     };
     let query = FFFQuery {
-        raw_query: &needle,
+        raw_query: &request.query,
         fuzzy_query: FuzzyQuery::Text(&needle),
         constraints,
         location: None,
@@ -121,6 +121,7 @@ pub fn query(cwd: &Path, needle: &str, limit: usize) -> Option<Vec<Suggestion>> 
 
 pub fn discover(cwd: &Path, needle: &str, limit: usize) -> Option<Vec<Suggestion>> {
     if let Some(items) = query(cwd, needle, limit) {
+        remember_discovery(cwd, needle, &items);
         return Some(items);
     }
     let cwd = std::fs::canonicalize(cwd).ok()?;
@@ -143,6 +144,228 @@ pub fn discover(cwd: &Path, needle: &str, limit: usize) -> Option<Vec<Suggestion
             limit,
         },
     );
+    if let Some(items) = &result {
+        remember_discovery(&cwd, needle, items);
+    }
     crate::daemon::spawn_detached(&cwd);
     result
+}
+
+fn remember_discovery(cwd: &Path, needle: &str, items: &[Suggestion]) {
+    let files: Vec<_> = items
+        .iter()
+        .filter(|item| !item.directory)
+        .map(|item| item.path.clone())
+        .collect();
+    let session = std::env::var("RG_FFF_SESSION").unwrap_or_default();
+    crate::feedback::remember_files(cwd, needle, &session, &files);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::fs;
+    use std::io::{Read, Write};
+    use std::os::unix::net::UnixListener;
+    use std::process::Command;
+    use std::sync::atomic::{AtomicUsize, Ordering};
+
+    static NEXT: AtomicUsize = AtomicUsize::new(0);
+
+    struct Fixture(PathBuf);
+
+    impl Fixture {
+        fn new() -> Self {
+            let path = PathBuf::from("/tmp").join(format!(
+                "fff-files-{}-{}",
+                std::process::id(),
+                NEXT.fetch_add(1, Ordering::Relaxed)
+            ));
+            fs::create_dir(&path).unwrap();
+            Self(fs::canonicalize(path).unwrap())
+        }
+    }
+
+    impl Drop for Fixture {
+        fn drop(&mut self) {
+            let _ = fs::remove_dir_all(&self.0);
+        }
+    }
+
+    fn isolated(name: &str, cold: bool) -> bool {
+        let name = format!("files::tests::{name}");
+        if std::env::var("RG_FFF_FILES_TEST_CASE").as_deref() == Ok(&name) {
+            return false;
+        }
+        let fixture = Fixture::new();
+        let mut command = Command::new(std::env::current_exe().unwrap());
+        command
+            .args(["--exact", &name, "--nocapture"])
+            .env("RG_FFF_FILES_TEST_CASE", &name)
+            .env("RG_FFF_STATE_DIR", fixture.0.join("state"))
+            .env("RG_FFF_SESSION", "synthetic-filename-session");
+        if cold {
+            command.env("RG_FFF_NO_DAEMON", "1");
+        } else {
+            command.env_remove("RG_FFF_NO_DAEMON");
+        }
+        assert!(command.status().unwrap().success());
+        true
+    }
+
+    #[test]
+    fn nested_filename_history_uses_request_cwd_with_a_shared_project_picker() {
+        if isolated(
+            "nested_filename_history_uses_request_cwd_with_a_shared_project_picker",
+            true,
+        ) {
+            return;
+        }
+        let fixture = Fixture::new();
+        git2::Repository::init_opts(
+            &fixture.0,
+            git2::RepositoryInitOptions::new().external_template(false),
+        )
+        .unwrap();
+        let cwd = fixture.0.join("nested");
+        fs::create_dir(&cwd).unwrap();
+        for name in ["source_a.ts", "source_b.ts"] {
+            fs::write(cwd.join(name), "synthetic\n").unwrap();
+        }
+        fs::write(fixture.0.join("source_other.ts"), "synthetic\n").unwrap();
+        let shared = fff_search::SharedFilePicker::default();
+        FilePicker::new_with_shared_state(
+            shared.clone(),
+            crate::ranking::shared_frecency(),
+            crate::ranking::picker_options(&fixture.0, false),
+        )
+        .unwrap();
+        assert!(shared.wait_for_scan(std::time::Duration::from_secs(5)));
+        let guard = shared.read().unwrap();
+        let picker = guard.as_ref().unwrap();
+        let request = FileRequest {
+            cwd: cwd.join("."),
+            query: "./source".into(),
+            limit: 100,
+        };
+        let items = suggest(picker, &request).unwrap();
+        assert_eq!(items.len(), 2);
+        assert!(items
+            .iter()
+            .all(|item| !item.directory && !item.path.contains('/')));
+        let selected = cwd.join(&items.last().unwrap().path);
+        remember_discovery(&request.cwd, &request.query, &items);
+        assert_eq!(crate::feedback::preferred(&cwd, &request.query), None);
+        crate::feedback::record_access(&fixture.0, &selected, "synthetic-filename-session");
+        assert_eq!(
+            crate::feedback::preferred(&cwd, &request.query),
+            Some(selected.clone())
+        );
+        assert_eq!(crate::feedback::preferred(&fixture.0, &request.query), None);
+        let learned = suggest(picker, &request).unwrap();
+        assert_eq!(cwd.join(&learned[0].path), selected);
+    }
+
+    #[test]
+    fn cold_filename_discovery_learns_raw_query_only_after_a_selected_read() {
+        if isolated(
+            "cold_filename_discovery_learns_raw_query_only_after_a_selected_read",
+            true,
+        ) {
+            return;
+        }
+        let fixture = Fixture::new();
+        for name in ["source_a.ts", "source_b.ts", "unseen.ts"] {
+            fs::write(fixture.0.join(name), "synthetic\n").unwrap();
+        }
+        fs::create_dir(fixture.0.join("source_dir")).unwrap();
+        let query = "./source";
+        let items = discover(&fixture.0, query, 100).unwrap();
+        let files: Vec<_> = items.iter().filter(|item| !item.directory).collect();
+        assert_eq!(files.len(), 2);
+        let selected = fixture.0.join(&files.last().unwrap().path);
+        assert_eq!(crate::feedback::preferred(&fixture.0, query), None);
+        crate::feedback::record_access(
+            &fixture.0,
+            Path::new("unseen.ts"),
+            "synthetic-filename-session",
+        );
+        assert_eq!(crate::feedback::preferred(&fixture.0, query), None);
+        crate::feedback::record_access(&fixture.0, &selected, "synthetic-filename-session");
+        assert_eq!(
+            crate::feedback::preferred(&fixture.0, query),
+            Some(selected.clone())
+        );
+        let learned = discover(&fixture.0, query, 100).unwrap();
+        assert_eq!(
+            fixture
+                .0
+                .join(&learned.iter().find(|item| !item.directory).unwrap().path),
+            selected
+        );
+    }
+
+    #[test]
+    fn warm_filename_discovery_remembers_file_candidates_without_teaching_previews() {
+        if isolated(
+            "warm_filename_discovery_remembers_file_candidates_without_teaching_previews",
+            false,
+        ) {
+            return;
+        }
+        let fixture = Fixture::new();
+        for name in ["warm_a.ts", "warm_b.ts", "unseen.ts"] {
+            fs::write(fixture.0.join(name), "synthetic\n").unwrap();
+        }
+        fs::create_dir(fixture.0.join("warm_dir")).unwrap();
+        let items: Vec<_> = [
+            ("warm_a.ts", false),
+            ("warm_b.ts", false),
+            ("warm_dir/", true),
+        ]
+        .into_iter()
+        .enumerate()
+        .map(|(index, (path, directory))| Suggestion {
+            path: path.into(),
+            score: index as f64,
+            directory,
+            dirty: false,
+        })
+        .collect();
+        let body = serde_json::to_vec(&items).unwrap();
+        let socket = crate::daemon::socket_path(&fixture.0).unwrap();
+        let listener = UnixListener::bind(socket).unwrap();
+        let worker = std::thread::spawn(move || {
+            let (mut connection, _) = listener.accept().unwrap();
+            let mut request = String::new();
+            connection.read_to_string(&mut request).unwrap();
+            assert!(request.starts_with(&format!("{}\nsuggest\n", crate::daemon::PROTO)));
+            write!(connection, "0\n{}\n", body.len()).unwrap();
+            connection.write_all(&body).unwrap();
+        });
+        let result = discover(&fixture.0, "warm", 100).unwrap();
+        worker.join().unwrap();
+        assert_eq!(result.len(), 3);
+        assert_eq!(crate::feedback::preferred(&fixture.0, "warm"), None);
+        crate::feedback::record_access(
+            &fixture.0,
+            Path::new("warm_dir"),
+            "synthetic-filename-session",
+        );
+        crate::feedback::record_access(
+            &fixture.0,
+            Path::new("unseen.ts"),
+            "synthetic-filename-session",
+        );
+        assert_eq!(crate::feedback::preferred(&fixture.0, "warm"), None);
+        crate::feedback::record_access(
+            &fixture.0,
+            Path::new("warm_b.ts"),
+            "synthetic-filename-session",
+        );
+        assert_eq!(
+            crate::feedback::preferred(&fixture.0, "warm"),
+            Some(fixture.0.join("warm_b.ts"))
+        );
+    }
 }

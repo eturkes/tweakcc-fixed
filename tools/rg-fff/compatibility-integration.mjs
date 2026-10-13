@@ -101,6 +101,7 @@ const cases = [
   ['ere-literal-group', ['-E', '\\(foo\\)']],
   ['ere-repetition', ['-E', 'fo{2}']],
   ['ere-only-matching', ['-E', '-o', 'foo|bar']],
+  ['ere-longest-alternative', ['-E', '-o', 'foo|foobar'], undefined, []],
   ['fixed-alternation', ['-F', 'foo|bar']],
   ['fixed-group', ['-F', '(foo)']],
   ['fixed-escaped-alternation', ['-F', 'foo\\|bar']],

@@ -62,7 +62,7 @@ const FFF_GUIDANCE_MARKER = 'Search backend note (fff):';
 const FFF_GUIDANCE =
   '\n\n' +
   FFF_GUIDANCE_MARKER +
-  ' eligible searches are relevance-ranked using file usage and Git activity. Prefer a bare identifier when locating a symbol; a trailing [def] is an advisory definition hint. After two locating searches, read promising files before broadening the search.';
+  ' eligible exact symbol searches put likely declarations first, then rank by query preference, file usage, and Git activity. Prefer a bare identifier when locating a symbol; a trailing [def] is an advisory definition hint. After two locating searches, read promising files before broadening the search.';
 
 // ── 4. Bash-description guidance — best-effort (the MAIN agent's only search
 //      surface; it has no Grep tool, so this is where the --fuzzy lever lives).
@@ -76,7 +76,7 @@ const BASH_GUIDANCE_MARKER = 'most-relevant-first';
 const BASH_GUIDANCE =
   ' For Bash content searches, use the managed grep function so eligible queries go through fff. Eligible grep/rg results served by fff are ranked ' +
   BASH_GUIDANCE_MARKER +
-  ' using file usage and Git activity (read a promising hit first); fallback searches retain native ordering. A trailing [def] is an advisory definition hint. Prefer a bare identifier for symbol lookup, grep -E for alternation, and -F for literal punctuation. After two locating searches, read candidate code before broadening. Add --fuzzy for approximate content matches, e.g. grep --fuzzy SomeName; verify approximate hits by reading the file.';
+  ' with likely declarations first for exact symbol queries, then query preference, file usage, and Git activity (read a promising hit first); fallback searches retain native ordering. A trailing [def] is an advisory definition hint. Start symbol lookup with grep -rn SomeName . and read a promising declaration before expanding the query. Use grep -E for alternation, and -F for literal punctuation. After two locating searches, read candidate code before broadening. Add --fuzzy for approximate content matches, e.g. grep --fuzzy SomeName; verify approximate hits by reading the file.';
 
 /** [CRITICAL] Repoint the grep→ugrep / find→bfs shadow at the wrapper. */
 const repointBashSearchShadow = (

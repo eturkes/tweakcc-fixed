@@ -30,7 +30,7 @@ use std::net::Shutdown;
 use std::os::fd::AsRawFd;
 use std::os::unix::fs::{FileTypeExt, MetadataExt, OpenOptionsExt, PermissionsExt};
 use std::os::unix::net::{UnixListener, UnixStream};
-use std::path::{Path, PathBuf};
+use std::path::{Component, Path, PathBuf};
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
@@ -39,7 +39,7 @@ use std::{fs, thread};
 use fff_search::file_picker::FilePicker;
 use fff_search::SharedFilePicker;
 
-use crate::{format_results, SearchReq};
+use crate::{format_results, Mode, SearchOutput, SearchReq};
 
 const IDLE_TIMEOUT: Duration = Duration::from_secs(30 * 60);
 const QUERY_READ_TIMEOUT: Duration = Duration::from_secs(3);
@@ -170,7 +170,7 @@ pub fn rpc(root: &Path, operation: &str, payload: &str) -> Option<(String, i32)>
 /// of colliding with a still-running old-format daemon that holds the old name —
 /// otherwise the new daemon can't bind and the root stays cold until the old one
 /// idle-times-out).
-pub const PROTO: &str = "v10";
+pub const PROTO: &str = "v11";
 
 pub fn socket_path(root: &Path) -> Option<PathBuf> {
     let dir = daemons_dir()?;
@@ -180,13 +180,15 @@ pub fn socket_path(root: &Path) -> Option<PathBuf> {
 
 /// Client: try to satisfy a search via a running daemon for `root`.
 /// Returns None on any error / no daemon — caller then cold-scans.
-pub fn query(root: &Path, req: &SearchReq) -> Option<(String, i32)> {
+pub fn query(root: &Path, req: &SearchReq) -> Option<SearchOutput> {
     // A pattern with an embedded newline can't survive the line protocol; let
     // the cold path (which never serializes it) handle that rare case.
     if req.pattern.contains('\n') || req.dir_prefixes.iter().any(|d| d.contains('\n')) {
         return None;
     }
-    rpc(root, "search", &serde_json::to_string(req).ok()?)
+    let (body, code) = rpc(root, "search", &serde_json::to_string(req).ok()?)?;
+    let result: SearchOutput = serde_json::from_str(&body).ok()?;
+    (result.code == code).then_some(result)
 }
 
 pub fn refresh_access(root: &Path, path: &Path) {
@@ -453,6 +455,46 @@ pub fn serve(root_arg: &str) {
     }
 }
 
+fn refresh_inventory(picker: &mut FilePicker, request: &SearchReq) -> Option<()> {
+    let cwd = fs::canonicalize(&request.cwd).ok()?;
+    if cwd != Path::new(&request.cwd) || !cwd.is_dir() || !cwd.starts_with(&picker.base_path) {
+        return None;
+    }
+    let files = request.expected_files.as_ref()?;
+    let mut paths = Vec::with_capacity(files.len());
+    for name in files {
+        let relative = Path::new(name);
+        if relative.as_os_str().is_empty()
+            || relative
+                .components()
+                .any(|component| !matches!(component, Component::Normal(_)))
+            || relative.components().collect::<PathBuf>().as_os_str() != relative.as_os_str()
+        {
+            return None;
+        }
+        let path = cwd.join(relative);
+        let canonical = fs::canonicalize(&path).ok()?;
+        if canonical != path
+            || !canonical.starts_with(&cwd)
+            || !canonical.starts_with(&picker.base_path)
+        {
+            return None;
+        }
+        let metadata = fs::metadata(&path).ok()?;
+        if !metadata.is_file() || metadata.len() > 10 * 1024 * 1024 {
+            return None;
+        }
+        paths.push(path);
+    }
+    for path in paths {
+        if let Some(file) = picker.get_file_by_path(&path) {
+            file.set_binary(false);
+        }
+        picker.handle_create_or_modify(path)?;
+    }
+    Some(())
+}
+
 fn handle(mut stream: UnixStream, shared: &SharedFilePicker, last: &Mutex<Instant>) {
     let Some(bytes) = bounded_read(&mut stream, MAX_REQUEST, Duration::from_secs(2)) else {
         return;
@@ -531,21 +573,23 @@ fn handle(mut stream: UnixStream, shared: &SharedFilePicker, last: &Mutex<Instan
     if let Ok(mut timestamp) = last.lock() {
         *timestamp = Instant::now();
     }
-    let guard = match shared.read() {
-        Ok(g) => g,
-        Err(_) => {
-            let _ = bounded_write(&mut out, b"FALLBACK\n", Duration::from_millis(100));
-            return;
-        }
+    let result = if matches!(req.mode, Mode::Fuzzy) {
+        shared
+            .read()
+            .ok()
+            .and_then(|guard| format_results(guard.as_ref()?, &req))
+    } else {
+        shared.write().ok().and_then(|mut guard| {
+            let picker = guard.as_mut()?;
+            refresh_inventory(picker, &req)?;
+            format_results(picker, &req)
+        })
     };
-    let picker = match guard.as_ref() {
-        Some(p) => p,
-        None => {
-            let _ = bounded_write(&mut out, b"FALLBACK\n", Duration::from_millis(100));
-            return;
-        }
-    };
-    match format_results(picker, &req) {
+    match result.and_then(|result| {
+        serde_json::to_string(&result)
+            .ok()
+            .map(|body| (body, result.code))
+    }) {
         Some((body, code)) if body.len() <= MAX_RESPONSE - 64 => {
             // Length-framed: `<code>\n<byte_len>\n<body>`. The client verifies it
             // received exactly byte_len bytes — if the daemon is killed mid-write

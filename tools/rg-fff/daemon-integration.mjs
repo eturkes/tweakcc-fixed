@@ -71,7 +71,7 @@ try {
       socket = readdirSync(dir).find(name => name.endsWith('.sock'));
       if (socket) {
         socket = path.join(dir, socket);
-        if ((await rpc(socket, 'v10\nping\n{}\n')) === '0\n5\nREADY') break;
+        if ((await rpc(socket, 'v11\nping\n{}\n')) === '0\n5\nREADY') break;
       }
     } catch {
       socket = undefined;
@@ -158,7 +158,7 @@ try {
     )
   );
   assert.equal(await rpc(socket, 'obsolete\nping\n{}\n'), 'FALLBACK\n');
-  assert.equal(await rpc(socket, 'v10\nsearch\nnot-json\n'), 'FALLBACK\n');
+  assert.equal(await rpc(socket, 'v11\nsearch\nnot-json\n'), 'FALLBACK\n');
   writeFileSync(path.join(one, 'fresh.ts'), 'new_symbol\n');
   await new Promise(resolve => setTimeout(resolve, 300));
   const fresh = spawnSync(wrapper, ['-n', 'new_symbol', '.'], {

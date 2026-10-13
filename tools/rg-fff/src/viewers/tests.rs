@@ -167,7 +167,12 @@ fn worker_completes_matching_queries_and_separates_navigation_sessions() {
     let mut request =
         crate::parse(crate::Tool::Rg, vec!["needle".into()]).to_req(crate::Mode::Plain);
     request.session = "synthetic-bash-process".into();
-    crate::feedback::remember(&root, &request, "src/source.rs:1:synthetic needle\n");
+    crate::feedback::remember_files(
+        &root,
+        &request.pattern,
+        &request.session,
+        &["src/source.rs".into()],
+    );
     let record = Recording {
         cwd: cwd.clone(),
         root: root.clone(),

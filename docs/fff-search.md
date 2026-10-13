@@ -4,11 +4,19 @@ Enable **fff search and file autocomplete** in the miscellaneous settings, then
 apply the patch. This is opt-in. It affects Claude Code's Bash search functions,
 embedded ripgrep resolver, and normal `@` file suggestions.
 
-Eligible searches use fff 0.11 with file-access history and Git activity for
-ranking. Ripgrep counts and context output retain that file order. Managed grep counts
-use the original engine to preserve zero counts, empty files, and option precedence. Successful Read, Edit,
-and Write operations update the local history; a search followed by reading one
-of its results also teaches the query-to-file preference.
+Eligible searches use fff 0.11. Exact symbol searches collect all result pages
+before ordering files: declarations of the queried symbol come first, followed
+by query-to-file preferences, access/Git activity, modification time, and path.
+Declaration lines and their context blocks lead within each file. Counts and
+filename-only output retain the same file ordering. Declaration recognition is
+conservative and covers common function, type, and variable declarations; it is
+not a language parser or semantic index. Fuzzy searches retain fff's fuzzy order.
+
+Managed grep counts use the original engine to preserve zero counts, empty
+files, and option precedence. Successful Read, Edit, and Write operations update
+local history. Reading a result from content search or explicit `fff files`
+discovery also teaches its query-to-file preference. Receipts store structured
+file paths, so repeated matches and colons in filenames do not distort learning.
 
 The separate **fff: learn from Bash file reads** setting is enabled by default
 and requires the main fff setting. Supported successful `cat`, `head`, `tail`,
@@ -37,15 +45,18 @@ either setting. Your terminal outside Claude Code retains its normal viewers.
 The wrapper supports literal/regex searches, case-insensitive matching, context,
 counts, filenames, multiple `-e` patterns, `-F`, and common `-o`/`-w` queries.
 Ripgrep globs use the real engine's file inventory to preserve their inclusion
-rules. Binary files, ignored scopes, Unicode word boundaries, long lines, or
+rules. Binary files, ignored scopes, unsupported word-boundary behavior, long lines, or
 unsupported options can require fallback. PCRE, multiline search, stdin filters,
+overlapping directory scopes, conflicting grep matcher flags,
 and individual-file searches continue through the original embedded tool.
 `find` retains its original results, with optional fuzzy suggestions on an empty
 simple filename lookup.
 
 Grep preserves its native basic-regex syntax; use `grep -E` for extended regex
 or `grep -F` for literal punctuation. Ripgrep retains ripgrep syntax. Unsupported
-regex dialect features use the original engine. The legacy `RG_FFF_FIRST`
+regex dialect features use the original engine. Exact searches preserve Unicode
+matching and CRLF content. Searches exceeding the collector budget or reaching
+the per-file match ceiling fall back rather than silently omit results. The legacy `RG_FFF_FIRST`
 environment variable no longer overrides command semantics. Fuzzy content suggestions are approximate and
 marked accordingly. `[def]` is a navigation hint; read the code to confirm it.
 
@@ -80,7 +91,10 @@ how many files a new task will require. Routing criteria remain unchanged.
 
 Daemons are shared by Git worktree root while each request stays scoped to its
 working directory. Shell setup starts warming the index. The daemon requires a
-completed scan and ready watcher before serving, holds a process lock, limits
+completed scan and ready watcher before serving. Exact searches also enumerate
+the current scope with the native tool and synchronously refresh its fff entries
+before matching, including files that previously had no matches. This prevents
+watcher lag from hiding recent edits. The daemon holds a process lock, limits
 concurrent requests and protocol sizes, caps cached content at 64 MiB, and exits
 when its RSS budget is exceeded. The default RSS budget is 256 MiB; it is a
 monitored circuit breaker, not a kernel allocation limit. An over-budget root
@@ -99,7 +113,11 @@ different local state directory. `RG_FFF_NO_DAEMON=1` disables persistent daemon
 cargo build --release --manifest-path tools/rg-fff/Cargo.toml
 cargo test --manifest-path tools/rg-fff/Cargo.toml
 node tools/rg-fff/integration.mjs
+node tools/rg-fff/compatibility-integration.mjs
+node tools/rg-fff/semantic-integration.mjs
+node tools/rg-fff/relevance-integration.mjs
 node tools/rg-fff/daemon-integration.mjs
+node tools/rg-fff/freshness-integration.mjs
 node tools/rg-fff/viewer-integration.mjs
 python3 tools/rg-fff/test_export_transcripts.py
 ```
