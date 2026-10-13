@@ -106,7 +106,8 @@ mod tests {
                 args.push("needle".into());
                 let mut req = parse(Tool::Rg, args).to_req(Mode::Plain);
                 req.cwd = root.to_string_lossy().into_owned();
-                let (out, code) = format_results(picker, &req).unwrap();
+                let result = format_results(picker, &req).unwrap();
+                let (out, code) = (result.body, result.code);
                 assert_eq!(code, 0);
                 assert!(out.starts_with("z.rs"), "{out}");
                 assert!(out.contains("a.rs"));

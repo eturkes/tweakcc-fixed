@@ -14,20 +14,6 @@
 //! Modes (chosen by `search_mode`, never the model): Plain (literal), Regex
 //! (regex::bytes — the same engine ripgrep uses), Fuzzy (`--fuzzy`).
 //!
-//! Faithfulness contract (the core invariant): fff serves ONLY when the result is
-//! faithful to the MODEL'S INTENT, else it defers via a verbatim re-exec — so
-//! correctness never depends on fff, only latency/ranking. Two dialect modes:
-//!   * default (RG_FFF_FIRST=on): regex is served as ripgrep RE2 — the dialect the
-//!     model writes and CC's Grep tool advertises. For `ugrep -G` (BRE) this is a
-//!     DELIBERATE divergence from ugrep's literal +?(){}| (CC's shell grep is
-//!     already BRE-broken for the model's RE2). Served output == ripgrep RE2.
-//!   * RG_FFF_FIRST=0 (byte-equiv): served output is byte-identical to the ACTUAL
-//!     embedded tool (ugrep -G BRE included); a regex whose dialect would diverge
-//!     is deferred.
-//! Advisory markers ([def], [~approx], the truncation note) and the auto-fuzzy
-//! fallback on zero matches are intentional, clearly-labeled augmentations — they
-//! never change the match SET vs the real tool.
-//!
 //! Levers: `--fuzzy`, `--no-fallback` (CI), `--fff-claude-bin=P` (rg resolver),
 //! `--daemon <root>` (warm-index daemon, see daemon.rs).
 
@@ -38,20 +24,23 @@ mod files;
 mod metrics;
 mod navigation;
 mod ranking;
+mod search;
+use search::format_results;
 mod viewers;
 
 use serde::{Deserialize, Serialize};
-use std::collections::{BTreeMap, HashMap, HashSet};
+use std::ffi::{OsStr, OsString};
 use std::fmt::Write as _;
-use std::io::Write as _;
+use std::io::{Read as _, Write as _};
+use std::os::unix::ffi::{OsStrExt, OsStringExt};
 use std::path::Path;
 use std::process::Command;
 use std::time::Duration;
 
 use fff_search::file_picker::FilePicker;
 use fff_search::{
-    AiGrepConfig, FFFMode, FFFQuery, FilePickerOptions, FuzzyQuery, FuzzySearchOptions, GrepMode,
-    GrepSearchOptions, PaginationArgs, QueryParser, SharedFilePicker,
+    FFFMode, FFFQuery, FilePickerOptions, FuzzyQuery, FuzzySearchOptions, PaginationArgs,
+    SharedFilePicker,
 };
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -117,22 +106,9 @@ struct Opts {
     // extensions (e.g. ".ts"). Only simple extension include globs are served;
     // any other glob (exclude, path glob, char class, brace, **) sets
     // force_fallback in parse so we never silently ignore a glob.
-    fff_first: bool, // RG_FFF_FIRST: serve fff RE2 (the model's intended
-    // dialect) instead of mirroring CC's shell ugrep -G BRE — captures the
-    // \w/\d/+/(/| regexes the model writes. Correctness gates (servable/newline/
-    // non-ascii/long-line/path/pipe) still apply; only the dialect gate relaxes.
     no_fallback: bool,
     claude_bin: Option<String>,
     force_fallback: bool,
-}
-
-impl Opts {
-    /// The regex dialect to interpret the pattern in. fff-first treats every
-    /// tool's pattern as ERE/RE2 (what the model intends + the Grep tool
-    /// advertises); byte-equiv mode honors the tool's real dialect.
-    fn eff_ere(&self) -> bool {
-        self.ere || self.fff_first
-    }
 }
 
 /// The minimal, serializable request shared by the cold path and the daemon.
@@ -144,6 +120,7 @@ pub struct SearchReq {
     pub expected_files: Option<Vec<String>>,
     pub session: String,
     pub pattern: String,
+    pub symbol: Option<String>,
     pub dir_prefixes: Vec<String>, // canonical "app/","lib/" scopes; empty = cwd
     pub line_numbers: bool,
     pub files_only: bool,
@@ -156,6 +133,13 @@ pub struct SearchReq {
     pub sep_between_files: bool, // rg prints `--` across files; ugrep does not
     pub include_exts: Vec<String>, // -g/--include "*.ext" -> keep only these
     pub path_prefix: String,   // "./" iff the tool echoes it for this path arg
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct SearchOutput {
+    pub body: String,
+    pub code: i32,
+    pub files: Vec<String>,
 }
 
 /// Append a one-line decision record to `$RG_FFF_LOG` for adoption testing:
@@ -193,7 +177,15 @@ fn main() {
     if viewers::dispatch() {
         return;
     }
-    let argv: Vec<String> = std::env::args().collect();
+    let opaque: Vec<OsString> = std::env::args_os().collect();
+    let argv = match opaque
+        .iter()
+        .map(|argument| argument.to_str().map(str::to_owned))
+        .collect::<Option<Vec<_>>>()
+    {
+        Some(argv) => argv,
+        None => fallback_opaque(&opaque),
+    };
     let explicit = argv
         .first()
         .map(|a| Tool::from_argv0(a) == Tool::Fff)
@@ -335,7 +327,7 @@ fn main() {
 
     let opts = parse(tool, raw);
     NO_FALLBACK.store(opts.no_fallback, std::sync::atomic::Ordering::Relaxed);
-    if let Some(mode) = search_mode(&opts, stdin_is_pipe()) {
+    if let Some(mode) = search_mode(&opts, stdin_requires_native()) {
         std::process::exit(run_search(&opts, mode));
     }
     log_decision(opts.tool, &opts.pattern, "fallback-ineligible", -1);
@@ -409,15 +401,11 @@ fn parse(tool: Tool, raw: Vec<String>) -> Opts {
         globs: Vec::new(),
         exclude_dirs: Vec::new(),
         include_exts: Vec::new(),
-        // fff-first (serve RE2 = the model's intended dialect) is the MAINSTREAM
-        // production default: when this wrapper is installed the feature is on and
-        // the user wants fff to be the search. RG_FFF_FIRST=0 opts back into the
-        // conservative byte-equiv (mirror ugrep -G BRE) mode.
-        fff_first: std::env::var("RG_FFF_FIRST").as_deref() != Ok("0"),
         no_fallback: false,
         claude_bin: None,
         force_fallback: false,
     };
+    let mut matcher_flags = 0u8;
     let mut explicit_patterns: Vec<String> = Vec::new();
     let mut positionals: Vec<String> = Vec::new();
     let mut i = 0;
@@ -440,11 +428,17 @@ fn parse(tool: Tool, raw: Vec<String>) -> Opts {
             "-c" | "--count" => o.count = true,
             "-o" | "--only-matching" => o.only_matching = true,
             "-w" | "--word-regexp" => o.word = true,
-            "-F" | "--fixed-strings" | "--fixed-regexp" => o.fixed = true,
+            "-F" | "--fixed-strings" => {
+                o.fixed = true;
+                matcher_flags |= 1;
+            }
+            "--fixed-regexp" | "--pattern" => o.force_fallback = true,
             "--no-line-number" => o.line_numbers = false,
             "-n" | "--line-number" => o.line_numbers = true,
             "-h" | "--no-filename" | "--color=always" => o.force_fallback = true,
-            "-H" | "--with-filename" | "--color" | "--color=never" | "--color=auto" => {}
+            "-H" | "--with-filename" | "--color=never" | "--color=auto" => {}
+            "--color" if o.tool == Tool::Ugrep => {}
+            "--color" => o.force_fallback = true,
             "-r" | "--recursive" if o.tool == Tool::Ugrep => o.recursive = true,
             "-r" | "-R" | "--recursive" | "--dereference-recursive" => o.force_fallback = true,
             "--hidden" => o.hidden = true,
@@ -456,10 +450,14 @@ fn parse(tool: Tool, raw: Vec<String>) -> Opts {
             "-G" | "--basic-regexp" => {
                 o.fixed = false;
                 o.ere = false;
+                matcher_flags |= 2;
             }
-            "--ignore-files" | "-I" | "--no-config" => {}
+            "--ignore-files" | "--no-config" => {}
+            "-I" if o.tool == Tool::Ugrep => {}
+            "-I" => o.force_fallback = true,
             "-E" | "--extended-regexp" => {
                 o.ere = true;
+                matcher_flags |= 4;
                 o.fixed = false;
             }
             // -A/-B/-C N (space form) — context. A non-numeric value -> defer.
@@ -491,7 +489,7 @@ fn parse(tool: Tool, raw: Vec<String>) -> Opts {
                     i += 1;
                 }
             }
-            "-e" | "--regexp" | "--pattern" => {
+            "-e" | "--regexp" => {
                 if i + 1 < raw.len() {
                     explicit_patterns.push(raw[i + 1].clone());
                     i += 1;
@@ -501,9 +499,14 @@ fn parse(tool: Tool, raw: Vec<String>) -> Opts {
             }
             // include globs (space form): serve simple "*.ext", defer the rest.
             "-g" | "--glob" | "--include" => {
+                if a == "--include" && o.tool != Tool::Ugrep {
+                    o.force_fallback = true;
+                }
                 if let Some(g) = raw.get(i + 1) {
                     classify_glob(g, &mut o);
                     i += 1;
+                } else {
+                    o.force_fallback = true;
                 }
             }
             // exclude globs -> defer (can't serve byte-exactly yet).
@@ -532,10 +535,14 @@ fn parse(tool: Tool, raw: Vec<String>) -> Opts {
                     .strip_prefix("--include=")
                     .or_else(|| other.strip_prefix("--glob="))
                 {
+                    if other.starts_with("--include=") && o.tool != Tool::Ugrep {
+                        o.force_fallback = true;
+                    }
                     classify_glob(g, &mut o); // include glob (= form)
                 } else if other.starts_with("--exclude=") {
                     o.force_fallback = true; // exclude glob -> defer
                 } else if other.starts_with("--color=") {
+                    o.force_fallback = true;
                 } else if let Some(n) =
                     attached_ctx(other, "-A").or_else(|| attached_ctx(other, "--after-context="))
                 {
@@ -561,21 +568,28 @@ fn parse(tool: Tool, raw: Vec<String>) -> Opts {
                                 'i' => o.ignore_case = true,
                                 'o' => o.only_matching = true,
                                 'w' => o.word = true,
-                                'F' => o.fixed = true,
+                                'F' => {
+                                    o.fixed = true;
+                                    matcher_flags |= 1;
+                                }
                                 'n' => o.line_numbers = true,
                                 'l' => o.files_only = true,
                                 'c' => o.count = true,
                                 'r' if o.tool == Tool::Ugrep => o.recursive = true,
                                 'r' | 'R' => o.force_fallback = true,
                                 'E' => {
+                                    matcher_flags |= 4;
                                     o.ere = true;
                                     o.fixed = false;
                                 }
                                 'G' => {
+                                    matcher_flags |= 2;
                                     o.ere = false;
                                     o.fixed = false;
                                 }
-                                'H' | 'I' => {}
+                                'H' => {}
+                                'I' if o.tool == Tool::Ugrep => {}
+                                'I' => o.force_fallback = true,
                                 'h' => o.force_fallback = true,
                                 _ => o.force_fallback = true,
                             }
@@ -589,11 +603,17 @@ fn parse(tool: Tool, raw: Vec<String>) -> Opts {
         i += 1;
     }
 
+    if (tool == Tool::Ugrep && matcher_flags.count_ones() > 1)
+        || (tool != Tool::Ugrep && matcher_flags & 6 != 0)
+    {
+        o.force_fallback = true;
+    }
+
     if !explicit_patterns.is_empty() {
         o.pattern = Some(if explicit_patterns.len() == 1 {
             explicit_patterns.remove(0)
         } else {
-            if !o.eff_ere() && !o.fixed {
+            if !o.ere && !o.fixed {
                 o.force_fallback = true;
             }
             o.ere = true;
@@ -644,21 +664,32 @@ fn attached_ctx(s: &str, prefix: &str) -> Option<usize> {
 
 /// Decide which fff mode (if any) serves this query *faithfully tool-equivalent*.
 /// None => fall back to the real embedded tool.
-fn stdin_is_pipe() -> bool {
+fn stdin_requires_native() -> bool {
     let mut stat: libc::stat = unsafe { std::mem::zeroed() };
     (unsafe { libc::fstat(libc::STDIN_FILENO, &mut stat) == 0 })
-        && matches!(stat.st_mode & libc::S_IFMT, libc::S_IFIFO | libc::S_IFSOCK)
+        && matches!(
+            stat.st_mode & libc::S_IFMT,
+            libc::S_IFIFO | libc::S_IFSOCK | libc::S_IFREG
+        )
 }
 
 fn search_mode(o: &Opts, piped_stdin: bool) -> Option<Mode> {
-    if o.force_fallback || piped_stdin {
+    if o.force_fallback
+        || piped_stdin
+        || (o.count && (o.tool == Tool::Ugrep || o.only_matching || o.files_only))
+        || (o.only_matching && (o.before_context > 0 || o.after_context > 0))
+    {
         return None;
     }
     let pat = match &o.pattern {
         Some(p) if !p.is_empty() => p,
         _ => return None,
     };
-    if !pat.is_ascii() {
+    if !pat.is_ascii()
+        || pat.chars().any(char::is_control)
+        || (o.fixed && pat.contains(r"\n"))
+        || (o.tool == Tool::Ugrep && (o.ignore_case || o.word))
+    {
         return None;
     }
     // ugrep needs -r to recurse (else stdin / top-level only); rg/fff recurse by
@@ -676,7 +707,17 @@ fn search_mode(o: &Opts, piped_stdin: bool) -> Option<Mode> {
         });
     let dot_overlap = o.paths.len() > 1 && o.paths.iter().any(|p| p == ".");
     let path_ok = o.paths.is_empty() || (all_rel_dirs && !dot_overlap);
-    if !path_ok || dir_has_dsl_operator(o) {
+    let roots: Vec<_> = o
+        .paths
+        .iter()
+        .filter_map(|path| std::fs::canonicalize(path).ok())
+        .collect();
+    let overlapping = roots.iter().enumerate().any(|(index, root)| {
+        roots[..index]
+            .iter()
+            .any(|other| root.starts_with(other) || other.starts_with(root))
+    });
+    if !path_ok || overlapping || dir_has_dsl_operator(o) {
         return None;
     }
 
@@ -688,7 +729,10 @@ fn search_mode(o: &Opts, piped_stdin: bool) -> Option<Mode> {
         }
         return Some(Mode::Fuzzy);
     }
-    let is_regex_orig = !o.fixed && has_regex_meta(pat, o.eff_ere());
+    let is_regex_orig = !o.fixed && has_regex_meta(pat, o.ere);
+    if o.tool == Tool::Ugrep && o.only_matching && is_regex_orig {
+        return None;
+    }
     if o.word && !pat.bytes().all(is_ident_byte) {
         return None;
     }
@@ -696,15 +740,7 @@ fn search_mode(o: &Opts, piped_stdin: bool) -> Option<Mode> {
     // fff's DSL parser, but it CAN be served as an escaped literal via the
     // DSL-bypassing regex path (byte-identical to a literal grep). Route it there.
     if o.ignore_case || o.word || is_regex_orig || has_dsl_operator(pat) {
-        // Regex mode bypasses the DSL (raw pattern as the needle), so DSL operators
-        // in the pattern are fine. -i is served here via a (?i) prefix built in
-        // effective_pattern. The dialect gate applies only to a genuine regex
-        // original — an escaped -i literal carries no dialect risk. fff-first
-        // skips the dialect gate entirely: it serves fff's RE2 (the dialect the
-        // model intends + the Grep tool advertises), so the \w/\d/+/(/| regexes
-        // ugrep -G would treat as BRE-literal are served as real regex. The
-        // regex_servable gate below still guarantees RE2-faithfulness.
-        if is_regex_orig && !o.fff_first && !regex_dialect_ok(pat, o) {
+        if is_regex_orig && !regex_dialect_ok(pat, o) {
             return None;
         }
         // An escaped -i literal still wants the bigram floor for a sound prefilter.
@@ -741,7 +777,7 @@ fn effective_pattern(o: &Opts, mode: Mode) -> String {
     // serve literal PHRASES the DSL can't (spaces/`:`/`/`/`!`) by routing them
     // through the DSL-bypassing regex path as an escaped literal — byte-identical
     // to a literal grep. `-i` adds the inline (?i) flag on top.
-    let body = if !o.fixed && has_regex_meta(&pat, o.eff_ere()) {
+    let body = if !o.fixed && has_regex_meta(&pat, o.ere) {
         pat
     } else {
         regex::escape(&pat)
@@ -752,9 +788,9 @@ fn effective_pattern(o: &Opts, mode: Mode) -> String {
         body
     };
     if o.ignore_case {
-        format!("(?i){body}")
+        format!("(?u:(?i){body})")
     } else {
-        body
+        format!("(?u:{body})")
     }
 }
 
@@ -885,6 +921,11 @@ impl Opts {
             expected_files: None,
             session: std::env::var("RG_FFF_SESSION").unwrap_or_default(),
             pattern: effective_pattern(self, mode),
+            symbol: self
+                .pattern
+                .as_deref()
+                .filter(|pattern| !matches!(mode, Mode::Fuzzy) && search::is_symbol(pattern))
+                .map(str::to_owned),
             dir_prefixes,
             line_numbers: self.line_numbers,
             files_only: self.files_only,
@@ -929,8 +970,8 @@ fn fuzzy_fallback_block(
     }
     let fz_req = o.to_req(Mode::Fuzzy);
     let body = match picker {
-        Some(p) => format_results(p, &fz_req).map(|(s, _)| s),
-        None => root.and_then(|r| daemon::query(r, &fz_req).map(|(s, _)| s)),
+        Some(p) => format_results(p, &fz_req).map(|result| result.body),
+        None => root.and_then(|r| daemon::query(r, &fz_req).map(|result| result.body)),
     }?;
     // The body always starts with FUZZY_HDR; require >=1 real match line under it.
     let has_match = body
@@ -964,9 +1005,31 @@ fn fuzzy_fallback_block(
     Some(out)
 }
 
+fn native_encoding_required(cwd: &str, files: &[String]) -> bool {
+    files.iter().any(|name| {
+        let mut prefix = Vec::with_capacity(3);
+        std::fs::File::open(Path::new(cwd).join(name))
+            .and_then(|file| {
+                if !file.metadata()?.is_file() {
+                    return Err(std::io::Error::from(std::io::ErrorKind::InvalidInput));
+                }
+                file.take(3).read_to_end(&mut prefix)
+            })
+            .map_or(true, |_| {
+                prefix.starts_with(&[0xff, 0xfe])
+                    || prefix.starts_with(&[0xfe, 0xff])
+                    || prefix.starts_with(&[0xef, 0xbb, 0xbf])
+            })
+    })
+}
+
 fn run_search(o: &Opts, mode: Mode) -> i32 {
     let mut req = o.to_req(mode);
-    if !o.globs.is_empty() || o.tool == Tool::Ugrep || o.paths.iter().any(|p| p != ".") {
+    if !matches!(mode, Mode::Fuzzy)
+        || !o.globs.is_empty()
+        || o.tool == Tool::Ugrep
+        || o.paths.iter().any(|p| p != ".")
+    {
         let mut args = if o.tool == Tool::Ugrep {
             let mut args = vec!["-rl".into(), "-G".into(), "-e".into(), "".into()];
             if o.raw.iter().any(|a| a == "--ignore-files") {
@@ -991,12 +1054,14 @@ fn run_search(o: &Opts, mode: Mode) -> i32 {
         args.extend(o.paths.clone());
         match capture_embedded(o.tool, &args, o.claude_bin.as_deref()) {
             Some((paths, code)) if code <= 1 && paths.len() < 2 * 1024 * 1024 => {
-                req.expected_files = Some(
-                    paths
-                        .lines()
-                        .map(|p| p.trim_start_matches("./").to_string())
-                        .collect(),
-                );
+                let files: Vec<_> = paths
+                    .lines()
+                    .map(|p| p.trim_start_matches("./").to_string())
+                    .collect();
+                if !matches!(mode, Mode::Fuzzy) && native_encoding_required(&req.cwd, &files) {
+                    fallback(o.tool, &strip_custom(&o.raw), o.claude_bin.as_deref());
+                }
+                req.expected_files = Some(files);
             }
             _ => fallback(o.tool, &strip_custom(&o.raw), o.claude_bin.as_deref()),
         }
@@ -1009,7 +1074,12 @@ fn run_search(o: &Opts, mode: Mode) -> i32 {
 
     if daemon_enabled {
         if let Some(root) = &root {
-            if let Some((out, code)) = daemon::query(root, &req) {
+            if let Some(SearchOutput {
+                body: out,
+                code,
+                files,
+            }) = daemon::query(root, &req)
+            {
                 if debug {
                     eprintln!("rg-fff: daemon hit");
                 }
@@ -1019,7 +1089,9 @@ fn run_search(o: &Opts, mode: Mode) -> i32 {
                     "served-daemon",
                     out.lines().count() as i64,
                 );
-                feedback::remember(root, &req, &out);
+                if !matches!(req.mode, Mode::Fuzzy) {
+                    feedback::remember_files(root, &req.pattern, &req.session, &files);
+                }
                 let mut w = std::io::stdout().lock();
                 let _ = w.write_all(out.as_bytes());
                 if code == 1 {
@@ -1066,7 +1138,11 @@ fn run_search(o: &Opts, mode: Mode) -> i32 {
             None => fallback(o.tool, &strip_custom(&o.raw), o.claude_bin.as_deref()),
         };
         // None => fff can't serve faithfully (e.g. a regex its engine rejects).
-        let (out, code) = match format_results(picker, &req) {
+        let SearchOutput {
+            body: out,
+            code,
+            files,
+        } = match format_results(picker, &req) {
             Some(r) => {
                 if debug {
                     eprintln!("rg-fff: fff served (cold)");
@@ -1075,7 +1151,7 @@ fn run_search(o: &Opts, mode: Mode) -> i32 {
                     o.tool,
                     &o.pattern,
                     "served-cold",
-                    r.0.lines().count() as i64,
+                    r.body.lines().count() as i64,
                 );
                 r
             }
@@ -1088,7 +1164,9 @@ fn run_search(o: &Opts, mode: Mode) -> i32 {
             }
         };
         if let Some(root) = &root {
-            feedback::remember(root, &req, &out);
+            if !matches!(req.mode, Mode::Fuzzy) {
+                feedback::remember_files(root, &req.pattern, &req.session, &files);
+            }
         }
         let mut w = std::io::stdout().lock();
         let _ = w.write_all(out.as_bytes());
@@ -1143,557 +1221,9 @@ const APPROX_MARK: &str = " [~approx]";
 /// navigation hint). Parser-safe trailing text. Never authoritative.
 const DEF_MARK: &str = " [def]";
 
-fn is_variable_definition(line: &str) -> bool {
-    let line = line
-        .trim_start()
-        .strip_prefix("export ")
-        .unwrap_or(line.trim_start());
-    ["const ", "let ", "var "]
-        .iter()
-        .any(|prefix| line.starts_with(prefix))
-}
-
 #[inline]
 fn is_ident_byte(b: u8) -> bool {
     b.is_ascii_alphanumeric() || b == b'_'
-}
-
-/// Definition keywords / bindings that introduce a symbol when they immediately
-/// precede it. `const/let/var` included for the TS/JS `export const NAME =` style
-/// that fff's own heuristic misses.
-const DEF_KEYWORDS: &[&str] = &[
-    "fn",
-    "func",
-    "function",
-    "def",
-    "struct",
-    "enum",
-    "trait",
-    "impl",
-    "class",
-    "interface",
-    "type",
-    "module",
-    "object",
-    "const",
-    "let",
-    "var",
-];
-
-/// Does `line` DEFINE `pattern` — i.e. is the (whole-word) searched symbol
-/// introduced here, not merely used? True iff an occurrence of `pattern` is
-/// immediately preceded (ignoring whitespace) by a definition keyword/binding AND
-/// immediately followed by a definition delimiter. Pattern-AWARE on purpose:
-/// `export const getUserData =` defines getUserData ([def]), but `const result =
-/// getUserData()` is a CALL SITE and is NOT marked. The trailing-delimiter guard
-/// rejects PROSE where a def keyword is just an English word ("module import
-/// hoisting", "type checking") — there the searched term is followed by more words,
-/// not `=({:<;` etc. Plain (literal) mode only. Advisory navigation hint.
-fn line_defines(line: &str, pattern: &str) -> bool {
-    if pattern.is_empty() {
-        return false;
-    }
-    let bytes = line.as_bytes();
-    let mut from = 0;
-    while let Some(rel) = line[from..].find(pattern) {
-        let at = from + rel;
-        let end = at + pattern.len();
-        // whole-word match only (so searching "User" doesn't def-tag getUserData)
-        let lhs_word = at > 0 && is_ident_byte(bytes[at - 1]);
-        let rhs_word = end < bytes.len() && is_ident_byte(bytes[end]);
-        if !lhs_word && !rhs_word {
-            // The token immediately before the symbol must be a def keyword,
-            let prefix = line[..at].trim_end();
-            let last = prefix
-                .rsplit(|c: char| c.is_whitespace())
-                .next()
-                .unwrap_or("");
-            // AND the symbol must be followed by a definition delimiter (not prose).
-            let after = line[end..].trim_start();
-            let def_delim = after.is_empty()
-                || after.starts_with(|c: char| matches!(c, '=' | '(' | '{' | ':' | '<' | ';'))
-                || after.starts_with("extends")
-                || after.starts_with("implements");
-            if DEF_KEYWORDS.contains(&last) && def_delim {
-                return true;
-            }
-        }
-        from = end.max(at + 1);
-    }
-    false
-}
-
-/// Grep `picker` per `req` and render tool-compatible output. Shared verbatim by
-/// the cold path and the daemon. Returns None when fff can't serve faithfully.
-pub fn format_results(picker: &FilePicker, req: &SearchReq) -> Option<(String, i32)> {
-    let cwd = if req.cwd.is_empty() {
-        &picker.base_path
-    } else {
-        Path::new(&req.cwd)
-    };
-    if !cwd.starts_with(&picker.base_path) {
-        return None;
-    }
-    let scoped_path = |file: &fff_search::types::FileItem| {
-        file.absolute_path(picker, &picker.base_path)
-            .strip_prefix(cwd)
-            .ok()
-            .map(|p| p.to_string_lossy().into_owned())
-    };
-    let expected: Option<HashSet<&str>> = req
-        .expected_files
-        .as_ref()
-        .map(|v| v.iter().map(String::as_str).collect());
-    if let Some(files) = &expected {
-        if files
-            .iter()
-            .any(|path| picker.get_file_by_path(cwd.join(path)).is_none())
-        {
-            return None;
-        }
-    }
-    if cwd != picker.base_path
-        && git2::Repository::discover(&picker.base_path)
-            .ok()
-            .and_then(|repo| {
-                repo.status_should_ignore(cwd.strip_prefix(&picker.base_path).ok()?)
-                    .ok()
-            })
-            .unwrap_or(true)
-    {
-        return None;
-    }
-    let preferred = feedback::preferred(cwd, &req.pattern);
-    let grep = |query: &FFFQuery<'_>, opts: &GrepSearchOptions| {
-        let mut result = picker.grep(query, opts);
-        if req.word
-            && result
-                .matches
-                .iter()
-                .any(|m| !m.line_content.is_ascii() || m.line_content.len() >= 509)
-        {
-            result.regex_fallback_error =
-                Some("Unicode word boundaries require the real tool".into());
-        }
-        if let Some(path) = preferred.as_deref() {
-            if opts.max_matches_per_file == 1 {
-                result
-                    .files
-                    .sort_by_key(|f| f.absolute_path(picker, &picker.base_path) != path);
-            } else {
-                result.matches.sort_by_key(|m| {
-                    result.files[m.file_index].absolute_path(picker, &picker.base_path) != path
-                });
-            }
-        }
-        result
-    };
-    let gmode = match req.mode {
-        Mode::Plain => GrepMode::PlainText,
-        Mode::Regex => GrepMode::Regex,
-        Mode::Fuzzy => GrepMode::Fuzzy,
-    };
-    let is_fuzzy = matches!(req.mode, Mode::Fuzzy);
-    let is_regex = matches!(req.mode, Mode::Regex);
-    // Definition hinting is meaningful only when the pattern is a literal symbol.
-    let is_plain = matches!(req.mode, Mode::Plain);
-
-    // Non-git directories: fff scans with `.hidden(!is_git_repo)` (file_picker.rs:1802),
-    // so OUTSIDE a git repo it prunes dotfiles at the filesystem walk — and keep()
-    // operates only over the already-scanned index, so it can never re-add a pruned
-    // file. CC always injects `--hidden` (req.hidden=true), so in a non-git dir we
-    // would silently under-report matches inside dotfiles vs the real ugrep/rg
-    // `--hidden`. Defer so the embedded tool handles it faithfully. (In a git repo
-    // fff scans hidden, so keep() can honor --hidden correctly and we serve.)
-    if req.hidden && picker.git_root().is_none() {
-        return None;
-    }
-    // -i is baked into the pattern as (?i) for Regex; Plain is case-sensitive;
-    // only Fuzzy still relies on smart_case for case-insensitivity.
-    let smart = is_fuzzy && req.ignore_case;
-
-    // Directory scoping + path echoing. grep prints join(pathArg, relPath); fff
-    // returns cwd-relative paths. So scope by the CANONICAL dir (leading "./" and
-    // trailing "/" stripped), and re-prepend the "./" grep emits when the path
-    // arg is "." or "./...".
-    //  * Plain/Fuzzy go through fff's DSL ("dir/ " is a path constraint, the
-    //    simple pattern stays literal).
-    //  * Regex MUST bypass the DSL (it misreads `obj.method` as a filename, drops
-    //    `|`/`^`/`\b`), so we build the query directly and scope by post-filter.
-    // Canonical dir for scoping ("." and trailing "/" -> ""); "./..."/absolute
-    // args never reach here (deferred in search_mode). out_prefix is precomputed
-    // per-tool in to_req (rg echoes "./" for a "." arg; ugrep does not).
-    let out_prefix = req.path_prefix.as_str();
-    // Dir scoping is ALWAYS the anchored post-filter (relative_path starts_with a
-    // "dir/" prefix), never fff's DSL "dir/" constraint — that matches the segment
-    // (e.g. "src") ANYWHERE in a path (tools/x/src/…), diverging from grep's
-    // root-anchored path arg. `req.dir_prefixes` holds the canonical "app/","lib/"
-    // prefixes (empty = whole cwd / "." arg); multi-path keeps a result iff it's
-    // under ANY prefix. So the query carries only the pattern.
-    let dir_prefixes = &req.dir_prefixes;
-
-    let parser = QueryParser::new(AiGrepConfig);
-    let parsed: FFFQuery = if is_regex {
-        FFFQuery {
-            raw_query: &req.pattern,
-            constraints: Vec::new(),
-            fuzzy_query: FuzzyQuery::Text(&req.pattern),
-            location: None,
-        }
-    } else {
-        // QueryParser::parse borrows its input; req.pattern outlives `parsed`, so
-        // borrow it directly instead of cloning into a throwaway String.
-        parser.parse(&req.pattern)
-    };
-
-    let keep = |path: &str| -> bool {
-        if let Some(files) = &expected {
-            return files.contains(path);
-        }
-        // VCS metadata dirs: CC's shadow always injects
-        // `--exclude-dir=.git/.svn/.hg/.bzr/.jj/.sl`. fff only auto-excludes .git,
-        // and in a git repo it scans the other hidden VCS dirs — so without this,
-        // matches inside a non-gitignored .svn/.hg/etc. would diverge from ugrep
-        // (which --exclude-dirs them). Mirror CC's fixed VCS set here.
-        if path
-            .split('/')
-            .any(|s| matches!(s, ".git" | ".svn" | ".hg" | ".bzr" | ".jj" | ".sl"))
-        {
-            return false;
-        }
-        // -g/--include "*.ext" filter: keep only the requested extensions. Path
-        // ends-with is byte-identical to rg's `-g '*.ts'` (path glob) and grep's
-        // `--include=*.ts` (basename glob) for extension globs (the ext is at the
-        // path tail either way). Non-extension globs never reach here (deferred).
-        if !req.include_exts.is_empty()
-            && !req.include_exts.iter().any(|e| path.ends_with(e.as_str()))
-        {
-            return false;
-        }
-        // dir scoping: keep iff under ANY requested dir prefix (empty = whole cwd)
-        if !dir_prefixes.is_empty() && !dir_prefixes.iter().any(|p| path.starts_with(p.as_str())) {
-            return false;
-        }
-        // hidden-file handling: unless --hidden, skip dotfiles like the tool does
-        // — but only relative to the matching search root, so an explicit hidden
-        // dir arg (e.g. `grep X .github`) is still searched.
-        if req.hidden {
-            return true;
-        }
-        let rel = dir_prefixes
-            .iter()
-            .find_map(|p| path.strip_prefix(p.as_str()))
-            .unwrap_or(path);
-        !rel.split('/').any(|s| s.starts_with('.'))
-    };
-
-    if picker
-        .get_files()
-        .iter()
-        .chain(picker.get_overflow_files())
-        .any(|file| {
-            file.size > 10 * 1024 * 1024 && scoped_path(file).map(|p| keep(&p)).unwrap_or(false)
-        })
-    {
-        return None;
-    }
-
-    if is_regex {
-        // fff's grep_text() strips a leading backslash when it reads as a
-        // constraint-escape; if that (or anything) would alter our exact regex,
-        // the search would diverge — defer precisely, only when it actually does.
-        if parsed.grep_text() != req.pattern {
-            if std::env::var_os("RG_FFF_DEBUG").is_some() {
-                eprintln!(
-                    "rg-fff: regex defer: grep_text {:?} != pattern {:?}",
-                    parsed.grep_text(),
-                    req.pattern
-                );
-            }
-            return None;
-        }
-        // Preflight: if fff's engine can't compile the pattern it SILENTLY falls
-        // back to literal matching (regex_fallback_error set) -> defer.
-        let probe = grep(&parsed, &grep_opts(gmode, 0, req.files_only, smart));
-        if let Some(e) = &probe.regex_fallback_error {
-            if std::env::var_os("RG_FFF_DEBUG").is_some() {
-                eprintln!("rg-fff: regex defer: regex_fallback_error: {e}");
-            }
-            return None;
-        }
-    }
-
-    let mut out = String::new();
-    if is_fuzzy {
-        let _ = writeln!(out, "{FUZZY_HDR}");
-    }
-
-    if req.count {
-        let mut counts: Vec<(String, usize)> = Vec::new();
-        let mut indexes = HashMap::new();
-        let mut file_offset = 0usize;
-        loop {
-            let opts = grep_opts(gmode, file_offset, false, smart);
-            let r = grep(&parsed, &opts);
-            if r.regex_fallback_error.is_some() {
-                return None;
-            }
-            for m in &r.matches {
-                let f = r.files[m.file_index];
-                let Some(path) = scoped_path(f) else {
-                    continue;
-                };
-                if keep(&path) {
-                    let index = *indexes.entry(path.clone()).or_insert_with(|| {
-                        counts.push((path, 0));
-                        counts.len() - 1
-                    });
-                    counts[index].1 += 1;
-                }
-            }
-            if r.next_file_offset == 0 {
-                break;
-            }
-            file_offset = r.next_file_offset;
-        }
-        let any = !counts.is_empty();
-        for (f, c) in &counts {
-            let _ = writeln!(out, "{out_prefix}{f}:{c}");
-        }
-        return Some((out, if any { 0 } else { 1 }));
-    }
-
-    // -A/-B/-C context: collect every (match + context) line per file, merge
-    // overlapping windows by line number, then emit with grep's separators.
-    // (to_req zeroes context for -l/-c/fuzzy, so this is content mode only.)
-    if req.before_context > 0 || req.after_context > 0 {
-        // Per line: U+FFFD (non-UTF-8) -> defer the whole query (None); a >=509 B
-        // line gets the truncation marker; otherwise pass through unchanged.
-        let mark = |s: &str| -> Option<String> {
-            if s.contains('\u{FFFD}') || s.len() >= 509 {
-                return None;
-            }
-            Some(if s.len() >= 509 {
-                format!("{s}{TRUNC_MARK}")
-            } else {
-                s.to_string()
-            })
-        };
-        // path -> (line_no -> (is_match, content)); BTreeMap keeps line order.
-        let mut per_file: Vec<(String, BTreeMap<u64, (bool, String, bool)>)> = Vec::new();
-        let mut indexes = HashMap::new();
-        let mut file_offset = 0usize;
-        loop {
-            let opts = GrepSearchOptions {
-                before_context: req.before_context,
-                after_context: req.after_context,
-                ..grep_opts(gmode, file_offset, false, smart)
-            };
-            let result = grep(&parsed, &opts);
-            if result.regex_fallback_error.is_some() {
-                return None;
-            }
-            if result.regex_fallback_error.is_some() {
-                return None;
-            }
-            for m in &result.matches {
-                let f = result.files[m.file_index];
-                let Some(path) = scoped_path(f) else {
-                    continue;
-                };
-                if !keep(&path) {
-                    continue;
-                }
-                let mln = match mark(&m.line_content) {
-                    Some(x) => x,
-                    None => return None, // non-UTF-8 -> defer
-                };
-                let index = *indexes.entry(path.clone()).or_insert_with(|| {
-                    per_file.push((path, BTreeMap::new()));
-                    per_file.len() - 1
-                });
-                let fmap = &mut per_file[index].1;
-                let ln = m.line_number;
-                // fff returns only the context lines that exist, so the first
-                // before-context line sits at ln - context_before.len().
-                let blen = m.context_before.len() as u64;
-                for (i, c) in m.context_before.iter().enumerate() {
-                    let cm = match mark(c) {
-                        Some(x) => x,
-                        None => return None,
-                    };
-                    fmap.entry(ln - blen + i as u64)
-                        .or_insert((false, cm, false));
-                }
-                // The match line wins over any context tag for the same line.
-                fmap.insert(ln, (true, mln, m.is_definition));
-                for (i, c) in m.context_after.iter().enumerate() {
-                    let cm = match mark(c) {
-                        Some(x) => x,
-                        None => return None,
-                    };
-                    fmap.entry(ln + 1 + i as u64).or_insert((false, cm, false));
-                }
-            }
-            if result.next_file_offset == 0 {
-                break;
-            }
-            file_offset = result.next_file_offset;
-        }
-        let mut any = false;
-        let mut first_group = true;
-        for (path, lines) in &per_file {
-            let mut prev: Option<u64> = None;
-            for (&ln, (is_match, content, is_definition)) in lines {
-                let new_group = prev.map(|p| ln > p + 1).unwrap_or(true);
-                if new_group && !first_group {
-                    // within-file gap -> always `--`; across files -> only rg.
-                    let cross_file = prev.is_none();
-                    if !cross_file || req.sep_between_files {
-                        let _ = writeln!(out, "--");
-                    }
-                }
-                let sep = if *is_match { ':' } else { '-' };
-                // Advisory def hint on MATCH lines only (never context lines),
-                // and only where the searched literal symbol is defined.
-                let def = if is_plain
-                    && *is_match
-                    && line_defines(content, &req.pattern)
-                    && (*is_definition || is_variable_definition(content))
-                {
-                    DEF_MARK
-                } else {
-                    ""
-                };
-                if req.line_numbers {
-                    let _ = writeln!(out, "{out_prefix}{path}{sep}{ln}{sep}{content}{def}");
-                } else {
-                    let _ = writeln!(out, "{out_prefix}{path}{sep}{content}{def}");
-                }
-                prev = Some(ln);
-                first_group = false;
-                any = true;
-            }
-        }
-        return Some((out, if any { 0 } else { 1 }));
-    }
-
-    let mut any = false;
-    let mut file_offset = 0usize;
-    loop {
-        let opts = grep_opts(gmode, file_offset, req.files_only, smart);
-        let result = grep(&parsed, &opts);
-        if result.regex_fallback_error.is_some() {
-            return None;
-        }
-        if req.files_only {
-            for f in &result.files {
-                let Some(path) = scoped_path(f) else {
-                    continue;
-                };
-                if keep(&path) {
-                    let _ = writeln!(out, "{out_prefix}{path}");
-                    any = true;
-                }
-            }
-        } else {
-            for m in &result.matches {
-                let f = result.files[m.file_index];
-                let Some(path) = scoped_path(f) else {
-                    continue;
-                };
-                if !keep(&path) {
-                    continue;
-                }
-                if req.only_matching {
-                    if m.line_content.len() >= 509 || m.line_content.contains('�') {
-                        return None;
-                    }
-                    for &(start, end) in &m.match_byte_offsets {
-                        let text = m.line_content.get(start as usize..end as usize)?;
-                        if req.line_numbers {
-                            let _ = writeln!(out, "{out_prefix}{path}:{}:{text}", m.line_number);
-                        } else {
-                            let _ = writeln!(out, "{out_prefix}{path}:{text}");
-                        }
-                        any = true;
-                    }
-                    continue;
-                }
-                // fff caps line_content at 512 B (MAX_LINE_DISPLAY_LEN, backed up
-                // to a char boundary -> [509,512]) and lossily replaces invalid
-                // UTF-8 with U+FFFD. A 512-byte preview is the right thing for an
-                // agent (a full minified line is context-noise) — so serve it with
-                // an explicit marker (parser-safe trailing text) rather than the
-                // silent cut fff/OpenCode emit. Non-UTF-8 (U+FFFD) still defers:
-                // raw bytes can't be represented as a String.
-                if !is_fuzzy && (m.line_content.contains('\u{FFFD}') || m.line_content.len() >= 509)
-                {
-                    return None;
-                }
-                let mark = if m.line_content.len() >= 509 {
-                    TRUNC_MARK
-                } else {
-                    ""
-                };
-                // Fuzzy matches are approximate — tag every line so a copied line
-                // still reads as approximate (reinforces the header).
-                let approx = if is_fuzzy { APPROX_MARK } else { "" };
-                // Advisory definition hint (navigation), like fff-mcp's def hinting
-                // — only where the searched literal symbol is actually defined.
-                let def = if is_plain
-                    && line_defines(&m.line_content, &req.pattern)
-                    && (m.is_definition || is_variable_definition(&m.line_content))
-                {
-                    DEF_MARK
-                } else {
-                    ""
-                };
-                if req.line_numbers {
-                    let _ = writeln!(
-                        out,
-                        "{}{}:{}:{}{}{}{}",
-                        out_prefix, path, m.line_number, m.line_content, mark, def, approx
-                    );
-                } else {
-                    let _ = writeln!(
-                        out,
-                        "{}{}:{}{}{}{}",
-                        out_prefix, path, m.line_content, mark, def, approx
-                    );
-                }
-                any = true;
-            }
-        }
-        if is_fuzzy || result.next_file_offset == 0 {
-            break;
-        }
-        file_offset = result.next_file_offset;
-    }
-    Some((out, if any { 0 } else { 1 }))
-}
-
-fn grep_opts(
-    mode: GrepMode,
-    file_offset: usize,
-    files_only: bool,
-    smart_case: bool,
-) -> GrepSearchOptions {
-    GrepSearchOptions {
-        max_file_size: 10 * 1024 * 1024,
-        max_matches_per_file: if files_only { 1 } else { 1_000_000 },
-        smart_case,
-        file_offset,
-        page_limit: 1_000_000,
-        mode,
-        time_budget_ms: 0,
-        before_context: 0,
-        after_context: 0,
-        classify_definitions: true,
-        trim_whitespace: false,
-        abort_signal: None,
-        ..Default::default()
-    }
 }
 
 /// Re-exec the real embedded tool via the claude binary (argv0 multicall).
@@ -1772,10 +1302,7 @@ fn capture_embedded(
         cmd.args(args);
         cmd.arg0(tool.embedded_argv0());
         if let Ok(out) = cmd.output() {
-            return Some((
-                String::from_utf8_lossy(&out.stdout).into_owned(),
-                out.status.code().unwrap_or(1),
-            ));
+            return Some((String::from_utf8(out.stdout).ok()?, out.status.code()?));
         }
     }
     let sys = match tool {
@@ -1784,10 +1311,7 @@ fn capture_embedded(
         _ => "rg",
     };
     let out = Command::new(sys).args(args).output().ok()?;
-    Some((
-        String::from_utf8_lossy(&out.stdout).into_owned(),
-        out.status.code().unwrap_or(1),
-    ))
+    Some((String::from_utf8(out.stdout).ok()?, out.status.code()?))
 }
 
 /// fff fuzzy filename suggestions for a `find -name` that matched nothing — fff's
@@ -1796,7 +1320,6 @@ fn capture_embedded(
 /// clearly-approximate block (raw text the model reads — shell-find only, so a label
 /// line is safe). None when there's nothing good to suggest.
 fn fuzzy_file_suggestions(q: &FindNameQuery, n: usize) -> Option<String> {
-    use std::fmt::Write as _;
     let needle = q.name.trim_matches('*');
     if needle.len() < 2 {
         return None;
@@ -1850,23 +1373,59 @@ fn fuzzy_file_suggestions(q: &FindNameQuery, n: usize) -> Option<String> {
 }
 
 fn fallback(tool: Tool, args: &[String], claude_bin: Option<&str>) -> ! {
+    fallback_native(
+        tool,
+        &args.iter().map(OsString::from).collect::<Vec<_>>(),
+        claude_bin.map(OsStr::new),
+    )
+}
+
+fn fallback_opaque(argv: &[OsString]) -> ! {
+    let tool = argv
+        .first()
+        .and_then(|argument| Path::new(argument).file_name())
+        .and_then(OsStr::to_str)
+        .map(Tool::from_argv0)
+        .unwrap_or(Tool::Fff);
+    let mut operands = false;
+    let mut claude_bin = None;
+    let mut args = Vec::new();
+    for argument in argv.iter().skip(1) {
+        if argument == "--" {
+            operands = true;
+        }
+        if !operands {
+            if let Some(value) = argument.as_bytes().strip_prefix(b"--fff-claude-bin=") {
+                claude_bin = Some(OsString::from_vec(value.to_vec()));
+                continue;
+            }
+            if argument == "--no-fallback" {
+                NO_FALLBACK.store(true, std::sync::atomic::Ordering::Relaxed);
+                continue;
+            }
+            if argument == "--fuzzy" || argument == "--daemon" {
+                continue;
+            }
+        }
+        args.push(argument.clone());
+    }
+    fallback_native(tool, &args, claude_bin.as_deref())
+}
+
+fn fallback_native(tool: Tool, args: &[OsString], claude_bin: Option<&OsStr>) -> ! {
     if NO_FALLBACK.load(std::sync::atomic::Ordering::Relaxed) {
         std::process::exit(2);
     }
     use std::os::unix::process::CommandExt;
 
     let claude = claude_bin
-        .map(String::from)
+        .map(OsStr::to_os_string)
         .filter(|p| Path::new(p).exists())
+        .or_else(|| std::env::var_os("CLAUDE_CODE_EXECPATH").filter(|p| Path::new(p).exists()))
         .or_else(|| {
-            std::env::var("CLAUDE_CODE_EXECPATH")
-                .ok()
-                .filter(|p| Path::new(p).exists())
-        })
-        .or_else(|| {
-            let h = std::env::var("HOME").ok()?;
-            let p = format!("{h}/.local/bin/claude");
-            Path::new(&p).exists().then_some(p)
+            let h = std::env::var_os("HOME")?;
+            let p = Path::new(&h).join(".local/bin/claude");
+            p.exists().then(|| p.into_os_string())
         });
 
     let a0 = tool.embedded_argv0();
@@ -1894,6 +1453,10 @@ fn fallback(tool: Tool, args: &[String], claude_bin: Option<&str>) -> ! {
 mod tests {
     use super::*;
 
+    fn line_defines(line: &str, pattern: &str) -> bool {
+        search::line_defines(line, pattern, false)
+    }
+
     // Build an Opts for eligibility tests. recursive defaults true (so the ugrep
     // -r gate doesn't mask other checks); ere mirrors the real default.
     fn opts(tool: Tool, pat: &str, paths: &[&str]) -> Opts {
@@ -1918,7 +1481,6 @@ mod tests {
             globs: Vec::new(),
             exclude_dirs: Vec::new(),
             include_exts: Vec::new(),
-            fff_first: false,
             no_fallback: false,
             claude_bin: None,
             force_fallback: false,
@@ -2193,16 +1755,14 @@ mod tests {
         // -i (any case) routes to Regex (served via a (?i) prefix)
         let mut lo = opts(Tool::Ugrep, "showdiff", &["src"]);
         lo.ignore_case = true;
-        assert!(matches!(search_mode(&lo, false), Some(Regex)));
+        assert!(matches!(search_mode(&lo, false), None));
         let mut up = opts(Tool::Ugrep, "ShowDiff", &["src"]);
         up.ignore_case = true;
-        assert!(matches!(search_mode(&up, false), Some(Regex)));
+        assert!(matches!(search_mode(&up, false), None));
     }
 
     fn p(tool: Tool, args: &[&str]) -> Opts {
-        let mut o = parse(tool, args.iter().map(|s| s.to_string()).collect());
-        o.fff_first = false; // deterministic: parse-tests don't depend on the env default
-        o
+        parse(tool, args.iter().map(|s| s.to_string()).collect())
     }
 
     #[test]
@@ -2300,36 +1860,37 @@ mod tests {
     }
 
     #[test]
-    fn fff_first_serves_re2_for_ugrep_but_keeps_correctness_gates() {
-        use Mode::*;
-        // "fn_a+b": byte-equiv ugrep sees no BRE meta -> literal Plain; fff-first
-        // sees ERE '+' -> RE2 Regex (the model's intent).
-        let mut p = opts(Tool::Ugrep, "fn_a+b", &["src"]);
-        assert!(matches!(search_mode(&p, false), Some(Plain)));
-        p.fff_first = true;
-        assert!(matches!(search_mode(&p, false), Some(Regex)));
-        // alternation/groups: literal in BRE, regex in fff-first
-        let mut alt = opts(Tool::Ugrep, "Grep(Match|Result)", &["src"]);
-        assert!(matches!(search_mode(&alt, false), Some(Plain)));
-        alt.fff_first = true;
-        assert!(matches!(search_mode(&alt, false), Some(Regex)));
-        // CORRECTNESS GATES STILL APPLY in fff-first:
-        // \s can match the newline -> defer
-        let mut ws = opts(Tool::Ugrep, "fn\\s+x", &["src"]);
-        ws.fff_first = true;
-        assert!(search_mode(&ws, false).is_none());
-        // empty-matching (a* matches the empty string) -> defer
-        let mut em = opts(Tool::Ugrep, "a*", &["src"]);
-        em.fff_first = true;
-        assert!(search_mode(&em, false).is_none());
-        // non-ascii -> defer; ugrep without -r -> defer (unchanged by fff-first)
-        let mut na = opts(Tool::Ugrep, "café+", &["src"]);
-        na.fff_first = true;
-        assert!(search_mode(&na, false).is_none());
-        let mut nr = opts(Tool::Ugrep, "a+b", &["src"]);
-        nr.fff_first = true;
-        nr.recursive = false;
-        assert!(search_mode(&nr, false).is_none());
+    fn managed_grep_preserves_requested_dialect() {
+        for pattern in ["fn_a+b", "Grep(Match|Result)"] {
+            let basic = opts(Tool::Ugrep, pattern, &["src"]);
+            assert!(matches!(search_mode(&basic, false), Some(Mode::Plain)));
+            let mut extended = basic;
+            extended.ere = true;
+            assert!(matches!(search_mode(&extended, false), Some(Mode::Regex)));
+        }
+        for pattern in [r"needle\|other", r"\(needle\)", r"needle\{2\}"] {
+            assert!(search_mode(&opts(Tool::Ugrep, pattern, &["src"]), false).is_none());
+        }
+    }
+
+    #[test]
+    fn exact_search_defers_control_characters() {
+        for pattern in ["abc\ndef", "\rabc", "abc\r", "abc\tdef", "abc\0def"] {
+            let mut query = opts(Tool::Rg, pattern, &[]);
+            query.fixed = true;
+            assert!(search_mode(&query, false).is_none());
+        }
+    }
+
+    #[test]
+    fn managed_counts_use_native_zero_and_empty_file_semantics() {
+        for flag in ["-rc", "-rcl", "-rlc", "-roc"] {
+            assert!(search_mode(&p(Tool::Ugrep, &[flag, "needle"]), false).is_none());
+        }
+        assert!(matches!(
+            search_mode(&p(Tool::Rg, &["-c", "needle"]), false),
+            Some(Mode::Plain)
+        ));
     }
 
     #[test]
@@ -2337,17 +1898,17 @@ mod tests {
         // "a+b": literal in BRE (escape the +) but a regex in ERE (keep the +).
         let mut lit = opts(Tool::Ugrep, "a+b", &["src"]);
         lit.ignore_case = true;
-        assert_eq!(effective_pattern(&lit, Mode::Regex), "(?i)a\\+b");
+        assert_eq!(effective_pattern(&lit, Mode::Regex), "(?u:(?i)a\\+b)");
         let mut re = opts(Tool::Rg, "a+b", &["src"]);
         re.ignore_case = true;
-        assert_eq!(effective_pattern(&re, Mode::Regex), "(?i)a+b");
+        assert_eq!(effective_pattern(&re, Mode::Regex), "(?u:(?i)a+b)");
         // a literal PHRASE (no regex meta, no -i) is escaped so it matches exactly
         let phrase = opts(Tool::Ugrep, "export const", &["src"]);
-        assert_eq!(effective_pattern(&phrase, Mode::Regex), "export const");
+        assert_eq!(effective_pattern(&phrase, Mode::Regex), "(?u:export const)");
         // a phrase containing a regex-special char that is NOT a meta for the
         // dialect is escaped (BRE: + is literal -> escape it)
         let p2 = opts(Tool::Ugrep, "a+ b", &["src"]);
-        assert_eq!(effective_pattern(&p2, Mode::Regex), "a\\+ b");
+        assert_eq!(effective_pattern(&p2, Mode::Regex), "(?u:a\\+ b)");
     }
 
     #[test]

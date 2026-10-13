@@ -118,6 +118,7 @@ import { writeClearScreen } from './clearScreen';
 import { writeSessionColor } from './sessionColor';
 import { writeReadDefaultLines } from './readDefaultLines';
 import { writeSwapRipgrepForFff } from './swapRipgrepForFff';
+import { writeFffInstructionHygiene } from './fffInstructions';
 import { ensureRgFffWrapper } from '../ripgrepFff';
 import {
   writeSuppressDeferredTools,
@@ -234,6 +235,13 @@ const PATCH_DEFINITIONS = [
     group: PatchGroup.ALWAYS_APPLIED,
     description:
       'When a prompt override replaces one of Claude Code\'s identity lines, turn off the "global" cache scope that the first-party API rejects after a non-stock identity, so the prompt caches at organization scope instead. Does nothing while the identity lines are stock.',
+  },
+  {
+    id: 'fff-instruction-hygiene',
+    name: 'Remove stale fff tool guidance',
+    group: PatchGroup.ALWAYS_APPLIED,
+    description:
+      'Remove previously appended fff guidance from active saved tool descriptions without modifying session records',
   },
   {
     id: 'fix-summarize-from-here',
@@ -581,6 +589,7 @@ const PATCH_DEFINITIONS = [
     name: FFF_FEATURE_TITLE,
     group: PatchGroup.FEATURES,
     description: FFF_FEATURE_DESCRIPTION,
+    modelFacing: true,
   },
   {
     id: 'fff-bash-reads',
@@ -749,7 +758,8 @@ export const applyPatchImplementations = (
     if (
       patchFilter &&
       !patchFilter.includes(def.id) &&
-      def.id !== 'no-global-cache-scope'
+      def.id !== 'no-global-cache-scope' &&
+      def.id !== 'fff-instruction-hygiene'
     ) {
       results.push({
         id: def.id,
@@ -1137,6 +1147,9 @@ export const applyCustomization = async (
     'no-global-cache-scope': {
       fn: c =>
         writeNoGlobalCacheScope(c, pristineContent, identityOverrideApplied),
+    },
+    'fff-instruction-hygiene': {
+      fn: c => writeFffInstructionHygiene(c),
     },
     'fix-summarize-from-here': {
       fn: c => writeFixSummarizeFromHere(c),

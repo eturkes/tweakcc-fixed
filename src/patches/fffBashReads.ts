@@ -1,5 +1,6 @@
 import { escapeNonAscii } from '../utils';
 import { showDiff } from './index';
+import { hasFffShellIntegration } from './swapRipgrepForFff';
 
 export const fffViewerSetup = (directory: string, wrapper: string): string => {
   const quote = (value: string) => "'" + value.replaceAll("'", "'\\''") + "'";
@@ -29,6 +30,12 @@ export const writeFffBashReads = (
   directory: string,
   wrapper: string
 ): string | null => {
+  if (!hasFffShellIntegration(file, wrapper)) {
+    console.error(
+      'patch: fffBashReads: managed fff shell integration is required'
+    );
+    return null;
+  }
   if (file.includes('export RG_FFF_VIEWER_DIR=')) return file;
   const pattern =
     /;([$\w]+)\.push\(`eval \$\{([$\w]+)\}`\),\1\.push\(`pwd -P >\| /g;

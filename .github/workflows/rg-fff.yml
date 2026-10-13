@@ -8,9 +8,7 @@ name: Build rg-fff wrapper
 # softprops appends assets to the same release.
 
 on:
-  push:
-    tags:
-      - "v*"
+  workflow_call:
 
 permissions:
   contents: write
@@ -84,6 +82,7 @@ jobs:
       - name: Attach to release
         uses: softprops/action-gh-release@v2
         with:
+          fail_on_unmatched_files: true
           files: |
             tools/rg-fff/rg-fff-${{ matrix.target }}
             tools/rg-fff/rg-fff-${{ matrix.target }}.sha256

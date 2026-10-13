@@ -1,0 +1,1382 @@
+{
+  "schemaVersion": 1,
+  "protocol": "Four native-default-tool OAuth sessions comparing committed instruction placement/descriptions against final API and automatic-instruction render hooks; same corrected wrapper; no CLI appendix.",
+  "nativeVersion": "2.1.296",
+  "sourceBinarySha256": {
+    "baseline": "65bcfadd5505d68af493b05ccefeee029ddc4ff20f1ce6c1de7fbc816bb65aa9",
+    "candidate": "308d5c33607d3c2b07017e2d2db5f41aadd6acc488f7210e1e6f0a7233af83d5"
+  },
+  "wrapperSha256": [
+    "ac9534bb81088c22a2bc40b523a9d33b637f7455ebb428045d0a40bc28bfe11d",
+    "ac9534bb81088c22a2bc40b523a9d33b637f7455ebb428045d0a40bc28bfe11d"
+  ],
+  "protocolSourceSha256": {
+    "run.mjs": "cb732e05a292beddff6e47254d1e5daa3a353f047da7cd19e06e952c493a89a8",
+    "runtime.mjs": "adcfa25e8e9cc02d74c8d4c66a21ccb7c30d802314b1a71d4a8318d5e23852e8",
+    "proxy.mjs": "da1a098421d0365ff8b8e3e4332ff01ef1d1efe080737069f1d270c83a3b074a",
+    "evidence.mjs": "3e92831d07a8420b6478193206f6aeecc4648c9e317f471fd612a64a66dd456a",
+    "common.mjs": "db3bc8092a0060f323b0b828cbef55e08b142c38ca18a897ac44cdef61d12f9d",
+    "native-contract.v1.json": "92ab50fd1765be8fc6418911a9e09015b67220de3030beb4310497d8bd3c61bb",
+    "../core.mjs": "36b54571ae01e5428f7cdd8295b68022e321d93fbf6b15f07e960ad63b089438"
+  },
+  "tasksSha256": "2df53d283112cdc8e0301a2d6a6f149b00f5571fc4e6823d11a597cf055777ea",
+  "authMode": "account-oauth",
+  "mainToolNames": [
+    "Agent",
+    "Bash",
+    "CronCreate",
+    "CronDelete",
+    "CronList",
+    "Edit",
+    "EnterWorktree",
+    "ExitWorktree",
+    "Glob",
+    "Grep",
+    "ListAgents",
+    "NotebookEdit",
+    "Read",
+    "RemoteTrigger",
+    "ReportFindings",
+    "ScheduleWakeup",
+    "SendMessage",
+    "TaskStop",
+    "WebFetch",
+    "WebSearch",
+    "Workflow",
+    "Write"
+  ],
+  "budgets": {
+    "maxRuns": 4,
+    "maxApiRequests": 48,
+    "maxTurns": 12,
+    "timeoutSeconds": 150,
+    "outputTokens": 4096,
+    "perRunUsd": 1.1,
+    "totalUsd": 4,
+    "previousSpendUsd": 0.4550518
+  },
+  "paidNativeSessions": 4,
+  "forwardedRequests": 15,
+  "outcomeRetries": 0,
+  "reportedFinalFourCostUsd": 0.6616158,
+  "reportedAllTwelveCostUsd": 1.1166676,
+  "baselineAdoption": {
+    "sessions": 2,
+    "fffAttempts": 0,
+    "successfulHeaders": 0,
+    "returnedAndInspectedCandidateSessions": 0
+  },
+  "candidateAdoption": {
+    "sessions": 2,
+    "fffAttempts": 2,
+    "successfulHeaders": 2,
+    "returnedAndInspectedCandidateSessions": 2
+  },
+  "rows": [
+    {
+      "number": 1,
+      "taskId": "approximate-proration-filename",
+      "condition": "baseline",
+      "effort": "low",
+      "sessionSuccess": true,
+      "reportedCostUsd": 0.2573484,
+      "model": "claude-opus-5-5",
+      "requestClasses": {
+        "main": 3
+      },
+      "subagentStats": {
+        "spawned": 0,
+        "requested": {
+          "background": 0,
+          "foreground": 0,
+          "unset": 0
+        },
+        "started_in_background": 0,
+        "max_depth": 0,
+        "spawned_by_subagents": 0,
+        "completed": 0,
+        "failed": 0,
+        "killed": {
+          "parent": 0,
+          "user": 0,
+          "system": 0
+        },
+        "refused": {
+          "depth_limit": 0,
+          "concurrency_limit": 0,
+          "budget": 0
+        },
+        "by_type": {}
+      },
+      "toolSequence": [
+        "Bash",
+        "Bash"
+      ],
+      "toolCalls": [
+        {
+          "id": "toolu_01UCjVehHTHHGqSW54QKzJvN",
+          "name": "Bash",
+          "input": {
+            "command": "grep -rniE \"prorat\" --include=* -l . | grep -v .git/; grep -rn \"prorat\" -i . --exclude-dir=.git | grep -iE \"import|require\" | head"
+          },
+          "eventIndex": 2,
+          "agentId": null,
+          "parentToolUseId": null,
+          "subagentType": null
+        },
+        {
+          "id": "toolu_01RrEqmgiNvdH4618kSVX7U2",
+          "name": "Bash",
+          "input": {
+            "command": "ls src/billing/subscriptions/; cat -n src/billing/subscriptions/ProrationPolicy*; cat -n src/http/invoice.ts"
+          },
+          "eventIndex": 5,
+          "agentId": null,
+          "parentToolUseId": null,
+          "subagentType": null
+        }
+      ],
+      "toolResults": [
+        {
+          "id": "toolu_01UCjVehHTHHGqSW54QKzJvN",
+          "isError": false,
+          "content": "docs/proration-policy.md\nsrc/migrations/ProrationPolicyV1.ts\nsrc/http/invoice.ts\nsrc/http/invoice.ts:1:import { chargeUnusedPeriod } from '../billing/subscriptions/ProrationPolicy';",
+          "eventIndex": 4,
+          "agentId": null,
+          "parentToolUseId": null,
+          "subagentType": null
+        },
+        {
+          "id": "toolu_01RrEqmgiNvdH4618kSVX7U2",
+          "isError": false,
+          "content": "CancelSubscription.ts\nProrationPolicy.ts\n     1\texport function chargeUnusedPeriod(remainingDays: number, periodDays: number, monthlyCents: number) {\n     2\t  if (periodDays <= 0) throw new Error('INVALID_PERIOD');\n     3\t  if (remainingDays <= 0) return 0;\n     4\t  const billableDays = Math.min(remainingDays, periodDays);\n     5\t  return Math.ceil(monthlyCents * billableDays / periodDays);\n     6\t}\n     1\timport { chargeUnusedPeriod } from '../billing/subscriptions/ProrationPolicy';\n     2\texport function invoice(remainingDays: number, periodDays: number, monthlyCents: number) {\n     3\t  return chargeUnusedPeriod(remainingDays, periodDays, monthlyCents);\n     4\t}",
+          "eventIndex": 6,
+          "agentId": null,
+          "parentToolUseId": null,
+          "subagentType": null
+        }
+      ],
+      "fff": [],
+      "coreGuidancePresent": [
+        false,
+        false,
+        false
+      ],
+      "factChecks": [
+        {
+          "fact": "Invoice imports and calls chargeUnusedPeriod from the current ProrationPolicy.",
+          "status": "pass",
+          "source": [
+            "src/http/invoice.ts:1",
+            "src/http/invoice.ts:3"
+          ]
+        },
+        {
+          "fact": "7/30 of 999 cents is 233.1; Math.ceil returns 234 cents.",
+          "status": "pass",
+          "source": [
+            "src/billing/subscriptions/ProrationPolicy.ts:5"
+          ]
+        },
+        {
+          "fact": "Rounding uses Math.ceil after clipping remaining days to periodDays.",
+          "status": "pass",
+          "source": [
+            "src/billing/subscriptions/ProrationPolicy.ts:4",
+            "src/billing/subscriptions/ProrationPolicy.ts:5"
+          ]
+        },
+        {
+          "fact": "Zero or negative periodDays throws Error('INVALID_PERIOD') before the remaining-days check.",
+          "status": "pass",
+          "source": [
+            "src/billing/subscriptions/ProrationPolicy.ts:2",
+            "src/billing/subscriptions/ProrationPolicy.ts:3"
+          ]
+        }
+      ],
+      "unsupportedOrOverstatedExtras": [
+        {
+          "claim": "The charge can never exceed the full monthly price.",
+          "status": "overgeneralized",
+          "reason": "The number-typed input has no integer constraint. A full period with monthlyCents=999.5 returns 1000, exceeding 999.5.",
+          "source": [
+            "src/billing/subscriptions/ProrationPolicy.ts:1",
+            "src/billing/subscriptions/ProrationPolicy.ts:5"
+          ]
+        }
+      ],
+      "limitations": [],
+      "answer": "The policy invoice handling uses is `chargeUnusedPeriod` in `src/billing/subscriptions/ProrationPolicy.ts` (note the spelling \"Proration\", not \"proraton\"). `src/http/invoice.ts:1-3` imports it and passes its arguments straight through.\n\n**Charge for 7 remaining days, a 30-day period and 999 cents: 234 cents.**\n- 999 \u00d7 7 / 30 = 233.1, which rounds up to 234.\n\n**Rounding rule** (`ProrationPolicy.ts:4-5`):\n- Remaining days are first capped at the period length: `billableDays = Math.min(remainingDays, periodDays)`. The charge can never be more than the full monthly price.\n- The charge is `Math.ceil(monthlyCents * billableDays / periodDays)`. Any fraction of a cent always rounds **up**, not to the nearest cent.\n- If remaining days are 0 or negative, it returns 0 without doing the calculation (`:3`).\n\n**Zero-length period** (`:2`): if `periodDays <= 0`, it throws `Error('INVALID_PERIOD')` and returns no charge. This check runs first, so it throws even when remaining days are 0.\n\nThere are two other files with similar names that invoice handling does not use: `src/migrations/ProrationPolicyV1.ts` and `docs/proration-policy.md`. I didn't check them, so they may describe different behaviour. I made no changes to any files.",
+      "requiredSourceReads": [
+        {
+          "file": "src/http/invoice.ts",
+          "printedSourceLines": [
+            1,
+            2,
+            3
+          ],
+          "evidence": [
+            {
+              "path": "src/http/invoice.ts",
+              "line": 1,
+              "text": "import { chargeUnusedPeriod } from '../billing/subscriptions/ProrationPolicy';",
+              "toolUseId": "toolu_01RrEqmgiNvdH4618kSVX7U2",
+              "kind": "Bash viewer",
+              "agentId": null,
+              "parentToolUseId": null
+            },
+            {
+              "path": "src/http/invoice.ts",
+              "line": 2,
+              "text": "export function invoice(remainingDays: number, periodDays: number, monthlyCents: number) {",
+              "toolUseId": "toolu_01RrEqmgiNvdH4618kSVX7U2",
+              "kind": "Bash viewer",
+              "agentId": null,
+              "parentToolUseId": null
+            },
+            {
+              "path": "src/http/invoice.ts",
+              "line": 3,
+              "text": "  return chargeUnusedPeriod(remainingDays, periodDays, monthlyCents);",
+              "toolUseId": "toolu_01RrEqmgiNvdH4618kSVX7U2",
+              "kind": "Bash viewer",
+              "agentId": null,
+              "parentToolUseId": null
+            }
+          ]
+        },
+        {
+          "file": "src/billing/subscriptions/ProrationPolicy.ts",
+          "printedSourceLines": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "evidence": [
+            {
+              "path": "src/billing/subscriptions/ProrationPolicy.ts",
+              "line": 1,
+              "text": "export function chargeUnusedPeriod(remainingDays: number, periodDays: number, monthlyCents: number) {",
+              "toolUseId": "toolu_01RrEqmgiNvdH4618kSVX7U2",
+              "kind": "Manual verified Bash glob operand",
+              "viewerOperand": "src/billing/subscriptions/ProrationPolicy*",
+              "resolvedMatches": [
+                "src/billing/subscriptions/ProrationPolicy.ts"
+              ],
+              "agentId": null,
+              "parentToolUseId": null
+            },
+            {
+              "path": "src/billing/subscriptions/ProrationPolicy.ts",
+              "line": 2,
+              "text": "  if (periodDays <= 0) throw new Error('INVALID_PERIOD');",
+              "toolUseId": "toolu_01RrEqmgiNvdH4618kSVX7U2",
+              "kind": "Manual verified Bash glob operand",
+              "viewerOperand": "src/billing/subscriptions/ProrationPolicy*",
+              "resolvedMatches": [
+                "src/billing/subscriptions/ProrationPolicy.ts"
+              ],
+              "agentId": null,
+              "parentToolUseId": null
+            },
+            {
+              "path": "src/billing/subscriptions/ProrationPolicy.ts",
+              "line": 3,
+              "text": "  if (remainingDays <= 0) return 0;",
+              "toolUseId": "toolu_01RrEqmgiNvdH4618kSVX7U2",
+              "kind": "Manual verified Bash glob operand",
+              "viewerOperand": "src/billing/subscriptions/ProrationPolicy*",
+              "resolvedMatches": [
+                "src/billing/subscriptions/ProrationPolicy.ts"
+              ],
+              "agentId": null,
+              "parentToolUseId": null
+            },
+            {
+              "path": "src/billing/subscriptions/ProrationPolicy.ts",
+              "line": 4,
+              "text": "  const billableDays = Math.min(remainingDays, periodDays);",
+              "toolUseId": "toolu_01RrEqmgiNvdH4618kSVX7U2",
+              "kind": "Manual verified Bash glob operand",
+              "viewerOperand": "src/billing/subscriptions/ProrationPolicy*",
+              "resolvedMatches": [
+                "src/billing/subscriptions/ProrationPolicy.ts"
+              ],
+              "agentId": null,
+              "parentToolUseId": null
+            },
+            {
+              "path": "src/billing/subscriptions/ProrationPolicy.ts",
+              "line": 5,
+              "text": "  return Math.ceil(monthlyCents * billableDays / periodDays);",
+              "toolUseId": "toolu_01RrEqmgiNvdH4618kSVX7U2",
+              "kind": "Manual verified Bash glob operand",
+              "viewerOperand": "src/billing/subscriptions/ProrationPolicy*",
+              "resolvedMatches": [
+                "src/billing/subscriptions/ProrationPolicy.ts"
+              ],
+              "agentId": null,
+              "parentToolUseId": null
+            }
+          ]
+        }
+      ],
+      "manualEvidenceSupplement": [
+        {
+          "path": "src/billing/subscriptions/ProrationPolicy.ts",
+          "line": 1,
+          "text": "export function chargeUnusedPeriod(remainingDays: number, periodDays: number, monthlyCents: number) {",
+          "toolUseId": "toolu_01RrEqmgiNvdH4618kSVX7U2",
+          "kind": "Manual verified Bash glob operand",
+          "viewerOperand": "src/billing/subscriptions/ProrationPolicy*",
+          "resolvedMatches": [
+            "src/billing/subscriptions/ProrationPolicy.ts"
+          ],
+          "agentId": null,
+          "parentToolUseId": null
+        },
+        {
+          "path": "src/billing/subscriptions/ProrationPolicy.ts",
+          "line": 2,
+          "text": "  if (periodDays <= 0) throw new Error('INVALID_PERIOD');",
+          "toolUseId": "toolu_01RrEqmgiNvdH4618kSVX7U2",
+          "kind": "Manual verified Bash glob operand",
+          "viewerOperand": "src/billing/subscriptions/ProrationPolicy*",
+          "resolvedMatches": [
+            "src/billing/subscriptions/ProrationPolicy.ts"
+          ],
+          "agentId": null,
+          "parentToolUseId": null
+        },
+        {
+          "path": "src/billing/subscriptions/ProrationPolicy.ts",
+          "line": 3,
+          "text": "  if (remainingDays <= 0) return 0;",
+          "toolUseId": "toolu_01RrEqmgiNvdH4618kSVX7U2",
+          "kind": "Manual verified Bash glob operand",
+          "viewerOperand": "src/billing/subscriptions/ProrationPolicy*",
+          "resolvedMatches": [
+            "src/billing/subscriptions/ProrationPolicy.ts"
+          ],
+          "agentId": null,
+          "parentToolUseId": null
+        },
+        {
+          "path": "src/billing/subscriptions/ProrationPolicy.ts",
+          "line": 4,
+          "text": "  const billableDays = Math.min(remainingDays, periodDays);",
+          "toolUseId": "toolu_01RrEqmgiNvdH4618kSVX7U2",
+          "kind": "Manual verified Bash glob operand",
+          "viewerOperand": "src/billing/subscriptions/ProrationPolicy*",
+          "resolvedMatches": [
+            "src/billing/subscriptions/ProrationPolicy.ts"
+          ],
+          "agentId": null,
+          "parentToolUseId": null
+        },
+        {
+          "path": "src/billing/subscriptions/ProrationPolicy.ts",
+          "line": 5,
+          "text": "  return Math.ceil(monthlyCents * billableDays / periodDays);",
+          "toolUseId": "toolu_01RrEqmgiNvdH4618kSVX7U2",
+          "kind": "Manual verified Bash glob operand",
+          "viewerOperand": "src/billing/subscriptions/ProrationPolicy*",
+          "resolvedMatches": [
+            "src/billing/subscriptions/ProrationPolicy.ts"
+          ],
+          "agentId": null,
+          "parentToolUseId": null
+        }
+      ],
+      "toolWarnings": [],
+      "fixtureUnchanged": true,
+      "possiblePromptPersistenceArtifacts": [],
+      "noSpeedClaim": true
+    },
+    {
+      "number": 2,
+      "taskId": "approximate-proration-filename",
+      "condition": "candidate",
+      "effort": "low",
+      "sessionSuccess": true,
+      "reportedCostUsd": 0.2578476,
+      "model": "claude-opus-5-5",
+      "requestClasses": {
+        "main": 3
+      },
+      "subagentStats": {
+        "spawned": 0,
+        "requested": {
+          "background": 0,
+          "foreground": 0,
+          "unset": 0
+        },
+        "started_in_background": 0,
+        "max_depth": 0,
+        "spawned_by_subagents": 0,
+        "completed": 0,
+        "failed": 0,
+        "killed": {
+          "parent": 0,
+          "user": 0,
+          "system": 0
+        },
+        "refused": {
+          "depth_limit": 0,
+          "concurrency_limit": 0,
+          "budget": 0
+        },
+        "by_type": {}
+      },
+      "toolSequence": [
+        "Bash",
+        "Bash"
+      ],
+      "toolCalls": [
+        {
+          "id": "toolu_01HzZVRcTWPZSAiSsrNe3GoE",
+          "name": "Bash",
+          "input": {
+            "command": "fff files 'billing proration policy'; grep -rn -i \"prorat\" --include=* . | grep -v .git/ | head -30"
+          },
+          "eventIndex": 2,
+          "agentId": null,
+          "parentToolUseId": null,
+          "subagentType": null
+        },
+        {
+          "id": "toolu_01XJCmHfW8PStycPR8uH84bB",
+          "name": "Bash",
+          "input": {
+            "command": "cat -n src/billing/subscriptions/ProrationPolicy.ts; cat -n src/http/invoice.ts"
+          },
+          "eventIndex": 5,
+          "agentId": null,
+          "parentToolUseId": null,
+          "subagentType": null
+        }
+      ],
+      "toolResults": [
+        {
+          "id": "toolu_01HzZVRcTWPZSAiSsrNe3GoE",
+          "isError": false,
+          "content": "# fff: ranked fuzzy filenames; verify candidate files by reading them\nsrc/billing/subscriptions/ProrationPolicy.ts [modified] -> Read\nsrc/billing/accounts/AllocationPolicy.ts [modified] -> Read\nsrc/billing/subscriptions/CancelSubscription.ts [modified] -> Read\ndocs/proration-policy.md:2:ProrationPolicyV1 is migration-only.\nsrc/migrations/ProrationPolicyV1.ts:2:export function oldProratedCharge(days: number, period: number, cents: number) {\nsrc/http/invoice.ts:1:import { chargeUnusedPeriod } from '../billing/subscriptions/ProrationPolicy';",
+          "eventIndex": 4,
+          "agentId": null,
+          "parentToolUseId": null,
+          "subagentType": null
+        },
+        {
+          "id": "toolu_01XJCmHfW8PStycPR8uH84bB",
+          "isError": false,
+          "content": "     1\texport function chargeUnusedPeriod(remainingDays: number, periodDays: number, monthlyCents: number) {\n     2\t  if (periodDays <= 0) throw new Error('INVALID_PERIOD');\n     3\t  if (remainingDays <= 0) return 0;\n     4\t  const billableDays = Math.min(remainingDays, periodDays);\n     5\t  return Math.ceil(monthlyCents * billableDays / periodDays);\n     6\t}\n     1\timport { chargeUnusedPeriod } from '../billing/subscriptions/ProrationPolicy';\n     2\texport function invoice(remainingDays: number, periodDays: number, monthlyCents: number) {\n     3\t  return chargeUnusedPeriod(remainingDays, periodDays, monthlyCents);\n     4\t}",
+          "eventIndex": 6,
+          "agentId": null,
+          "parentToolUseId": null,
+          "subagentType": null
+        }
+      ],
+      "fff": [
+        {
+          "id": "toolu_01HzZVRcTWPZSAiSsrNe3GoE",
+          "command": "fff files 'billing proration policy'; grep -rn -i \"prorat\" --include=* . | grep -v .git/ | head -30",
+          "agentId": null,
+          "parentToolUseId": null,
+          "isError": false,
+          "successfulHeader": true,
+          "candidates": [
+            "src/billing/subscriptions/ProrationPolicy.ts",
+            "src/billing/accounts/AllocationPolicy.ts",
+            "src/billing/subscriptions/CancelSubscription.ts"
+          ],
+          "inspectedCandidatePaths": [
+            "src/billing/subscriptions/ProrationPolicy.ts"
+          ],
+          "inspectedSameAgentCandidatePaths": [
+            "src/billing/subscriptions/ProrationPolicy.ts"
+          ]
+        }
+      ],
+      "coreGuidancePresent": [
+        true,
+        true,
+        true
+      ],
+      "factChecks": [
+        {
+          "fact": "Invoice imports and calls chargeUnusedPeriod from the current ProrationPolicy.",
+          "status": "pass",
+          "source": [
+            "src/http/invoice.ts:1",
+            "src/http/invoice.ts:3"
+          ]
+        },
+        {
+          "fact": "7/30 of 999 cents is 233.1; Math.ceil returns 234 cents.",
+          "status": "pass",
+          "source": [
+            "src/billing/subscriptions/ProrationPolicy.ts:5"
+          ]
+        },
+        {
+          "fact": "Rounding uses Math.ceil after clipping remaining days to periodDays.",
+          "status": "pass",
+          "source": [
+            "src/billing/subscriptions/ProrationPolicy.ts:4",
+            "src/billing/subscriptions/ProrationPolicy.ts:5"
+          ]
+        },
+        {
+          "fact": "Zero or negative periodDays throws Error('INVALID_PERIOD') before the remaining-days check.",
+          "status": "pass",
+          "source": [
+            "src/billing/subscriptions/ProrationPolicy.ts:2",
+            "src/billing/subscriptions/ProrationPolicy.ts:3"
+          ]
+        }
+      ],
+      "unsupportedOrOverstatedExtras": [
+        {
+          "claim": "The charge can never exceed the full monthly price.",
+          "status": "overgeneralized",
+          "reason": "The number-typed input has no integer constraint. A full period with monthlyCents=999.5 returns 1000, exceeding 999.5.",
+          "source": [
+            "src/billing/subscriptions/ProrationPolicy.ts:1",
+            "src/billing/subscriptions/ProrationPolicy.ts:5"
+          ]
+        }
+      ],
+      "limitations": [
+        "FFF and content grep ran in the same Bash command, so the subsequent policy choice cannot be attributed uniquely to FFF."
+      ],
+      "answer": "The policy your teammate meant is spelled **Proration**, not \"proraton\". Invoice handling uses `chargeUnusedPeriod` in `src/billing/subscriptions/ProrationPolicy.ts`. It's imported and called directly in `src/http/invoice.ts:1-3`.\n\n**Charge for 7 remaining days, a 30-day period and 999 monthly cents: 234 cents.**\n999 \u00d7 7 / 30 = 233.1, which rounds up to 234 (`ProrationPolicy.ts:5`).\n\n**Rounding rule** (`ProrationPolicy.ts:3-5`):\n- The charge is `Math.ceil(monthlyCents * billableDays / periodDays)`, so any fractional cent always rounds **up**, in the customer's disfavor.\n- Remaining days are capped at the period length (`billableDays = Math.min(remainingDays, periodDays)`), so the charge can never exceed the monthly amount.\n- If remaining days are zero or negative, the charge is `0`.\n\n**Zero-length period** (`ProrationPolicy.ts:2`): a `periodDays` of 0 or less throws `Error('INVALID_PERIOD')`. It does not return 0 and does not divide by zero. This check runs before the remaining-days check.\n\nThere's also `src/migrations/ProrationPolicyV1.ts` (`oldProratedCharge`), but `docs/proration-policy.md:2` says V1 is migration-only, and invoice handling doesn't use it. I didn't modify any files.",
+      "requiredSourceReads": [
+        {
+          "file": "src/http/invoice.ts",
+          "printedSourceLines": [
+            1,
+            2,
+            3
+          ],
+          "evidence": [
+            {
+              "path": "src/http/invoice.ts",
+              "line": 1,
+              "text": "import { chargeUnusedPeriod } from '../billing/subscriptions/ProrationPolicy';",
+              "toolUseId": "toolu_01XJCmHfW8PStycPR8uH84bB",
+              "kind": "Bash viewer",
+              "agentId": null,
+              "parentToolUseId": null
+            },
+            {
+              "path": "src/http/invoice.ts",
+              "line": 2,
+              "text": "export function invoice(remainingDays: number, periodDays: number, monthlyCents: number) {",
+              "toolUseId": "toolu_01XJCmHfW8PStycPR8uH84bB",
+              "kind": "Bash viewer",
+              "agentId": null,
+              "parentToolUseId": null
+            },
+            {
+              "path": "src/http/invoice.ts",
+              "line": 3,
+              "text": "  return chargeUnusedPeriod(remainingDays, periodDays, monthlyCents);",
+              "toolUseId": "toolu_01XJCmHfW8PStycPR8uH84bB",
+              "kind": "Bash viewer",
+              "agentId": null,
+              "parentToolUseId": null
+            }
+          ]
+        },
+        {
+          "file": "src/billing/subscriptions/ProrationPolicy.ts",
+          "printedSourceLines": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "evidence": [
+            {
+              "path": "src/billing/subscriptions/ProrationPolicy.ts",
+              "line": 1,
+              "text": "export function chargeUnusedPeriod(remainingDays: number, periodDays: number, monthlyCents: number) {",
+              "toolUseId": "toolu_01XJCmHfW8PStycPR8uH84bB",
+              "kind": "Bash viewer",
+              "agentId": null,
+              "parentToolUseId": null
+            },
+            {
+              "path": "src/billing/subscriptions/ProrationPolicy.ts",
+              "line": 2,
+              "text": "  if (periodDays <= 0) throw new Error('INVALID_PERIOD');",
+              "toolUseId": "toolu_01XJCmHfW8PStycPR8uH84bB",
+              "kind": "Bash viewer",
+              "agentId": null,
+              "parentToolUseId": null
+            },
+            {
+              "path": "src/billing/subscriptions/ProrationPolicy.ts",
+              "line": 3,
+              "text": "  if (remainingDays <= 0) return 0;",
+              "toolUseId": "toolu_01XJCmHfW8PStycPR8uH84bB",
+              "kind": "Bash viewer",
+              "agentId": null,
+              "parentToolUseId": null
+            },
+            {
+              "path": "src/billing/subscriptions/ProrationPolicy.ts",
+              "line": 4,
+              "text": "  const billableDays = Math.min(remainingDays, periodDays);",
+              "toolUseId": "toolu_01XJCmHfW8PStycPR8uH84bB",
+              "kind": "Bash viewer",
+              "agentId": null,
+              "parentToolUseId": null
+            },
+            {
+              "path": "src/billing/subscriptions/ProrationPolicy.ts",
+              "line": 5,
+              "text": "  return Math.ceil(monthlyCents * billableDays / periodDays);",
+              "toolUseId": "toolu_01XJCmHfW8PStycPR8uH84bB",
+              "kind": "Bash viewer",
+              "agentId": null,
+              "parentToolUseId": null
+            }
+          ]
+        }
+      ],
+      "manualEvidenceSupplement": [],
+      "toolWarnings": [],
+      "fixtureUnchanged": true,
+      "possiblePromptPersistenceArtifacts": [],
+      "noSpeedClaim": true
+    },
+    {
+      "number": 3,
+      "taskId": "unhelpful-filename-cue",
+      "condition": "candidate",
+      "effort": "medium",
+      "sessionSuccess": true,
+      "reportedCostUsd": 0.0801086,
+      "model": "claude-opus-5-5",
+      "requestClasses": {
+        "main": 5
+      },
+      "subagentStats": {
+        "spawned": 0,
+        "requested": {
+          "background": 0,
+          "foreground": 0,
+          "unset": 0
+        },
+        "started_in_background": 0,
+        "max_depth": 0,
+        "spawned_by_subagents": 0,
+        "completed": 0,
+        "failed": 0,
+        "killed": {
+          "parent": 0,
+          "user": 0,
+          "system": 0
+        },
+        "refused": {
+          "depth_limit": 0,
+          "concurrency_limit": 0,
+          "budget": 0
+        },
+        "by_type": {}
+      },
+      "toolSequence": [
+        "Bash",
+        "Bash",
+        "Bash",
+        "Grep"
+      ],
+      "toolCalls": [
+        {
+          "id": "toolu_01RWur7XNev4RYigRKHX2CE8",
+          "name": "Bash",
+          "input": {
+            "command": "cd $FIXTURE; fff files 'pause' 2>&1 | head -20; git ls-files | head -100"
+          },
+          "eventIndex": 2,
+          "agentId": null,
+          "parentToolUseId": null,
+          "subagentType": null
+        },
+        {
+          "id": "toolu_01RV8c9J5t1EWNJGD6eQGZZP",
+          "name": "Bash",
+          "input": {
+            "command": "cd $FIXTURE; find . -type f -not -path './.git/*' | head -50; for f in docs/pause.md src/old/pause.ts src/ui/PauseButton.ts; do echo \"=== $f\"; cat -n $f; done"
+          },
+          "eventIndex": 5,
+          "agentId": null,
+          "parentToolUseId": null,
+          "subagentType": null
+        },
+        {
+          "id": "toolu_01F3T4PqMjqX4tgdJwTxTUmy",
+          "name": "Bash",
+          "input": {
+            "command": "cd $FIXTURE; for f in src/http/hold.ts src/core/state.ts README.md; do echo \"=== $f\"; cat -n $f; done"
+          },
+          "eventIndex": 7,
+          "agentId": null,
+          "parentToolUseId": null,
+          "subagentType": null
+        },
+        {
+          "id": "toolu_01Nikbn9Lc9UzAUEU5TzVchg",
+          "name": "Grep",
+          "input": {
+            "pattern": "pauseJob|holdJob|transition",
+            "output_mode": "content"
+          },
+          "eventIndex": 10,
+          "agentId": null,
+          "parentToolUseId": null,
+          "subagentType": null
+        }
+      ],
+      "toolResults": [
+        {
+          "id": "toolu_01RWur7XNev4RYigRKHX2CE8",
+          "isError": false,
+          "content": "# fff: ranked fuzzy filenames; verify candidate files by reading them\ndocs/pause.md [modified] -> Read\nsrc/old/pause.ts [modified] -> Read\nsrc/ui/PauseButton.ts [modified] -> Read\ngit: error: couldn't create cache file '$SYSTEM_TEMP/xcrun_db-XnCLzAjl' (errno=Operation not permitted)\ngit: error: couldn't create cache file '$SYSTEM_TEMP/xcrun_db-nENcpXlj' (errno=Operation not permitted)",
+          "eventIndex": 4,
+          "agentId": null,
+          "parentToolUseId": null,
+          "subagentType": null
+        },
+        {
+          "id": "toolu_01RV8c9J5t1EWNJGD6eQGZZP",
+          "isError": false,
+          "content": "./README.md\n./docs/pause.md\n./src/ui/PauseButton.ts\n./src/core/state.ts\n./src/old/pause.ts\n./src/http/hold.ts\n=== docs/pause.md\n     1\t# Job pause\n     2\tThe UI pause action is implemented through holdJob; previous revisions did not validate ownership.\n=== src/old/pause.ts\n     1\texport function pauseJob(row: { active: boolean; revision: number }) {\n     2\t  return { ...row, active: false, revision: row.revision + 1 };\n     3\t}\n=== src/ui/PauseButton.ts\n     1\texport const PauseButton = { label: 'Pause', action: 'POST /hold' };",
+          "eventIndex": 6,
+          "agentId": null,
+          "parentToolUseId": null,
+          "subagentType": null
+        },
+        {
+          "id": "toolu_01F3T4PqMjqX4tgdJwTxTUmy",
+          "isError": false,
+          "content": "=== src/http/hold.ts\n     1\timport { transition } from '../core/state';\n     2\texport function holdJob(id: string, owner: string, expectedRevision: number, repository: { get(id: string): any; put(id: string, row: any): void }) {\n     3\t  const current = repository.get(id);\n     4\t  const result = transition(current, owner, expectedRevision);\n     5\t  if (result.ok) repository.put(id, result.row);\n     6\t  return result;\n     7\t}\n=== src/core/state.ts\n     1\texport function transition(current: { owner: string; revision: number; active: boolean }, owner: string, expectedRevision: number) {\n     2\t  if (current.owner !== owner) return { ok: false, reason: 'WRONG_OWNER' };\n     3\t  if (current.revision !== expectedRevision) return { ok: false, reason: 'STALE_REVISION' };\n     4\t  return { ok: true, row: { ...current, active: false, revision: current.revision + 1 } };\n     5\t}\n=== README.md\n     1\t# Beacon fixture\n     2\tSynthetic job scheduling service. No file path was supplied with the request.",
+          "eventIndex": 8,
+          "agentId": null,
+          "parentToolUseId": null,
+          "subagentType": null
+        },
+        {
+          "id": "toolu_01Nikbn9Lc9UzAUEU5TzVchg",
+          "isError": false,
+          "content": "src/http/hold.ts:1:import { transition } from '../core/state';\nsrc/http/hold.ts:2:export function holdJob(id: string, owner: string, expectedRevision: number, repository: { get(id: string): any; put(id: string, row: any): void }) {\nsrc/http/hold.ts:4:  const result = transition(current, owner, expectedRevision);\nsrc/old/pause.ts:1:export function pauseJob(row: { active: boolean; revision: number }) {\nsrc/core/state.ts:1:export function transition(current: { owner: string; revision: number; active: boolean }, owner: string, expectedRevision: number) {\ndocs/pause.md:2:The UI pause action is implemented through holdJob; previous revisions did not validate ownership.",
+          "eventIndex": 11,
+          "agentId": null,
+          "parentToolUseId": null,
+          "subagentType": null
+        }
+      ],
+      "fff": [
+        {
+          "id": "toolu_01RWur7XNev4RYigRKHX2CE8",
+          "command": "cd $FIXTURE; fff files 'pause' 2>&1 | head -20; git ls-files | head -100",
+          "agentId": null,
+          "parentToolUseId": null,
+          "isError": false,
+          "successfulHeader": true,
+          "candidates": [
+            "docs/pause.md",
+            "src/old/pause.ts",
+            "src/ui/PauseButton.ts"
+          ],
+          "inspectedCandidatePaths": [
+            "docs/pause.md",
+            "src/old/pause.ts",
+            "src/ui/PauseButton.ts"
+          ],
+          "inspectedSameAgentCandidatePaths": [
+            "docs/pause.md",
+            "src/old/pause.ts",
+            "src/ui/PauseButton.ts"
+          ]
+        }
+      ],
+      "coreGuidancePresent": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "factChecks": [
+        {
+          "fact": "Ownership is checked first, then revision.",
+          "status": "pass",
+          "source": [
+            "src/core/state.ts:2",
+            "src/core/state.ts:3"
+          ]
+        },
+        {
+          "fact": "worker-b passes ownership but stored revision 8 differs from expected 7, returning {ok:false,reason:'STALE_REVISION'}.",
+          "status": "pass",
+          "source": [
+            "src/core/state.ts:2",
+            "src/core/state.ts:3"
+          ]
+        },
+        {
+          "fact": "holdJob calls repository.put only for an ok result, so this request makes no write and leaves the stored row unchanged.",
+          "status": "pass",
+          "source": [
+            "src/http/hold.ts:4",
+            "src/http/hold.ts:5",
+            "src/http/hold.ts:6"
+          ]
+        },
+        {
+          "fact": "The current holdJob implementation calls transition, while src/old/pause.ts is an obsolete unchecked implementation.",
+          "status": "pass",
+          "source": [
+            "src/http/hold.ts:1",
+            "src/http/hold.ts:4",
+            "src/old/pause.ts:1",
+            "src/old/pause.ts:2",
+            "docs/pause.md:2"
+          ]
+        }
+      ],
+      "unsupportedOrOverstatedExtras": [],
+      "limitations": [
+        "The fixture has a static POST /hold UI action and documentation naming holdJob but no actual router registration code.",
+        "The candidate explicitly notes that the UI-to-handler router link rests on the name and documentation.",
+        "FFF returned documentation, UI and obsolete code rather than the active handler/state files; the agent inspected candidates and then read active files separately."
+      ],
+      "answer": "No, the repository write does not happen. `holdJob` returns `{ ok: false, reason: 'STALE_REVISION' }`, and the stored job stays at owner `worker-b`, revision 8, active `true`.\n\n**Active call path.** In the code, \"Pause\" is called \"hold\":\n\n1. `src/ui/PauseButton.ts:1`: the button is labeled `'Pause'` and its action is `'POST /hold'`.\n2. `src/http/hold.ts:2-7`: `holdJob(id, owner, expectedRevision, repository)` reads the stored job with `repository.get(id)` and passes it to `transition`. It only calls `repository.put` if `result.ok` is true (line 5). It returns `result` either way.\n3. `src/core/state.ts:1-5`: `transition` makes two checks in this order:\n   - Ownership (line 2): if `current.owner !== owner`, it returns `{ ok: false, reason: 'WRONG_OWNER' }`. Here `'worker-b' === 'worker-b'`, so this check passes.\n   - Revision (line 3): if `current.revision !== expectedRevision`, it returns `{ ok: false, reason: 'STALE_REVISION' }`. Here 8 \u2260 7, so this check fails.\n   - It only reaches line 4, which returns `{ ok: true, row: {...active: false, revision: 9} }`, when both checks pass.\n\n`docs/pause.md:2` agrees that the UI pause action goes through `holdJob`. I didn't find a route or server file that wires `POST /hold` to `holdJob`, so that link rests on the matching name and the docs.\n\n**Obsolete implementation:** `src/old/pause.ts:1-3` has `pauseJob(row)`, which checks neither owner nor revision. It always returns the row with `active: false` and the revision plus one. Nothing in the repo calls it. `docs/pause.md` says earlier versions did not check ownership, which fits this file. If it were still in use, the same request would deactivate the job and bump it to revision 9. It is not in the active path.\n\nI didn't modify any files.",
+      "requiredSourceReads": [
+        {
+          "file": "src/http/hold.ts",
+          "printedSourceLines": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "evidence": [
+            {
+              "path": "src/http/hold.ts",
+              "line": 1,
+              "text": "import { transition } from '../core/state';",
+              "toolUseId": "toolu_01F3T4PqMjqX4tgdJwTxTUmy",
+              "kind": "Bash viewer",
+              "agentId": null,
+              "parentToolUseId": null
+            },
+            {
+              "path": "src/http/hold.ts",
+              "line": 2,
+              "text": "export function holdJob(id: string, owner: string, expectedRevision: number, repository: { get(id: string): any; put(id: string, row: any): void }) {",
+              "toolUseId": "toolu_01F3T4PqMjqX4tgdJwTxTUmy",
+              "kind": "Bash viewer",
+              "agentId": null,
+              "parentToolUseId": null
+            },
+            {
+              "path": "src/http/hold.ts",
+              "line": 3,
+              "text": "  const current = repository.get(id);",
+              "toolUseId": "toolu_01F3T4PqMjqX4tgdJwTxTUmy",
+              "kind": "Bash viewer",
+              "agentId": null,
+              "parentToolUseId": null
+            },
+            {
+              "path": "src/http/hold.ts",
+              "line": 4,
+              "text": "  const result = transition(current, owner, expectedRevision);",
+              "toolUseId": "toolu_01F3T4PqMjqX4tgdJwTxTUmy",
+              "kind": "Bash viewer",
+              "agentId": null,
+              "parentToolUseId": null
+            },
+            {
+              "path": "src/http/hold.ts",
+              "line": 5,
+              "text": "  if (result.ok) repository.put(id, result.row);",
+              "toolUseId": "toolu_01F3T4PqMjqX4tgdJwTxTUmy",
+              "kind": "Bash viewer",
+              "agentId": null,
+              "parentToolUseId": null
+            },
+            {
+              "path": "src/http/hold.ts",
+              "line": 6,
+              "text": "  return result;",
+              "toolUseId": "toolu_01F3T4PqMjqX4tgdJwTxTUmy",
+              "kind": "Bash viewer",
+              "agentId": null,
+              "parentToolUseId": null
+            },
+            {
+              "path": "src/http/hold.ts",
+              "line": 1,
+              "text": "import { transition } from '../core/state';",
+              "toolUseId": "toolu_01Nikbn9Lc9UzAUEU5TzVchg",
+              "kind": "Grep",
+              "agentId": null,
+              "parentToolUseId": null
+            },
+            {
+              "path": "src/http/hold.ts",
+              "line": 2,
+              "text": "export function holdJob(id: string, owner: string, expectedRevision: number, repository: { get(id: string): any; put(id: string, row: any): void }) {",
+              "toolUseId": "toolu_01Nikbn9Lc9UzAUEU5TzVchg",
+              "kind": "Grep",
+              "agentId": null,
+              "parentToolUseId": null
+            },
+            {
+              "path": "src/http/hold.ts",
+              "line": 4,
+              "text": "  const result = transition(current, owner, expectedRevision);",
+              "toolUseId": "toolu_01Nikbn9Lc9UzAUEU5TzVchg",
+              "kind": "Grep",
+              "agentId": null,
+              "parentToolUseId": null
+            }
+          ]
+        },
+        {
+          "file": "src/core/state.ts",
+          "printedSourceLines": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "evidence": [
+            {
+              "path": "src/core/state.ts",
+              "line": 1,
+              "text": "export function transition(current: { owner: string; revision: number; active: boolean }, owner: string, expectedRevision: number) {",
+              "toolUseId": "toolu_01F3T4PqMjqX4tgdJwTxTUmy",
+              "kind": "Bash viewer",
+              "agentId": null,
+              "parentToolUseId": null
+            },
+            {
+              "path": "src/core/state.ts",
+              "line": 2,
+              "text": "  if (current.owner !== owner) return { ok: false, reason: 'WRONG_OWNER' };",
+              "toolUseId": "toolu_01F3T4PqMjqX4tgdJwTxTUmy",
+              "kind": "Bash viewer",
+              "agentId": null,
+              "parentToolUseId": null
+            },
+            {
+              "path": "src/core/state.ts",
+              "line": 3,
+              "text": "  if (current.revision !== expectedRevision) return { ok: false, reason: 'STALE_REVISION' };",
+              "toolUseId": "toolu_01F3T4PqMjqX4tgdJwTxTUmy",
+              "kind": "Bash viewer",
+              "agentId": null,
+              "parentToolUseId": null
+            },
+            {
+              "path": "src/core/state.ts",
+              "line": 4,
+              "text": "  return { ok: true, row: { ...current, active: false, revision: current.revision + 1 } };",
+              "toolUseId": "toolu_01F3T4PqMjqX4tgdJwTxTUmy",
+              "kind": "Bash viewer",
+              "agentId": null,
+              "parentToolUseId": null
+            },
+            {
+              "path": "src/core/state.ts",
+              "line": 1,
+              "text": "export function transition(current: { owner: string; revision: number; active: boolean }, owner: string, expectedRevision: number) {",
+              "toolUseId": "toolu_01Nikbn9Lc9UzAUEU5TzVchg",
+              "kind": "Grep",
+              "agentId": null,
+              "parentToolUseId": null
+            }
+          ]
+        }
+      ],
+      "manualEvidenceSupplement": [],
+      "toolWarnings": [
+        {
+          "toolUseId": "toolu_01RWur7XNev4RYigRKHX2CE8",
+          "kind": "Apple Git xcrun cache denied by temp containment",
+          "recovery": "A subsequent find listing and source reads completed the task.",
+          "rawToolResultPreserved": true
+        }
+      ],
+      "fixtureUnchanged": true,
+      "possiblePromptPersistenceArtifacts": [],
+      "noSpeedClaim": true
+    },
+    {
+      "number": 4,
+      "taskId": "unhelpful-filename-cue",
+      "condition": "baseline",
+      "effort": "medium",
+      "sessionSuccess": true,
+      "reportedCostUsd": 0.0663112,
+      "model": "claude-opus-5-5",
+      "requestClasses": {
+        "main": 4
+      },
+      "subagentStats": {
+        "spawned": 0,
+        "requested": {
+          "background": 0,
+          "foreground": 0,
+          "unset": 0
+        },
+        "started_in_background": 0,
+        "max_depth": 0,
+        "spawned_by_subagents": 0,
+        "completed": 0,
+        "failed": 0,
+        "killed": {
+          "parent": 0,
+          "user": 0,
+          "system": 0
+        },
+        "refused": {
+          "depth_limit": 0,
+          "concurrency_limit": 0,
+          "budget": 0
+        },
+        "by_type": {}
+      },
+      "toolSequence": [
+        "Bash",
+        "Bash",
+        "Bash"
+      ],
+      "toolCalls": [
+        {
+          "id": "toolu_01MsZ3735mXMgzkpUADcsxNh",
+          "name": "Bash",
+          "input": {
+            "command": "git ls-files | head -100 && grep -rniE \"pause|suspend|halt|freeze\" --exclude-dir=.git -l ."
+          },
+          "eventIndex": 2,
+          "agentId": null,
+          "parentToolUseId": null,
+          "subagentType": null
+        },
+        {
+          "id": "toolu_01GsFVx9CzZNGXXo8NDUn51C",
+          "name": "Bash",
+          "input": {
+            "command": "find . -type f -not -path './.git/*' | sort; for f in src/ui/PauseButton.ts docs/pause.md src/old/pause.ts; do echo \"== $f\"; cat -n $f; done"
+          },
+          "eventIndex": 5,
+          "agentId": null,
+          "parentToolUseId": null,
+          "subagentType": null
+        },
+        {
+          "id": "toolu_019qBFUUyArbmein5ZGYgEBH",
+          "name": "Bash",
+          "input": {
+            "command": "for f in README.md src/http/hold.ts src/core/state.ts; do echo \"== $f\"; cat -n $f; done"
+          },
+          "eventIndex": 7,
+          "agentId": null,
+          "parentToolUseId": null,
+          "subagentType": null
+        }
+      ],
+      "toolResults": [
+        {
+          "id": "toolu_01MsZ3735mXMgzkpUADcsxNh",
+          "isError": false,
+          "content": "git: error: couldn't create cache file '$SYSTEM_TEMP/xcrun_db-CdbCz2oi' (errno=Operation not permitted)\ngit: error: couldn't create cache file '$SYSTEM_TEMP/xcrun_db-iq4LCjdH' (errno=Operation not permitted)\nsrc/ui/PauseButton.ts\ndocs/pause.md\nsrc/old/pause.ts",
+          "eventIndex": 4,
+          "agentId": null,
+          "parentToolUseId": null,
+          "subagentType": null
+        },
+        {
+          "id": "toolu_01GsFVx9CzZNGXXo8NDUn51C",
+          "isError": false,
+          "content": "./README.md\n./docs/pause.md\n./src/core/state.ts\n./src/http/hold.ts\n./src/old/pause.ts\n./src/ui/PauseButton.ts\n== src/ui/PauseButton.ts\n     1\texport const PauseButton = { label: 'Pause', action: 'POST /hold' };\n== docs/pause.md\n     1\t# Job pause\n     2\tThe UI pause action is implemented through holdJob; previous revisions did not validate ownership.\n== src/old/pause.ts\n     1\texport function pauseJob(row: { active: boolean; revision: number }) {\n     2\t  return { ...row, active: false, revision: row.revision + 1 };\n     3\t}",
+          "eventIndex": 6,
+          "agentId": null,
+          "parentToolUseId": null,
+          "subagentType": null
+        },
+        {
+          "id": "toolu_019qBFUUyArbmein5ZGYgEBH",
+          "isError": false,
+          "content": "== README.md\n     1\t# Beacon fixture\n     2\tSynthetic job scheduling service. No file path was supplied with the request.\n== src/http/hold.ts\n     1\timport { transition } from '../core/state';\n     2\texport function holdJob(id: string, owner: string, expectedRevision: number, repository: { get(id: string): any; put(id: string, row: any): void }) {\n     3\t  const current = repository.get(id);\n     4\t  const result = transition(current, owner, expectedRevision);\n     5\t  if (result.ok) repository.put(id, result.row);\n     6\t  return result;\n     7\t}\n== src/core/state.ts\n     1\texport function transition(current: { owner: string; revision: number; active: boolean }, owner: string, expectedRevision: number) {\n     2\t  if (current.owner !== owner) return { ok: false, reason: 'WRONG_OWNER' };\n     3\t  if (current.revision !== expectedRevision) return { ok: false, reason: 'STALE_REVISION' };\n     4\t  return { ok: true, row: { ...current, active: false, revision: current.revision + 1 } };\n     5\t}",
+          "eventIndex": 8,
+          "agentId": null,
+          "parentToolUseId": null,
+          "subagentType": null
+        }
+      ],
+      "fff": [],
+      "coreGuidancePresent": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "factChecks": [
+        {
+          "fact": "Ownership is checked first, then revision.",
+          "status": "pass",
+          "source": [
+            "src/core/state.ts:2",
+            "src/core/state.ts:3"
+          ]
+        },
+        {
+          "fact": "worker-b passes ownership but stored revision 8 differs from expected 7, returning {ok:false,reason:'STALE_REVISION'}.",
+          "status": "pass",
+          "source": [
+            "src/core/state.ts:2",
+            "src/core/state.ts:3"
+          ]
+        },
+        {
+          "fact": "holdJob calls repository.put only for an ok result, so this request makes no write and leaves the stored row unchanged.",
+          "status": "pass",
+          "source": [
+            "src/http/hold.ts:4",
+            "src/http/hold.ts:5",
+            "src/http/hold.ts:6"
+          ]
+        },
+        {
+          "fact": "The current holdJob implementation calls transition, while src/old/pause.ts is an obsolete unchecked implementation.",
+          "status": "pass",
+          "source": [
+            "src/http/hold.ts:1",
+            "src/http/hold.ts:4",
+            "src/old/pause.ts:1",
+            "src/old/pause.ts:2",
+            "docs/pause.md:2"
+          ]
+        }
+      ],
+      "unsupportedOrOverstatedExtras": [
+        {
+          "claim": "The static Pause button sends POST /hold as an established active runtime edge.",
+          "status": "unproven runtime edge",
+          "reason": "The source provides an action field and documentation, not a sending implementation or router registration. The answer does not flag this gap.",
+          "source": [
+            "src/ui/PauseButton.ts:1",
+            "docs/pause.md:2"
+          ]
+        }
+      ],
+      "limitations": [
+        "The fixture has a static POST /hold UI action and documentation naming holdJob but no actual router registration code."
+      ],
+      "answer": "**Answer:** No, the repository write does not happen. The call returns `{ ok: false, reason: 'STALE_REVISION' }`.\n\n**Active call path** (in the code, \"Pause\" is called \"hold\"):\n1. `src/ui/PauseButton.ts:1`: the button labelled `'Pause'` sends `POST /hold`. `docs/pause.md:2` confirms that the UI pause action is implemented through `holdJob`.\n2. `src/http/hold.ts:2-7`, `holdJob(id, owner, expectedRevision, repository)`:\n   - It reads the stored job with `repository.get(id)` (line 3).\n   - It calls `transition(current, owner, expectedRevision)` (line 4).\n   - It only calls `repository.put(id, result.row)` if `result.ok` is true (line 5).\n   - It returns `result` either way (line 6).\n3. `src/core/state.ts:1-5`, `transition`:\n   - Line 2 checks the owner: `'worker-b' === 'worker-b'`, so it passes.\n   - Line 3 checks the revision: stored `8 !== 7`, so it returns `{ ok: false, reason: 'STALE_REVISION' }`.\n   - Line 4 is never reached. That is the line that would set `active: false` and raise the revision to 9.\n\nBecause `result.ok` is false, `put` is skipped. The stored job keeps owner `worker-b`, revision 8 and `active: true`. The owner check runs before the revision check, so a wrong owner would get `WRONG_OWNER` first. Here the owner matches, so the result is `STALE_REVISION`.\n\n**Obsolete implementation:** `src/old/pause.ts:1-3`, `pauseJob(row)`. It takes no owner or expected revision and checks nothing: it always returns the row with `active: false` and the revision plus one. Nothing in the active path calls it. `docs/pause.md` says these earlier versions \"did not validate ownership.\" If that code were still used, this request would have paused the job and moved it to revision 9, even though the client's revision was out of date.\n\nI didn't modify any files.",
+      "requiredSourceReads": [
+        {
+          "file": "src/http/hold.ts",
+          "printedSourceLines": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "evidence": [
+            {
+              "path": "src/http/hold.ts",
+              "line": 1,
+              "text": "import { transition } from '../core/state';",
+              "toolUseId": "toolu_019qBFUUyArbmein5ZGYgEBH",
+              "kind": "Bash viewer",
+              "agentId": null,
+              "parentToolUseId": null
+            },
+            {
+              "path": "src/http/hold.ts",
+              "line": 2,
+              "text": "export function holdJob(id: string, owner: string, expectedRevision: number, repository: { get(id: string): any; put(id: string, row: any): void }) {",
+              "toolUseId": "toolu_019qBFUUyArbmein5ZGYgEBH",
+              "kind": "Bash viewer",
+              "agentId": null,
+              "parentToolUseId": null
+            },
+            {
+              "path": "src/http/hold.ts",
+              "line": 3,
+              "text": "  const current = repository.get(id);",
+              "toolUseId": "toolu_019qBFUUyArbmein5ZGYgEBH",
+              "kind": "Bash viewer",
+              "agentId": null,
+              "parentToolUseId": null
+            },
+            {
+              "path": "src/http/hold.ts",
+              "line": 4,
+              "text": "  const result = transition(current, owner, expectedRevision);",
+              "toolUseId": "toolu_019qBFUUyArbmein5ZGYgEBH",
+              "kind": "Bash viewer",
+              "agentId": null,
+              "parentToolUseId": null
+            },
+            {
+              "path": "src/http/hold.ts",
+              "line": 5,
+              "text": "  if (result.ok) repository.put(id, result.row);",
+              "toolUseId": "toolu_019qBFUUyArbmein5ZGYgEBH",
+              "kind": "Bash viewer",
+              "agentId": null,
+              "parentToolUseId": null
+            },
+            {
+              "path": "src/http/hold.ts",
+              "line": 6,
+              "text": "  return result;",
+              "toolUseId": "toolu_019qBFUUyArbmein5ZGYgEBH",
+              "kind": "Bash viewer",
+              "agentId": null,
+              "parentToolUseId": null
+            }
+          ]
+        },
+        {
+          "file": "src/core/state.ts",
+          "printedSourceLines": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "evidence": [
+            {
+              "path": "src/core/state.ts",
+              "line": 1,
+              "text": "export function transition(current: { owner: string; revision: number; active: boolean }, owner: string, expectedRevision: number) {",
+              "toolUseId": "toolu_019qBFUUyArbmein5ZGYgEBH",
+              "kind": "Bash viewer",
+              "agentId": null,
+              "parentToolUseId": null
+            },
+            {
+              "path": "src/core/state.ts",
+              "line": 2,
+              "text": "  if (current.owner !== owner) return { ok: false, reason: 'WRONG_OWNER' };",
+              "toolUseId": "toolu_019qBFUUyArbmein5ZGYgEBH",
+              "kind": "Bash viewer",
+              "agentId": null,
+              "parentToolUseId": null
+            },
+            {
+              "path": "src/core/state.ts",
+              "line": 3,
+              "text": "  if (current.revision !== expectedRevision) return { ok: false, reason: 'STALE_REVISION' };",
+              "toolUseId": "toolu_019qBFUUyArbmein5ZGYgEBH",
+              "kind": "Bash viewer",
+              "agentId": null,
+              "parentToolUseId": null
+            },
+            {
+              "path": "src/core/state.ts",
+              "line": 4,
+              "text": "  return { ok: true, row: { ...current, active: false, revision: current.revision + 1 } };",
+              "toolUseId": "toolu_019qBFUUyArbmein5ZGYgEBH",
+              "kind": "Bash viewer",
+              "agentId": null,
+              "parentToolUseId": null
+            }
+          ]
+        }
+      ],
+      "manualEvidenceSupplement": [],
+      "toolWarnings": [
+        {
+          "toolUseId": "toolu_01MsZ3735mXMgzkpUADcsxNh",
+          "kind": "Apple Git xcrun cache denied by temp containment",
+          "recovery": "A subsequent find listing and source reads completed the task.",
+          "rawToolResultPreserved": true
+        }
+      ],
+      "fixtureUnchanged": true,
+      "possiblePromptPersistenceArtifacts": [],
+      "noSpeedClaim": true
+    }
+  ],
+  "gradingMethod": "Manual review of complete answers against the frozen fixture, with path-aware printed-source verification. Requested facts and extra claims are assessed separately.",
+  "interpretation": "The candidate invoked FFF in both sampled sessions with built-in system guidance; the task questions did not name tools. Baseline used content search. Requested facts pass in all four. This is two single-run pairs, not a general success-rate, accuracy, cost or speed estimate. Filename-only suggestions receive no behavior-evidence credit.",
+  "preflightGuardFailures": {
+    "sessions": 4,
+    "forwardedRequests": 0,
+    "reportedNewCostUsd": 0,
+    "publicRecord": "guard-failure.v1.json"
+  },
+  "rawArtifactsSha256": {
+    "report.json": "317d14bc329f988d277bb18242c968d104aa8dc22c5c5ead3a214b7594318598",
+    "trial-01/output.jsonl": "fe257dbb57163e469a37d95c3cb8731305370de214a05c8c4fdddd488b5437e2",
+    "trial-01/stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "trial-01/request-metadata.json": "609798d7d4cc961fc5646ecf02ca5c2adee37f6a2c4cd5619d3b842be4da498b",
+    "trial-01/tool-evidence.json": "a947089c89abbad3cd53aba5ae02b17238d6cc379f9edc6d27b89b1eb98d9fd6",
+    "trial-01/checked-facts.json": "a3207dae780e2b94ef63d95cca7eb283f02129cf04dd211f8e8d7218b4043132",
+    "trial-01/summary.json": "97303ee8b64b508373c5b601aa82b69a562be0b5dddaece09c06a38aa2e98135",
+    "trial-01/timing.json": "7c7539d0db212c764b8b1e710c1195781e41ac01031c5ae284b8a6954308e0bf",
+    "trial-02/output.jsonl": "f65e08c270b7fd83f8047fe4dace78ff3612d3f85d544412e950fe61b9f76107",
+    "trial-02/stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "trial-02/request-metadata.json": "0a1a63da93aabe138b4129d29284d3b78c5a27fbe25822f0b7cc81edbd7abea2",
+    "trial-02/tool-evidence.json": "f3afc1435cfa18d5f7b1fd450fe8d73d54f1f1645c51e2d8634a0e4d5529ec9d",
+    "trial-02/checked-facts.json": "cdc502d6f3b1bff1a59a158b6cf7d4bc7b98231818fc9d166f019bc09ee94214",
+    "trial-02/summary.json": "138c84964015b8a9cca780749802b8c35beef0990800492437516953f96dd4c3",
+    "trial-02/timing.json": "9258b919297dfe7ae94fdda56618e979c7e9c3a8df26f7151b935b1e1d7ff2d1",
+    "trial-03/output.jsonl": "0cc0d1b32d892038f94e1ea5fa501954ece524b267c2b97c2c8e73418cc91bf9",
+    "trial-03/stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "trial-03/request-metadata.json": "aabdad35102990479e0be8d37c7634d91c586386e1d20f0d1f04e2fcd3d71cde",
+    "trial-03/tool-evidence.json": "9dea1cc9c634a2ad31a5f700bd3c8bc9e16b4acccc742b02131feab21905cef5",
+    "trial-03/checked-facts.json": "16c28f5f44402e8d964a9a49d2db66cf64eff3d835c39356000e0b98cb2bafed",
+    "trial-03/summary.json": "d922e426a0f21cb68dc233c81e98ba457c2f61560313a73c8454b74b0e88b1b0",
+    "trial-03/timing.json": "c5ae18138c063d5eba1da2ddffa61e3d2da6fff8025c890d9f1e7b345b6befd5",
+    "trial-04/output.jsonl": "87cb5f17eb55a7ea22c3eae9628330a3e2b40b8bea7a4bf6ee3448ce8383a801",
+    "trial-04/stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "trial-04/request-metadata.json": "a54466de9e41c62ac7fe12a432e50a3b03e480d4063b0c461524b1a61cd04b83",
+    "trial-04/tool-evidence.json": "074be63d721a401f802a3d0818570e0db079c95c55cdff145f210960b7ceeb49",
+    "trial-04/checked-facts.json": "b65d864527d3bc663947c41ed23eaa4eed3509473892d2106197101596391b7d",
+    "trial-04/summary.json": "b4feb8414db29a677bf6d600bdd8da78d3445cc8057dc5549ca4eeefe08a11a9",
+    "trial-04/timing.json": "7cfd2b17dbb376b6a9729aeb74f17cee8242fc6467ccdceae2ebab14510e448b"
+  },
+  "capabilityProbeReportSha256": "787ad8c932a4ab7509d47c02136226f10d33130db59ae425fe97e6d0ef5c254b",
+  "postTrialChanges": [
+    {
+      "change": "Added one exact single-newline legacy Bash instruction suffix variant to cleanup coverage, with an explicit regression test.",
+      "testedCandidatePredatesChange": true,
+      "scope": "Legacy compatibility only; guidance, automatic renderer and runtime helper code unchanged.",
+      "freshCohortEvidence": "All sessions had fresh state, no saved prompt reuse, and candidate API tool descriptions contained no owned guide suffixes. The added legacy suffix matcher does not affect these fresh trial inputs.",
+      "paidOutcomesRepeated": false
+    },
+    {
+      "change": "Pinned public proxy forwarding to https://api.anthropic.com/v1/messages and rejected absolute, protocol-relative and off-origin request targets.",
+      "trialProxySha256": "da1a098421d0365ff8b8e3e4332ff01ef1d1efe080737069f1d270c83a3b074a",
+      "publishedProxySha256": "8b9bfc94ada72c7f96a64665c17561631428c67e9a2aa77c12e3380b5f7f7265",
+      "frozenTrialRuntimePredatesChange": true,
+      "scope": "Security-only forwarding validation; normal native relative /v1/messages traffic keeps the same API destination and request bytes.",
+      "observedRequestPaths": [
+        "/v1/messages"
+      ],
+      "localGuardCasesPassed": 15,
+      "paidOutcomesRepeated": false
+    }
+  ],
+  "noSpeedClaim": true
+}

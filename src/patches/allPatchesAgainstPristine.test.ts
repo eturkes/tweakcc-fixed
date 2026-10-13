@@ -34,6 +34,7 @@ import { writeOpusplan1m } from './opusplan1m';
 import { writeThinkingBlockStyling } from './thinkingBlockStyling';
 import { writeFixLspSupport } from './fixLspSupport';
 import { writeNoGlobalCacheScope } from './globalCacheScope';
+import { writeFffInstructionHygiene } from './fffInstructions';
 import { writeFixSummarizeFromHere } from './fixSummarizeFromHere';
 import { writeFixRewindSummaryHeader } from './fixRewindSummaryHeader';
 import { writeStatuslineUpdateThrottle } from './statuslineUpdateThrottle';
@@ -302,6 +303,7 @@ const INVOCATIONS: Record<PatchId, (src: string) => string | null> = {
   opusplan1m: c => writeOpusplan1m(c),
   'thinking-block-styling': c => writeThinkingBlockStyling(c),
   'fix-lsp-support': c => writeFixLspSupport(c),
+  'fff-instruction-hygiene': c => writeFffInstructionHygiene(c),
   // The patch acts only once an identity line differs from stock, so one is
   // replaced here to exercise both of its anchors against the real bundle.
   'no-global-cache-scope': c =>
@@ -398,12 +400,16 @@ const INVOCATIONS: Record<PatchId, (src: string) => string | null> = {
   'worktree-mode': c => writeWorktreeMode(c),
   'session-memory': c => writeSessionMemory(c),
   'swap-ripgrep-for-fff': c => writeSwapRipgrepForFff(c, FFF_WRAPPER_PATH),
-  'fff-bash-reads': c =>
-    writeFffBashReads(
-      c,
-      path.join(path.dirname(FFF_WRAPPER_PATH), 'viewers'),
-      FFF_WRAPPER_PATH
-    ),
+  'fff-bash-reads': c => {
+    const search = writeSwapRipgrepForFff(c, FFF_WRAPPER_PATH);
+    return search === null
+      ? null
+      : writeFffBashReads(
+          search,
+          path.join(path.dirname(FFF_WRAPPER_PATH), 'viewers'),
+          FFF_WRAPPER_PATH
+        );
+  },
   'dream-mode': c => writeDreamMode(c),
   'lean-memory-types': c => writeLeanMemoryTypes(c),
   // All three bindings, each distinct: the selection expression emits a branch

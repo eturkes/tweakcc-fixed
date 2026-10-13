@@ -72,7 +72,6 @@
     "@types/node": "^20.19.10",
     "@types/react": "^19.2.14",
     "@types/which": "^3.0.4",
-    "acorn": "^8.15.0",
     "esbuild": "^0.25.8",
     "eslint": "^9.33.0",
     "eslint-plugin-react": "^7.37.5",
@@ -92,6 +91,7 @@
     "*.{json,md}": "prettier --write"
   },
   "dependencies": {
+    "acorn": "^8.15.0",
     "chalk": "^5.5.0",
     "cli-spinners": "^3.4.0",
     "commander": "^14.0.0",

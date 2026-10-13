@@ -24,7 +24,10 @@ writeFileSync(
   path.join(root, 'src', 'a.ts'),
   'before\nconst needle = 1; needle();\notherneedle\nafter\n'
 );
-writeFileSync(path.join(root, 'src', 'z.ts'), 'before\nneedle();\nafter\n');
+writeFileSync(
+  path.join(root, 'src', 'z.ts'),
+  'before\nconst needle = 2;\nafter\n'
+);
 writeFileSync(path.join(root, 'test', 'sample.tsx'), 'needle();\nother();\n');
 const cases = [
   ['-n', 'needle'],
@@ -140,7 +143,7 @@ try {
     { wrapper, state: env.RG_FFF_STATE_DIR }
   );
   assert.equal(unicode.mismatches, 0);
-  assert.equal(unicode.fallback, 3);
+  assert.equal(unicode.served, 3);
   const native = path.join(os.homedir(), '.local/bin/claude');
   const claude = existsSync(native) ? native : undefined;
   const bre = replay(

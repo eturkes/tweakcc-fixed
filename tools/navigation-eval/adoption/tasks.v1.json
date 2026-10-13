@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "conditions": [
+    "baseline",
+    "fff-global-guidance"
+  ],
+  "seed": 20261013,
+  "tasks": [
+    {
+      "id": "webhook-retry",
+      "effort": "low",
+      "prompt": "When a webhook delivery fails with HTTP 429, where is its next retry time decided, and what delay and due time will attempt 3 use when Retry-After is '17' and now is 100000 milliseconds? Trace the relevant call path and cite file and line locations. This is a read-only task; do not modify any files.",
+      "files": {
+        "README.md": "# Courier fixture\nA small synthetic outbound delivery service. Runtime code is under src.\n",
+        "tests/deliveryRetry.test.ts": "import { chooseDeliveryRetry } from '../src/policies/deliveryRetry';\nexport const sample = chooseDeliveryRetry(1, 503, undefined, 0);\nif (sample.kind !== 'retry' || sample.delayMs !== 2000) throw new Error('unexpected delay');\n",
+        "src/transport/http.ts": "export interface HttpResponse { status: number; headers: Record<string, string> }\nexport async function postPayload(url: string, payload: string): Promise<HttpResponse> {\n  const result = await fetch(url, { method: 'POST', body: payload });\n  return { status: result.status, headers: Object.fromEntries(result.headers) };\n}\n",
+        "src/legacy/webhookRetry.ts": "export const migrationOnly = true;\nexport function legacyWebhookRetry(nowMs: number) {\n  return nowMs + 5000;\n}\n",
+        "src/policies/deliveryRetry.ts": "import { retryAfterMillis } from '../time/retryAfter';\n\nexport function chooseDeliveryRetry(attempt: number, status: number, retryAfter: string | undefined, nowMs: number) {\n  if (status !== 429 && status < 500) return { kind: 'stop' as const };\n  if (attempt >= 5) return { kind: 'stop' as const };\n  const exponentialMs = Math.min(1000 * 2 ** attempt, 60000);\n  const serverHintMs = status === 429 ? retryAfterMillis(retryAfter) : 0;\n  const delayMs = Math.max(exponentialMs, serverHintMs);\n  return { kind: 'retry' as const, delayMs, dueAtMs: nowMs + delayMs };\n}\n",
+        "src/storage/deliveryQueue.ts": "export interface DeliveryJob {\n  id: string;\n  url: string;\n  payload: string;\n  attempt: number;\n}\n\nexport interface DeliveryQueue {\n  complete(id: string): Promise<void>;\n  reschedule(id: string, dueAtMs: number): Promise<void>;\n  deadLetter(id: string): Promise<void>;\n}\n",
+        "src/time/retryAfter.ts": "export function retryAfterMillis(value: string | undefined): number {\n  if (value === undefined || !/^\\d+$/.test(value.trim())) return 0;\n  return Math.min(Number(value.trim()) * 1000, 60000);\n}\n",
+        "src/worker/deliver.ts": "import { handleFailure } from './handleFailure';\nimport { postPayload } from '../transport/http';\nimport type { DeliveryQueue, DeliveryJob } from '../storage/deliveryQueue';\n\nexport async function deliver(job: DeliveryJob, queue: DeliveryQueue, nowMs: number) {\n  const response = await postPayload(job.url, job.payload);\n  if (response.status >= 200 && response.status < 300) {\n    await queue.complete(job.id);\n    return { kind: 'complete' as const };\n  }\n  return handleFailure(job, response, queue, nowMs);\n}\n",
+        "src/worker/handleFailure.ts": "import { chooseDeliveryRetry } from '../policies/deliveryRetry';\nimport type { DeliveryQueue, DeliveryJob } from '../storage/deliveryQueue';\nimport type { HttpResponse } from '../transport/http';\n\nexport async function handleFailure(job: DeliveryJob, response: HttpResponse, queue: DeliveryQueue, nowMs: number) {\n  const decision = chooseDeliveryRetry(job.attempt, response.status, response.headers['retry-after'], nowMs);\n  if (decision.kind === 'retry') {\n    await queue.reschedule(job.id, decision.dueAtMs);\n  } else {\n    await queue.deadLetter(job.id);\n  }\n  return decision;\n}\n",
+        "src/billing/retryInvoice.ts": "export function retryInvoice(attempt: number, nowMs: number) {\n  return { kind: 'retry' as const, dueAtMs: nowMs + 300000 * (attempt + 1) };\n}\n"
+      },
+      "requiredFiles": [
+        "src/policies/deliveryRetry.ts",
+        "src/worker/handleFailure.ts",
+        "src/time/retryAfter.ts"
+      ],
+      "expectedFacts": [
+        "17000",
+        "117000"
+      ]
+    },
+    {
+      "id": "lease-renewal",
+      "effort": "medium",
+      "prompt": "For POST /leases/:id/renew, an active lease has owner 'worker-a', generation 4, and expiresAtMs 120000. At nowMs 100000, worker-a submits expectedGeneration 3 and ttlMs 45000. Does storage change, and what HTTP status and response body are returned? Trace the relevant call path and cite file and line locations. This is a read-only task; do not modify any files.",
+      "files": {
+        "README.md": "# Leaseboard fixture\nA small synthetic lease coordination service. The HTTP route is defined under src/api.\n",
+        "tests/renewal.test.ts": "import { evaluateRenewal } from '../src/policies/renewal';\nconst lease = { owner: 'sample', generation: 2, expiresAtMs: 200 };\nexport const accepted = evaluateRenewal(lease, { owner: 'sample', expectedGeneration: 2 }, 100);\n",
+        "src/legacy/renewLease.ts": "export function renewLegacyLease(lease: { expiresAtMs: number }, ttlMs: number) {\n  return { ...lease, expiresAtMs: lease.expiresAtMs + ttlMs };\n}\n",
+        "src/policies/renewal.ts": "import type { Lease } from '../storage/leaseStore';\n\nexport function evaluateRenewal(current: Lease, input: { owner: string; expectedGeneration: number }, nowMs: number) {\n  if (current.expiresAtMs <= nowMs) return { ok: false as const, code: 'EXPIRED' as const };\n  if (current.owner !== input.owner) return { ok: false as const, code: 'OWNER_MISMATCH' as const };\n  if (current.generation !== input.expectedGeneration) return { ok: false as const, code: 'STALE_GENERATION' as const };\n  return { ok: true as const };\n}\n",
+        "src/storage/leaseStore.ts": "export interface Lease { owner: string; generation: number; expiresAtMs: number }\nexport interface LeaseStore {\n  get(id: string): Promise<Lease | undefined>;\n  put(id: string, value: Lease): Promise<void>;\n}\n",
+        "src/api/routes.ts": "import { renewLeaseHandler } from './renewLeaseHandler';\nexport const routes = [{ method: 'POST', path: '/leases/:id/renew', handler: renewLeaseHandler }];\n",
+        "src/api/renewLeaseHandler.ts": "import { renewLease } from '../services/renewLease';\nimport type { LeaseStore } from '../storage/leaseStore';\n\nexport async function renewLeaseHandler(request: { id: string; owner: string; expectedGeneration: number; ttlMs: number }, store: LeaseStore, nowMs: number) {\n  const result = await renewLease(request, store, nowMs);\n  if (result.ok) return { status: 200, body: result.lease };\n  const status = result.code === 'NOT_FOUND' ? 404 : result.code === 'OWNER_MISMATCH' ? 403 : 409;\n  return { status, body: { error: result.code } };\n}\n",
+        "src/services/renewLease.ts": "import { evaluateRenewal } from '../policies/renewal';\nimport type { LeaseStore } from '../storage/leaseStore';\n\nexport async function renewLease(input: { id: string; owner: string; expectedGeneration: number; ttlMs: number }, store: LeaseStore, nowMs: number) {\n  const current = await store.get(input.id);\n  if (!current) return { ok: false as const, code: 'NOT_FOUND' as const };\n  const decision = evaluateRenewal(current, input, nowMs);\n  if (!decision.ok) return decision;\n  const renewed = { ...current, generation: current.generation + 1, expiresAtMs: nowMs + input.ttlMs };\n  await store.put(input.id, renewed);\n  return { ok: true as const, lease: renewed };\n}\n",
+        "src/services/createLease.ts": "import type { LeaseStore } from '../storage/leaseStore';\nexport async function createLease(id: string, owner: string, store: LeaseStore, nowMs: number) {\n  const lease = { owner, generation: 1, expiresAtMs: nowMs + 30000 };\n  await store.put(id, lease);\n  return lease;\n}\n"
+      },
+      "requiredFiles": [
+        "src/api/renewLeaseHandler.ts",
+        "src/services/renewLease.ts",
+        "src/policies/renewal.ts"
+      ],
+      "expectedFacts": [
+        "409",
+        "STALE_GENERATION"
+      ]
+    },
+    {
+      "id": "approximate-proration-filename",
+      "effort": "low",
+      "prompt": "A teammate called the subscription charge policy 'billing/proraton policy' but that might not be its exact path or spelling. Find the implementation used by invoice handling. What charge does it return for 7 remaining days, a 30-day period and 999 monthly cents? Explain the rounding rule and what happens for a zero-length period. Cite files and line numbers. This is a read-only task; do not modify files.",
+      "files": {
+        "README.md": "# Meterbook\nA synthetic subscription billing service. Active invoice handling begins in src/http/invoice.ts.\n",
+        "src/http/invoice.ts": "import { chargeUnusedPeriod } from '../billing/subscriptions/ProrationPolicy';\nexport function invoice(remainingDays: number, periodDays: number, monthlyCents: number) {\n  return chargeUnusedPeriod(remainingDays, periodDays, monthlyCents);\n}\n",
+        "src/billing/subscriptions/ProrationPolicy.ts": "export function chargeUnusedPeriod(remainingDays: number, periodDays: number, monthlyCents: number) {\n  if (periodDays <= 0) throw new Error('INVALID_PERIOD');\n  if (remainingDays <= 0) return 0;\n  const billableDays = Math.min(remainingDays, periodDays);\n  return Math.ceil(monthlyCents * billableDays / periodDays);\n}\n",
+        "src/migrations/ProrationPolicyV1.ts": "export const migrationOnly = true;\nexport function oldProratedCharge(days: number, period: number, cents: number) {\n  return Math.floor(cents * days / period);\n}\n",
+        "src/billing/accounts/AllocationPolicy.ts": "export function allocationWeight(seats: number, totalSeats: number) { return seats / totalSeats; }\n",
+        "docs/proration-policy.md": "# Historic migration\nProrationPolicyV1 is migration-only.\n",
+        "src/billing/subscriptions/CancelSubscription.ts": "export function cancel(id: string) { return { id, status: 'cancelled' }; }\n"
+      },
+      "requiredFiles": [
+        "src/http/invoice.ts",
+        "src/billing/subscriptions/ProrationPolicy.ts"
+      ],
+      "expectedFacts": [
+        "234",
+        "ceil",
+        "INVALID_PERIOD"
+      ]
+    },
+    {
+      "id": "unhelpful-filename-cue",
+      "effort": "medium",
+      "prompt": "Find how the current job-pause operation enforces ownership and revision checks. A stored job has owner 'worker-b', revision 8 and active true; worker-b submits expected revision 7. Does the repository write occur, and what result is returned? The UI calls this Pause, but runtime filenames may use different words. Cite the active call path and distinguish any obsolete implementation. This is a read-only task; do not modify files.",
+      "files": {
+        "README.md": "# Beacon fixture\nSynthetic job scheduling service. No file path was supplied with the request.\n",
+        "src/http/hold.ts": "import { transition } from '../core/state';\nexport function holdJob(id: string, owner: string, expectedRevision: number, repository: { get(id: string): any; put(id: string, row: any): void }) {\n  const current = repository.get(id);\n  const result = transition(current, owner, expectedRevision);\n  if (result.ok) repository.put(id, result.row);\n  return result;\n}\n",
+        "src/core/state.ts": "export function transition(current: { owner: string; revision: number; active: boolean }, owner: string, expectedRevision: number) {\n  if (current.owner !== owner) return { ok: false, reason: 'WRONG_OWNER' };\n  if (current.revision !== expectedRevision) return { ok: false, reason: 'STALE_REVISION' };\n  return { ok: true, row: { ...current, active: false, revision: current.revision + 1 } };\n}\n",
+        "src/old/pause.ts": "export function pauseJob(row: { active: boolean; revision: number }) {\n  return { ...row, active: false, revision: row.revision + 1 };\n}\n",
+        "src/ui/PauseButton.ts": "export const PauseButton = { label: 'Pause', action: 'POST /hold' };\n",
+        "docs/pause.md": "# Job pause\nThe UI pause action is implemented through holdJob; previous revisions did not validate ownership.\n"
+      },
+      "requiredFiles": [
+        "src/http/hold.ts",
+        "src/core/state.ts"
+      ],
+      "expectedFacts": [
+        "STALE_REVISION",
+        "no write"
+      ]
+    }
+  ]
+}

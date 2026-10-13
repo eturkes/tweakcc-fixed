@@ -486,10 +486,20 @@ try {
     control(['files', 'Service'], rankingEnv)
       .split('\n')
       .find(line => line && !line.startsWith('#')),
+    /^src\/AlphaService\.ts(?: \[modified\])? -> Read/
+  );
+  assert.equal(
+    execute('/bin/bash', 'cat src/ZetaService.ts >/dev/null', rankingEnv).status,
+    0
+  );
+  assert.match(
+    control(['files', 'Service'], rankingEnv)
+      .split('\n')
+      .find(line => line && !line.startsWith('#')),
     /^src\/ZetaService\.ts(?: \[modified\])? -> Read/
   );
   assert.match(
-    control(['-n', 'Service'], rankingEnv),
+    control(['--no-fallback', '-n', 'Service', 'src'], rankingEnv),
     /^src\/ZetaService\.ts:/
   );
   process.stdout.write(

@@ -1,0 +1,36 @@
+{
+  "nativeVersion": "2.1.296",
+  "sourceSha256": "7ee9eafd14173295a7e51b91c6cc55ac6eddff49eb85bb89d23cbe754b22c672",
+  "aliases": {
+    "opus": "claude-opus-5-5",
+    "sonnet": "claude-sonnet-5-5",
+    "haiku": "claude-haiku-5-5",
+    "fable": "claude-fable-5-1"
+  },
+  "requestClasses": [
+    "main",
+    "subagent",
+    "workflow",
+    "compaction",
+    "auxiliary",
+    "side_reply"
+  ],
+  "efforts": ["low", "medium", "high", "xhigh", "max"],
+  "provenanceHeaders": [
+    "x-claude-code-request-class",
+    "x-claude-code-agent-type",
+    "x-claude-code-agent-id",
+    "x-claude-code-parent-agent-id"
+  ],
+  "enableProvenance": { "CLAUDE_CODE_GATEWAY_HINT_HEADERS": "1" },
+  "verification": {
+    "aliases": "Inspected native baked catalog aliases.default and latest_per_family; no remote model catalog is read.",
+    "headers": "Inspected native i$ client builder, bFn flag and pvs/fvs query-source classification.",
+    "probe": "A local-only Agent/Explore probe with no model/effort override inherited Opus 5.5, medium effort and the output cap; its Read events carried parent_tool_use_id and agent_id.",
+    "budget": "Native max-budget-usd includes subagent requests; all forwarded request classes also count toward the harness request cap and process timeout."
+  },
+  "documentation": [
+    "https://code.claude.com/docs/en/sub-agents",
+    "https://code.claude.com/docs/en/agent-sdk/subagents"
+  ]
+}
