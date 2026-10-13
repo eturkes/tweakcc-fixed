@@ -52,6 +52,7 @@ function findRepoRoot(): { root: string; version: string } | null {
 
 async function isExecutable(p: string): Promise<boolean> {
   try {
+    if (!(await fs.lstat(p)).isFile()) return false;
     await fs.access(p, fsSync.constants.X_OK);
     return true;
   } catch {
@@ -77,12 +78,17 @@ async function install(src: string, dest: string): Promise<void> {
   }
 }
 
-async function mtimeMs(p: string): Promise<number> {
-  try {
-    return (await fs.stat(p)).mtimeMs;
-  } catch {
-    return -1;
-  }
+async function digest(p: string): Promise<string> {
+  return crypto
+    .createHash('sha256')
+    .update(await fs.readFile(p))
+    .digest('hex');
+}
+
+async function removeStamp(p: string): Promise<void> {
+  await fs.unlink(p).catch(error => {
+    if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+  });
 }
 
 /**
@@ -103,26 +109,46 @@ export async function ensureRgFffWrapper(): Promise<string | null> {
   // './config' don't trip over an undefined CONFIG_DIR during mock hoisting.
   const dest = path.join(CONFIG_DIR, 'fff', triple, 'rg-fff');
   const stamp = path.join(path.dirname(dest), '.version');
+  const localStamp = path.join(path.dirname(dest), '.local-sha256');
   const repo = findRepoRoot();
 
   // 1. Repo-local build (dev checkout) is canonical — and REFRESH dest whenever
   //    the build is newer, so a rebuilt wrapper actually redeploys (otherwise a
   //    stale binary lingers and the patch points at old behavior).
   if (repo) {
-    for (const profile of ['release', 'debug']) {
-      const local = path.join(
-        repo.root,
-        'tools',
-        'rg-fff',
-        'target',
-        profile,
-        'rg-fff'
-      );
-      if (fsSync.existsSync(local)) {
-        if ((await mtimeMs(local)) > (await mtimeMs(dest))) {
+    const candidates = await Promise.all(
+      ['release', 'debug'].map(async profile => {
+        const local = path.join(
+          repo.root,
+          'tools',
+          'rg-fff',
+          'target',
+          profile,
+          'rg-fff'
+        );
+        if (!(await isExecutable(local))) return null;
+        try {
+          return { path: local, mtime: (await fs.lstat(local)).mtimeMs };
+        } catch {
+          return null;
+        }
+      })
+    );
+    const local = candidates
+      .filter(candidate => candidate !== null)
+      .sort((a, b) => b.mtime - a.mtime)[0]?.path;
+    if (local) {
+      try {
+        await fs.mkdir(path.dirname(dest), { recursive: true });
+        const hash = await digest(local);
+        await removeStamp(stamp);
+        if (!(await isExecutable(dest)) || (await digest(dest)) !== hash) {
           await install(local, dest);
         }
+        await fs.writeFile(localStamp, hash);
         return dest;
+      } catch {
+        return null;
       }
     }
   }
@@ -174,6 +200,7 @@ export async function ensureRgFffWrapper(): Promise<string | null> {
     }
 
     await fs.mkdir(path.dirname(dest), { recursive: true });
+    await removeStamp(stamp);
     const tmp = `${dest}.tmp-${process.pid}`;
     try {
       await fs.writeFile(tmp, bin);
@@ -183,7 +210,8 @@ export async function ensureRgFffWrapper(): Promise<string | null> {
       await fs.unlink(tmp).catch(() => {});
       throw e;
     }
-    await fs.writeFile(stamp, version).catch(() => {});
+    await removeStamp(localStamp);
+    await fs.writeFile(stamp, version);
     return dest;
   } catch {
     return null;
