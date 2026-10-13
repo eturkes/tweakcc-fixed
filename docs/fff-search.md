@@ -5,7 +5,8 @@ apply the patch. This is opt-in. It affects Claude Code's Bash search functions,
 embedded ripgrep resolver, and normal `@` file suggestions.
 
 Eligible searches use fff 0.11 with file-access history and Git activity for
-ranking. Count and context output retain that file order. Successful Read, Edit,
+ranking. Ripgrep counts and context output retain that file order. Managed grep counts
+use the original engine to preserve zero counts, empty files, and option precedence. Successful Read, Edit,
 and Write operations update the local history; a search followed by reading one
 of its results also teaches the query-to-file preference.
 
@@ -42,8 +43,10 @@ and individual-file searches continue through the original embedded tool.
 `find` retains its original results, with optional fuzzy suggestions on an empty
 simple filename lookup.
 
-By default, grep patterns use ripgrep-style syntax. Set `RG_FFF_FIRST=0` to request
-the embedded grep dialect instead. Fuzzy content suggestions are approximate and
+Grep preserves its native basic-regex syntax; use `grep -E` for extended regex
+or `grep -F` for literal punctuation. Ripgrep retains ripgrep syntax. Unsupported
+regex dialect features use the original engine. The legacy `RG_FFF_FIRST`
+environment variable no longer overrides command semantics. Fuzzy content suggestions are approximate and
 marked accordingly. `[def]` is a navigation hint; read the code to confirm it.
 
 Inside Claude Code's Bash shell:

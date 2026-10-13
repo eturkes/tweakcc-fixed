@@ -76,7 +76,7 @@ const BASH_GUIDANCE_MARKER = 'most-relevant-first';
 const BASH_GUIDANCE =
   ' For Bash content searches, use the managed grep function so eligible queries go through fff. Eligible grep/rg results served by fff are ranked ' +
   BASH_GUIDANCE_MARKER +
-  ' using file usage and Git activity (read a promising hit first); fallback searches retain native ordering. A trailing [def] is an advisory definition hint. Prefer a bare identifier for symbol lookup and use -F for literal punctuation. After two locating searches, read candidate code before broadening. Add --fuzzy for approximate content matches, e.g. grep --fuzzy SomeName; verify approximate hits by reading the file.';
+  ' using file usage and Git activity (read a promising hit first); fallback searches retain native ordering. A trailing [def] is an advisory definition hint. Prefer a bare identifier for symbol lookup, grep -E for alternation, and -F for literal punctuation. After two locating searches, read candidate code before broadening. Add --fuzzy for approximate content matches, e.g. grep --fuzzy SomeName; verify approximate hits by reading the file.';
 
 /** [CRITICAL] Repoint the grep→ugrep / find→bfs shadow at the wrapper. */
 const repointBashSearchShadow = (
