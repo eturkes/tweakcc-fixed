@@ -499,7 +499,7 @@ try {
     /^src\/ZetaService\.ts(?: \[modified\])? -> Read/
   );
   assert.match(
-    control(['-n', 'Service'], rankingEnv),
+    control(['--no-fallback', '-n', 'Service', 'src'], rankingEnv),
     /^src\/ZetaService\.ts:/
   );
   process.stdout.write(
