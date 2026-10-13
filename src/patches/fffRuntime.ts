@@ -4,13 +4,13 @@ import { buildFffContextRuntime } from './fffContext';
 export const buildFffUsageRuntime = (wrapperPath: string): string => {
   const wrapper = escapeNonAscii(JSON.stringify(wrapperPath));
   return (
-    buildFffContextRuntime(wrapperPath) +
+    buildFffContextRuntime() +
     'globalThis.__tweakccFffRecord??=((operation,filePath)=>{' +
     'if(!["read","edit","write"].includes(operation)||typeof filePath!=="string")return;' +
     'let sid=globalThis.__tweakccFffContext?.sid??"",cwd=globalThis.__tweakccFffCwd();' +
     'Promise.resolve().then(()=>import("node:child_process")).then(({execFile})=>{' +
     `let child=execFile(${wrapper},["--record-access",filePath,String(process.pid),sid],` +
-    '{cwd,timeout:500,maxBuffer:65536,windowsHide:true},()=>{globalThis.__tweakccFffRefresh(true);});' +
+    '{cwd,timeout:500,maxBuffer:65536,windowsHide:true},()=>{});' +
     'child.on("error",()=>{});child.unref();' +
     '}).catch(()=>{});});'
   );

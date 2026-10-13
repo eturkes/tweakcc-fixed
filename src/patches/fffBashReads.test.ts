@@ -10,12 +10,13 @@ import { applyPatchImplementations } from './index';
 const commandFixture =
   ';function build(command){let $commands=[];$commands.push("snapshot");$commands.push("scrub");$commands.push(`eval ${command}`),$commands.push(`pwd -P >| ${quote(["cwd"] )}`);return $commands}';
 const wrapper = '/tmp/rg-fff';
+const searchFixture =
+  'var glob="Glob";var grep="Grep";var empty=new Set;var hidden=new Set([glob,grep]);' +
+  'function excluded(){if(!gate()||!bash())return empty;let names=hidden,aliases;return aliases??names}' +
+  ';function snippets(){if(!gate())return null;return["unalias find 2>/dev/null || true","unalias grep 2>/dev/null || true",""]}' +
+  ';function snapshot(){let commands=snippets();if(commands!==null){const marker="FIND_GREP_FUNC_END";return commands}return""}';
 const fixtureFor = (binary: string): string =>
-  writeSwapRipgrepForFff(
-    ';function shadow($tool){return`local _cc_bin=""; (exec -a ${$tool} "$_cc_bin" "$@")`;}' +
-      commandFixture,
-    binary
-  )!;
+  writeSwapRipgrepForFff(searchFixture + commandFixture, binary)!;
 const fixture = fixtureFor(wrapper);
 
 describe('fffBashReads', () => {
@@ -66,7 +67,7 @@ describe('fffBashReads', () => {
     }
   });
 
-  it('requires the actual managed search dependency for selective application and critical failures', () => {
+  it('requires the actual shell integration for selective application and critical failures', () => {
     const error = vi.spyOn(console, 'error').mockImplementation(() => {});
     try {
       const implementations = {
@@ -123,7 +124,7 @@ describe('fffBashReads', () => {
       const once = writeFffBashReads(fixture, '/tmp/viewers', wrapper)!;
       expect(writeFffBashReads(once, '/tmp/viewers', wrapper)).toBe(once);
       expect(error).toHaveBeenCalledWith(
-        'patch: fffBashReads: managed fff Bash search patch is required'
+        'patch: fffBashReads: managed fff shell integration is required'
       );
     } finally {
       error.mockRestore();

@@ -195,9 +195,7 @@ function __tweakccRouterSummarize(s){
 function __tweakccRouterBody(s,text,model){
   var settings=__tweakccRouterSettings,criteria={};if(settings.levels.length>255)return null;settings.levels.forEach(function(level,index){criteria[String(index)]=level.effort+": "+level.help});
   var body={model:settings.model,state:{currentMessage:text,summary:s.summary,recentEvents:s.events.map(function(event){return {role:event.role,text:event.text}}),contextOmitted:!!s.contextOmitted||!!s.compactionSource,model:typeof model==="string"?model:"unknown",currentMessageOmitted:text.includes("[content omitted]")||text.includes("[non-text content unavailable to router]")},questions:{effort:{type:"choice",instructions:${JSON.stringify(JEV_EFFORT_INSTRUCTIONS)},criteria:criteria}}};
-  try{var raw=typeof globalThis.__tweakccFffScope==="function"?globalThis.__tweakccFffScope(s.sid):null,keys=["indexedFiles","gitModifiedFiles","recentSessionFiles","recentSessionDirectories"],scope={};if(raw&&keys.every(function(key){return Number.isSafeInteger(raw[key])&&raw[key]>=0&&raw[key]<=10000000})){keys.forEach(function(key){scope[key]=raw[key]});body.state.fffScope={counts:scope,meaning:"Partial index and recent file usage in the current session/directory; weak breadth evidence, not the number of files this task must change."};}}catch(e){}
   while(__tweakccRouterBytes(body)>settings.budget){
-    if(body.state.fffScope){delete body.state.fffScope;continue}
     body.state.contextOmitted=true;
     var events=body.state.recentEvents;
     if(events.length){events.shift();continue}

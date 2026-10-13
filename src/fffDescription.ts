@@ -1,10 +1,10 @@
 export const FFF_FEATURE_TITLE =
-  '[EXPERIMENTAL] fff search and file autocomplete';
+  '[EXPERIMENTAL] native search and fff file autocomplete';
 
 export const FFF_FEATURE_DESCRIPTION =
-  'Use fff for eligible Bash searches and fuzzy @ file suggestions. Exact symbol searches put likely declarations first, then use query preferences, persistent Read/Edit/Write history, optional Bash-read learning, and Git activity; unsupported options or scopes use the original search tool. Grep preserves its native syntax; use -E for extended regex or -F for literals. Adds fff files <query> for ranked filename discovery and fff --stats for aggregate local service counts. Appends recent session file pointers after reactive compaction and supplies aggregate breadth counts to the Jev effort router. The daemon is shared by Git worktree, prewarms at shell setup, and bounds its cache and requests. History remains local under ~/.tweakcc/fff. Your terminal outside Claude Code is unchanged.';
+  'Keep native Grep and Glob available in Claude Code. Grep retains native matching, result ordering, and pagination. Use fff for fuzzy @ file suggestions and fff files <query>; filename ranking can use local Read/Edit/Write history, optional Bash reads, and Git activity. Bash grep, rg, and find keep their native behavior. The local daemon prewarms at shell setup; fff --stats reports aggregate service counts. History stays under ~/.tweakcc/fff.';
 
 export const FFF_BASH_READ_TITLE = 'fff: learn from Bash file reads';
 
 export const FFF_BASH_READ_DESCRIPTION =
-  'Teach fff file ranking and session navigation from successful supported cat, head, tail, and single-file sed commands in Claude Code. Requires fff search; enabled by default. Preserves the original viewer output and status, and skips failed or ambiguous reads. Stores file paths and usage metadata locally, without adding file contents or Bash command text to history. Absolute viewer paths, custom shell viewers, and stdin-only reads can bypass learning.';
+  'Teach fff filename ranking from successful supported cat, head, tail, and single-file sed commands in Claude Code. Requires the native search and fff autocomplete integration; enabled by default. Preserves viewer output and status, and skips failed or ambiguous reads. Stores file paths and usage metadata locally. Absolute viewer paths, custom shell viewers, and stdin-only reads can bypass learning.';

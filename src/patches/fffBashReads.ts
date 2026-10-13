@@ -1,6 +1,6 @@
 import { escapeNonAscii } from '../utils';
 import { showDiff } from './index';
-import { hasFffBashSearch } from './swapRipgrepForFff';
+import { hasFffShellIntegration } from './swapRipgrepForFff';
 
 export const fffViewerSetup = (directory: string, wrapper: string): string => {
   const quote = (value: string) => "'" + value.replaceAll("'", "'\\''") + "'";
@@ -30,9 +30,9 @@ export const writeFffBashReads = (
   directory: string,
   wrapper: string
 ): string | null => {
-  if (!hasFffBashSearch(file, wrapper)) {
+  if (!hasFffShellIntegration(file, wrapper)) {
     console.error(
-      'patch: fffBashReads: managed fff Bash search patch is required'
+      'patch: fffBashReads: managed fff shell integration is required'
     );
     return null;
   }

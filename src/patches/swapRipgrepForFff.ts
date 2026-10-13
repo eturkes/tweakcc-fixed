@@ -1,184 +1,105 @@
 // Please see the note about writing patches in ./index
-//
-// [EXPERIMENTAL] Routes Claude Code's Bash content/file search through our `fff`
-// multicall wrapper (which serves fff for eligible literal searches and re-execs
-// the real embedded tool otherwise). KEEPS every engine; nothing is removed.
-//
-// CC 2.1.186 does NOT expose a Grep/Glob tool to the main agent (the search-tools
-// gate). Instead it SHADOWS the shell `grep`→embedded `ugrep` and `find`→embedded
-// `bfs` in its own shell snapshot, and offers `rg` separately. The model runs
-// `grep` ~136x more than `rg` (measured), so the high-value target is the
-// ugrep/bfs shadow, not ripgrep. We repoint all three at the wrapper.
-//
-// Three transforms, in priority order:
-//   1. [CRITICAL] Bash-search shadow repoint. The snapshot-generator emits
-//      `ARGV0=${t} "$_cc_bin" ${o}` (×2: zsh/win32) and `(exec -a ${t} "$_cc_bin"
-//      ${o})` (×1: else), where ${t} is ugrep|bfs and $_cc_bin is the claude
-//      binary. We swap "$_cc_bin" → our wrapper (3 occurrences, all in this
-//      template). The model's grep/find then transparently hit fff; the wrapper
-//      re-execs the real embedded ugrep/bfs (via CLAUDE_CODE_EXECPATH) on miss.
-//   2. [BEST-EFFORT] ripgrep resolver repoint — the embedded descriptor
-//      {mode:"embedded",command:process.execPath,args:["--no-config"],argv0:"rg"}
-//      → system-mode wrapper. Catches the rare `rg` calls + the Grep tool that
-//      SUBAGENTS still receive (local-agent entrypoint). process.execPath is
-//      forwarded so the wrapper can re-exec the embedded rg for fallback.
-//   3. [BEST-EFFORT] fff usage guidance appended to BOTH Grep tool description
-//      variants (full + concise/velvet) — only seen by subagents that have the
-//      Grep tool; harmless otherwise. Append-only, on top of edited prompts.
 
 import { debug, escapeNonAscii } from '../utils';
 import { showDiff } from './index';
 import { observeFffFileUsage, useFffAutocomplete } from './fffRuntime';
-import { attachFffCompaction, bindFffSession } from './fffContext';
+import { bindFffSession } from './fffContext';
 
-/** Make a wrapper path safe to splice into the backtick-template shell shadow:
- *  (1) escapeNonAscii so non-ASCII survives Bun's Latin-1 cli.js store as \uXXXX
- *  (not mojibake); (2) escape backtick and ${ so a path containing either can't
- *  terminate the template / trigger interpolation (the "function wrapper" crash
- *  class). The double-quoted JS string contexts (rg descriptor) need only (1). */
-const shadowSafePath = (wrapperPath: string): string =>
-  escapeNonAscii(
-    JSON.stringify("'" + wrapperPath.replaceAll("'", "'\\''") + "'").slice(
-      1,
-      -1
+const GREP_DESC_ANCHOR = 'built on ripgrep';
+const GREP_GUIDANCE_MARKER = 'Native Grep navigation:';
+const GREP_GUIDANCE =
+  '\n\n' +
+  GREP_GUIDANCE_MARKER +
+  ' For broad file discovery by content, use output_mode files_with_matches. Use Glob for filename patterns. Narrow the path or glob, use output_mode content with a small context window to inspect matches, and Read candidate files to inspect current code. Matches are textual candidates. When LSP is available and a source position is known, use goToDefinition, findReferences, or incomingCalls for definitions, references, or callers.';
+
+const BASH_GUIDANCE_ANCHOR = 'Prefer dedicated tools over';
+const BASH_GUIDANCE_MARKER = 'Native search and fff files:';
+const BASH_GUIDANCE =
+  ' For broad file discovery by content, use Grep with output_mode files_with_matches. Use Glob for filename patterns. Narrow the path or glob, use Grep output_mode content with a small context window, and Read candidate files to inspect current code. When LSP is available and a source position is known, use goToDefinition, findReferences, or incomingCalls for definitions, references, or callers. Use fff files SomeName for fuzzy filename discovery, or fff --stats for local aggregate service counts.';
+
+const fffShellSetup = (wrapperPath: string): string => {
+  const quoted = "'" + wrapperPath.replaceAll("'", "'\\''") + "'";
+  return (
+    escapeNonAscii(
+      JSON.stringify(`if [ -x ${quoted} ]; then export RG_FFF_SESSION=`)
+    ) +
+    '+process.pid+' +
+    escapeNonAscii(
+      JSON.stringify(
+        '; unalias fff 2>/dev/null || true; ' +
+          `function fff { ${quoted} "$@"; }; ` +
+          `${quoted} --warmup "$PWD" >/dev/null 2>&1 || true; fi`
+      )
     )
-  )
-    .replace(/`/g, '\\`')
-    .replace(/\$\{/g, '\\${');
-
-const hasShadowInvocation = (file: string, wrapperPath: string): boolean => {
-  const wp = shadowSafePath(wrapperPath);
-  return [
-    ...file.matchAll(/(?:ARGV0=\$\{[$\w]+\} |exec -a \$\{[$\w]+\} )/g),
-  ].some(match => file.startsWith(wp, match.index + match[0].length));
+  );
 };
 
-export const hasFffBashSearch = (file: string, wrapperPath: string): boolean =>
-  file.includes('export RG_FFF_SESSION="${process.pid}"; local _cc_bin=') &&
-  hasShadowInvocation(file, wrapperPath);
-
-// ── 1. Bash-search shadow (ugrep/bfs) — CRITICAL ──────────────────────────────
-const SHADOW_TOKEN = '"$_cc_bin"';
-
-// ── 2. ripgrep resolver — best-effort ─────────────────────────────────────────
-const EMBEDDED_DESCRIPTOR =
-  '{mode:"embedded",command:process.execPath,args:["--no-config"],argv0:"rg"}';
-const EMBEDDED_RE =
-  /\{mode:"embedded",command:process\.execPath,args:\[[^\]]*\],argv0:"rg"\}/;
-
-// Guidance text is minimal by design: only what the model can't infer and that
-// changes behavior. NO backticks/quotes — these splice into a backtick template
-// literal, where a stray backtick breaks parity (the "Expected CommonJS module
-// to have a function wrapper" crash class).
-
-// ── 3. Grep-tool-description guidance — best-effort (subagents; the structured
-//      Grep tool has no --fuzzy flag, so don't advertise it here). ─────────────
-const GREP_DESC_ANCHOR = 'built on ripgrep';
-const FFF_GUIDANCE_MARKER = 'Search backend note (fff):';
-const FFF_GUIDANCE =
-  '\n\n' +
-  FFF_GUIDANCE_MARKER +
-  ' eligible exact symbol searches put likely declarations first, then rank by query preference, file usage, and Git activity. Prefer a bare identifier when locating a symbol; a trailing [def] is an advisory definition hint. After two locating searches, read promising files before broadening the search.';
-
-// ── 4. Bash-description guidance — best-effort (the MAIN agent's only search
-//      surface; it has no Grep tool, so this is where the --fuzzy lever lives).
-//      Inserted at the end of the "Prefer the dedicated tool" bullet. ──────────
-// Anchor on the PRISTINE phrasing (verified in the cli.js backup: "Prefer dedicated
-// tools over ${o} ..."). The earlier "Prefer the dedicated tool" exists only in the
-// maintainer's LCC overrides, so public/default installs silently never got this
-// main-agent guidance.
-const BASH_GUIDANCE_ANCHOR = 'Prefer dedicated tools over';
-const BASH_GUIDANCE_MARKER = 'most-relevant-first';
-const BASH_GUIDANCE =
-  ' For Bash content searches, use the managed grep function so eligible queries go through fff. Eligible grep/rg results served by fff are ranked ' +
-  BASH_GUIDANCE_MARKER +
-  ' with likely declarations first for exact symbol queries, then query preference, file usage, and Git activity (read a promising hit first); fallback searches retain native ordering. A trailing [def] is an advisory definition hint. Start symbol lookup with grep -rn SomeName . and read a promising declaration before expanding the query. Use grep -E for alternation, and -F for literal punctuation. After two locating searches, read candidate code before broadening. Add --fuzzy for approximate content matches, e.g. grep --fuzzy SomeName; verify approximate hits by reading the file.';
-
-/** [CRITICAL] Repoint the grep→ugrep / find→bfs shadow at the wrapper. */
-const repointBashSearchShadow = (
+export const hasFffShellIntegration = (
   file: string,
   wrapperPath: string
-): string | null => {
-  const wp = shadowSafePath(wrapperPath); // shell-quoted + template/Latin-1 safe
-  // Idempotent: already repointed (wrapper sits where $_cc_bin was).
-  const count = file.split(SHADOW_TOKEN).length - 1;
-  if (count === 0) {
-    if (hasShadowInvocation(file, wrapperPath)) return file;
+): boolean => file.includes('=[' + fffShellSetup(wrapperPath) + ',');
+
+const installFffShell = (file: string, wrapperPath: string): string | null => {
+  if (hasFffShellIntegration(file, wrapperPath)) return file;
+  const pattern =
+    /function ([$\w]+)\(\)\{if\(![$\w]+\(\)\)return null;return\["unalias find 2>\/dev\/null \|\| true","unalias grep 2>\/dev\/null \|\| true",/g;
+  const matches = [...file.matchAll(pattern)];
+  if (matches.length !== 1 || matches[0].index === undefined) {
     console.error(
-      'patch: swapRipgrepForFff: bash-search shadow anchor "$_cc_bin" not found'
+      'patch: swapRipgrepForFff: failed to find unique native shell setup'
     );
     return null;
   }
-  let newFile = file.split(SHADOW_TOKEN).join(wp);
-  newFile = newFile.replaceAll(
-    'local _cc_bin=',
-    'export RG_FFF_SESSION="${process.pid}"; local _cc_bin='
+  const consumers = [
+    ...file.matchAll(/let ([$\w]+)=([$\w]+)\(\);if\(\1!==null\)/g),
+  ].filter(
+    match =>
+      match[2] === matches[0][1] &&
+      file
+        .slice(match.index, match.index! + 1000)
+        .includes('FIND_GREP_FUNC_END')
   );
-  // Defense-in-depth: the snapshot's guard `if [[ ! -x $_cc_bin ]]; then command
-  // ${e} ...; return; fi` checks only the claude binary — but the ARGV0 line now
-  // runs the WRAPPER, not $_cc_bin. Also gate on the wrapper being executable, so a
-  // missing/non-exec wrapper degrades to the real system tool instead of
-  // hard-failing every grep/find. (Best-effort: skipped cleanly if the shape drifts.)
-  const GUARD = '[[ ! -x $_cc_bin ]]';
-  if (newFile.includes(GUARD)) {
-    newFile = newFile.split(GUARD).join(`[[ ! -x $_cc_bin || ! -x ${wp} ]]`);
+  if (consumers.length !== 1 || consumers[0].index === undefined) {
+    console.error(
+      'patch: swapRipgrepForFff: failed to find unique native shell setup consumer'
+    );
+    return null;
   }
-  showDiff(
-    file,
-    newFile,
-    wp,
-    file.indexOf(SHADOW_TOKEN),
-    file.indexOf(SHADOW_TOKEN) + SHADOW_TOKEN.length
-  );
-  return newFile;
-};
-
-/** [BEST-EFFORT] Repoint the embedded ripgrep resolver descriptor. */
-const repointRgResolver = (file: string, wrapperPath: string): string => {
-  if (file.includes('--fff-claude-bin=')) return file; // idempotent
-  let start = file.indexOf(EMBEDDED_DESCRIPTOR);
-  let end = start === -1 ? -1 : start + EMBEDDED_DESCRIPTOR.length;
-  if (start === -1) {
-    const m = file.match(EMBEDDED_RE);
-    if (!m || m.index === undefined) {
-      debug(
-        'patch: swapRipgrepForFff: ripgrep resolver descriptor not found; skipping rg repoint'
-      );
-      return file;
-    }
-    start = m.index;
-    end = m.index + m[0].length;
-  }
-  const replacement =
-    // Double-quoted JS string context: ${/backtick are inert, but non-ASCII still
-    // mojibakes in Bun's Latin-1 store -> escapeNonAscii.
-    `{mode:"system",command:${escapeNonAscii(JSON.stringify(wrapperPath))},` +
-    `args:["--fff-claude-bin="+process.execPath]}`;
-  const newFile = file.slice(0, start) + replacement + file.slice(end);
-  showDiff(file, newFile, replacement, start, end);
-  return newFile;
-};
-
-const prewarmShellSearch = (file: string, wrapperPath: string): string => {
-  if (file.includes('function fff {')) return file;
-  const anchor =
-    '"unalias find 2>/dev/null || true","unalias grep 2>/dev/null || true",';
-  const start = file.indexOf(anchor);
-  if (start < 0) return file;
-  const quoted = "'" + wrapperPath.replaceAll("'", "'\\''") + "'";
-  const commands = [
-    ...(!file.includes(' --warmup ')
-      ? [
-          `if [ -x ${quoted} ]; then ${quoted} --warmup "$PWD" >/dev/null 2>&1 || true; fi`,
-        ]
-      : []),
-    'unalias fff 2>/dev/null || true',
-    `function fff { ${quoted} "$@"; }`,
-  ];
+  const match = consumers[0];
+  const start = match.index!;
   const insertion =
-    commands.map(command => escapeNonAscii(JSON.stringify(command))).join(',') +
-    ',';
-  return file.slice(0, start) + insertion + file.slice(start);
+    `let ${match[1]}=[${fffShellSetup(wrapperPath)},${match[2]}()].filter(Boolean).join("\\n");` +
+    `if(${match[1]}!==null)`;
+  const updated =
+    file.slice(0, start) + insertion + file.slice(start + match[0].length);
+  showDiff(file, updated, insertion, start, start + match[0].length);
+  return updated;
+};
+
+export const restoreNativeSearchTools = (file: string): string | null => {
+  const pattern =
+    /(?:^|[;}])var ([$\w]+)=new Set;var ([$\w]+)=new Set\(\[([$\w]+),([$\w]+)\]\);function ([$\w]+)\(\)\{if\(![$\w]+\(\)\|\|![$\w]+\(\)\)return \1;let ([$\w]+)=([$\w]+),/g;
+  const matches = [...file.matchAll(pattern)].filter(
+    match =>
+      file.includes(`var ${match[3]}="Glob";`) &&
+      file.includes(`var ${match[4]}="Grep";`) &&
+      [match[1], match[2]].includes(match[7])
+  );
+  if (matches.length !== 1 || matches[0].index === undefined) {
+    console.error(
+      'patch: swapRipgrepForFff: failed to find unique native search omission gate'
+    );
+    return null;
+  }
+  const match = matches[0];
+  if (match[7] === match[1]) return file;
+  const suffix = `let ${match[6]}=${match[7]},`;
+  const start = match.index! + match[0].length - suffix.length;
+  const replacement = `let ${match[6]}=${match[1]},`;
+  const updated =
+    file.slice(0, start) + replacement + file.slice(start + suffix.length);
+  showDiff(file, updated, replacement, start, start + suffix.length);
+  return updated;
 };
 
 const skipString = (s: string, i: number): number => {
@@ -289,23 +210,89 @@ const appendBeforeClosingBacktick = (
   return out;
 };
 
+const appendAsyncGuidance = (method: string, guidance: string): string =>
+  method.replace(
+    /return ([\s\S]*)\}$/,
+    (_, expression: string) =>
+      'return(await ' +
+      expression +
+      ')+' +
+      escapeNonAscii(JSON.stringify(guidance)) +
+      '}'
+  );
+
 const appendBashGuidance = (file: string, guidance: string): string => {
-  const marker = 'FFF Bash search:';
-  if (file.includes(marker)) return file;
+  if (file.includes(BASH_GUIDANCE_MARKER)) return file;
+  const start = file.indexOf('searchHint:"execute shell commands"');
+  const end = start < 0 ? -1 : file.indexOf(',isConcurrencySafe(', start);
+  if (start >= 0 && end > start && end - start < 10000) {
+    const methods = file.slice(start, end);
+    const prompt = methods.match(
+      /async prompt\(\{model:([$\w]+),tools:([$\w]+),leanPrompt:([$\w]+),bashFirstTrimmed:([$\w]+)\}\)\{return [$\w]+\(\1,await [$\w]+\(\2\),\2,\3,\4\)\}/
+    );
+    if (prompt) {
+      const updated = methods.replace(
+        prompt[0],
+        appendAsyncGuidance(prompt[0], '\n\n' + BASH_GUIDANCE_MARKER + guidance)
+      );
+      const result = file.slice(0, start) + updated + file.slice(end);
+      showDiff(file, result, updated, start, end);
+      return result;
+    }
+  }
   const headers =
     /return\["Executes (?:a|a given) bash command and returns its output\.",/g;
   if (headers.test(file)) {
     return file.replace(
       headers,
-      header => header + escapeNonAscii(JSON.stringify(marker + guidance)) + ','
+      header =>
+        header +
+        escapeNonAscii(JSON.stringify(BASH_GUIDANCE_MARKER + guidance)) +
+        ','
     );
   }
   return appendBeforeClosingBacktick(
     file,
     BASH_GUIDANCE_ANCHOR,
-    guidance,
+    ' ' + BASH_GUIDANCE_MARKER + guidance,
     BASH_GUIDANCE_MARKER,
     'Bash description'
+  );
+};
+
+const appendGrepGuidance = (file: string): string => {
+  if (file.includes(GREP_GUIDANCE_MARKER)) return file;
+  const start = file.indexOf(
+    'searchHint:"search file contents with regex (ripgrep)"'
+  );
+  const end = start < 0 ? -1 : file.indexOf(',create(', start);
+  if (start >= 0 && end > start && end - start < 20000) {
+    const methods = file.slice(start, end);
+    const description = methods.match(
+      /async description\(\)\{return ([$\w]+)\(void 0\)\}/
+    );
+    const prompt = methods.match(
+      /async prompt\(\{model:([$\w]+),leanPrompt:([$\w]+)\}\)\{return ([$\w]+)\(\1,\2\)\}/
+    );
+    if (description && prompt && description[1] === prompt[3]) {
+      let updated = methods;
+      for (const match of [description, prompt]) {
+        updated = updated.replace(
+          match[0],
+          appendAsyncGuidance(match[0], GREP_GUIDANCE)
+        );
+      }
+      const result = file.slice(0, start) + updated + file.slice(end);
+      showDiff(file, result, updated, start, end);
+      return result;
+    }
+  }
+  return appendBeforeClosingBacktick(
+    file,
+    GREP_DESC_ANCHOR,
+    GREP_GUIDANCE,
+    GREP_GUIDANCE_MARKER,
+    'Grep description'
   );
 };
 
@@ -313,32 +300,22 @@ export const writeSwapRipgrepForFff = (
   oldFile: string,
   wrapperPath: string
 ): string | null => {
-  // 1. Bash-search shadow (the 40k grep/find path) — CRITICAL.
-  const shadowed = repointBashSearchShadow(oldFile, wrapperPath);
-  if (shadowed === null) return null;
-  let file = prewarmShellSearch(shadowed, wrapperPath);
-
-  // 2. ripgrep resolver (rare rg + subagent Grep tool) — best-effort.
-  file = repointRgResolver(file, wrapperPath);
-
-  // 3. Grep-tool-description guidance (subagents) — best-effort.
-  file = appendBeforeClosingBacktick(
-    file,
-    GREP_DESC_ANCHOR,
-    FFF_GUIDANCE,
-    FFF_GUIDANCE_MARKER,
-    'Grep description'
-  );
-
-  // 4. Bash-description guidance (main agent: ranking + the --fuzzy lever) —
-  //    best-effort.
-  file = appendBashGuidance(
-    file,
-    BASH_GUIDANCE +
-      (file.includes('function fff {')
-        ? ' Use fff files SomeName for fuzzy filename discovery, or fff --stats for local aggregate service counts.'
-        : '')
-  );
+  if (
+    oldFile.includes(
+      'export RG_FFF_SESSION="${process.pid}"; local _cc_bin='
+    ) ||
+    oldFile.includes('args:["--fff-claude-bin="+process.execPath]')
+  ) {
+    console.error(
+      'patch: swapRipgrepForFff: legacy search interception requires applying from pristine Claude Code'
+    );
+    return null;
+  }
+  const restored = restoreNativeSearchTools(oldFile);
+  if (restored === null) return null;
+  const installed = installFffShell(restored, wrapperPath);
+  if (installed === null) return null;
+  let file = appendBashGuidance(appendGrepGuidance(installed), BASH_GUIDANCE);
 
   const observed = observeFffFileUsage(file, wrapperPath);
   if (observed === null) {
@@ -349,14 +326,11 @@ export const writeSwapRipgrepForFff = (
     file = observed;
   }
 
-  file = prewarmShellSearch(file, wrapperPath);
   const autocomplete = useFffAutocomplete(file, wrapperPath);
   if (autocomplete !== null) file = autocomplete;
 
-  const bound = bindFffSession(file, wrapperPath);
+  const bound = bindFffSession(file);
   if (bound !== null) file = bound;
-  const compacted = attachFffCompaction(file);
-  if (compacted !== null) file = compacted;
 
   return file;
 };
