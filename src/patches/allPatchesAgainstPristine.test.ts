@@ -398,12 +398,16 @@ const INVOCATIONS: Record<PatchId, (src: string) => string | null> = {
   'worktree-mode': c => writeWorktreeMode(c),
   'session-memory': c => writeSessionMemory(c),
   'swap-ripgrep-for-fff': c => writeSwapRipgrepForFff(c, FFF_WRAPPER_PATH),
-  'fff-bash-reads': c =>
-    writeFffBashReads(
-      c,
-      path.join(path.dirname(FFF_WRAPPER_PATH), 'viewers'),
-      FFF_WRAPPER_PATH
-    ),
+  'fff-bash-reads': c => {
+    const search = writeSwapRipgrepForFff(c, FFF_WRAPPER_PATH);
+    return search === null
+      ? null
+      : writeFffBashReads(
+          search,
+          path.join(path.dirname(FFF_WRAPPER_PATH), 'viewers'),
+          FFF_WRAPPER_PATH
+        );
+  },
   'dream-mode': c => writeDreamMode(c),
   'lean-memory-types': c => writeLeanMemoryTypes(c),
   // All three bindings, each distinct: the selection expression emits a branch

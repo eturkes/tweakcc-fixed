@@ -4,10 +4,19 @@ import * as os from 'node:os';
 import * as path from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
 import { fffViewerSetup, writeFffBashReads } from './fffBashReads';
+import { writeSwapRipgrepForFff } from './swapRipgrepForFff';
+import { applyPatchImplementations } from './index';
 
-const fixture =
+const commandFixture =
   ';function build(command){let $commands=[];$commands.push("snapshot");$commands.push("scrub");$commands.push(`eval ${command}`),$commands.push(`pwd -P >| ${quote(["cwd"] )}`);return $commands}';
 const wrapper = '/tmp/rg-fff';
+const fixtureFor = (binary: string): string =>
+  writeSwapRipgrepForFff(
+    ';function shadow($tool){return`local _cc_bin=""; (exec -a ${$tool} "$_cc_bin" "$@")`;}' +
+      commandFixture,
+    binary
+  )!;
+const fixture = fixtureFor(wrapper);
 
 describe('fffBashReads', () => {
   it('inserts setup after snapshot and scrubbing, immediately before evaluation', () => {
@@ -25,7 +34,11 @@ describe('fffBashReads', () => {
   it('keeps JS and shell syntax valid for difficult directory names', () => {
     const directory = "/tmp/José/'`x${HOME}/viewers";
     const trickyWrapper = directory + '/../rg-fff';
-    const patched = writeFffBashReads(fixture, directory, trickyWrapper)!;
+    const patched = writeFffBashReads(
+      fixtureFor(trickyWrapper),
+      directory,
+      trickyWrapper
+    )!;
     expect(patched).not.toContain('José');
     expect(patched).toContain('Jos\\u00e9');
     const commands = new Function('quote', patched + ';return build("task")')(
@@ -48,6 +61,70 @@ describe('fffBashReads', () => {
         writeFffBashReads(fixture + fixture, '/tmp/viewers', wrapper)
       ).toBeNull();
       expect(error).toHaveBeenCalledTimes(2);
+    } finally {
+      error.mockRestore();
+    }
+  });
+
+  it('requires the actual managed search dependency for selective application and critical failures', () => {
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+    try {
+      const implementations = {
+        'no-global-cache-scope': {
+          fn: (file: string) => file,
+          condition: false,
+        },
+        'swap-ripgrep-for-fff': {
+          fn: (file: string) => writeSwapRipgrepForFff(file, wrapper),
+          condition: true,
+        },
+        'fff-bash-reads': {
+          fn: (file: string) =>
+            writeFffBashReads(file, '/tmp/viewers', wrapper),
+          condition: true,
+        },
+      } as unknown as Parameters<typeof applyPatchImplementations>[1];
+      for (const filter of [
+        ['fff-bash-reads'],
+        ['swap-ripgrep-for-fff', 'fff-bash-reads'],
+      ]) {
+        const result = applyPatchImplementations(
+          commandFixture,
+          implementations,
+          filter
+        );
+        expect(result.content).toBe(commandFixture);
+        expect(
+          result.results.find(item => item.id === 'fff-bash-reads')?.failed
+        ).toBe(true);
+      }
+      const disabled = applyPatchImplementations(
+        commandFixture,
+        {
+          ...implementations,
+          'swap-ripgrep-for-fff': {
+            ...implementations['swap-ripgrep-for-fff'],
+            condition: false,
+          },
+          'fff-bash-reads': {
+            ...implementations['fff-bash-reads'],
+            condition: false,
+          },
+        },
+        ['swap-ripgrep-for-fff', 'fff-bash-reads']
+      );
+      expect(disabled.content).toBe(commandFixture);
+      expect(
+        disabled.results.filter(item => item.id === 'fff-bash-reads')[0].skipped
+      ).toBe(true);
+      expect(
+        writeFffBashReads(fixture, '/tmp/viewers', '/other-wrapper')
+      ).toBeNull();
+      const once = writeFffBashReads(fixture, '/tmp/viewers', wrapper)!;
+      expect(writeFffBashReads(once, '/tmp/viewers', wrapper)).toBe(once);
+      expect(error).toHaveBeenCalledWith(
+        'patch: fffBashReads: managed fff Bash search patch is required'
+      );
     } finally {
       error.mockRestore();
     }

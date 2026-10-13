@@ -37,9 +37,25 @@ import { attachFffCompaction, bindFffSession } from './fffContext';
  *  terminate the template / trigger interpolation (the "function wrapper" crash
  *  class). The double-quoted JS string contexts (rg descriptor) need only (1). */
 const shadowSafePath = (wrapperPath: string): string =>
-  escapeNonAscii(JSON.stringify(wrapperPath))
+  escapeNonAscii(
+    JSON.stringify("'" + wrapperPath.replaceAll("'", "'\\''") + "'").slice(
+      1,
+      -1
+    )
+  )
     .replace(/`/g, '\\`')
     .replace(/\$\{/g, '\\${');
+
+const hasShadowInvocation = (file: string, wrapperPath: string): boolean => {
+  const wp = shadowSafePath(wrapperPath);
+  return [
+    ...file.matchAll(/(?:ARGV0=\$\{[$\w]+\} |exec -a \$\{[$\w]+\} )/g),
+  ].some(match => file.startsWith(wp, match.index + match[0].length));
+};
+
+export const hasFffBashSearch = (file: string, wrapperPath: string): boolean =>
+  file.includes('export RG_FFF_SESSION="${process.pid}"; local _cc_bin=') &&
+  hasShadowInvocation(file, wrapperPath);
 
 // ── 1. Bash-search shadow (ugrep/bfs) — CRITICAL ──────────────────────────────
 const SHADOW_TOKEN = '"$_cc_bin"';
@@ -85,14 +101,9 @@ const repointBashSearchShadow = (
 ): string | null => {
   const wp = shadowSafePath(wrapperPath); // shell-quoted + template/Latin-1 safe
   // Idempotent: already repointed (wrapper sits where $_cc_bin was).
-  if (
-    file.includes(`ARGV0=\${t} ${wp}`) ||
-    file.includes(`exec -a \${t} ${wp}`)
-  ) {
-    return file;
-  }
   const count = file.split(SHADOW_TOKEN).length - 1;
   if (count === 0) {
+    if (hasShadowInvocation(file, wrapperPath)) return file;
     console.error(
       'patch: swapRipgrepForFff: bash-search shadow anchor "$_cc_bin" not found'
     );

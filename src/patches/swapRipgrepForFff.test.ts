@@ -1,9 +1,12 @@
 import { describe, expect, it, vi } from 'vitest';
 import { spawnSync } from 'node:child_process';
+import * as fs from 'node:fs/promises';
+import * as os from 'node:os';
+import * as path from 'node:path';
 import { writeSwapRipgrepForFff } from './swapRipgrepForFff';
 
 const WRAPPER = '/Users/x/.tweakcc/fff/aarch64-apple-darwin/rg-fff';
-const WQ = JSON.stringify(WRAPPER); // "..."
+const WQ = "'" + WRAPPER + "'"; // "..."
 
 // The grep/find shadow template as CC's snapshot-generator emits it (3× "$_cc_bin").
 const SHADOW =
@@ -120,6 +123,65 @@ describe('swapRipgrepForFff', () => {
     const once = writeSwapRipgrepForFff(COMBINED, WRAPPER)!;
     const twice = writeSwapRipgrepForFff(once, WRAPPER);
     expect(twice).toBe(once);
+  });
+
+  it('is idempotent with renamed native generator arguments', () => {
+    const renamed = COMBINED.replaceAll('${t}', '${$tool}').replaceAll(
+      '${o}',
+      '${$arguments}'
+    );
+    const once = writeSwapRipgrepForFff(renamed, WRAPPER)!;
+    expect(writeSwapRipgrepForFff(once, WRAPPER)).toBe(once);
+  });
+
+  it('executes literal wrapper paths through Bash and zsh shadow functions', async () => {
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), 'fff-shadow-path-'));
+    try {
+      const tricky = path.join(
+        root,
+        "José ' $HOME ${HOME} $(touch injected) `touch injected` \\"
+      );
+      await fs.mkdir(tricky);
+      const wrapper = path.join(tricky, 'rg-fff');
+      await fs.writeFile(wrapper, '#!/bin/sh\nprintf "%s\\n" "$@"\n', {
+        mode: 0o700,
+      });
+      const generator =
+        'function shadow($tool,$arguments){return`' +
+        SHADOW.replaceAll('${t}', '${$tool}')
+          .replaceAll('${o}', '${$arguments}')
+          .replaceAll(
+            '${CLAUDE_CODE_EXECPATH:-}',
+            '\\${CLAUDE_CODE_EXECPATH:-}'
+          )
+          .replaceAll('${ZSH_VERSION:-}', '\\${ZSH_VERSION:-}') +
+        '`;}';
+      const patched = writeSwapRipgrepForFff(generator, wrapper)!;
+      expect(patched).not.toBeNull();
+      const shell = new Function(
+        patched + ';return shadow("ugrep",\'"$@"\');'
+      )() as string;
+      for (const executable of ['/bin/bash', '/bin/zsh']) {
+        const result = spawnSync(
+          executable,
+          ['-c', shell + '\ngrep "literal argument"'],
+          {
+            cwd: root,
+            env: { ...process.env, CLAUDE_CODE_EXECPATH: '/bin/sh' },
+            encoding: 'utf8',
+          }
+        );
+        if (!result.error) {
+          expect(result.status, result.stderr).toBe(0);
+          expect(result.stdout).toBe('literal argument\n');
+          expect(result.stderr).toBe('');
+        }
+      }
+      await expect(fs.stat(path.join(root, 'injected'))).rejects.toThrow();
+      expect(writeSwapRipgrepForFff(patched, wrapper)).toBe(patched);
+    } finally {
+      await fs.rm(root, { recursive: true, force: true });
+    }
   });
 
   it('warms the runtime working directory when shell setup is sourced', () => {
