@@ -2,10 +2,46 @@ use std::path::{Path, PathBuf};
 
 use fff_search::types::MixedItemRef;
 use fff_search::{
-    file_picker::FilePicker, query_tracker::QueryTracker, Constraint, FFFQuery, FuzzyQuery,
-    FuzzySearchOptions, PaginationArgs,
+    file_picker::FilePicker, query_tracker::QueryTracker, Constraint, FFFQuery, FuzzySearchOptions,
+    PaginationArgs, ParserConfig,
 };
 use serde::{Deserialize, Serialize};
+
+struct LiteralFilenameConfig;
+
+impl ParserConfig for LiteralFilenameConfig {
+    fn enable_glob(&self) -> bool {
+        false
+    }
+
+    fn enable_extension(&self) -> bool {
+        false
+    }
+
+    fn enable_exclude(&self) -> bool {
+        false
+    }
+
+    fn enable_path_segments(&self) -> bool {
+        false
+    }
+
+    fn enable_type_filter(&self) -> bool {
+        false
+    }
+
+    fn enable_git_status(&self) -> bool {
+        false
+    }
+
+    fn enable_location(&self) -> bool {
+        false
+    }
+
+    fn enable_filename_constraint(&self) -> bool {
+        false
+    }
+}
 
 #[derive(Serialize, Deserialize)]
 pub struct FileRequest {
@@ -42,17 +78,11 @@ pub fn suggest(picker: &FilePicker, request: &FileRequest) -> Option<Vec<Suggest
             .into_owned();
     }
     let scope = format!("{}/**", globset::escape(&relative.to_string_lossy()));
-    let constraints = if relative.as_os_str().is_empty() {
-        Vec::new()
-    } else {
-        vec![Constraint::Glob(&scope)]
-    };
-    let query = FFFQuery {
-        raw_query: &request.query,
-        fuzzy_query: FuzzyQuery::Text(&needle),
-        constraints,
-        location: None,
-    };
+    let mut query = FFFQuery::parse(&needle, LiteralFilenameConfig);
+    query.raw_query = &request.query;
+    if !relative.as_os_str().is_empty() {
+        query.constraints.push(Constraint::Glob(&scope));
+    }
     let tracker =
         crate::ranking::state_dir().and_then(|dir| QueryTracker::open(dir.join("queries")).ok());
     let result = picker.fuzzy_search_mixed(
@@ -184,6 +214,18 @@ mod tests {
             fs::create_dir(&path).unwrap();
             Self(fs::canonicalize(path).unwrap())
         }
+
+        fn picker(&self) -> fff_search::SharedFilePicker {
+            let shared = fff_search::SharedFilePicker::default();
+            FilePicker::new_with_shared_state(
+                shared.clone(),
+                crate::ranking::shared_frecency(),
+                crate::ranking::picker_options(&self.0, false),
+            )
+            .unwrap();
+            assert!(shared.wait_for_scan(std::time::Duration::from_secs(5)));
+            shared
+        }
     }
 
     impl Drop for Fixture {
@@ -211,6 +253,114 @@ mod tests {
         }
         assert!(command.status().unwrap().success());
         true
+    }
+
+    #[test]
+    fn filename_terms_match_conjunctively_in_any_order() {
+        if isolated("filename_terms_match_conjunctively_in_any_order", true) {
+            return;
+        }
+        let fixture = Fixture::new();
+        for name in [
+            "renewLease.ts",
+            "renewLeaseHandler.ts",
+            "renew.ts",
+            "lease.ts",
+            "unrelated.ts",
+        ] {
+            fs::write(fixture.0.join(name), "synthetic\n").unwrap();
+        }
+        let shared = fixture.picker();
+        let guard = shared.read().unwrap();
+        let picker = guard.as_ref().unwrap();
+        let request = |query: &str| FileRequest {
+            cwd: fixture.0.clone(),
+            query: query.into(),
+            limit: 100,
+        };
+        for (query, path) in [("renew", "renew.ts"), ("lease", "lease.ts")] {
+            let items = suggest(picker, &request(query)).unwrap();
+            assert!(items.iter().any(|item| item.path == path), "{query}");
+        }
+        for query in ["lease renew", "renew lease"] {
+            let items = suggest(picker, &request(query)).unwrap();
+            let paths: Vec<_> = items.iter().map(|item| item.path.as_str()).collect();
+            for path in ["renewLease.ts", "renewLeaseHandler.ts"] {
+                assert!(paths.contains(&path), "{query}: {paths:?}");
+            }
+            for path in ["renew.ts", "lease.ts"] {
+                assert!(!paths.contains(&path), "{query}: {paths:?}");
+            }
+        }
+    }
+
+    #[test]
+    fn literal_filename_queries_preserve_nested_scope_and_absolute_paths() {
+        if isolated(
+            "literal_filename_queries_preserve_nested_scope_and_absolute_paths",
+            true,
+        ) {
+            return;
+        }
+        let fixture = Fixture::new();
+        git2::Repository::init_opts(
+            &fixture.0,
+            git2::RepositoryInitOptions::new().external_template(false),
+        )
+        .unwrap();
+        let cwd = fixture.0.join("nested[scope]:12");
+        fs::create_dir(&cwd).unwrap();
+        let filenames = [
+            "renewLease.ts",
+            "colon:12",
+            "[route].ts",
+            "type:rust",
+            "status:modified",
+            "!lease.ts",
+            "literal*.ts",
+        ];
+        for name in filenames {
+            fs::write(cwd.join(name), "synthetic\n").unwrap();
+            fs::write(fixture.0.join(name), "synthetic\n").unwrap();
+        }
+        let shared = fixture.picker();
+        let guard = shared.read().unwrap();
+        let picker = guard.as_ref().unwrap();
+        for name in filenames {
+            for query in [
+                format!("./{name}"),
+                cwd.join(name).to_string_lossy().into_owned(),
+            ] {
+                let items = suggest(
+                    picker,
+                    &FileRequest {
+                        cwd: cwd.clone(),
+                        query: query.clone(),
+                        limit: 1,
+                    },
+                )
+                .unwrap();
+                assert_eq!(items.len(), 1, "{query}");
+                assert_eq!(items[0].path, name, "{query}");
+                assert!(!items[0].directory, "{query}");
+            }
+        }
+        for query in ["lease renew", "renew lease"] {
+            let items = suggest(
+                picker,
+                &FileRequest {
+                    cwd: cwd.clone(),
+                    query: query.into(),
+                    limit: 100,
+                },
+            )
+            .unwrap();
+            assert!(
+                items.iter().any(|item| item.path == "renewLease.ts"),
+                "{query}"
+            );
+            assert!(items.iter().all(|item| !item.path.contains('/')), "{query}");
+        }
     }
 
     #[test]
