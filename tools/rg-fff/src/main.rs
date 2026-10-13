@@ -29,8 +29,10 @@ use search::format_results;
 mod viewers;
 
 use serde::{Deserialize, Serialize};
+use std::ffi::{OsStr, OsString};
 use std::fmt::Write as _;
-use std::io::Write as _;
+use std::io::{Read as _, Write as _};
+use std::os::unix::ffi::{OsStrExt, OsStringExt};
 use std::path::Path;
 use std::process::Command;
 use std::time::Duration;
@@ -175,7 +177,15 @@ fn main() {
     if viewers::dispatch() {
         return;
     }
-    let argv: Vec<String> = std::env::args().collect();
+    let opaque: Vec<OsString> = std::env::args_os().collect();
+    let argv = match opaque
+        .iter()
+        .map(|argument| argument.to_str().map(str::to_owned))
+        .collect::<Option<Vec<_>>>()
+    {
+        Some(argv) => argv,
+        None => fallback_opaque(&opaque),
+    };
     let explicit = argv
         .first()
         .map(|a| Tool::from_argv0(a) == Tool::Fff)
@@ -317,7 +327,7 @@ fn main() {
 
     let opts = parse(tool, raw);
     NO_FALLBACK.store(opts.no_fallback, std::sync::atomic::Ordering::Relaxed);
-    if let Some(mode) = search_mode(&opts, stdin_is_pipe()) {
+    if let Some(mode) = search_mode(&opts, stdin_requires_native()) {
         std::process::exit(run_search(&opts, mode));
     }
     log_decision(opts.tool, &opts.pattern, "fallback-ineligible", -1);
@@ -418,14 +428,17 @@ fn parse(tool: Tool, raw: Vec<String>) -> Opts {
             "-c" | "--count" => o.count = true,
             "-o" | "--only-matching" => o.only_matching = true,
             "-w" | "--word-regexp" => o.word = true,
-            "-F" | "--fixed-strings" | "--fixed-regexp" => {
+            "-F" | "--fixed-strings" => {
                 o.fixed = true;
                 matcher_flags |= 1;
             }
+            "--fixed-regexp" | "--pattern" => o.force_fallback = true,
             "--no-line-number" => o.line_numbers = false,
             "-n" | "--line-number" => o.line_numbers = true,
             "-h" | "--no-filename" | "--color=always" => o.force_fallback = true,
-            "-H" | "--with-filename" | "--color" | "--color=never" | "--color=auto" => {}
+            "-H" | "--with-filename" | "--color=never" | "--color=auto" => {}
+            "--color" if o.tool == Tool::Ugrep => {}
+            "--color" => o.force_fallback = true,
             "-r" | "--recursive" if o.tool == Tool::Ugrep => o.recursive = true,
             "-r" | "-R" | "--recursive" | "--dereference-recursive" => o.force_fallback = true,
             "--hidden" => o.hidden = true,
@@ -439,7 +452,9 @@ fn parse(tool: Tool, raw: Vec<String>) -> Opts {
                 o.ere = false;
                 matcher_flags |= 2;
             }
-            "--ignore-files" | "-I" | "--no-config" => {}
+            "--ignore-files" | "--no-config" => {}
+            "-I" if o.tool == Tool::Ugrep => {}
+            "-I" => o.force_fallback = true,
             "-E" | "--extended-regexp" => {
                 o.ere = true;
                 matcher_flags |= 4;
@@ -474,7 +489,7 @@ fn parse(tool: Tool, raw: Vec<String>) -> Opts {
                     i += 1;
                 }
             }
-            "-e" | "--regexp" | "--pattern" => {
+            "-e" | "--regexp" => {
                 if i + 1 < raw.len() {
                     explicit_patterns.push(raw[i + 1].clone());
                     i += 1;
@@ -484,9 +499,14 @@ fn parse(tool: Tool, raw: Vec<String>) -> Opts {
             }
             // include globs (space form): serve simple "*.ext", defer the rest.
             "-g" | "--glob" | "--include" => {
+                if a == "--include" && o.tool != Tool::Ugrep {
+                    o.force_fallback = true;
+                }
                 if let Some(g) = raw.get(i + 1) {
                     classify_glob(g, &mut o);
                     i += 1;
+                } else {
+                    o.force_fallback = true;
                 }
             }
             // exclude globs -> defer (can't serve byte-exactly yet).
@@ -515,10 +535,14 @@ fn parse(tool: Tool, raw: Vec<String>) -> Opts {
                     .strip_prefix("--include=")
                     .or_else(|| other.strip_prefix("--glob="))
                 {
+                    if other.starts_with("--include=") && o.tool != Tool::Ugrep {
+                        o.force_fallback = true;
+                    }
                     classify_glob(g, &mut o); // include glob (= form)
                 } else if other.starts_with("--exclude=") {
                     o.force_fallback = true; // exclude glob -> defer
                 } else if other.starts_with("--color=") {
+                    o.force_fallback = true;
                 } else if let Some(n) =
                     attached_ctx(other, "-A").or_else(|| attached_ctx(other, "--after-context="))
                 {
@@ -563,7 +587,9 @@ fn parse(tool: Tool, raw: Vec<String>) -> Opts {
                                     o.ere = false;
                                     o.fixed = false;
                                 }
-                                'H' | 'I' => {}
+                                'H' => {}
+                                'I' if o.tool == Tool::Ugrep => {}
+                                'I' => o.force_fallback = true,
                                 'h' => o.force_fallback = true,
                                 _ => o.force_fallback = true,
                             }
@@ -638,16 +664,20 @@ fn attached_ctx(s: &str, prefix: &str) -> Option<usize> {
 
 /// Decide which fff mode (if any) serves this query *faithfully tool-equivalent*.
 /// None => fall back to the real embedded tool.
-fn stdin_is_pipe() -> bool {
+fn stdin_requires_native() -> bool {
     let mut stat: libc::stat = unsafe { std::mem::zeroed() };
     (unsafe { libc::fstat(libc::STDIN_FILENO, &mut stat) == 0 })
-        && matches!(stat.st_mode & libc::S_IFMT, libc::S_IFIFO | libc::S_IFSOCK)
+        && matches!(
+            stat.st_mode & libc::S_IFMT,
+            libc::S_IFIFO | libc::S_IFSOCK | libc::S_IFREG
+        )
 }
 
 fn search_mode(o: &Opts, piped_stdin: bool) -> Option<Mode> {
     if o.force_fallback
         || piped_stdin
         || (o.count && (o.tool == Tool::Ugrep || o.only_matching || o.files_only))
+        || (o.only_matching && (o.before_context > 0 || o.after_context > 0))
     {
         return None;
     }
@@ -975,6 +1005,24 @@ fn fuzzy_fallback_block(
     Some(out)
 }
 
+fn native_encoding_required(cwd: &str, files: &[String]) -> bool {
+    files.iter().any(|name| {
+        let mut prefix = Vec::with_capacity(3);
+        std::fs::File::open(Path::new(cwd).join(name))
+            .and_then(|file| {
+                if !file.metadata()?.is_file() {
+                    return Err(std::io::Error::from(std::io::ErrorKind::InvalidInput));
+                }
+                file.take(3).read_to_end(&mut prefix)
+            })
+            .map_or(true, |_| {
+                prefix.starts_with(&[0xff, 0xfe])
+                    || prefix.starts_with(&[0xfe, 0xff])
+                    || prefix.starts_with(&[0xef, 0xbb, 0xbf])
+            })
+    })
+}
+
 fn run_search(o: &Opts, mode: Mode) -> i32 {
     let mut req = o.to_req(mode);
     if !matches!(mode, Mode::Fuzzy)
@@ -1006,12 +1054,14 @@ fn run_search(o: &Opts, mode: Mode) -> i32 {
         args.extend(o.paths.clone());
         match capture_embedded(o.tool, &args, o.claude_bin.as_deref()) {
             Some((paths, code)) if code <= 1 && paths.len() < 2 * 1024 * 1024 => {
-                req.expected_files = Some(
-                    paths
-                        .lines()
-                        .map(|p| p.trim_start_matches("./").to_string())
-                        .collect(),
-                );
+                let files: Vec<_> = paths
+                    .lines()
+                    .map(|p| p.trim_start_matches("./").to_string())
+                    .collect();
+                if !matches!(mode, Mode::Fuzzy) && native_encoding_required(&req.cwd, &files) {
+                    fallback(o.tool, &strip_custom(&o.raw), o.claude_bin.as_deref());
+                }
+                req.expected_files = Some(files);
             }
             _ => fallback(o.tool, &strip_custom(&o.raw), o.claude_bin.as_deref()),
         }
@@ -1252,10 +1302,7 @@ fn capture_embedded(
         cmd.args(args);
         cmd.arg0(tool.embedded_argv0());
         if let Ok(out) = cmd.output() {
-            return Some((
-                String::from_utf8_lossy(&out.stdout).into_owned(),
-                out.status.code().unwrap_or(1),
-            ));
+            return Some((String::from_utf8(out.stdout).ok()?, out.status.code()?));
         }
     }
     let sys = match tool {
@@ -1264,10 +1311,7 @@ fn capture_embedded(
         _ => "rg",
     };
     let out = Command::new(sys).args(args).output().ok()?;
-    Some((
-        String::from_utf8_lossy(&out.stdout).into_owned(),
-        out.status.code().unwrap_or(1),
-    ))
+    Some((String::from_utf8(out.stdout).ok()?, out.status.code()?))
 }
 
 /// fff fuzzy filename suggestions for a `find -name` that matched nothing — fff's
@@ -1329,23 +1373,59 @@ fn fuzzy_file_suggestions(q: &FindNameQuery, n: usize) -> Option<String> {
 }
 
 fn fallback(tool: Tool, args: &[String], claude_bin: Option<&str>) -> ! {
+    fallback_native(
+        tool,
+        &args.iter().map(OsString::from).collect::<Vec<_>>(),
+        claude_bin.map(OsStr::new),
+    )
+}
+
+fn fallback_opaque(argv: &[OsString]) -> ! {
+    let tool = argv
+        .first()
+        .and_then(|argument| Path::new(argument).file_name())
+        .and_then(OsStr::to_str)
+        .map(Tool::from_argv0)
+        .unwrap_or(Tool::Fff);
+    let mut operands = false;
+    let mut claude_bin = None;
+    let mut args = Vec::new();
+    for argument in argv.iter().skip(1) {
+        if argument == "--" {
+            operands = true;
+        }
+        if !operands {
+            if let Some(value) = argument.as_bytes().strip_prefix(b"--fff-claude-bin=") {
+                claude_bin = Some(OsString::from_vec(value.to_vec()));
+                continue;
+            }
+            if argument == "--no-fallback" {
+                NO_FALLBACK.store(true, std::sync::atomic::Ordering::Relaxed);
+                continue;
+            }
+            if argument == "--fuzzy" || argument == "--daemon" {
+                continue;
+            }
+        }
+        args.push(argument.clone());
+    }
+    fallback_native(tool, &args, claude_bin.as_deref())
+}
+
+fn fallback_native(tool: Tool, args: &[OsString], claude_bin: Option<&OsStr>) -> ! {
     if NO_FALLBACK.load(std::sync::atomic::Ordering::Relaxed) {
         std::process::exit(2);
     }
     use std::os::unix::process::CommandExt;
 
     let claude = claude_bin
-        .map(String::from)
+        .map(OsStr::to_os_string)
         .filter(|p| Path::new(p).exists())
+        .or_else(|| std::env::var_os("CLAUDE_CODE_EXECPATH").filter(|p| Path::new(p).exists()))
         .or_else(|| {
-            std::env::var("CLAUDE_CODE_EXECPATH")
-                .ok()
-                .filter(|p| Path::new(p).exists())
-        })
-        .or_else(|| {
-            let h = std::env::var("HOME").ok()?;
-            let p = format!("{h}/.local/bin/claude");
-            Path::new(&p).exists().then_some(p)
+            let h = std::env::var_os("HOME")?;
+            let p = Path::new(&h).join(".local/bin/claude");
+            p.exists().then(|| p.into_os_string())
         });
 
     let a0 = tool.embedded_argv0();

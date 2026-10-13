@@ -23,6 +23,9 @@ jobs:
       - run: node tools/rg-fff/integration.mjs
       - run: node tools/rg-fff/compatibility-integration.mjs
       - run: node tools/rg-fff/semantic-integration.mjs
+      - run: node tools/rg-fff/edge-integration.mjs
+      - run: node tools/rg-fff/output-integration.mjs
+      - run: node tools/rg-fff/history-integration.mjs
       - run: node tools/rg-fff/relevance-integration.mjs
       - run: node tools/rg-fff/daemon-integration.mjs
       - run: node tools/rg-fff/freshness-integration.mjs

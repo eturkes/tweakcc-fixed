@@ -218,5 +218,5 @@ fn rank(
     result.files = files;
     result
         .matches
-        .sort_by_key(|item| (item.file_index, !defined(item), item.line_number));
+        .sort_by_cached_key(|item| (item.file_index, !defined(item), item.line_number));
 }

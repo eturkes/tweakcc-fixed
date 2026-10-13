@@ -51,7 +51,7 @@ fn with_receipts(session: &str, update: impl FnOnce(&mut Vec<Receipt>)) -> Optio
         .mode(0o600)
         .open(path)
         .ok()?;
-    if unsafe { libc::flock(file.as_raw_fd(), libc::LOCK_EX) } != 0 {
+    if unsafe { libc::flock(file.as_raw_fd(), libc::LOCK_EX | libc::LOCK_NB) } != 0 {
         return None;
     }
     let mut bytes = Vec::new();

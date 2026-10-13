@@ -1,7 +1,8 @@
 mod collect;
 mod definitions;
+mod output;
 
-use std::collections::{BTreeMap, HashMap, HashSet};
+use std::collections::{BTreeMap, HashSet};
 use std::fmt::Write as _;
 use std::path::Path;
 
@@ -182,35 +183,24 @@ pub fn format_results(picker: &FilePicker, req: &SearchReq) -> Option<SearchOutp
     let files = result
         .files
         .iter()
-        .filter_map(|file| scoped_path(file))
-        .collect();
-    let mut out = String::new();
+        .map(|file| scoped_path(file))
+        .collect::<Option<Vec<_>>>()?;
+    let mut out = output::Output::default();
     if is_fuzzy {
-        let _ = writeln!(out, "{FUZZY_HDR}");
+        writeln!(out, "{FUZZY_HDR}").ok()?;
     }
 
     if req.count {
-        let mut counts: Vec<(String, usize)> = Vec::new();
-        let mut indexes = HashMap::new();
-        for m in &result.matches {
-            let f = result.files[m.file_index];
-            let Some(path) = scoped_path(f) else {
-                continue;
-            };
-            if keep(&path) {
-                let index = *indexes.entry(path.clone()).or_insert_with(|| {
-                    counts.push((path, 0));
-                    counts.len() - 1
-                });
-                counts[index].1 += 1;
-            }
+        let mut counts = vec![0usize; files.len()];
+        for item in &result.matches {
+            counts[item.file_index] += 1;
         }
-        let any = !counts.is_empty();
-        for (f, c) in &counts {
-            let _ = writeln!(out, "{out_prefix}{f}:{c}");
+        let any = !result.matches.is_empty();
+        for (path, count) in files.iter().zip(counts) {
+            writeln!(out, "{out_prefix}{path}:{count}").ok()?;
         }
         return Some(SearchOutput {
-            body: out,
+            body: out.finish(),
             code: if any { 0 } else { 1 },
             files,
         });
@@ -229,25 +219,13 @@ pub fn format_results(picker: &FilePicker, req: &SearchReq) -> Option<SearchOutp
             Some(s.to_string())
         };
         // path -> (line_no -> (is_match, content)); BTreeMap keeps line order.
-        let mut per_file: Vec<(String, BTreeMap<u64, (bool, String)>)> = Vec::new();
-        let mut indexes = HashMap::new();
+        let mut per_file: Vec<BTreeMap<u64, (bool, String)>> = vec![BTreeMap::new(); files.len()];
         for m in &result.matches {
-            let f = result.files[m.file_index];
-            let Some(path) = scoped_path(f) else {
-                continue;
-            };
-            if !keep(&path) {
-                continue;
-            }
             let mln = match mark(&m.line_content) {
                 Some(x) => x,
                 None => return None, // non-UTF-8 -> defer
             };
-            let index = *indexes.entry(path.clone()).or_insert_with(|| {
-                per_file.push((path, BTreeMap::new()));
-                per_file.len() - 1
-            });
-            let fmap = &mut per_file[index].1;
+            let fmap = &mut per_file[m.file_index];
             let ln = m.line_number;
             // fff returns only the context lines that exist, so the first
             // before-context line sits at ln - context_before.len().
@@ -271,7 +249,7 @@ pub fn format_results(picker: &FilePicker, req: &SearchReq) -> Option<SearchOutp
         }
         let mut any = false;
         let mut first_group = true;
-        for (path, lines) in &per_file {
+        for (path, lines) in files.iter().zip(&per_file) {
             let mut groups: Vec<Vec<_>> = Vec::new();
             let mut last = None;
             for (&number, line) in lines {
@@ -297,7 +275,7 @@ pub fn format_results(picker: &FilePicker, req: &SearchReq) -> Option<SearchOutp
                     // within-file gap -> always `--`; across files -> only rg.
                     let cross_file = prev.is_none();
                     if !cross_file || req.sep_between_files {
-                        let _ = writeln!(out, "--");
+                        writeln!(out, "--").ok()?;
                     }
                 }
                 let sep = if *is_match { ':' } else { '-' };
@@ -315,9 +293,9 @@ pub fn format_results(picker: &FilePicker, req: &SearchReq) -> Option<SearchOutp
                     ""
                 };
                 if req.line_numbers {
-                    let _ = writeln!(out, "{out_prefix}{path}{sep}{ln}{sep}{content}{def}");
+                    writeln!(out, "{out_prefix}{path}{sep}{ln}{sep}{content}{def}").ok()?;
                 } else {
-                    let _ = writeln!(out, "{out_prefix}{path}{sep}{content}{def}");
+                    writeln!(out, "{out_prefix}{path}{sep}{content}{def}").ok()?;
                 }
                 prev = Some(ln);
                 first_group = false;
@@ -325,7 +303,7 @@ pub fn format_results(picker: &FilePicker, req: &SearchReq) -> Option<SearchOutp
             }
         }
         return Some(SearchOutput {
-            body: out,
+            body: out.finish(),
             code: if any { 0 } else { 1 },
             files,
         });
@@ -333,24 +311,13 @@ pub fn format_results(picker: &FilePicker, req: &SearchReq) -> Option<SearchOutp
 
     let mut any = false;
     if req.files_only {
-        for f in &result.files {
-            let Some(path) = scoped_path(f) else {
-                continue;
-            };
-            if keep(&path) {
-                let _ = writeln!(out, "{out_prefix}{path}");
-                any = true;
-            }
+        for path in &files {
+            writeln!(out, "{out_prefix}{path}").ok()?;
+            any = true;
         }
     } else {
         for m in &result.matches {
-            let f = result.files[m.file_index];
-            let Some(path) = scoped_path(f) else {
-                continue;
-            };
-            if !keep(&path) {
-                continue;
-            }
+            let path = &files[m.file_index];
             if req.only_matching {
                 if m.line_content.len() >= 509 || m.line_content.contains('�') {
                     return None;
@@ -358,9 +325,9 @@ pub fn format_results(picker: &FilePicker, req: &SearchReq) -> Option<SearchOutp
                 for &(start, end) in &m.match_byte_offsets {
                     let text = m.line_content.get(start as usize..end as usize)?;
                     if req.line_numbers {
-                        let _ = writeln!(out, "{out_prefix}{path}:{}:{text}", m.line_number);
+                        writeln!(out, "{out_prefix}{path}:{}:{text}", m.line_number).ok()?;
                     } else {
-                        let _ = writeln!(out, "{out_prefix}{path}:{text}");
+                        writeln!(out, "{out_prefix}{path}:{text}").ok()?;
                     }
                     any = true;
                 }
@@ -397,23 +364,25 @@ pub fn format_results(picker: &FilePicker, req: &SearchReq) -> Option<SearchOutp
                 ""
             };
             if req.line_numbers {
-                let _ = writeln!(
+                writeln!(
                     out,
                     "{}{}:{}:{}{}{}{}",
                     out_prefix, path, m.line_number, m.line_content, mark, def, approx
-                );
+                )
+                .ok()?;
             } else {
-                let _ = writeln!(
+                writeln!(
                     out,
                     "{}{}:{}{}{}{}",
                     out_prefix, path, m.line_content, mark, def, approx
-                );
+                )
+                .ok()?;
             }
             any = true;
         }
     }
     Some(SearchOutput {
-        body: out,
+        body: out.finish(),
         code: if any { 0 } else { 1 },
         files,
     })
