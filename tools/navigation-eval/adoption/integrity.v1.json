@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "tasksSha256": "2df53d283112cdc8e0301a2d6a6f149b00f5571fc4e6823d11a597cf055777ea",
+  "guidanceSha256": "91d199e6b58d0c683233c9c6b41ad3088c553e8b480aaeaa82b84336d5a3713c",
+  "frozenBeforeExploratoryCalls": true,
+  "claudeVersion": "2.1.296",
+  "model": "claude-opus-5-5",
+  "exploratoryTools": [
+    "Bash",
+    "Glob",
+    "Grep",
+    "Read"
+  ],
+  "confirmationTools": "native defaults; no explicit tool selection",
+  "confirmationMechanism": "paired native binaries; no CLI appendix",
+  "noSpeedClaim": true
+}

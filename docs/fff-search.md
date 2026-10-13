@@ -1,13 +1,52 @@
 # Native search and fff filename discovery
 
-Enable **native search and fff file autocomplete** in miscellaneous settings,
-then apply. The feature is experimental and opt-in. Its existing config key
-`swapRipgrepForFff` and patch ID `swap-ripgrep-for-fff` remain compatible.
+Enable **native search and fff filename discovery** in miscellaneous settings,
+then apply and restart Claude Code. The feature is experimental and opt-in.
+Its existing config key `swapRipgrepForFff` and patch ID `swap-ripgrep-for-fff`
+remain compatible.
 
 The patch edits Claude Code's embedded JavaScript, including native binary
 installations. It makes the existing Grep and Glob tools available through the
 native tool-selection path, retaining disabled-tool and permission filters.
 Grep keeps its native matching, result ordering, pagination, and tool schema.
+
+## How Claude uses it
+
+The binary adds an instruction to start discovery of unknown project files with
+`fff files '<short filename or path words>'` in Bash. Claude should read plausible
+candidates, then use native content search when filenames provide no useful
+lead or the task needs exact code text. Known paths can be read directly. Fuzzy
+filename results are candidates, not evidence about what their code does.
+
+This guidance is attached to the final API system prompt after Claude selects
+its live or saved prompt. Custom system-prompt overrides retain their content;
+main queries, subagent queries, and resumed sessions receive the appendix when
+Bash is available. `/context` accounts for the same appendix. The patch also
+updates the search clause in native auto-mode messages after rendering,
+preserving permission instructions and edit rules. Native Bash/Grep tool
+descriptions retain their content.
+
+The appendix is not written into saved prompt snapshots or override files.
+Disabling the feature, reapplying from the pristine backup, and restarting
+removes its discovery appendix and auto-mode changes. Toolsets without Bash
+receive no fff appendix. No separate plugin, MCP server, or shell-search
+interception is needed.
+
+An always-applied compatibility repair removes exact old fff additions from
+selected saved Bash/Grep tool descriptions and schema descriptions. This
+prevents resumed snapshots from retaining old guidance after discovery is off.
+Other text, schema fields, tool names, and native snapshot records are
+preserved. Historical transcript files remain intact. The repair also runs
+with `--patches` filters and needs no fff executable or separate setting.
+
+The [adoption evaluation](../tools/navigation-eval/adoption/README.md) compares
+instruction integration with frozen synthetic tasks and records both successful
+and unsuccessful discovery. In the two final Opus 5.5 task pairs, the guided
+binary used fff in both tasks and the baseline in neither. Both conditions
+answered the requested facts correctly, so better answers remain unproven.
+The [Pi comparison](fff-agent-navigation.md) explains the workflow and binary
+insertion points. This is a navigation capability, not a semantic code search
+engine or a guarantee of better answers.
 
 ## Content search
 
@@ -31,18 +70,22 @@ effects. There is no interleaving toggle or formatter in the installed patch.
 
 Bash `grep`, `rg`, and `find`, their native shell setup, and Claude's embedded
 ripgrep resolver retain native behavior. The patch no longer redirects them to
-fff. Tool guidance is appended at the native description call sites when the
-feature is applied, so custom prompt overrides can retain their content.
-It recommends filename-only discovery, inspecting current source, and
-available LSP tools. Guidance does not guarantee the model will choose these
-tools: two unguided Opus 5.5 trials still chose Bash and answered correctly.
+fff. Navigation guidance is attached to the final system prompt when the
+feature is applied. Earlier description-only trials did not use fff; the newer
+paired evaluation tests explicit guidance rather than assuming tool visibility
+causes adoption. Guidance does not guarantee which tools the model will choose.
 File pointers are no longer appended to compaction summaries, and file-history
 counts no longer affect the Jev effort router.
 
 The native insertion points are checked against Claude Code 2.1.296. Missing or
-ambiguous required tool-selection and integration boundaries fail the patch.
+ambiguous required tool-selection and instruction boundaries fail the patch.
+An AST parser bounds each instruction site to its native function, rejecting
+neighboring or nested lookalikes rather than patching an unrelated function.
 Older installed builds can require another verified match method. Reapply from
 the pristine backup to replace a previously intercepted search configuration.
+The always-applied snapshot repair is also verified on 2.1.296. Builds without
+native prompt snapshots need no repair; a snapshot-enabled build with different
+required sites can fail apply even when fff is disabled.
 
 ## Filename discovery and local learning
 
@@ -50,12 +93,19 @@ Inside Claude Code's Bash shell:
 
 ```sh
 fff files UserService
+fff files 'lease renew'
 fff files UserService 10
 fff --stats
 ```
 
 `fff files` searches filenames, includes directories, marks Git-modified files,
-and suggests reading candidates. The fff 0.11 backend also supplements normal
+and suggests reading candidates. Whitespace separates fuzzy terms that must
+all match; the terms can appear in either order in a path. For example,
+`lease renew` can discover `renewLease.ts`. Matching remains typo tolerant, so
+extra candidates can appear. Filename punctuation is literal: colon, bracket,
+and other query-like names do not activate location or filter syntax. Directory
+scope and original query history are preserved. Use Glob for exact patterns.
+The fff 0.11 backend also supplements normal
 `@` autocomplete while preserving native commands, directory browsing,
 external configuration entries, and the 15-item limit. Autocomplete has a short
 timeout and native fallback. Filename search can scan locally when its daemon
@@ -123,6 +173,13 @@ questions, expected evidence, and byte budgets before comparing native search
 presentation. It uses a pinned public repository and synthetic cases. Retrieval
 coverage and model answer correctness are separate outcomes; this work does
 not establish a general answer-quality improvement over native search.
+The [model adoption harness](../tools/navigation-eval/adoption/README.md) uses
+synthetic fixtures, isolated native copies, and explicit live-call budgets.
+Its first cohort restricts the tool catalog; its final binary comparison uses
+the default tool selection and no CLI prompt appendix.
+The [native lifecycle check](../tools/navigation-eval/adoption/lifecycle.v1.json)
+separately verifies prompt recording and disable/resume cleanup through a local
+mock endpoint with no forwarded requests.
 
 ```sh
 pnpm test

@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Local-only native instruction recording, disable, and resume proof",
+  "nativeVersion": "2.1.296",
+  "authMode": "synthetic-api-key",
+  "paidRequests": 0,
+  "forwardedRequests": 0,
+  "sourceBinarySha256": {
+    "baseline": "65bcfadd5505d68af493b05ccefeee029ddc4ff20f1ce6c1de7fbc816bb65aa9",
+    "candidate": "27bb8e1104bbc552330e6cd20b3a6515982afa8a50f87842f2e80ba520a4f6c8",
+    "disabled": "d3095f23be9e2c25f8e9c24f4ebc3f68abac31eff8160807f85919a228b77721"
+  },
+  "wrapperSha256": [
+    "ac9534bb81088c22a2bc40b523a9d33b637f7455ebb428045d0a40bc28bfe11d"
+  ],
+  "protocolSourceSha256": {
+    "lifecycle.check.mjs": "0e8b159e5c922b4c55fd1fddf634a3c879215e8e330988cad1a8577d66dcf10f",
+    "runtime.mjs": "adcfa25e8e9cc02d74c8d4c66a21ccb7c30d802314b1a71d4a8318d5e23852e8",
+    "common.mjs": "db3bc8092a0060f323b0b828cbef55e08b142c38ca18a897ac44cdef61d12f9d",
+    "native-contract.v1.json": "92ab50fd1765be8fc6418911a9e09015b67220de3030beb4310497d8bd3c61bb",
+    "../core.mjs": "36b54571ae01e5428f7cdd8295b68022e321d93fbf6b15f07e960ad63b089438"
+  },
+  "checks": {
+    "homePreserved": true,
+    "homeContainmentRequired": true,
+    "syntheticConfigOnly": true,
+    "existingInstructionFilesEdited": [],
+    "inputBinariesAndWrappersUnchanged": true,
+    "legacySnapshotRowsUnchanged": true,
+    "resumeOnlyAppendedNativeRows": true,
+    "nativeOffToolFiltersPreserved": true,
+    "commonInputSchemasUnchanged": true
+  },
+  "phases": [
+    {
+      "action": "baseline-record",
+      "status": 0,
+      "snapshotCount": 2,
+      "recordedCoreGuidance": false,
+      "recordedOwnedDescriptions": true,
+      "recordedAutoGuidance": false,
+      "priorTempReadsDenied": true,
+      "priorTempWritesDenied": true,
+      "currentTrialReadWriteAllowed": true,
+      "requestCount": 1,
+      "coreGuidanceSent": false,
+      "ownedDescriptionNamesSent": [
+        "Bash",
+        "Grep"
+      ],
+      "toolCount": 21,
+      "toolNamesSha256": "58edd505a82a8dce63c8ed07036a027fc93dbeb820e04edb02b82eea41c81c57"
+    },
+    {
+      "action": "disabled-resume",
+      "status": 0,
+      "snapshotCount": 2,
+      "recordedCoreGuidance": false,
+      "recordedOwnedDescriptions": true,
+      "recordedAutoGuidance": false,
+      "priorTempReadsDenied": true,
+      "priorTempWritesDenied": true,
+      "currentTrialReadWriteAllowed": true,
+      "requestCount": 1,
+      "coreGuidanceSent": false,
+      "ownedDescriptionNamesSent": [],
+      "toolCount": 19,
+      "toolNamesSha256": "45f4f8cd59894d6410a2d25ed536575b7dbfebc5c7a02bd9b8010771b095a047"
+    },
+    {
+      "action": "candidate-record",
+      "status": 0,
+      "snapshotCount": 2,
+      "recordedCoreGuidance": false,
+      "recordedOwnedDescriptions": false,
+      "recordedAutoGuidance": false,
+      "priorTempReadsDenied": true,
+      "priorTempWritesDenied": true,
+      "currentTrialReadWriteAllowed": true,
+      "requestCount": 1,
+      "coreGuidanceSent": true,
+      "ownedDescriptionNamesSent": [],
+      "toolCount": 21,
+      "toolNamesSha256": "58edd505a82a8dce63c8ed07036a027fc93dbeb820e04edb02b82eea41c81c57"
+    }
+  ]
+}

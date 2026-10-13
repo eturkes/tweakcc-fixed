@@ -1,5 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
-import { applyPatchImplementations, getAllPatchDefinitions } from './index';
+import {
+  applyPatchImplementations,
+  getAllPatchDefinitions,
+  PatchGroup,
+} from './index';
 
 const only = (fn: (s: string) => string | null) => {
   const defs = getAllPatchDefinitions();
@@ -44,5 +48,46 @@ describe('applyPatchImplementations', () => {
     spy.mockRestore();
     expect(r.failed).toBe(true);
     expect(r.partial).toBeUndefined();
+  });
+
+  it('applies saved guidance hygiene through filters while fff is disabled', () => {
+    const definitions = getAllPatchDefinitions();
+    const implementations = Object.fromEntries(
+      definitions.map(definition => [
+        definition.id,
+        { fn: (source: string) => source, condition: false },
+      ])
+    );
+    implementations['fff-instruction-hygiene'] = {
+      fn: source => source + ' repaired',
+      condition: true,
+    };
+    const result = applyPatchImplementations(
+      'native',
+      implementations as never,
+      ['fff-bash-reads']
+    );
+    expect(result.content).toBe('native repaired');
+    expect(
+      result.results.find(row => row.id === 'fff-instruction-hygiene')
+    ).toMatchObject({ applied: true, failed: false });
+    expect(
+      result.results.find(row => row.id === 'swap-ripgrep-for-fff')
+    ).toMatchObject({ applied: false, skipped: true });
+  });
+
+  it('classifies hygiene as correctness and enabled navigation as model facing', () => {
+    const definitions = getAllPatchDefinitions();
+    expect(
+      definitions.find(
+        definition => definition.id === 'fff-instruction-hygiene'
+      )
+    ).toMatchObject({
+      name: 'Remove stale fff tool guidance',
+      group: PatchGroup.ALWAYS_APPLIED,
+    });
+    expect(
+      definitions.find(definition => definition.id === 'swap-ripgrep-for-fff')
+    ).toMatchObject({ modelFacing: true, group: PatchGroup.FEATURES });
   });
 });

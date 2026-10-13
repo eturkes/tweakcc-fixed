@@ -66,7 +66,12 @@ ripgrep capture can change bounded output order. The observed tradeoff is
 sufficient to reject automatic interleaving as the default; filename-only
 Grep already lets the caller request distinct files explicitly.
 
-## Native tool availability and model choice
+## Earlier native tool availability and model choice
+
+These observations preceded the system-level instruction integration. The
+[paired adoption evaluation](adoption/README.md) separately tests explicit
+guidance and final default-tool binaries; neither study is a general
+answer-quality claim.
 
 An isolated patched native Claude Code 2.1.296 binary booted and sent Grep and
 Glob in the actual Opus 5.5 API tool catalog. A prescribed smoke test completed
@@ -86,7 +91,9 @@ Read, or fff. This was observational, with different tasks at each effort and
 no paired baseline. It establishes neither a model-quality improvement nor an
 effort-level comparison. The tested clone still contained the subsequently
 rejected formatter, which these Bash-only trials never exercised. The final
-integration removes that formatter and recommends filename-only discovery.
+integration removes that formatter. The later instruction integration guides
+unknown-file discovery through `fff files` while retaining native content
+search and exact filename patterns.
 
 The separate viewer integration test completed 133 native-output comparisons,
 eight viewer selections, and 12 cancellation cases. Its synthetic filename

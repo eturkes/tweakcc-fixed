@@ -8,6 +8,7 @@ import {
   restoreNativeSearchTools,
   writeSwapRipgrepForFff,
 } from './swapRipgrepForFff';
+import { FFF_PROJECT_GUIDANCE } from './fffInstructions';
 
 const WRAPPER = '/Users/x/.tweakcc/fff/aarch64-apple-darwin/rg-fff';
 const VISIBILITY =
@@ -65,7 +66,15 @@ const GREP_DESC_NESTED =
   BT +
   '}';
 
-const BASE = VISIBILITY + SHADOW + SETUP + SNAPSHOT;
+const INSTRUCTIONS =
+  ';async function*fffQuery($input,$events,$commands,$runner){let{systemPrompt:$base,userContext:$user,systemContext:$environment,canUseTool:$permission}=$input;' +
+  'let $current=$input.toolUseContext,$selected={systemPrompt:$base},$routing={systemContext:$environment},$rows=[],$source="fixture",$stamp={};' +
+  'let $wire=$identity($merge($selected.systemPrompt,$routing.systemContext)),$unused,$other,$entries,$copies,$record=()=>{let $next=$extra($rows,$entries,{options:$current.options,querySource:$source,stamp:$stamp,toolInputCopies:$copies});return $next};yield $wire;}' +
+  ';async function fffContext($messages,$model,$permissions,$visible,$agents,$details){let{session:$session,terminalWidth:$width,toolUseContext:$current,mainThreadAgentDefinition:$agent}=$details;' +
+  'let $saved=$details.snapshot,$fallback=$details.prompt,$tools={};let $counted=$saved?.systemPrompt??$fallback,$descriptions=$tools?.toolDescriptions,$schemas=$tools?.toolEntries;return $counted;}' +
+  ';function fffRender($rows,$visible=[],$model,$config){$rows=$fold($rows,$config?.accountMemoryWithheld,$memo(()=>$visible));let $output=[];for(let $row of $rows){' +
+  'let $options={},$active=false,$result=$config?.withoutAttachmentHooks?$live($row,$options):$recorded($row,$options,$active),$rendered=$result.messages,{isKnownType:$known,recordedRole:$role}=$result;$output.push(...$rendered)}return $output;}';
+const BASE = VISIBILITY + SHADOW + SETUP + SNAPSHOT + INSTRUCTIONS;
 const COMBINED = BASE + RESOLVER + GREP_DESC + BASH_DESC;
 const countOf = (source: string, part: string) => source.split(part).length - 1;
 const shellCommands = (source: string, enabled = true): string[] =>
@@ -154,6 +163,24 @@ describe('swapRipgrepForFff', () => {
     }
   });
 
+  it('requires the real instruction hooks before reporting the feature applied', () => {
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+    try {
+      const source = VISIBILITY + SHADOW + SETUP + SNAPSHOT;
+      expect(writeSwapRipgrepForFff(source, WRAPPER)).toBeNull();
+      expect(error).toHaveBeenCalledWith(
+        'patch: swapRipgrepForFff: failed to find unique scoped search instruction boundaries'
+      );
+      const patched = writeSwapRipgrepForFff(BASE, WRAPPER)!;
+      expect(patched).toContain('function __tweakccFffPrompt');
+      expect(patched).toContain('function __tweakccFffAutoMode');
+      expect(patched).toContain(FFF_PROJECT_GUIDANCE);
+      expect(() => new Function(patched)).not.toThrow();
+    } finally {
+      error.mockRestore();
+    }
+  });
+
   it('refuses legacy interception instead of leaving native searches redirected', () => {
     const error = vi.spyOn(console, 'error').mockImplementation(() => {});
     try {
@@ -171,17 +198,13 @@ describe('swapRipgrepForFff', () => {
     }
   });
 
-  it('describes native content discovery in every legacy prompt variant', () => {
+  it('keeps native descriptions intact and confines guidance to request hooks', () => {
     const patched = writeSwapRipgrepForFff(COMBINED, WRAPPER)!;
-    expect(countOf(patched, 'Native Grep navigation:')).toBe(2);
-    expect(countOf(patched, 'Native search and fff files:')).toBe(2);
-    expect(patched).toContain('output_mode files_with_matches');
-    expect(patched).toContain('Use Glob for filename patterns');
-    expect(patched).toContain('output_mode content');
-    expect(patched).toContain('small context window');
-    expect(patched).toContain('Matches are textual candidates');
-    expect(patched).toContain('When LSP is available');
-    expect(patched).toContain('Use fff files SomeName');
+    expect(patched).toContain(GREP_DESC);
+    expect(patched).toContain(BASH_DESC);
+    expect(countOf(patched, 'Native Grep navigation:')).toBe(0);
+    expect(countOf(patched, 'Native search and fff files:')).toBe(0);
+    expect(patched).toContain(FFF_PROJECT_GUIDANCE);
     for (const stale of [
       'most-relevant-first',
       'likely declarations first',
@@ -194,7 +217,7 @@ describe('swapRipgrepForFff', () => {
     }
   });
 
-  it('appends native guidance to custom Grep descriptions at the tool boundary', async () => {
+  it('preserves custom Grep descriptions at the tool boundary', async () => {
     const custom =
       ';async function customPrompt(model,lean){return lean?"My concise grep instructions.":"My full grep instructions."}' +
       ';var tool={searchHint:"search file contents with regex (ripgrep)",async description(){return customPrompt(void 0)},async prompt({model:$model,leanPrompt:$lean}){return customPrompt($model,$lean)},create(){return{}}};';
@@ -205,16 +228,15 @@ describe('swapRipgrepForFff', () => {
     };
     for (const leanPrompt of [true, false]) {
       const prompt = await tool.prompt({ leanPrompt });
-      expect(prompt).toContain(
+      expect(prompt).toBe(
         leanPrompt
           ? 'My concise grep instructions.'
           : 'My full grep instructions.'
       );
-      expect(countOf(prompt, 'Native Grep navigation:')).toBe(1);
+      expect(countOf(prompt, 'Native Grep navigation:')).toBe(0);
       expect(prompt).not.toContain('[object Promise]');
     }
-    expect(await tool.description()).toContain('My full grep instructions.');
-    expect(await tool.description()).toContain('Native Grep navigation:');
+    expect(await tool.description()).toBe('My full grep instructions.');
     expect(writeSwapRipgrepForFff(patched, WRAPPER)).toBe(patched);
   });
 
@@ -229,7 +251,7 @@ describe('swapRipgrepForFff', () => {
     ],
     ['Custom lean overview.', 'Custom full overview.'],
   ])(
-    'appends Bash guidance independently of overridden headers %s / %s',
+    'preserves overridden Bash headers %s / %s',
     async (leanHeader, fullHeader) => {
       const separatePrompt =
         ';var separatePrompt=`Prefer dedicated tools over shell commands.`;';
@@ -256,14 +278,14 @@ describe('swapRipgrepForFff', () => {
             leanPrompt,
             bashFirstTrimmed,
           });
-          expect(description).toContain(leanPrompt ? leanHeader : fullHeader);
+          expect(description).toBe(
+            (leanPrompt ? leanHeader : fullHeader) +
+              (bashFirstTrimmed ? '' : ' Custom tool instructions.')
+          );
           expect(description.includes('Custom tool instructions.')).toBe(
             !bashFirstTrimmed
           );
-          expect(description).toContain(
-            'Grep with output_mode files_with_matches'
-          );
-          expect(countOf(description, 'Native search and fff files:')).toBe(1);
+          expect(countOf(description, 'Native search and fff files:')).toBe(0);
           expect(description).not.toContain('[object Promise]');
         }
       }
@@ -276,7 +298,7 @@ describe('swapRipgrepForFff', () => {
     }
   );
 
-  it('includes Bash guidance even when custom bullets are hidden', async () => {
+  it('preserves Bash description arrays when custom bullets are hidden', async () => {
     const custom =
       ';async function lean(hide){let notes=[];if(!hide)notes.push("Custom lean instructions.");return["Executes a bash command and returns its output.",...notes].join("\\n")}' +
       ';async function full(hide){let notes=[];if(!hide)notes.push("Custom full instructions.");return["Executes a given bash command and returns its output.",...notes].join("\\n")}';
@@ -288,37 +310,34 @@ describe('swapRipgrepForFff', () => {
     for (const make of [descriptions.lean, descriptions.full]) {
       for (const hide of [true, false]) {
         const description = await make(hide);
-        expect(description).toContain(
-          'Grep with output_mode files_with_matches'
+        expect(description).toMatch(
+          /^Executes (a|a given) bash command and returns its output\./
         );
-        expect(description).toContain('Grep output_mode content');
-        expect(description).toContain('Use fff files SomeName');
-        expect(countOf(description, 'Native search and fff files:')).toBe(1);
+        expect(countOf(description, 'Native search and fff files:')).toBe(0);
         if (!hide) expect(description).toContain('Custom');
       }
     }
     expect(writeSwapRipgrepForFff(patched, WRAPPER)).toBe(patched);
   });
 
-  it('splices at the true closing backtick past a nested template', () => {
+  it('preserves native nested description templates', () => {
     const patched = writeSwapRipgrepForFff(BASE + GREP_DESC_NESTED, WRAPPER)!;
     expect(() => new Function(patched)).not.toThrow();
-    expect(countOf(patched, 'Native Grep navigation:')).toBe(1);
-    expect(patched.indexOf('Native Grep navigation:')).toBeGreaterThan(
-      patched.indexOf('Pattern syntax: rg-flavored')
-    );
+    expect(countOf(patched, 'Native Grep navigation:')).toBe(0);
+    expect(patched).toContain(GREP_DESC_NESTED);
   });
 
-  it('refuses guidance insertion into an unclosed template', () => {
+  it('does not search description templates for guidance insertion', () => {
     const error = vi.spyOn(console, 'error').mockImplementation(() => {});
     try {
       const source = BASE + ';var description=`unterminated, built on ripgrep';
       const patched = writeSwapRipgrepForFff(source, WRAPPER)!;
       expect(patched).not.toBeNull();
       expect(patched).not.toContain('Native Grep navigation:');
-      expect(error).toHaveBeenCalledWith(
-        expect.stringContaining('no balanced closing backtick')
+      expect(patched).toContain(
+        ';var description=`unterminated, built on ripgrep'
       );
+      expect(error).not.toHaveBeenCalled();
     } finally {
       error.mockRestore();
     }

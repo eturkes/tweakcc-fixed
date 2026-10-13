@@ -1,0 +1,1386 @@
+{
+  "controls": {
+    "binarySha256": "cc998ec10a6f55845fcc7b3bcdb07550c6024ccd9fce0ab23782fd77568fa6ca",
+    "wrapperSha256": "b4e680ea2256f8ff270702d838fc9d4d50842775125360577673337ca941469a",
+    "tasksSha256": "2df53d283112cdc8e0301a2d6a6f149b00f5571fc4e6823d11a597cf055777ea",
+    "guidanceSha256": "91d199e6b58d0c683233c9c6b41ad3088c553e8b480aaeaa82b84336d5a3713c",
+    "model": "claude-opus-5-5",
+    "tools": [
+      "Bash",
+      "Glob",
+      "Grep",
+      "Read"
+    ],
+    "seed": 20261013,
+    "budget": {
+      "maxRuns": 8,
+      "maxApiRequests": 96,
+      "perRunUsd": 1.1,
+      "totalUsd": 4,
+      "turns": 12,
+      "timeoutSeconds": 150,
+      "outputTokens": 4096
+    },
+    "context": "fresh context and empty isolated fff state per run; no resume",
+    "guidanceMechanism": "--append-system-prompt-file",
+    "evidencePolicy": "Filename candidates are not code evidence; factual checks require source content and manual review.",
+    "timingPolicy": "Elapsed observations only; no speed inference."
+  },
+  "completedRuns": 8,
+  "forwardedMainModelRequests": 32,
+  "totalReportedCostUsd": 0.45505179999999995,
+  "groups": {
+    "baseline": {
+      "runs": 4,
+      "fffAttemptedRuns": 0,
+      "fffSuccessfulHeaderRuns": 0,
+      "fffReturnedCandidateRuns": 0,
+      "fffCandidateInspectedRuns": 0,
+      "coreFactChecksPassed": 4,
+      "allRequiredSourceFilesInspectedRuns": 4,
+      "reportedCostUsd": 0.2290698
+    },
+    "fff-global-guidance": {
+      "runs": 4,
+      "fffAttemptedRuns": 3,
+      "fffSuccessfulHeaderRuns": 3,
+      "fffReturnedCandidateRuns": 2,
+      "fffCandidateInspectedRuns": 2,
+      "coreFactChecksPassed": 4,
+      "allRequiredSourceFilesInspectedRuns": 4,
+      "reportedCostUsd": 0.225982
+    }
+  },
+  "methodLimitations": [
+    "One trial per condition per task; four small synthetic fixtures",
+    "Independent contexts have fresh empty usage state and untracked synthetic Git files",
+    "The proration guidance trial combined fuzzy filename and content search in one Bash call, so candidate inspection is observable but its causal source is ambiguous",
+    "The lease guidance trial received a successful fff header with no candidate paths and continued with native file listing",
+    "The webhook guidance trial did not invoke fff files",
+    "No timing or speed inference is made"
+  ],
+  "protocol": "Exploratory CLI appendix with explicit four-tool selection; native Bash-first defaults were not exercised",
+  "requestedFactChecks": "All eight core fact checks passed; unsupported extra claims are retained separately",
+  "rows": [
+    {
+      "number": 1,
+      "taskId": "approximate-proration-filename",
+      "condition": "baseline",
+      "effort": "low",
+      "status": 0,
+      "resultType": "success",
+      "isError": false,
+      "cost": 0.0773344,
+      "fixtureUnchanged": true,
+      "answer": "The policy is at `src/billing/subscriptions/ProrationPolicy.ts`. The teammate's name was close, but the real path includes `subscriptions/` and the file is spelled \"Proration\". For 7 remaining days, a 30-day period and 999 monthly cents, it returns **234 cents**.\n\n**How invoice handling reaches it:** `src/http/invoice.ts:1` imports `chargeUnusedPeriod` from `../billing/subscriptions/ProrationPolicy`, and `invoice.ts:3` passes its arguments straight through to it.\n\n**The calculation** (`ProrationPolicy.ts:1-6`):\n- **Line 4:** billable days are `min(remainingDays, periodDays)`, which is 7 here.\n- **Line 5:** the charge is `Math.ceil(999 * 7 / 30)`. That is `Math.ceil(233.1)`, which gives **234**.\n\n**Rounding rule:** it always rounds **up** to the next whole cent (`Math.ceil`, line 5). Any fraction of a cent is charged as a full cent. Two other rules affect the result:\n- Remaining days are capped at the period length (line 4), so the charge can never exceed `monthlyCents`.\n- If `remainingDays <= 0`, it returns 0 (line 3).\n\n**Zero-length period:** if `periodDays <= 0`, it throws `Error('INVALID_PERIOD')` (line 2). This check comes before the remaining-days check, so a zero-length period always throws and never returns 0 or divides by zero.\n\n**A similar file that invoice handling doesn't use:** `src/migrations/ProrationPolicyV1.ts` has `oldProratedCharge`, which rounds **down** (`Math.floor`, line 3) and has no guard against a zero period. Its own flag (line 1) and `docs/proration-policy.md:2` both say it is migration-only. Under that rule the same inputs would give 233.\n\nI didn't modify any files.",
+      "calls": [
+        {
+          "id": "toolu_014JHaKoZrJa3JuPtGfKkXXP",
+          "name": "Grep",
+          "input": {
+            "pattern": "(?i)prorat"
+          },
+          "eventIndex": 2
+        },
+        {
+          "id": "toolu_012CcEaioLGLNft1H9CUBCYP",
+          "name": "Bash",
+          "input": {
+            "command": "cd <experiment>/run-1791912162530/trial-01/fixture; cat -n src/http/invoice.ts src/migrations/ProrationPolicyV1.ts docs/proration-policy.md; ls -R src"
+          },
+          "eventIndex": 5
+        },
+        {
+          "id": "toolu_0128s6KzD3gbEBbhKVtqd2i5",
+          "name": "Bash",
+          "input": {
+            "command": "cd <experiment>/run-1791912162530/trial-01/fixture; cat -n src/billing/subscriptions/ProrationPolicy.ts"
+          },
+          "eventIndex": 7
+        }
+      ],
+      "results": [
+        {
+          "id": "toolu_014JHaKoZrJa3JuPtGfKkXXP",
+          "isError": false,
+          "content": "Found 3 files\ndocs/proration-policy.md\nsrc/http/invoice.ts\nsrc/migrations/ProrationPolicyV1.ts",
+          "eventIndex": 4
+        },
+        {
+          "id": "toolu_012CcEaioLGLNft1H9CUBCYP",
+          "isError": false,
+          "content": "     1\timport { chargeUnusedPeriod } from '../billing/subscriptions/ProrationPolicy';\n     2\texport function invoice(remainingDays: number, periodDays: number, monthlyCents: number) {\n     3\t  return chargeUnusedPeriod(remainingDays, periodDays, monthlyCents);\n     4\t}\n     1\texport const migrationOnly = true;\n     2\texport function oldProratedCharge(days: number, period: number, cents: number) {\n     3\t  return Math.floor(cents * days / period);\n     4\t}\n     1\t# Historic migration\n     2\tProrationPolicyV1 is migration-only.\nbilling\nhttp\nmigrations\n\nsrc/billing:\naccounts\nsubscriptions\n\nsrc/billing/accounts:\nAllocationPolicy.ts\n\nsrc/billing/subscriptions:\nCancelSubscription.ts\nProrationPolicy.ts\n\nsrc/http:\ninvoice.ts\n\nsrc/migrations:\nProrationPolicyV1.ts",
+          "eventIndex": 6
+        },
+        {
+          "id": "toolu_0128s6KzD3gbEBbhKVtqd2i5",
+          "isError": false,
+          "content": "     1\texport function chargeUnusedPeriod(remainingDays: number, periodDays: number, monthlyCents: number) {\n     2\t  if (periodDays <= 0) throw new Error('INVALID_PERIOD');\n     3\t  if (remainingDays <= 0) return 0;\n     4\t  const billableDays = Math.min(remainingDays, periodDays);\n     5\t  return Math.ceil(monthlyCents * billableDays / periodDays);\n     6\t}",
+          "eventIndex": 8
+        }
+      ],
+      "fffAttempts": [],
+      "factReview": {
+        "passed": true,
+        "verifiedFacts": [
+          "Active invoice import uses ProrationPolicy.ts",
+          "999 * 7 / 30 = 233.1; Math.ceil returns 234 cents",
+          "periodDays <= 0 throws INVALID_PERIOD before division"
+        ],
+        "scope": "Core requested facts; unsupported extra claims are assessed separately",
+        "unsupportedExtraClaims": [
+          "The claim that the charge can never exceed monthlyCents needs an integer-cents constraint. No such input constraint is enforced: a full period with monthlyCents 999.5 returns 1000."
+        ]
+      },
+      "sourceEvidence": [
+        {
+          "file": "src/http/invoice.ts",
+          "readCallIds": [],
+          "bashViewerCallIds": [
+            "toolu_012CcEaioLGLNft1H9CUBCYP"
+          ],
+          "sourceLinesVisible": [
+            {
+              "toolUseId": "toolu_012CcEaioLGLNft1H9CUBCYP",
+              "line": "import { chargeUnusedPeriod } from '../billing/subscriptions/ProrationPolicy';"
+            },
+            {
+              "toolUseId": "toolu_012CcEaioLGLNft1H9CUBCYP",
+              "line": "export function invoice(remainingDays: number, periodDays: number, monthlyCents: number) {"
+            },
+            {
+              "toolUseId": "toolu_012CcEaioLGLNft1H9CUBCYP",
+              "line": "return chargeUnusedPeriod(remainingDays, periodDays, monthlyCents);"
+            }
+          ],
+          "hasSourceCodeEvidence": true
+        },
+        {
+          "file": "src/billing/subscriptions/ProrationPolicy.ts",
+          "readCallIds": [],
+          "bashViewerCallIds": [
+            "toolu_0128s6KzD3gbEBbhKVtqd2i5"
+          ],
+          "sourceLinesVisible": [
+            {
+              "toolUseId": "toolu_0128s6KzD3gbEBbhKVtqd2i5",
+              "line": "export function chargeUnusedPeriod(remainingDays: number, periodDays: number, monthlyCents: number) {"
+            },
+            {
+              "toolUseId": "toolu_0128s6KzD3gbEBbhKVtqd2i5",
+              "line": "if (periodDays <= 0) throw new Error('INVALID_PERIOD');"
+            },
+            {
+              "toolUseId": "toolu_0128s6KzD3gbEBbhKVtqd2i5",
+              "line": "if (remainingDays <= 0) return 0;"
+            },
+            {
+              "toolUseId": "toolu_0128s6KzD3gbEBbhKVtqd2i5",
+              "line": "const billableDays = Math.min(remainingDays, periodDays);"
+            },
+            {
+              "toolUseId": "toolu_0128s6KzD3gbEBbhKVtqd2i5",
+              "line": "return Math.ceil(monthlyCents * billableDays / periodDays);"
+            }
+          ],
+          "hasSourceCodeEvidence": true
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "taskId": "approximate-proration-filename",
+      "condition": "fff-global-guidance",
+      "effort": "low",
+      "status": 0,
+      "resultType": "success",
+      "isError": false,
+      "cost": 0.07264759999999999,
+      "fixtureUnchanged": true,
+      "answer": "The teammate meant **`src/billing/subscriptions/ProrationPolicy.ts`**. Note the spelling is \"Proration\", not \"proraton\". Invoice handling uses it: `src/http/invoice.ts:1` imports `chargeUnusedPeriod`, and `src/http/invoice.ts:3` passes its arguments straight to it.\n\n**Answer: 7 remaining days, a 30-day period and 999 monthly cents returns 234 cents.**\n- Line 4: billable days = min(7, 30) = 7.\n- Line 5: 999 \u00d7 7 / 30 = 233.1, which `Math.ceil` raises to **234**.\n\n**Rounding rule** (`ProrationPolicy.ts:5`): the result is always rounded up to the next whole cent with `Math.ceil`, so any fraction of a cent counts as a full cent. Line 4 also caps remaining days at the period length, so the charge can never be more than `monthlyCents`.\n\n**Zero-length period** (`ProrationPolicy.ts:2`): if `periodDays <= 0`, the function throws `Error('INVALID_PERIOD')` and returns no charge. This check comes first, so it also prevents dividing by zero. A different case is zero or negative *remaining days* with a valid period: that returns `0` (line 3).\n\nThere is also a `src/migrations/ProrationPolicyV1.ts` (`oldProratedCharge`), but `docs/proration-policy.md:2` says it is migration-only, and invoice handling doesn't use it. I didn't modify any files.",
+      "calls": [
+        {
+          "id": "toolu_013ZTHQwFX6rH4WDAQHJgxg4",
+          "name": "Bash",
+          "input": {
+            "command": "fff files 'billing proration policy'; grep -rn -i \"prorat\" --include=* . | grep -v \"^./.git\" | head -30",
+            "description": "Find proration policy files"
+          },
+          "eventIndex": 2
+        },
+        {
+          "id": "toolu_01XTCBTUP7opfg5Wznacgoir",
+          "name": "Bash",
+          "input": {
+            "command": "cat -n src/billing/subscriptions/ProrationPolicy.ts src/http/invoice.ts",
+            "description": "Read policy and invoice files"
+          },
+          "eventIndex": 5
+        }
+      ],
+      "results": [
+        {
+          "id": "toolu_013ZTHQwFX6rH4WDAQHJgxg4",
+          "isError": false,
+          "content": "# fff: ranked fuzzy filenames; verify candidate files by reading them\nsrc/billing/subscriptions/ProrationPolicy.ts [modified] -> Read\nsrc/billing/accounts/AllocationPolicy.ts [modified] -> Read\nsrc/migrations/ProrationPolicyV1.ts [modified] -> Read\n./docs/proration-policy.md:2:ProrationPolicyV1 is migration-only.\n./src/migrations/ProrationPolicyV1.ts:2:export function oldProratedCharge(days: number, period: number, cents: number) {\n./src/http/invoice.ts:1:import { chargeUnusedPeriod } from '../billing/subscriptions/ProrationPolicy';",
+          "eventIndex": 4
+        },
+        {
+          "id": "toolu_01XTCBTUP7opfg5Wznacgoir",
+          "isError": false,
+          "content": "     1\texport function chargeUnusedPeriod(remainingDays: number, periodDays: number, monthlyCents: number) {\n     2\t  if (periodDays <= 0) throw new Error('INVALID_PERIOD');\n     3\t  if (remainingDays <= 0) return 0;\n     4\t  const billableDays = Math.min(remainingDays, periodDays);\n     5\t  return Math.ceil(monthlyCents * billableDays / periodDays);\n     6\t}\n     1\timport { chargeUnusedPeriod } from '../billing/subscriptions/ProrationPolicy';\n     2\texport function invoice(remainingDays: number, periodDays: number, monthlyCents: number) {\n     3\t  return chargeUnusedPeriod(remainingDays, periodDays, monthlyCents);\n     4\t}",
+          "eventIndex": 6
+        }
+      ],
+      "fffAttempts": [
+        {
+          "id": "toolu_013ZTHQwFX6rH4WDAQHJgxg4",
+          "command": "fff files 'billing proration policy'; grep -rn -i \"prorat\" --include=* . | grep -v \"^./.git\" | head -30",
+          "hasResult": true,
+          "isError": false,
+          "successfulFffHeader": true,
+          "candidates": [
+            "src/billing/subscriptions/ProrationPolicy.ts",
+            "src/billing/accounts/AllocationPolicy.ts",
+            "src/migrations/ProrationPolicyV1.ts"
+          ],
+          "candidateReadCallIds": [],
+          "candidateBashViewerCallIds": [
+            "toolu_01XTCBTUP7opfg5Wznacgoir"
+          ],
+          "returnedCandidatePaths": true,
+          "stderrSuppressedByModelCommand": false
+        }
+      ],
+      "factReview": {
+        "passed": true,
+        "verifiedFacts": [
+          "Active invoice import uses ProrationPolicy.ts",
+          "999 * 7 / 30 = 233.1; Math.ceil returns 234 cents",
+          "periodDays <= 0 throws INVALID_PERIOD before division"
+        ],
+        "scope": "Core requested facts; unsupported extra claims are assessed separately",
+        "unsupportedExtraClaims": [
+          "The claim that the charge can never exceed monthlyCents needs an integer-cents constraint. No such input constraint is enforced: a full period with monthlyCents 999.5 returns 1000."
+        ]
+      },
+      "sourceEvidence": [
+        {
+          "file": "src/http/invoice.ts",
+          "readCallIds": [],
+          "bashViewerCallIds": [
+            "toolu_01XTCBTUP7opfg5Wznacgoir"
+          ],
+          "sourceLinesVisible": [
+            {
+              "toolUseId": "toolu_01XTCBTUP7opfg5Wznacgoir",
+              "line": "import { chargeUnusedPeriod } from '../billing/subscriptions/ProrationPolicy';"
+            },
+            {
+              "toolUseId": "toolu_01XTCBTUP7opfg5Wznacgoir",
+              "line": "export function invoice(remainingDays: number, periodDays: number, monthlyCents: number) {"
+            },
+            {
+              "toolUseId": "toolu_01XTCBTUP7opfg5Wznacgoir",
+              "line": "return chargeUnusedPeriod(remainingDays, periodDays, monthlyCents);"
+            }
+          ],
+          "hasSourceCodeEvidence": true
+        },
+        {
+          "file": "src/billing/subscriptions/ProrationPolicy.ts",
+          "readCallIds": [],
+          "bashViewerCallIds": [
+            "toolu_01XTCBTUP7opfg5Wznacgoir"
+          ],
+          "sourceLinesVisible": [
+            {
+              "toolUseId": "toolu_01XTCBTUP7opfg5Wznacgoir",
+              "line": "export function chargeUnusedPeriod(remainingDays: number, periodDays: number, monthlyCents: number) {"
+            },
+            {
+              "toolUseId": "toolu_01XTCBTUP7opfg5Wznacgoir",
+              "line": "if (periodDays <= 0) throw new Error('INVALID_PERIOD');"
+            },
+            {
+              "toolUseId": "toolu_01XTCBTUP7opfg5Wznacgoir",
+              "line": "if (remainingDays <= 0) return 0;"
+            },
+            {
+              "toolUseId": "toolu_01XTCBTUP7opfg5Wznacgoir",
+              "line": "const billableDays = Math.min(remainingDays, periodDays);"
+            },
+            {
+              "toolUseId": "toolu_01XTCBTUP7opfg5Wznacgoir",
+              "line": "return Math.ceil(monthlyCents * billableDays / periodDays);"
+            }
+          ],
+          "hasSourceCodeEvidence": true
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "taskId": "unhelpful-filename-cue",
+      "condition": "fff-global-guidance",
+      "effort": "medium",
+      "status": 0,
+      "resultType": "success",
+      "isError": false,
+      "cost": 0.04807,
+      "fixtureUnchanged": true,
+      "answer": "**Answer:** No repository write happens. The call returns `{ ok: false, reason: 'STALE_REVISION' }`, and the stored row stays at revision 8 with `active: true`.\n\n**Active call path** (the runtime calls it \"hold\", not \"pause\"):\n\n1. `src/ui/PauseButton.ts:1`: the button labelled `'Pause'` has the action `'POST /hold'`.\n2. `src/http/hold.ts:2-7`: `holdJob(id, owner, expectedRevision, repository)` loads the row with `repository.get(id)` and passes it to `transition(...)`. It only calls `repository.put(id, result.row)` when `result.ok` is true (line 5). It returns `result` either way.\n3. `src/core/state.ts:1-5`: `transition` runs the checks in this order:\n   - Ownership first (line 2): if `current.owner !== owner`, it returns `{ ok: false, reason: 'WRONG_OWNER' }`.\n   - Revision second (line 3): if `current.revision !== expectedRevision`, it returns `{ ok: false, reason: 'STALE_REVISION' }`.\n   - If both pass (line 4), it returns `{ ok: true, row: { ...current, active: false, revision: current.revision + 1 } }`.\n\n**Your scenario:** The owner check passes because the stored owner and the caller are both `'worker-b'`. The revision check fails because 8 \u2260 7, so `transition` returns `STALE_REVISION`. Since `ok` is false, `hold.ts:5` skips `put`. The revision check is an exact match, not \"at least\", so a higher stored revision also fails.\n\n**Obsolete implementation:** `src/old/pause.ts:1-3` has `pauseJob(row)`. It does no owner or revision check: it always returns the row with `active: false` and the revision bumped by one. Nothing in the repo references it. `docs/pause.md:2` confirms that the UI pause goes through `holdJob` and that earlier versions did not check ownership. If this old code were used, the request would succeed and produce revision 9 with `active: false`. That is not current behaviour.\n\nThe fixture contains no router code linking `POST /hold` to `holdJob`. That link rests on the button's action string, the matching name, and the docs, not on routing code I could read.",
+      "calls": [
+        {
+          "id": "toolu_01SZ4TjVtMfVtjPcUutjSVVn",
+          "name": "Bash",
+          "input": {
+            "command": "fff files 'pause' ; git ls-files | head -100",
+            "description": "Search for pause-related files and list repo files"
+          },
+          "eventIndex": 2
+        },
+        {
+          "id": "toolu_019pYhiaAQ1fQRKFudrtpAmv",
+          "name": "Bash",
+          "input": {
+            "command": "find . -type f -not -path './.git/*' | head -50; for f in docs/pause.md src/old/pause.ts src/ui/PauseButton.ts; do echo \"== $f\"; cat -n $f; done",
+            "description": "List files and read pause candidates"
+          },
+          "eventIndex": 5
+        },
+        {
+          "id": "toolu_01SZajcFdm3CKxmobEXSHuDk",
+          "name": "Bash",
+          "input": {
+            "command": "cat -n src/http/hold.ts src/core/state.ts README.md; grep -rn \"pauseJob\\|holdJob\\|old/pause\" --exclude-dir=.git .",
+            "description": "Read hold handler, state, and references"
+          },
+          "eventIndex": 7
+        }
+      ],
+      "results": [
+        {
+          "id": "toolu_01SZ4TjVtMfVtjPcUutjSVVn",
+          "isError": false,
+          "content": "# fff: ranked fuzzy filenames; verify candidate files by reading them\ndocs/pause.md [modified] -> Read\nsrc/old/pause.ts [modified] -> Read\nsrc/ui/PauseButton.ts [modified] -> Read",
+          "eventIndex": 4
+        },
+        {
+          "id": "toolu_019pYhiaAQ1fQRKFudrtpAmv",
+          "isError": false,
+          "content": "./docs/pause.md\n./README.md\n./src/ui/PauseButton.ts\n./src/core/state.ts\n./src/old/pause.ts\n./src/http/hold.ts\n== docs/pause.md\n     1\t# Job pause\n     2\tThe UI pause action is implemented through holdJob; previous revisions did not validate ownership.\n== src/old/pause.ts\n     1\texport function pauseJob(row: { active: boolean; revision: number }) {\n     2\t  return { ...row, active: false, revision: row.revision + 1 };\n     3\t}\n== src/ui/PauseButton.ts\n     1\texport const PauseButton = { label: 'Pause', action: 'POST /hold' };",
+          "eventIndex": 6
+        },
+        {
+          "id": "toolu_01SZajcFdm3CKxmobEXSHuDk",
+          "isError": false,
+          "content": "     1\timport { transition } from '../core/state';\n     2\texport function holdJob(id: string, owner: string, expectedRevision: number, repository: { get(id: string): any; put(id: string, row: any): void }) {\n     3\t  const current = repository.get(id);\n     4\t  const result = transition(current, owner, expectedRevision);\n     5\t  if (result.ok) repository.put(id, result.row);\n     6\t  return result;\n     7\t}\n     1\texport function transition(current: { owner: string; revision: number; active: boolean }, owner: string, expectedRevision: number) {\n     2\t  if (current.owner !== owner) return { ok: false, reason: 'WRONG_OWNER' };\n     3\t  if (current.revision !== expectedRevision) return { ok: false, reason: 'STALE_REVISION' };\n     4\t  return { ok: true, row: { ...current, active: false, revision: current.revision + 1 } };\n     5\t}\n     1\t# Beacon fixture\n     2\tSynthetic job scheduling service. No file path was supplied with the request.\n./docs/pause.md:2:The UI pause action is implemented through holdJob; previous revisions did not validate ownership.\n./src/old/pause.ts:1:export function pauseJob(row: { active: boolean; revision: number }) {\n./src/http/hold.ts:2:export function holdJob(id: string, owner: string, expectedRevision: number, repository: { get(id: string): any; put(id: string, row: any): void }) {",
+          "eventIndex": 8
+        }
+      ],
+      "fffAttempts": [
+        {
+          "id": "toolu_01SZ4TjVtMfVtjPcUutjSVVn",
+          "command": "fff files 'pause' ; git ls-files | head -100",
+          "hasResult": true,
+          "isError": false,
+          "successfulFffHeader": true,
+          "candidates": [
+            "docs/pause.md",
+            "src/old/pause.ts",
+            "src/ui/PauseButton.ts"
+          ],
+          "candidateReadCallIds": [],
+          "candidateBashViewerCallIds": [
+            "toolu_019pYhiaAQ1fQRKFudrtpAmv"
+          ],
+          "returnedCandidatePaths": true,
+          "stderrSuppressedByModelCommand": false
+        }
+      ],
+      "factReview": {
+        "passed": true,
+        "verifiedFacts": [
+          "Stored and submitted owners match",
+          "Revision 8 does not equal expected revision 7",
+          "Result is ok false and reason STALE_REVISION",
+          "repository.put is skipped and stored active/revision values remain unchanged",
+          "Obsolete pauseJob omits the checks"
+        ],
+        "fixtureLimitation": "No route registration connects POST /hold to holdJob. The button action and documentation support that inferred connection; the guidance answer explicitly acknowledges the missing registration.",
+        "scope": "Core requested facts; unsupported extra claims are assessed separately",
+        "unsupportedExtraClaims": []
+      },
+      "sourceEvidence": [
+        {
+          "file": "src/http/hold.ts",
+          "readCallIds": [],
+          "bashViewerCallIds": [
+            "toolu_01SZajcFdm3CKxmobEXSHuDk"
+          ],
+          "sourceLinesVisible": [
+            {
+              "toolUseId": "toolu_01SZajcFdm3CKxmobEXSHuDk",
+              "line": "import { transition } from '../core/state';"
+            },
+            {
+              "toolUseId": "toolu_01SZajcFdm3CKxmobEXSHuDk",
+              "line": "export function holdJob(id: string, owner: string, expectedRevision: number, repository: { get(id: string): any; put(id: string, row: any): void }) {"
+            },
+            {
+              "toolUseId": "toolu_01SZajcFdm3CKxmobEXSHuDk",
+              "line": "const current = repository.get(id);"
+            },
+            {
+              "toolUseId": "toolu_01SZajcFdm3CKxmobEXSHuDk",
+              "line": "const result = transition(current, owner, expectedRevision);"
+            },
+            {
+              "toolUseId": "toolu_01SZajcFdm3CKxmobEXSHuDk",
+              "line": "if (result.ok) repository.put(id, result.row);"
+            }
+          ],
+          "hasSourceCodeEvidence": true
+        },
+        {
+          "file": "src/core/state.ts",
+          "readCallIds": [],
+          "bashViewerCallIds": [
+            "toolu_01SZajcFdm3CKxmobEXSHuDk"
+          ],
+          "sourceLinesVisible": [
+            {
+              "toolUseId": "toolu_01SZajcFdm3CKxmobEXSHuDk",
+              "line": "export function transition(current: { owner: string; revision: number; active: boolean }, owner: string, expectedRevision: number) {"
+            },
+            {
+              "toolUseId": "toolu_01SZajcFdm3CKxmobEXSHuDk",
+              "line": "if (current.owner !== owner) return { ok: false, reason: 'WRONG_OWNER' };"
+            },
+            {
+              "toolUseId": "toolu_01SZajcFdm3CKxmobEXSHuDk",
+              "line": "if (current.revision !== expectedRevision) return { ok: false, reason: 'STALE_REVISION' };"
+            },
+            {
+              "toolUseId": "toolu_01SZajcFdm3CKxmobEXSHuDk",
+              "line": "return { ok: true, row: { ...current, active: false, revision: current.revision + 1 } };"
+            }
+          ],
+          "hasSourceCodeEvidence": true
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "taskId": "unhelpful-filename-cue",
+      "condition": "baseline",
+      "effort": "medium",
+      "status": 0,
+      "resultType": "success",
+      "isError": false,
+      "cost": 0.0475342,
+      "fixtureUnchanged": true,
+      "answer": "No, the repository write does not happen. The call returns `{ ok: false, reason: 'STALE_REVISION' }` and the stored job is left unchanged.\n\n**Active call path**\n\n1. `src/ui/PauseButton.ts:1`: the UI button is labelled `'Pause'`, but its action is `'POST /hold'`. In the runtime code, \"pause\" is called \"hold\".\n2. `src/http/hold.ts:2-7`: `holdJob(id, owner, expectedRevision, repository)` fetches the current row with `repository.get(id)` and passes it to `transition(...)`. It calls `repository.put(id, result.row)` only `if (result.ok)` (line 5), and it returns `result` either way.\n3. `src/core/state.ts:1-5`: `transition` does the checks in this order:\n   - Line 2: ownership check. If `current.owner !== owner`, it returns `WRONG_OWNER`.\n   - Line 3: revision check. If `current.revision !== expectedRevision`, it returns `STALE_REVISION`.\n   - Line 4: if both pass, it returns `{ ok: true, row: { ...current, active: false, revision: current.revision + 1 } }`.\n\n`docs/pause.md:2` confirms this: \"The UI pause action is implemented through holdJob.\"\n\n**Your scenario** (stored owner `worker-b`, revision 8, active true; `worker-b` sends expected revision 7)\n\n- The owner check passes, because `'worker-b' === 'worker-b'`.\n- The revision check fails, because `8 !== 7`. `transition` returns `{ ok: false, reason: 'STALE_REVISION' }`.\n- Since `result.ok` is false, `repository.put` is skipped. The stored row stays at revision 8 with `active: true`.\n- `holdJob` returns `{ ok: false, reason: 'STALE_REVISION' }`.\n\n**Obsolete implementation**\n\n`src/old/pause.ts:1-3` (`pauseJob`) is the old version. It checks neither the owner nor the revision. It always returns the row with `active: false` and the revision increased by one, so for this input it would give revision 9 and inactive. It also never writes to a repository. Nothing on the active path uses it: the UI goes through `/hold`, which calls `holdJob`. The docs note that \"previous revisions did not validate ownership.\"\n\nI only read the files and changed nothing.",
+      "calls": [
+        {
+          "id": "toolu_017kxJXjAXYF3CY1Gtz3Rt8t",
+          "name": "Bash",
+          "input": {
+            "command": "git ls-files | head -100 && grep -rniE \"pause|suspend|halt|hold|freeze\" --include=* -l . | grep -v .git/",
+            "description": "List files and search pause-related terms"
+          },
+          "eventIndex": 2
+        },
+        {
+          "id": "toolu_01JZCwqXbzw5WVHbWB4pSeqT",
+          "name": "Bash",
+          "input": {
+            "command": "find . -type f -not -path './.git/*' | sort; for f in docs/pause.md src/ui/PauseButton.ts src/old/pause.ts src/http/hold.ts; do echo \"=== $f\"; cat -n $f; done",
+            "description": "List all files and print pause-related ones"
+          },
+          "eventIndex": 6
+        },
+        {
+          "id": "toolu_01GX1biMkFNrGyL77jqstUJE",
+          "name": "Bash",
+          "input": {
+            "command": "cat -n src/core/state.ts README.md",
+            "description": "Print state transition and README"
+          },
+          "eventIndex": 8
+        }
+      ],
+      "results": [
+        {
+          "id": "toolu_017kxJXjAXYF3CY1Gtz3Rt8t",
+          "isError": false,
+          "content": "./docs/pause.md\n./src/ui/PauseButton.ts\n./src/old/pause.ts\n./src/http/hold.ts",
+          "eventIndex": 4
+        },
+        {
+          "id": "toolu_01JZCwqXbzw5WVHbWB4pSeqT",
+          "isError": false,
+          "content": "./README.md\n./docs/pause.md\n./src/core/state.ts\n./src/http/hold.ts\n./src/old/pause.ts\n./src/ui/PauseButton.ts\n=== docs/pause.md\n     1\t# Job pause\n     2\tThe UI pause action is implemented through holdJob; previous revisions did not validate ownership.\n=== src/ui/PauseButton.ts\n     1\texport const PauseButton = { label: 'Pause', action: 'POST /hold' };\n=== src/old/pause.ts\n     1\texport function pauseJob(row: { active: boolean; revision: number }) {\n     2\t  return { ...row, active: false, revision: row.revision + 1 };\n     3\t}\n=== src/http/hold.ts\n     1\timport { transition } from '../core/state';\n     2\texport function holdJob(id: string, owner: string, expectedRevision: number, repository: { get(id: string): any; put(id: string, row: any): void }) {\n     3\t  const current = repository.get(id);\n     4\t  const result = transition(current, owner, expectedRevision);\n     5\t  if (result.ok) repository.put(id, result.row);\n     6\t  return result;\n     7\t}",
+          "eventIndex": 7
+        },
+        {
+          "id": "toolu_01GX1biMkFNrGyL77jqstUJE",
+          "isError": false,
+          "content": "     1\texport function transition(current: { owner: string; revision: number; active: boolean }, owner: string, expectedRevision: number) {\n     2\t  if (current.owner !== owner) return { ok: false, reason: 'WRONG_OWNER' };\n     3\t  if (current.revision !== expectedRevision) return { ok: false, reason: 'STALE_REVISION' };\n     4\t  return { ok: true, row: { ...current, active: false, revision: current.revision + 1 } };\n     5\t}\n     1\t# Beacon fixture\n     2\tSynthetic job scheduling service. No file path was supplied with the request.",
+          "eventIndex": 9
+        }
+      ],
+      "fffAttempts": [],
+      "factReview": {
+        "passed": true,
+        "verifiedFacts": [
+          "Stored and submitted owners match",
+          "Revision 8 does not equal expected revision 7",
+          "Result is ok false and reason STALE_REVISION",
+          "repository.put is skipped and stored active/revision values remain unchanged",
+          "Obsolete pauseJob omits the checks"
+        ],
+        "fixtureLimitation": "No route registration connects POST /hold to holdJob. The button action and documentation support that inferred connection; the guidance answer explicitly acknowledges the missing registration.",
+        "scope": "Core requested facts; unsupported extra claims are assessed separately",
+        "unsupportedExtraClaims": [
+          "The answer asserts a router link from POST /hold to holdJob, but this fixture contains no route registration. The button action and docs support an inference, not an observed router implementation."
+        ]
+      },
+      "sourceEvidence": [
+        {
+          "file": "src/http/hold.ts",
+          "readCallIds": [],
+          "bashViewerCallIds": [
+            "toolu_01JZCwqXbzw5WVHbWB4pSeqT"
+          ],
+          "sourceLinesVisible": [
+            {
+              "toolUseId": "toolu_01JZCwqXbzw5WVHbWB4pSeqT",
+              "line": "import { transition } from '../core/state';"
+            },
+            {
+              "toolUseId": "toolu_01JZCwqXbzw5WVHbWB4pSeqT",
+              "line": "export function holdJob(id: string, owner: string, expectedRevision: number, repository: { get(id: string): any; put(id: string, row: any): void }) {"
+            },
+            {
+              "toolUseId": "toolu_01JZCwqXbzw5WVHbWB4pSeqT",
+              "line": "const current = repository.get(id);"
+            },
+            {
+              "toolUseId": "toolu_01JZCwqXbzw5WVHbWB4pSeqT",
+              "line": "const result = transition(current, owner, expectedRevision);"
+            },
+            {
+              "toolUseId": "toolu_01JZCwqXbzw5WVHbWB4pSeqT",
+              "line": "if (result.ok) repository.put(id, result.row);"
+            }
+          ],
+          "hasSourceCodeEvidence": true
+        },
+        {
+          "file": "src/core/state.ts",
+          "readCallIds": [],
+          "bashViewerCallIds": [
+            "toolu_01GX1biMkFNrGyL77jqstUJE"
+          ],
+          "sourceLinesVisible": [
+            {
+              "toolUseId": "toolu_01GX1biMkFNrGyL77jqstUJE",
+              "line": "export function transition(current: { owner: string; revision: number; active: boolean }, owner: string, expectedRevision: number) {"
+            },
+            {
+              "toolUseId": "toolu_01GX1biMkFNrGyL77jqstUJE",
+              "line": "if (current.owner !== owner) return { ok: false, reason: 'WRONG_OWNER' };"
+            },
+            {
+              "toolUseId": "toolu_01GX1biMkFNrGyL77jqstUJE",
+              "line": "if (current.revision !== expectedRevision) return { ok: false, reason: 'STALE_REVISION' };"
+            },
+            {
+              "toolUseId": "toolu_01GX1biMkFNrGyL77jqstUJE",
+              "line": "return { ok: true, row: { ...current, active: false, revision: current.revision + 1 } };"
+            }
+          ],
+          "hasSourceCodeEvidence": true
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "taskId": "lease-renewal",
+      "condition": "baseline",
+      "effort": "medium",
+      "status": 0,
+      "resultType": "success",
+      "isError": false,
+      "cost": 0.0532708,
+      "fixtureUnchanged": true,
+      "answer": "**Answer:** Storage does not change. The request returns **HTTP 409** with body **`{ \"error\": \"STALE_GENERATION\" }`**.\n\n**Call path**\n\n1. **Route:** `src/api/routes.ts:2` maps `POST /leases/:id/renew` to `renewLeaseHandler`.\n2. **Handler:** `src/api/renewLeaseHandler.ts:5` calls `renewLease(request, store, 100000)`.\n3. **Service:** `src/services/renewLease.ts:5` reads the current lease with `store.get(id)`. The lease exists, so the `NOT_FOUND` branch at line 6 is skipped. Line 7 calls `evaluateRenewal(current, input, nowMs)`.\n4. **Policy:** `src/policies/renewal.ts` runs these checks in order:\n   - Line 4: `120000 <= 100000` is false, so the lease is not expired.\n   - Line 5: `'worker-a' !== 'worker-a'` is false, so the owner matches.\n   - Line 6: `4 !== 3` is true, so it returns `{ ok: false, code: 'STALE_GENERATION' }`.\n5. **Back in the service:** `src/services/renewLease.ts:8` returns that failure straight away. Lines 9\u201310 never run. Those are the lines that would build the renewed lease (generation 5, `expiresAtMs` 145000) and call `store.put`. Because `get` is the only store call made, storage stays at generation 4 and `expiresAtMs` 120000.\n6. **Status mapping:** `src/api/renewLeaseHandler.ts:7` maps `NOT_FOUND` to 404 and `OWNER_MISMATCH` to 403. Every other code becomes 409, so `STALE_GENERATION` gets 409. Line 8 returns `{ status: 409, body: { error: 'STALE_GENERATION' } }`.\n\nThe `ttlMs` value of 45000 is never used because the check fails before it matters.\n\n`src/legacy/renewLease.ts` is not on this path. Nothing imports it, and the route uses the service in `src/services/`.",
+      "calls": [
+        {
+          "id": "toolu_01QxF4piCGDP8t5K4Vn4V3Rc",
+          "name": "Grep",
+          "input": {
+            "pattern": "renew",
+            "output_mode": "files_with_matches"
+          },
+          "eventIndex": 2
+        },
+        {
+          "id": "toolu_01CXtWeaCdAdcSzzD1YZdS2U",
+          "name": "Bash",
+          "input": {
+            "command": "cat -n src/api/routes.ts src/api/renewLeaseHandler.ts src/services/renewLease.ts; ls -R src",
+            "description": "Show route, handler, and service source"
+          },
+          "eventIndex": 5
+        },
+        {
+          "id": "toolu_01Tv1AXJqojVLSeD6zj5NB9Q",
+          "name": "Bash",
+          "input": {
+            "command": "cat -n src/policies/renewal.ts src/storage/leaseStore.ts",
+            "description": "Show renewal policy and store"
+          },
+          "eventIndex": 7
+        },
+        {
+          "id": "toolu_01MAmEiAHPwUvgKLdFuunQUU",
+          "name": "Grep",
+          "input": {
+            "pattern": "legacy",
+            "output_mode": "content"
+          },
+          "eventIndex": 12
+        }
+      ],
+      "results": [
+        {
+          "id": "toolu_01QxF4piCGDP8t5K4Vn4V3Rc",
+          "isError": false,
+          "content": "Found 5 files\nsrc/api/renewLeaseHandler.ts\nsrc/api/routes.ts\nsrc/legacy/renewLease.ts\nsrc/services/renewLease.ts\ntests/renewal.test.ts",
+          "eventIndex": 4
+        },
+        {
+          "id": "toolu_01CXtWeaCdAdcSzzD1YZdS2U",
+          "isError": false,
+          "content": "     1\timport { renewLeaseHandler } from './renewLeaseHandler';\n     2\texport const routes = [{ method: 'POST', path: '/leases/:id/renew', handler: renewLeaseHandler }];\n     1\timport { renewLease } from '../services/renewLease';\n     2\timport type { LeaseStore } from '../storage/leaseStore';\n     3\t\n     4\texport async function renewLeaseHandler(request: { id: string; owner: string; expectedGeneration: number; ttlMs: number }, store: LeaseStore, nowMs: number) {\n     5\t  const result = await renewLease(request, store, nowMs);\n     6\t  if (result.ok) return { status: 200, body: result.lease };\n     7\t  const status = result.code === 'NOT_FOUND' ? 404 : result.code === 'OWNER_MISMATCH' ? 403 : 409;\n     8\t  return { status, body: { error: result.code } };\n     9\t}\n     1\timport { evaluateRenewal } from '../policies/renewal';\n     2\timport type { LeaseStore } from '../storage/leaseStore';\n     3\t\n     4\texport async function renewLease(input: { id: string; owner: string; expectedGeneration: number; ttlMs: number }, store: LeaseStore, nowMs: number) {\n     5\t  const current = await store.get(input.id);\n     6\t  if (!current) return { ok: false as const, code: 'NOT_FOUND' as const };\n     7\t  const decision = evaluateRenewal(current, input, nowMs);\n     8\t  if (!decision.ok) return decision;\n     9\t  const renewed = { ...current, generation: current.generation + 1, expiresAtMs: nowMs + input.ttlMs };\n    10\t  await store.put(input.id, renewed);\n    11\t  return { ok: true as const, lease: renewed };\n    12\t}\napi\nlegacy\npolicies\nservices\nstorage\n\nsrc/api:\nrenewLeaseHandler.ts\nroutes.ts\n\nsrc/legacy:\nrenewLease.ts\n\nsrc/policies:\nrenewal.ts\n\nsrc/services:\ncreateLease.ts\nrenewLease.ts\n\nsrc/storage:\nleaseStore.ts",
+          "eventIndex": 6
+        },
+        {
+          "id": "toolu_01Tv1AXJqojVLSeD6zj5NB9Q",
+          "isError": false,
+          "content": "     1\timport type { Lease } from '../storage/leaseStore';\n     2\t\n     3\texport function evaluateRenewal(current: Lease, input: { owner: string; expectedGeneration: number }, nowMs: number) {\n     4\t  if (current.expiresAtMs <= nowMs) return { ok: false as const, code: 'EXPIRED' as const };\n     5\t  if (current.owner !== input.owner) return { ok: false as const, code: 'OWNER_MISMATCH' as const };\n     6\t  if (current.generation !== input.expectedGeneration) return { ok: false as const, code: 'STALE_GENERATION' as const };\n     7\t  return { ok: true as const };\n     8\t}\n     1\texport interface Lease { owner: string; generation: number; expiresAtMs: number }\n     2\texport interface LeaseStore {\n     3\t  get(id: string): Promise<Lease | undefined>;\n     4\t  put(id: string, value: Lease): Promise<void>;\n     5\t}",
+          "eventIndex": 8
+        },
+        {
+          "id": "toolu_01MAmEiAHPwUvgKLdFuunQUU",
+          "isError": false,
+          "content": "No matches found",
+          "eventIndex": 13
+        }
+      ],
+      "fffAttempts": [],
+      "factReview": {
+        "passed": true,
+        "verifiedFacts": [
+          "Lease remains active at 100000 ms",
+          "Owner check passes but generation 4 differs from expected generation 3",
+          "Service returns before store.put",
+          "Handler returns status 409 and error STALE_GENERATION"
+        ],
+        "scope": "Core requested facts; unsupported extra claims are assessed separately",
+        "unsupportedExtraClaims": []
+      },
+      "sourceEvidence": [
+        {
+          "file": "src/api/renewLeaseHandler.ts",
+          "readCallIds": [],
+          "bashViewerCallIds": [
+            "toolu_01CXtWeaCdAdcSzzD1YZdS2U"
+          ],
+          "sourceLinesVisible": [
+            {
+              "toolUseId": "toolu_01CXtWeaCdAdcSzzD1YZdS2U",
+              "line": "import { renewLease } from '../services/renewLease';"
+            },
+            {
+              "toolUseId": "toolu_01CXtWeaCdAdcSzzD1YZdS2U",
+              "line": "import type { LeaseStore } from '../storage/leaseStore';"
+            },
+            {
+              "toolUseId": "toolu_01CXtWeaCdAdcSzzD1YZdS2U",
+              "line": "export async function renewLeaseHandler(request: { id: string; owner: string; expectedGeneration: number; ttlMs: number }, store: LeaseStore, nowMs: number) {"
+            },
+            {
+              "toolUseId": "toolu_01CXtWeaCdAdcSzzD1YZdS2U",
+              "line": "const result = await renewLease(request, store, nowMs);"
+            },
+            {
+              "toolUseId": "toolu_01CXtWeaCdAdcSzzD1YZdS2U",
+              "line": "if (result.ok) return { status: 200, body: result.lease };"
+            },
+            {
+              "toolUseId": "toolu_01CXtWeaCdAdcSzzD1YZdS2U",
+              "line": "const status = result.code === 'NOT_FOUND' ? 404 : result.code === 'OWNER_MISMATCH' ? 403 : 409;"
+            },
+            {
+              "toolUseId": "toolu_01CXtWeaCdAdcSzzD1YZdS2U",
+              "line": "return { status, body: { error: result.code } };"
+            }
+          ],
+          "hasSourceCodeEvidence": true
+        },
+        {
+          "file": "src/services/renewLease.ts",
+          "readCallIds": [],
+          "bashViewerCallIds": [
+            "toolu_01CXtWeaCdAdcSzzD1YZdS2U"
+          ],
+          "sourceLinesVisible": [
+            {
+              "toolUseId": "toolu_01CXtWeaCdAdcSzzD1YZdS2U",
+              "line": "import { evaluateRenewal } from '../policies/renewal';"
+            },
+            {
+              "toolUseId": "toolu_01CXtWeaCdAdcSzzD1YZdS2U",
+              "line": "import type { LeaseStore } from '../storage/leaseStore';"
+            },
+            {
+              "toolUseId": "toolu_01CXtWeaCdAdcSzzD1YZdS2U",
+              "line": "export async function renewLease(input: { id: string; owner: string; expectedGeneration: number; ttlMs: number }, store: LeaseStore, nowMs: number) {"
+            },
+            {
+              "toolUseId": "toolu_01CXtWeaCdAdcSzzD1YZdS2U",
+              "line": "const current = await store.get(input.id);"
+            },
+            {
+              "toolUseId": "toolu_01CXtWeaCdAdcSzzD1YZdS2U",
+              "line": "if (!current) return { ok: false as const, code: 'NOT_FOUND' as const };"
+            },
+            {
+              "toolUseId": "toolu_01CXtWeaCdAdcSzzD1YZdS2U",
+              "line": "const decision = evaluateRenewal(current, input, nowMs);"
+            },
+            {
+              "toolUseId": "toolu_01CXtWeaCdAdcSzzD1YZdS2U",
+              "line": "if (!decision.ok) return decision;"
+            },
+            {
+              "toolUseId": "toolu_01CXtWeaCdAdcSzzD1YZdS2U",
+              "line": "const renewed = { ...current, generation: current.generation + 1, expiresAtMs: nowMs + input.ttlMs };"
+            },
+            {
+              "toolUseId": "toolu_01CXtWeaCdAdcSzzD1YZdS2U",
+              "line": "await store.put(input.id, renewed);"
+            },
+            {
+              "toolUseId": "toolu_01CXtWeaCdAdcSzzD1YZdS2U",
+              "line": "return { ok: true as const, lease: renewed };"
+            }
+          ],
+          "hasSourceCodeEvidence": true
+        },
+        {
+          "file": "src/policies/renewal.ts",
+          "readCallIds": [],
+          "bashViewerCallIds": [
+            "toolu_01Tv1AXJqojVLSeD6zj5NB9Q"
+          ],
+          "sourceLinesVisible": [
+            {
+              "toolUseId": "toolu_01Tv1AXJqojVLSeD6zj5NB9Q",
+              "line": "import type { Lease } from '../storage/leaseStore';"
+            },
+            {
+              "toolUseId": "toolu_01Tv1AXJqojVLSeD6zj5NB9Q",
+              "line": "export function evaluateRenewal(current: Lease, input: { owner: string; expectedGeneration: number }, nowMs: number) {"
+            },
+            {
+              "toolUseId": "toolu_01Tv1AXJqojVLSeD6zj5NB9Q",
+              "line": "if (current.expiresAtMs <= nowMs) return { ok: false as const, code: 'EXPIRED' as const };"
+            },
+            {
+              "toolUseId": "toolu_01Tv1AXJqojVLSeD6zj5NB9Q",
+              "line": "if (current.owner !== input.owner) return { ok: false as const, code: 'OWNER_MISMATCH' as const };"
+            },
+            {
+              "toolUseId": "toolu_01Tv1AXJqojVLSeD6zj5NB9Q",
+              "line": "if (current.generation !== input.expectedGeneration) return { ok: false as const, code: 'STALE_GENERATION' as const };"
+            }
+          ],
+          "hasSourceCodeEvidence": true
+        }
+      ]
+    },
+    {
+      "number": 6,
+      "taskId": "lease-renewal",
+      "condition": "fff-global-guidance",
+      "effort": "medium",
+      "status": 0,
+      "resultType": "success",
+      "isError": false,
+      "cost": 0.052509999999999994,
+      "fixtureUnchanged": true,
+      "answer": "**Answer:** Storage does not change. The response is **HTTP 409** with body `{ \"error\": \"STALE_GENERATION\" }`.\n\n**Call path**\n\n1. **Route:** `src/api/routes.ts:2` sends `POST /leases/:id/renew` to `renewLeaseHandler`.\n2. **Handler:** `src/api/renewLeaseHandler.ts:5` calls `renewLease(request, store, 100000)`.\n3. **Service:** `src/services/renewLease.ts:5` reads the lease with `store.get(id)`. The lease exists, so the `NOT_FOUND` branch at line 6 is skipped. Line 7 calls `evaluateRenewal(current, input, 100000)`.\n4. **Policy:** `src/policies/renewal.ts` runs its checks in this order:\n   - Line 4, expiry check: `120000 <= 100000` is false, so the lease is not expired.\n   - Line 5, owner check: `'worker-a' !== 'worker-a'` is false, so the owner matches.\n   - Line 6, generation check: `4 !== 3` is true, so it returns `{ ok: false, code: 'STALE_GENERATION' }`.\n5. **Back in the service:** `src/services/renewLease.ts:8` returns that failure right away. Lines 9\u201310 never run. Those lines would have built the renewed lease (generation 5, expiry `100000 + 45000 = 145000`) and saved it with `store.put`. So the stored lease stays at owner `worker-a`, generation 4, `expiresAtMs` 120000. The `ttlMs` of 45000 is never used.\n6. **Status mapping:** `src/api/renewLeaseHandler.ts:7` returns 404 for `NOT_FOUND` and 403 for `OWNER_MISMATCH`. Every other failure gets 409, including `STALE_GENERATION`. Line 8 returns `{ status: 409, body: { error: 'STALE_GENERATION' } }`.\n\n`src/legacy/renewLease.ts` isn't on this route's path. It would also extend from the old expiry rather than from `nowMs`, so it doesn't affect this answer. I read the code but didn't run anything; the only test (`tests/renewal.test.ts`) covers the accepted case, not this one.",
+      "calls": [
+        {
+          "id": "toolu_01GnWuBBbazFoLUZe49muNNV",
+          "name": "Bash",
+          "input": {
+            "command": "git ls-files | head -50 && fff files 'lease renew' 2>/dev/null | head",
+            "description": "List repo files and search for lease files"
+          },
+          "eventIndex": 2
+        },
+        {
+          "id": "toolu_01JQeBKfmbZ6VRqc82KfoufG",
+          "name": "Bash",
+          "input": {
+            "command": "find . -type f -not -path './.git/*' | head -50",
+            "description": "List all files in fixture"
+          },
+          "eventIndex": 5
+        },
+        {
+          "id": "toolu_01JUj8wQwRKK9ttUSXkWTHKn",
+          "name": "Bash",
+          "input": {
+            "command": "for f in src/api/routes.ts src/api/renewLeaseHandler.ts src/services/renewLease.ts src/policies/renewal.ts src/storage/leaseStore.ts src/legacy/renewLease.ts README.md tests/renewal.test.ts; do echo \"=== $f\"; cat -n $f; done",
+            "description": "Print relevant source files with line numbers"
+          },
+          "eventIndex": 7
+        }
+      ],
+      "results": [
+        {
+          "id": "toolu_01GnWuBBbazFoLUZe49muNNV",
+          "isError": false,
+          "content": "# fff: ranked fuzzy filenames; verify candidate files by reading them",
+          "eventIndex": 4
+        },
+        {
+          "id": "toolu_01JQeBKfmbZ6VRqc82KfoufG",
+          "isError": false,
+          "content": "./tests/renewal.test.ts\n./README.md\n./src/legacy/renewLease.ts\n./src/policies/renewal.ts\n./src/storage/leaseStore.ts\n./src/api/routes.ts\n./src/api/renewLeaseHandler.ts\n./src/services/renewLease.ts\n./src/services/createLease.ts",
+          "eventIndex": 6
+        },
+        {
+          "id": "toolu_01JUj8wQwRKK9ttUSXkWTHKn",
+          "isError": false,
+          "content": "=== src/api/routes.ts\n     1\timport { renewLeaseHandler } from './renewLeaseHandler';\n     2\texport const routes = [{ method: 'POST', path: '/leases/:id/renew', handler: renewLeaseHandler }];\n=== src/api/renewLeaseHandler.ts\n     1\timport { renewLease } from '../services/renewLease';\n     2\timport type { LeaseStore } from '../storage/leaseStore';\n     3\t\n     4\texport async function renewLeaseHandler(request: { id: string; owner: string; expectedGeneration: number; ttlMs: number }, store: LeaseStore, nowMs: number) {\n     5\t  const result = await renewLease(request, store, nowMs);\n     6\t  if (result.ok) return { status: 200, body: result.lease };\n     7\t  const status = result.code === 'NOT_FOUND' ? 404 : result.code === 'OWNER_MISMATCH' ? 403 : 409;\n     8\t  return { status, body: { error: result.code } };\n     9\t}\n=== src/services/renewLease.ts\n     1\timport { evaluateRenewal } from '../policies/renewal';\n     2\timport type { LeaseStore } from '../storage/leaseStore';\n     3\t\n     4\texport async function renewLease(input: { id: string; owner: string; expectedGeneration: number; ttlMs: number }, store: LeaseStore, nowMs: number) {\n     5\t  const current = await store.get(input.id);\n     6\t  if (!current) return { ok: false as const, code: 'NOT_FOUND' as const };\n     7\t  const decision = evaluateRenewal(current, input, nowMs);\n     8\t  if (!decision.ok) return decision;\n     9\t  const renewed = { ...current, generation: current.generation + 1, expiresAtMs: nowMs + input.ttlMs };\n    10\t  await store.put(input.id, renewed);\n    11\t  return { ok: true as const, lease: renewed };\n    12\t}\n=== src/policies/renewal.ts\n     1\timport type { Lease } from '../storage/leaseStore';\n     2\t\n     3\texport function evaluateRenewal(current: Lease, input: { owner: string; expectedGeneration: number }, nowMs: number) {\n     4\t  if (current.expiresAtMs <= nowMs) return { ok: false as const, code: 'EXPIRED' as const };\n     5\t  if (current.owner !== input.owner) return { ok: false as const, code: 'OWNER_MISMATCH' as const };\n     6\t  if (current.generation !== input.expectedGeneration) return { ok: false as const, code: 'STALE_GENERATION' as const };\n     7\t  return { ok: true as const };\n     8\t}\n=== src/storage/leaseStore.ts\n     1\texport interface Lease { owner: string; generation: number; expiresAtMs: number }\n     2\texport interface LeaseStore {\n     3\t  get(id: string): Promise<Lease | undefined>;\n     4\t  put(id: string, value: Lease): Promise<void>;\n     5\t}\n=== src/legacy/renewLease.ts\n     1\texport function renewLegacyLease(lease: { expiresAtMs: number }, ttlMs: number) {\n     2\t  return { ...lease, expiresAtMs: lease.expiresAtMs + ttlMs };\n     3\t}\n=== README.md\n     1\t# Leaseboard fixture\n     2\tA small synthetic lease coordination service. The HTTP route is defined under src/api.\n=== tests/renewal.test.ts\n     1\timport { evaluateRenewal } from '../src/policies/renewal';\n     2\tconst lease = { owner: 'sample', generation: 2, expiresAtMs: 200 };\n     3\texport const accepted = evaluateRenewal(lease, { owner: 'sample', expectedGeneration: 2 }, 100);",
+          "eventIndex": 8
+        }
+      ],
+      "fffAttempts": [
+        {
+          "id": "toolu_01GnWuBBbazFoLUZe49muNNV",
+          "command": "git ls-files | head -50 && fff files 'lease renew' 2>/dev/null | head",
+          "hasResult": true,
+          "isError": false,
+          "successfulFffHeader": true,
+          "candidates": [],
+          "candidateReadCallIds": [],
+          "candidateBashViewerCallIds": [],
+          "returnedCandidatePaths": false,
+          "stderrSuppressedByModelCommand": true
+        }
+      ],
+      "factReview": {
+        "passed": true,
+        "verifiedFacts": [
+          "Lease remains active at 100000 ms",
+          "Owner check passes but generation 4 differs from expected generation 3",
+          "Service returns before store.put",
+          "Handler returns status 409 and error STALE_GENERATION"
+        ],
+        "scope": "Core requested facts; unsupported extra claims are assessed separately",
+        "unsupportedExtraClaims": []
+      },
+      "sourceEvidence": [
+        {
+          "file": "src/api/renewLeaseHandler.ts",
+          "readCallIds": [],
+          "bashViewerCallIds": [
+            "toolu_01JUj8wQwRKK9ttUSXkWTHKn"
+          ],
+          "sourceLinesVisible": [
+            {
+              "toolUseId": "toolu_01JUj8wQwRKK9ttUSXkWTHKn",
+              "line": "import { renewLease } from '../services/renewLease';"
+            },
+            {
+              "toolUseId": "toolu_01JUj8wQwRKK9ttUSXkWTHKn",
+              "line": "import type { LeaseStore } from '../storage/leaseStore';"
+            },
+            {
+              "toolUseId": "toolu_01JUj8wQwRKK9ttUSXkWTHKn",
+              "line": "export async function renewLeaseHandler(request: { id: string; owner: string; expectedGeneration: number; ttlMs: number }, store: LeaseStore, nowMs: number) {"
+            },
+            {
+              "toolUseId": "toolu_01JUj8wQwRKK9ttUSXkWTHKn",
+              "line": "const result = await renewLease(request, store, nowMs);"
+            },
+            {
+              "toolUseId": "toolu_01JUj8wQwRKK9ttUSXkWTHKn",
+              "line": "if (result.ok) return { status: 200, body: result.lease };"
+            },
+            {
+              "toolUseId": "toolu_01JUj8wQwRKK9ttUSXkWTHKn",
+              "line": "const status = result.code === 'NOT_FOUND' ? 404 : result.code === 'OWNER_MISMATCH' ? 403 : 409;"
+            },
+            {
+              "toolUseId": "toolu_01JUj8wQwRKK9ttUSXkWTHKn",
+              "line": "return { status, body: { error: result.code } };"
+            }
+          ],
+          "hasSourceCodeEvidence": true
+        },
+        {
+          "file": "src/services/renewLease.ts",
+          "readCallIds": [],
+          "bashViewerCallIds": [
+            "toolu_01JUj8wQwRKK9ttUSXkWTHKn"
+          ],
+          "sourceLinesVisible": [
+            {
+              "toolUseId": "toolu_01JUj8wQwRKK9ttUSXkWTHKn",
+              "line": "import { evaluateRenewal } from '../policies/renewal';"
+            },
+            {
+              "toolUseId": "toolu_01JUj8wQwRKK9ttUSXkWTHKn",
+              "line": "import type { LeaseStore } from '../storage/leaseStore';"
+            },
+            {
+              "toolUseId": "toolu_01JUj8wQwRKK9ttUSXkWTHKn",
+              "line": "export async function renewLease(input: { id: string; owner: string; expectedGeneration: number; ttlMs: number }, store: LeaseStore, nowMs: number) {"
+            },
+            {
+              "toolUseId": "toolu_01JUj8wQwRKK9ttUSXkWTHKn",
+              "line": "const current = await store.get(input.id);"
+            },
+            {
+              "toolUseId": "toolu_01JUj8wQwRKK9ttUSXkWTHKn",
+              "line": "if (!current) return { ok: false as const, code: 'NOT_FOUND' as const };"
+            },
+            {
+              "toolUseId": "toolu_01JUj8wQwRKK9ttUSXkWTHKn",
+              "line": "const decision = evaluateRenewal(current, input, nowMs);"
+            },
+            {
+              "toolUseId": "toolu_01JUj8wQwRKK9ttUSXkWTHKn",
+              "line": "if (!decision.ok) return decision;"
+            },
+            {
+              "toolUseId": "toolu_01JUj8wQwRKK9ttUSXkWTHKn",
+              "line": "const renewed = { ...current, generation: current.generation + 1, expiresAtMs: nowMs + input.ttlMs };"
+            },
+            {
+              "toolUseId": "toolu_01JUj8wQwRKK9ttUSXkWTHKn",
+              "line": "await store.put(input.id, renewed);"
+            },
+            {
+              "toolUseId": "toolu_01JUj8wQwRKK9ttUSXkWTHKn",
+              "line": "return { ok: true as const, lease: renewed };"
+            }
+          ],
+          "hasSourceCodeEvidence": true
+        },
+        {
+          "file": "src/policies/renewal.ts",
+          "readCallIds": [],
+          "bashViewerCallIds": [
+            "toolu_01JUj8wQwRKK9ttUSXkWTHKn"
+          ],
+          "sourceLinesVisible": [
+            {
+              "toolUseId": "toolu_01JUj8wQwRKK9ttUSXkWTHKn",
+              "line": "import type { Lease } from '../storage/leaseStore';"
+            },
+            {
+              "toolUseId": "toolu_01JUj8wQwRKK9ttUSXkWTHKn",
+              "line": "export function evaluateRenewal(current: Lease, input: { owner: string; expectedGeneration: number }, nowMs: number) {"
+            },
+            {
+              "toolUseId": "toolu_01JUj8wQwRKK9ttUSXkWTHKn",
+              "line": "if (current.expiresAtMs <= nowMs) return { ok: false as const, code: 'EXPIRED' as const };"
+            },
+            {
+              "toolUseId": "toolu_01JUj8wQwRKK9ttUSXkWTHKn",
+              "line": "if (current.owner !== input.owner) return { ok: false as const, code: 'OWNER_MISMATCH' as const };"
+            },
+            {
+              "toolUseId": "toolu_01JUj8wQwRKK9ttUSXkWTHKn",
+              "line": "if (current.generation !== input.expectedGeneration) return { ok: false as const, code: 'STALE_GENERATION' as const };"
+            }
+          ],
+          "hasSourceCodeEvidence": true
+        }
+      ]
+    },
+    {
+      "number": 7,
+      "taskId": "webhook-retry",
+      "condition": "fff-global-guidance",
+      "effort": "low",
+      "status": 0,
+      "resultType": "success",
+      "isError": false,
+      "cost": 0.05275440000000001,
+      "fixtureUnchanged": true,
+      "answer": "The next retry time for a 429 is decided in `chooseDeliveryRetry` (`src/policies/deliveryRetry.ts:3-10`). For attempt 3 with `Retry-After: '17'` and now = 100000 ms, the delay is **17000 ms** and the due time is **117000 ms**.\n\n**Call path**\n\n1. `deliver` (`src/worker/deliver.ts:5`) posts the payload at line 6. Any status outside 200\u2013299 is passed to `handleFailure(job, response, queue, nowMs)` at line 11.\n2. `handleFailure` (`src/worker/handleFailure.ts:6`) calls `chooseDeliveryRetry(job.attempt, response.status, response.headers['retry-after'], nowMs)`.\n3. `chooseDeliveryRetry` (`src/policies/deliveryRetry.ts`) makes the decision:\n   - Line 4: a 429 is not stopped here; only non-429 statuses below 500 are.\n   - Line 5: attempt 3 is below 5, so it continues.\n   - Line 6: `exponentialMs = min(1000 * 2**3, 60000) = 8000`.\n   - Line 7: for a 429, `serverHintMs = retryAfterMillis('17')`.\n4. `retryAfterMillis` (`src/time/retryAfter.ts:1-4`): `'17'` is all digits (line 2), so it returns `min(17 * 1000, 60000) = 17000` (line 3).\n5. Back in `deliveryRetry.ts`:\n   - Line 8: `delayMs = max(8000, 17000) = 17000`.\n   - Line 9: it returns `{ kind: 'retry', delayMs: 17000, dueAtMs: 100000 + 17000 = 117000 }`.\n6. `handleFailure.ts:8` stores that time with `queue.reschedule(job.id, 117000)`. `reschedule` is only declared in the `DeliveryQueue` interface (`src/storage/deliveryQueue.ts:10`).\n\nThis assumes \"attempt 3\" means `job.attempt === 3` when the failure is handled. If the counter is off by one (for example, the 429 came on attempt 2), the answer doesn't change: the exponential value would be 4000 or 16000, both below the 17000 hint. Retry-After is capped at 60 s, and attempts at 5 or above stop the job and send it to the dead-letter queue (`handleFailure.ts:10`).",
+      "calls": [
+        {
+          "id": "toolu_01JB4gq2ZpJKdrvdiyCwFdtt",
+          "name": "Grep",
+          "input": {
+            "pattern": "429|Retry-After|retryAfter|retry_after",
+            "output_mode": "content",
+            "-i": true
+          },
+          "eventIndex": 2
+        },
+        {
+          "id": "toolu_01Q5W5MXY7VEWz5zAD2aBTPj",
+          "name": "Bash",
+          "input": {
+            "command": "cd src; cat -n policies/deliveryRetry.ts time/retryAfter.ts worker/handleFailure.ts; grep -rn \"handleFailure\\|backoff\" . | head"
+          },
+          "eventIndex": 5
+        },
+        {
+          "id": "toolu_01AKb84zgeLgzTkU2nFrijXw",
+          "name": "Bash",
+          "input": {
+            "command": "cd src 2>/dev/null; cat -n worker/deliver.ts; grep -n \"attempt\\|reschedule\" -r storage"
+          },
+          "eventIndex": 7
+        }
+      ],
+      "results": [
+        {
+          "id": "toolu_01JB4gq2ZpJKdrvdiyCwFdtt",
+          "isError": false,
+          "content": "src/time/retryAfter.ts:1:export function retryAfterMillis(value: string | undefined): number {\nsrc/worker/handleFailure.ts:6:  const decision = chooseDeliveryRetry(job.attempt, response.status, response.headers['retry-after'], nowMs);\nsrc/policies/deliveryRetry.ts:1:import { retryAfterMillis } from '../time/retryAfter';\nsrc/policies/deliveryRetry.ts:3:export function chooseDeliveryRetry(attempt: number, status: number, retryAfter: string | undefined, nowMs: number) {\nsrc/policies/deliveryRetry.ts:4:  if (status !== 429 && status < 500) return { kind: 'stop' as const };\nsrc/policies/deliveryRetry.ts:7:  const serverHintMs = status === 429 ? retryAfterMillis(retryAfter) : 0;",
+          "eventIndex": 4
+        },
+        {
+          "id": "toolu_01Q5W5MXY7VEWz5zAD2aBTPj",
+          "isError": false,
+          "content": "     1\timport { retryAfterMillis } from '../time/retryAfter';\n     2\t\n     3\texport function chooseDeliveryRetry(attempt: number, status: number, retryAfter: string | undefined, nowMs: number) {\n     4\t  if (status !== 429 && status < 500) return { kind: 'stop' as const };\n     5\t  if (attempt >= 5) return { kind: 'stop' as const };\n     6\t  const exponentialMs = Math.min(1000 * 2 ** attempt, 60000);\n     7\t  const serverHintMs = status === 429 ? retryAfterMillis(retryAfter) : 0;\n     8\t  const delayMs = Math.max(exponentialMs, serverHintMs);\n     9\t  return { kind: 'retry' as const, delayMs, dueAtMs: nowMs + delayMs };\n    10\t}\n     1\texport function retryAfterMillis(value: string | undefined): number {\n     2\t  if (value === undefined || !/^\\d+$/.test(value.trim())) return 0;\n     3\t  return Math.min(Number(value.trim()) * 1000, 60000);\n     4\t}\n     1\timport { chooseDeliveryRetry } from '../policies/deliveryRetry';\n     2\timport type { DeliveryQueue, DeliveryJob } from '../storage/deliveryQueue';\n     3\timport type { HttpResponse } from '../transport/http';\n     4\t\n     5\texport async function handleFailure(job: DeliveryJob, response: HttpResponse, queue: DeliveryQueue, nowMs: number) {\n     6\t  const decision = chooseDeliveryRetry(job.attempt, response.status, response.headers['retry-after'], nowMs);\n     7\t  if (decision.kind === 'retry') {\n     8\t    await queue.reschedule(job.id, decision.dueAtMs);\n     9\t  } else {\n    10\t    await queue.deadLetter(job.id);\n    11\t  }\n    12\t  return decision;\n    13\t}\n./worker/deliver.ts:1:import { handleFailure } from './handleFailure';\n./worker/deliver.ts:11:  return handleFailure(job, response, queue, nowMs);\n./worker/handleFailure.ts:5:export async function handleFailure(job: DeliveryJob, response: HttpResponse, queue: DeliveryQueue, nowMs: number) {",
+          "eventIndex": 6
+        },
+        {
+          "id": "toolu_01AKb84zgeLgzTkU2nFrijXw",
+          "isError": false,
+          "content": "     1\timport { handleFailure } from './handleFailure';\n     2\timport { postPayload } from '../transport/http';\n     3\timport type { DeliveryQueue, DeliveryJob } from '../storage/deliveryQueue';\n     4\t\n     5\texport async function deliver(job: DeliveryJob, queue: DeliveryQueue, nowMs: number) {\n     6\t  const response = await postPayload(job.url, job.payload);\n     7\t  if (response.status >= 200 && response.status < 300) {\n     8\t    await queue.complete(job.id);\n     9\t    return { kind: 'complete' as const };\n    10\t  }\n    11\t  return handleFailure(job, response, queue, nowMs);\n    12\t}\nstorage/deliveryQueue.ts:5:  attempt: number;\nstorage/deliveryQueue.ts:10:  reschedule(id: string, dueAtMs: number): Promise<void>;",
+          "eventIndex": 8
+        }
+      ],
+      "fffAttempts": [],
+      "factReview": {
+        "passed": true,
+        "verifiedFacts": [
+          "deliver calls handleFailure, which calls chooseDeliveryRetry",
+          "Attempt 3 exponential delay is 8000 ms",
+          "Retry-After 17 converts to 17000 ms",
+          "Maximum delay is 17000 ms and due time is 117000 ms",
+          "handleFailure reschedules with the due time"
+        ],
+        "scope": "Core requested facts; unsupported extra claims are assessed separately",
+        "unsupportedExtraClaims": []
+      },
+      "sourceEvidence": [
+        {
+          "file": "src/policies/deliveryRetry.ts",
+          "readCallIds": [],
+          "bashViewerCallIds": [
+            "toolu_01Q5W5MXY7VEWz5zAD2aBTPj"
+          ],
+          "sourceLinesVisible": [
+            {
+              "toolUseId": "toolu_01Q5W5MXY7VEWz5zAD2aBTPj",
+              "line": "import { retryAfterMillis } from '../time/retryAfter';"
+            },
+            {
+              "toolUseId": "toolu_01Q5W5MXY7VEWz5zAD2aBTPj",
+              "line": "export function chooseDeliveryRetry(attempt: number, status: number, retryAfter: string | undefined, nowMs: number) {"
+            },
+            {
+              "toolUseId": "toolu_01Q5W5MXY7VEWz5zAD2aBTPj",
+              "line": "if (status !== 429 && status < 500) return { kind: 'stop' as const };"
+            },
+            {
+              "toolUseId": "toolu_01Q5W5MXY7VEWz5zAD2aBTPj",
+              "line": "if (attempt >= 5) return { kind: 'stop' as const };"
+            },
+            {
+              "toolUseId": "toolu_01Q5W5MXY7VEWz5zAD2aBTPj",
+              "line": "const exponentialMs = Math.min(1000 * 2 ** attempt, 60000);"
+            },
+            {
+              "toolUseId": "toolu_01Q5W5MXY7VEWz5zAD2aBTPj",
+              "line": "const serverHintMs = status === 429 ? retryAfterMillis(retryAfter) : 0;"
+            },
+            {
+              "toolUseId": "toolu_01Q5W5MXY7VEWz5zAD2aBTPj",
+              "line": "const delayMs = Math.max(exponentialMs, serverHintMs);"
+            },
+            {
+              "toolUseId": "toolu_01Q5W5MXY7VEWz5zAD2aBTPj",
+              "line": "return { kind: 'retry' as const, delayMs, dueAtMs: nowMs + delayMs };"
+            }
+          ],
+          "hasSourceCodeEvidence": true
+        },
+        {
+          "file": "src/worker/handleFailure.ts",
+          "readCallIds": [],
+          "bashViewerCallIds": [
+            "toolu_01Q5W5MXY7VEWz5zAD2aBTPj"
+          ],
+          "sourceLinesVisible": [
+            {
+              "toolUseId": "toolu_01Q5W5MXY7VEWz5zAD2aBTPj",
+              "line": "import { chooseDeliveryRetry } from '../policies/deliveryRetry';"
+            },
+            {
+              "toolUseId": "toolu_01Q5W5MXY7VEWz5zAD2aBTPj",
+              "line": "import type { DeliveryQueue, DeliveryJob } from '../storage/deliveryQueue';"
+            },
+            {
+              "toolUseId": "toolu_01Q5W5MXY7VEWz5zAD2aBTPj",
+              "line": "import type { HttpResponse } from '../transport/http';"
+            },
+            {
+              "toolUseId": "toolu_01Q5W5MXY7VEWz5zAD2aBTPj",
+              "line": "export async function handleFailure(job: DeliveryJob, response: HttpResponse, queue: DeliveryQueue, nowMs: number) {"
+            },
+            {
+              "toolUseId": "toolu_01Q5W5MXY7VEWz5zAD2aBTPj",
+              "line": "const decision = chooseDeliveryRetry(job.attempt, response.status, response.headers['retry-after'], nowMs);"
+            },
+            {
+              "toolUseId": "toolu_01Q5W5MXY7VEWz5zAD2aBTPj",
+              "line": "if (decision.kind === 'retry') {"
+            },
+            {
+              "toolUseId": "toolu_01Q5W5MXY7VEWz5zAD2aBTPj",
+              "line": "await queue.reschedule(job.id, decision.dueAtMs);"
+            },
+            {
+              "toolUseId": "toolu_01Q5W5MXY7VEWz5zAD2aBTPj",
+              "line": "await queue.deadLetter(job.id);"
+            }
+          ],
+          "hasSourceCodeEvidence": true
+        },
+        {
+          "file": "src/time/retryAfter.ts",
+          "readCallIds": [],
+          "bashViewerCallIds": [
+            "toolu_01Q5W5MXY7VEWz5zAD2aBTPj"
+          ],
+          "sourceLinesVisible": [
+            {
+              "toolUseId": "toolu_01Q5W5MXY7VEWz5zAD2aBTPj",
+              "line": "export function retryAfterMillis(value: string | undefined): number {"
+            },
+            {
+              "toolUseId": "toolu_01Q5W5MXY7VEWz5zAD2aBTPj",
+              "line": "if (value === undefined || !/^\\d+$/.test(value.trim())) return 0;"
+            },
+            {
+              "toolUseId": "toolu_01Q5W5MXY7VEWz5zAD2aBTPj",
+              "line": "return Math.min(Number(value.trim()) * 1000, 60000);"
+            }
+          ],
+          "hasSourceCodeEvidence": true
+        }
+      ]
+    },
+    {
+      "number": 8,
+      "taskId": "webhook-retry",
+      "condition": "baseline",
+      "effort": "low",
+      "status": 0,
+      "resultType": "success",
+      "isError": false,
+      "cost": 0.0509304,
+      "fixtureUnchanged": true,
+      "answer": "The next retry time for a 429 is decided in `chooseDeliveryRetry` at `src/policies/deliveryRetry.ts:3-10`. With Retry-After `'17'` and now = 100000 ms, attempt 3 waits **17000 ms** and is due at **117000 ms**.\n\n## Call path\n1. **`src/worker/deliver.ts:5-11`**: `deliver` calls `postPayload`. A 2xx response completes the job (line 7-8). Any other status goes to `handleFailure(job, response, queue, nowMs)` (line 11).\n2. **`src/worker/handleFailure.ts:6`**: calls `chooseDeliveryRetry(job.attempt, response.status, response.headers['retry-after'], nowMs)`. If the result is `retry`, it calls `queue.reschedule(job.id, decision.dueAtMs)` (line 8). Otherwise it calls `queue.deadLetter` (line 10).\n3. **`src/policies/deliveryRetry.ts`**:\n   - Line 4: a 429 is not stopped here, even though it is below 500.\n   - Line 5: stops when `attempt >= 5`.\n   - Line 6: `exponentialMs = min(1000 * 2^attempt, 60000)`.\n   - Line 7: for a 429 only, `serverHintMs = retryAfterMillis(retryAfter)`.\n   - Line 8: `delayMs = max(exponentialMs, serverHintMs)`.\n   - Line 9: `dueAtMs = nowMs + delayMs`.\n4. **`src/time/retryAfter.ts:1-4`**: accepts only an integer number of seconds (line 2); anything else returns 0. The result is seconds \u00d7 1000, capped at 60000 (line 3).\n\n## Attempt 3 (Retry-After `'17'`, now = 100000)\n- 3 < 5, so the job is retried.\n- exponentialMs = min(1000 \u00d7 2\u00b3, 60000) = **8000**\n- serverHintMs = min(17 \u00d7 1000, 60000) = **17000**\n- delayMs = max(8000, 17000) = **17000 ms**\n- dueAtMs = 100000 + 17000 = **117000 ms**, which is passed to `queue.reschedule` (`handleFailure.ts:8`).\n\nThis assumes `job.attempt` is 3 when the policy runs. The code passes `job.attempt` straight through, and I didn't check whether it counts from 0 or 1.",
+      "calls": [
+        {
+          "id": "toolu_01LmDvHRazQyZ3Ay9JTBqfu9",
+          "name": "Grep",
+          "input": {
+            "pattern": "429|Retry-After|retryAfter|nextRetry|backoff",
+            "-i": true,
+            "output_mode": "content"
+          },
+          "eventIndex": 2
+        },
+        {
+          "id": "toolu_011QH4CweXvLKVw6ncj5i46T",
+          "name": "Bash",
+          "input": {
+            "command": "cd src; cat -n policies/deliveryRetry.ts time/retryAfter.ts worker/handleFailure.ts; grep -rn \"handleFailure\\|exponential\\|jitter\" . | head"
+          },
+          "eventIndex": 5
+        },
+        {
+          "id": "toolu_01HrQtAxYqRLWfcTTveBEiFH",
+          "name": "Bash",
+          "input": {
+            "command": "cd src 2>/dev/null; cat -n worker/deliver.ts"
+          },
+          "eventIndex": 7
+        }
+      ],
+      "results": [
+        {
+          "id": "toolu_01LmDvHRazQyZ3Ay9JTBqfu9",
+          "isError": false,
+          "content": "src/worker/handleFailure.ts:6:  const decision = chooseDeliveryRetry(job.attempt, response.status, response.headers['retry-after'], nowMs);\nsrc/time/retryAfter.ts:1:export function retryAfterMillis(value: string | undefined): number {\nsrc/policies/deliveryRetry.ts:1:import { retryAfterMillis } from '../time/retryAfter';\nsrc/policies/deliveryRetry.ts:3:export function chooseDeliveryRetry(attempt: number, status: number, retryAfter: string | undefined, nowMs: number) {\nsrc/policies/deliveryRetry.ts:4:  if (status !== 429 && status < 500) return { kind: 'stop' as const };\nsrc/policies/deliveryRetry.ts:7:  const serverHintMs = status === 429 ? retryAfterMillis(retryAfter) : 0;",
+          "eventIndex": 4
+        },
+        {
+          "id": "toolu_011QH4CweXvLKVw6ncj5i46T",
+          "isError": false,
+          "content": "     1\timport { retryAfterMillis } from '../time/retryAfter';\n     2\t\n     3\texport function chooseDeliveryRetry(attempt: number, status: number, retryAfter: string | undefined, nowMs: number) {\n     4\t  if (status !== 429 && status < 500) return { kind: 'stop' as const };\n     5\t  if (attempt >= 5) return { kind: 'stop' as const };\n     6\t  const exponentialMs = Math.min(1000 * 2 ** attempt, 60000);\n     7\t  const serverHintMs = status === 429 ? retryAfterMillis(retryAfter) : 0;\n     8\t  const delayMs = Math.max(exponentialMs, serverHintMs);\n     9\t  return { kind: 'retry' as const, delayMs, dueAtMs: nowMs + delayMs };\n    10\t}\n     1\texport function retryAfterMillis(value: string | undefined): number {\n     2\t  if (value === undefined || !/^\\d+$/.test(value.trim())) return 0;\n     3\t  return Math.min(Number(value.trim()) * 1000, 60000);\n     4\t}\n     1\timport { chooseDeliveryRetry } from '../policies/deliveryRetry';\n     2\timport type { DeliveryQueue, DeliveryJob } from '../storage/deliveryQueue';\n     3\timport type { HttpResponse } from '../transport/http';\n     4\t\n     5\texport async function handleFailure(job: DeliveryJob, response: HttpResponse, queue: DeliveryQueue, nowMs: number) {\n     6\t  const decision = chooseDeliveryRetry(job.attempt, response.status, response.headers['retry-after'], nowMs);\n     7\t  if (decision.kind === 'retry') {\n     8\t    await queue.reschedule(job.id, decision.dueAtMs);\n     9\t  } else {\n    10\t    await queue.deadLetter(job.id);\n    11\t  }\n    12\t  return decision;\n    13\t}\n./policies/deliveryRetry.ts:6:  const exponentialMs = Math.min(1000 * 2 ** attempt, 60000);\n./policies/deliveryRetry.ts:8:  const delayMs = Math.max(exponentialMs, serverHintMs);\n./worker/deliver.ts:1:import { handleFailure } from './handleFailure';\n./worker/deliver.ts:11:  return handleFailure(job, response, queue, nowMs);\n./worker/handleFailure.ts:5:export async function handleFailure(job: DeliveryJob, response: HttpResponse, queue: DeliveryQueue, nowMs: number) {",
+          "eventIndex": 6
+        },
+        {
+          "id": "toolu_01HrQtAxYqRLWfcTTveBEiFH",
+          "isError": false,
+          "content": "     1\timport { handleFailure } from './handleFailure';\n     2\timport { postPayload } from '../transport/http';\n     3\timport type { DeliveryQueue, DeliveryJob } from '../storage/deliveryQueue';\n     4\t\n     5\texport async function deliver(job: DeliveryJob, queue: DeliveryQueue, nowMs: number) {\n     6\t  const response = await postPayload(job.url, job.payload);\n     7\t  if (response.status >= 200 && response.status < 300) {\n     8\t    await queue.complete(job.id);\n     9\t    return { kind: 'complete' as const };\n    10\t  }\n    11\t  return handleFailure(job, response, queue, nowMs);\n    12\t}",
+          "eventIndex": 8
+        }
+      ],
+      "fffAttempts": [],
+      "factReview": {
+        "passed": true,
+        "verifiedFacts": [
+          "deliver calls handleFailure, which calls chooseDeliveryRetry",
+          "Attempt 3 exponential delay is 8000 ms",
+          "Retry-After 17 converts to 17000 ms",
+          "Maximum delay is 17000 ms and due time is 117000 ms",
+          "handleFailure reschedules with the due time"
+        ],
+        "scope": "Core requested facts; unsupported extra claims are assessed separately",
+        "unsupportedExtraClaims": []
+      },
+      "sourceEvidence": [
+        {
+          "file": "src/policies/deliveryRetry.ts",
+          "readCallIds": [],
+          "bashViewerCallIds": [
+            "toolu_011QH4CweXvLKVw6ncj5i46T"
+          ],
+          "sourceLinesVisible": [
+            {
+              "toolUseId": "toolu_011QH4CweXvLKVw6ncj5i46T",
+              "line": "import { retryAfterMillis } from '../time/retryAfter';"
+            },
+            {
+              "toolUseId": "toolu_011QH4CweXvLKVw6ncj5i46T",
+              "line": "export function chooseDeliveryRetry(attempt: number, status: number, retryAfter: string | undefined, nowMs: number) {"
+            },
+            {
+              "toolUseId": "toolu_011QH4CweXvLKVw6ncj5i46T",
+              "line": "if (status !== 429 && status < 500) return { kind: 'stop' as const };"
+            },
+            {
+              "toolUseId": "toolu_011QH4CweXvLKVw6ncj5i46T",
+              "line": "if (attempt >= 5) return { kind: 'stop' as const };"
+            },
+            {
+              "toolUseId": "toolu_011QH4CweXvLKVw6ncj5i46T",
+              "line": "const exponentialMs = Math.min(1000 * 2 ** attempt, 60000);"
+            },
+            {
+              "toolUseId": "toolu_011QH4CweXvLKVw6ncj5i46T",
+              "line": "const serverHintMs = status === 429 ? retryAfterMillis(retryAfter) : 0;"
+            },
+            {
+              "toolUseId": "toolu_011QH4CweXvLKVw6ncj5i46T",
+              "line": "const delayMs = Math.max(exponentialMs, serverHintMs);"
+            },
+            {
+              "toolUseId": "toolu_011QH4CweXvLKVw6ncj5i46T",
+              "line": "return { kind: 'retry' as const, delayMs, dueAtMs: nowMs + delayMs };"
+            }
+          ],
+          "hasSourceCodeEvidence": true
+        },
+        {
+          "file": "src/worker/handleFailure.ts",
+          "readCallIds": [],
+          "bashViewerCallIds": [
+            "toolu_011QH4CweXvLKVw6ncj5i46T"
+          ],
+          "sourceLinesVisible": [
+            {
+              "toolUseId": "toolu_011QH4CweXvLKVw6ncj5i46T",
+              "line": "import { chooseDeliveryRetry } from '../policies/deliveryRetry';"
+            },
+            {
+              "toolUseId": "toolu_011QH4CweXvLKVw6ncj5i46T",
+              "line": "import type { DeliveryQueue, DeliveryJob } from '../storage/deliveryQueue';"
+            },
+            {
+              "toolUseId": "toolu_011QH4CweXvLKVw6ncj5i46T",
+              "line": "import type { HttpResponse } from '../transport/http';"
+            },
+            {
+              "toolUseId": "toolu_011QH4CweXvLKVw6ncj5i46T",
+              "line": "export async function handleFailure(job: DeliveryJob, response: HttpResponse, queue: DeliveryQueue, nowMs: number) {"
+            },
+            {
+              "toolUseId": "toolu_011QH4CweXvLKVw6ncj5i46T",
+              "line": "const decision = chooseDeliveryRetry(job.attempt, response.status, response.headers['retry-after'], nowMs);"
+            },
+            {
+              "toolUseId": "toolu_011QH4CweXvLKVw6ncj5i46T",
+              "line": "if (decision.kind === 'retry') {"
+            },
+            {
+              "toolUseId": "toolu_011QH4CweXvLKVw6ncj5i46T",
+              "line": "await queue.reschedule(job.id, decision.dueAtMs);"
+            },
+            {
+              "toolUseId": "toolu_011QH4CweXvLKVw6ncj5i46T",
+              "line": "await queue.deadLetter(job.id);"
+            }
+          ],
+          "hasSourceCodeEvidence": true
+        },
+        {
+          "file": "src/time/retryAfter.ts",
+          "readCallIds": [],
+          "bashViewerCallIds": [
+            "toolu_011QH4CweXvLKVw6ncj5i46T"
+          ],
+          "sourceLinesVisible": [
+            {
+              "toolUseId": "toolu_011QH4CweXvLKVw6ncj5i46T",
+              "line": "export function retryAfterMillis(value: string | undefined): number {"
+            },
+            {
+              "toolUseId": "toolu_011QH4CweXvLKVw6ncj5i46T",
+              "line": "if (value === undefined || !/^\\d+$/.test(value.trim())) return 0;"
+            },
+            {
+              "toolUseId": "toolu_011QH4CweXvLKVw6ncj5i46T",
+              "line": "return Math.min(Number(value.trim()) * 1000, 60000);"
+            }
+          ],
+          "hasSourceCodeEvidence": true
+        }
+      ]
+    }
+  ]
+}

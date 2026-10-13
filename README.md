@@ -66,7 +66,7 @@ That reach shows up in a few mechanisms the base doesn't have. The `<system-remi
 
 The extra patches cluster around a few themes: **memory** (a dream-mode consolidation pass, leaner memory types), **reasoning** (Opus defaulting to max effort, plus the experimental complexity router), **search** (the experimental fff backend), and a run of **correctness fixes** — an honest rewind-summary header, a "summarize from here" that actually starts at the rewind point, quieter empty system-reminders, and more.
 
-Two of those are worth calling out, and both ship off by default. **Native search and fff file autocomplete** keeps Grep/Glob available and adds guidance for discovering files before reading their code. Native result ordering and Bash search behavior remain intact. [fff](https://github.com/dmtrKovalenko/fff) provides fuzzy `@` suggestions and `fff files` discovery, with local filename-use history and a shared worktree daemon. See [search behavior and local verification](docs/fff-search.md). **The complexity router** chooses reasoning effort for each user message without switching the main model. It supports Haiku routing or opt-in Jev decisions with asynchronous Haiku conversation summaries. See the [effort router setup and behavior](docs/effort-router.md), including credential storage, context sharing, and fallback behavior.
+Two of those are worth calling out, and both ship off by default. **Native search and fff filename discovery** adds system-level guidance to start unknown-file discovery with `fff files`, then inspect candidate code. It also keeps Grep/Glob available. Native result ordering and Bash search behavior remain intact. [fff](https://github.com/dmtrKovalenko/fff) provides fuzzy filename words in any order, fuzzy `@` suggestions, local filename-use history, and a shared worktree daemon. See [search behavior and local verification](docs/fff-search.md). **The complexity router** chooses reasoning effort for each user message without switching the main model. It supports Haiku routing or opt-in Jev decisions with asynchronous Haiku conversation summaries. See the [effort router setup and behavior](docs/effort-router.md), including credential storage, context sharing, and fallback behavior.
 
 Newest is **Better Claude in Chrome** — a menu item, not a patch, that installs [claude-browser-bridge](https://github.com/skrabe/claude-browser-bridge) and points Claude Code at your real, logged-in browser over the Chrome DevTools Protocol. It sees and _claims_ your existing signed-in tabs — a fuller, self-hosted take on Claude in Chrome, driven through a `/browser` skill and a programmable `run` primitive (script a whole flow — locate, fill, click, wait, read — in one call). Pick it and it fetches the bridge, wires up the MCP server and the skill, walks you through loading the extension once, and disables the built-in Claude in Chrome — in the CLI and the Claude desktop app — so you have one browser surface. Pure config plus a fetched repo, no `cli.js` patch; Reinstall and Uninstall live in the same menu.
 
@@ -90,7 +90,7 @@ Each patch is tagged with how it behaves on `--apply`: **`[default on]`** applie
 
 **Search**
 
-- `swap-ripgrep-for-fff` **`[opt-in]`** — ranked search, fuzzy file autocomplete, and `fff files` _(experimental)_
+- `swap-ripgrep-for-fff` **`[opt-in]`** — fff discovery instructions, fuzzy filenames, and native Grep/Glob _(experimental)_
 
 **Correctness & noise**
 

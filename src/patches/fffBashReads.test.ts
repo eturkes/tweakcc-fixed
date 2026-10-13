@@ -6,6 +6,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { fffViewerSetup, writeFffBashReads } from './fffBashReads';
 import { writeSwapRipgrepForFff } from './swapRipgrepForFff';
 import { applyPatchImplementations } from './index';
+import { writeFffInstructionHygiene } from './fffInstructions';
 
 const commandFixture =
   ';function build(command){let $commands=[];$commands.push("snapshot");$commands.push("scrub");$commands.push(`eval ${command}`),$commands.push(`pwd -P >| ${quote(["cwd"] )}`);return $commands}';
@@ -15,8 +16,26 @@ const searchFixture =
   'function excluded(){if(!gate()||!bash())return empty;let names=hidden,aliases;return aliases??names}' +
   ';function snippets(){if(!gate())return null;return["unalias find 2>/dev/null || true","unalias grep 2>/dev/null || true",""]}' +
   ';function snapshot(){let commands=snippets();if(commands!==null){const marker="FIND_GREP_FUNC_END";return commands}return""}';
-const fixtureFor = (binary: string): string =>
-  writeSwapRipgrepForFff(searchFixture + commandFixture, binary)!;
+const instructionFixture =
+  ';async function*fffQuery($input,$events,$commands,$runner){let{systemPrompt:$base,userContext:$user,systemContext:$environment,canUseTool:$permission}=$input;' +
+  'let $current=$input.toolUseContext,$selected={systemPrompt:$base},$routing={systemContext:$environment},$rows=[],$source="fixture",$stamp={};' +
+  'let $wire=$identity($merge($selected.systemPrompt,$routing.systemContext)),$unused,$other,$entries,$copies,$record=()=>{let $next=$extra($rows,$entries,{options:$current.options,querySource:$source,stamp:$stamp,toolInputCopies:$copies});return $next};yield $wire;}' +
+  ';async function fffContext($messages,$model,$permissions,$visible,$agents,$details){let{session:$session,terminalWidth:$width,toolUseContext:$current,mainThreadAgentDefinition:$agent}=$details;' +
+  'let $saved=$details.snapshot,$fallback=$details.prompt,$tools={};let $counted=$saved?.systemPrompt??$fallback,$descriptions=$tools?.toolDescriptions,$schemas=$tools?.toolEntries;return $counted;}' +
+  ';function fffRender($rows,$visible=[],$model,$config){$rows=$fold($rows,$config?.accountMemoryWithheld,$memo(()=>$visible));let $output=[];for(let $row of $rows){' +
+  'let $options={},$active=false,$result=$config?.withoutAttachmentHooks?$live($row,$options):$recorded($row,$options,$active),$rendered=$result.messages,{isKnownType:$known,recordedRole:$role}=$result;$output.push(...$rendered)}return $output;}';
+const fixtureFor = (binary: string): string => {
+  const patched = writeSwapRipgrepForFff(
+    searchFixture + instructionFixture + commandFixture,
+    binary
+  );
+  if (patched === null) {
+    throw new Error(
+      'fffBashReads fixture requires the complete search integration'
+    );
+  }
+  return patched;
+};
 const fixture = fixtureFor(wrapper);
 
 describe('fffBashReads', () => {
@@ -74,6 +93,9 @@ describe('fffBashReads', () => {
         'no-global-cache-scope': {
           fn: (file: string) => file,
           condition: false,
+        },
+        'fff-instruction-hygiene': {
+          fn: (file: string) => writeFffInstructionHygiene(file),
         },
         'swap-ripgrep-for-fff': {
           fn: (file: string) => writeSwapRipgrepForFff(file, wrapper),
