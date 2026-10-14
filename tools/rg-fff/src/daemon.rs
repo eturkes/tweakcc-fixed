@@ -484,7 +484,7 @@ fn refresh_inventory(
         paths.push(path);
     }
     freshness.refresh(&paths, |path| {
-        if let Some(file) = picker.get_file_by_path(&path) {
+        if let Some(file) = picker.get_file_by_path(path) {
             file.set_binary(false);
         }
         picker.handle_create_or_modify(path).map(|_| ())

@@ -119,7 +119,7 @@ try {
   locker = undefined;
   run(['--no-fallback', '-n', 'OtherNeedle'], 'rg');
   const after = JSON.parse(readFileSync(receipt, 'utf8'));
-  assert.equal(after.length, JSON.parse(before).length + 1);
+  assert.equal(after.length, JSON.parse(before.toString('utf8')).length + 1);
   assert.equal(after.at(-1).query, 'OtherNeedle');
   process.stdout.write(
     'Search, file discovery, and access recording remain responsive with contended receipts; history resumes after unlock\n'
