@@ -106,5 +106,14 @@
     "tokens": {
       "TOOL_DESCRIPTION_BASH_RUN_IN_BACKGROUND_DETACHED_VAR_3": "Value is \"\" or \" A command started with run_in_background keeps running after your reply ends, until it finishes or reaches its timeout; a process the shell itself detaches (nohup, &) is usually stopped a few minutes after the reply.\" (EPt -> ` ${kro}`), a whole space-led sentence. It ends the bullet after \"re-invoked.\"; only the trimmed \" No `&` needed.\" used to follow it."
     }
+  },
+  "tool-description-webfetch-private-url-warning": {
+    "bodyHash": "aaec1af6eb21",
+    "pristineHash": "aadf5e927382",
+    "valueHash": "7dc95007d085",
+    "reviewed": "2026-10-14 (CC 2.1.299)",
+    "tokens": {
+      "WEBFETCH_OBSERVABLE_ACTION_NOTE": "Value is \"\" or a whole paragraph about which URLs WebFetch may fetch, ending in a blank line. It leads the description exactly as in pristine; the override only cut the IMPORTANT paragraph that followed it, so the block fn output now follows the note directly."
+    }
   }
 }

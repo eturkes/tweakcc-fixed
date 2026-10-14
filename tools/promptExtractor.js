@@ -118,6 +118,35 @@ const COORDINATOR_MODE_2_1_257_MAP = {
 };
 
 const CURATED_IDENTIFIER_MAPS = {
+  'system-reminder-plan-mode-workflow': [
+    {
+      // CC 2.1.299 hoisted the closing NOTE sentence into its own constant, so
+      // slot 12 is that note instead of the AskUserQuestion tool name. The
+      // reworded tail broke carryover; slots 0-11 are unchanged.
+      identifiers: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 10, 11, 9, 12],
+      identifierMap: {
+        0: 'PLAN_MODE_READONLY_INSTRUCTIONS',
+        1: 'PLAN_FILE_INFO',
+        2: 'INTERACTIVE_WORKSHOP_OPTION_BLOCK',
+        3: 'ACTIVE_WORKSHOP_INSTRUCTIONS_BLOCK',
+        4: 'PROTOTYPE_ARTIFACT_OPTION_BLOCK',
+        5: 'PLAN_MODE_PHASE_1_INITIAL_UNDERSTANDING',
+        6: 'PLAN_MODE_PHASE_2_DESIGN',
+        7: 'PLAN_MODE_PHASE_3_REVIEW',
+        8: 'PLAN_MODE_PHASE_4_FINAL_PLAN_FN',
+        9: 'PLAN_MODE_CONTEXT',
+        10: 'EXIT_PLAN_MODE_TOOL_NAME',
+        11: 'EXIT_PLAN_MODE_INSTRUCTIONS_FN',
+        12: 'PLAN_MODE_ASK_QUESTIONS_NOTE',
+      },
+    },
+  ],
+  'system-reminder-plan-mode-workflow-ask-questions-note': [
+    {
+      identifiers: [0],
+      identifierMap: { 0: 'ASK_USER_QUESTION_TOOL_NAME' },
+    },
+  ],
   'system-reminder-prefetched-artifact-type-instruction-files': [
     {
       // CC 2.1.277 turned slot 1 from the planned-read boolean into the
@@ -5612,6 +5641,8 @@ function disambiguateIdCollisions(prompts, existingData) {
     for (const p of family) {
       const fp = fingerprint(p);
       if (!fp || claimed.has(p.id)) continue;
+      // A sibling still live on its own body cannot be this body's old id.
+      if (p.id !== id && idShapes.get(p.id)?.size) continue;
       if (!unclaimedByFp.has(fp)) unclaimedByFp.set(fp, new Set());
       unclaimedByFp.get(fp).add(p.id);
     }

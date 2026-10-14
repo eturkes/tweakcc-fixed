@@ -237,8 +237,8 @@
     }
   },
   "tool-description-webfetch-private-url-warning": {
-    "bodyHash": "753a36b552f8",
-    "reviewed": "2026-09-02 (CC 2.1.258)",
+    "bodyHash": "aaec1af6eb21",
+    "reviewed": "2026-10-14 (CC 2.1.299; realign added the observable-action slot, cut unchanged)",
     "tokens": {
       "FORMAT_ARTIFACT_LINK_NOTE_FN": "CC 2.1.277 moved the claude.ai artifact-link exception (previously gated by IS_ARTIFACT_TOOL_ENABLED) behind this slot. The earlier cut stands: the gate is live in deployed tool-description-webfetch-concise, and when the Artifact tool exists tool-description-artifact-read-existing carries the better route (action: read)."
     }
