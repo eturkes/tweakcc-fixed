@@ -183,8 +183,9 @@ const asciiRunsOnLine = line => {
     if (s.length >= BUNDLE_PROBE_MIN) runs.push(s);
     cur = '';
   };
+  // A backtick is a template boundary, so a run across one carries code.
   for (const ch of line) {
-    if (ch >= ' ' && ch <= '~') cur += ch;
+    if (ch >= ' ' && ch <= '~' && ch !== '`') cur += ch;
     else flush();
   }
   flush();

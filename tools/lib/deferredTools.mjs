@@ -26,8 +26,9 @@ const hasReqBodies = d => {
 };
 
 // TWEAKCC_CAPTURES, else the dir `driver check` recorded for the version
-// (<tmp>/turnprobe-<ver>.json), else the newest <tmp>/turnprobe-<ver>-*/.
-export const resolveCaptureDir = (version, { env = process.env, tmp = '/tmp' } = {}) => {
+// (<tmp>/turnprobe-<ver>.json), else the newest <tmp>/turnprobe-<ver>-*/;
+// <tmp> is the run directory (SHOWTIME_TMP) when one is set.
+export const resolveCaptureDir = (version, { env = process.env, tmp = env.SHOWTIME_TMP || '/tmp' } = {}) => {
   if (env.TWEAKCC_CAPTURES) return hasReqBodies(env.TWEAKCC_CAPTURES) ? env.TWEAKCC_CAPTURES : null;
   if (!version) return null;
   try {
