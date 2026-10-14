@@ -27,6 +27,26 @@ const CONTEXT =
 const RENDER =
   ';function $render($rows,$visible=[],$model,$config){$rows=$fold($rows,$config?.accountMemoryWithheld,$memo(()=>$visible));let $output=[];for(let $row of $rows){let $options={},$active=false,$result=$config?.withoutAttachmentHooks?$live($row,$options):$recordedRender($row,$options,$active),$rendered=$result.messages,{isKnownType:$known,recordedRole:$role}=$result;$output.push(...$rendered)}return $output;}';
 const PRISTINE = API + CONTEXT + RENDER + ';var $type="prompt_snapshot";';
+const API_HEAD = 'canUseTool:$permission}=$input;';
+const API_2_1_299 =
+  API.slice(0, API.indexOf(API_HEAD) + API_HEAD.length) +
+  'let $state={toolUseContext:$input.toolUseContext},$pending=[];async function*$loop(){if($state&&$state.toolUseContext.shouldStopBeforeNextApiCall?.())return yield*$pending,{reason:"background_requested"};' +
+  API.slice(API.indexOf(API_HEAD) + API_HEAD.length, -1)
+    .replace(
+      '=$changes,$selected=',
+      '=$changes,$recall=()=>$rows?$restore($rows):void 0,$selected='
+    )
+    .replace(
+      'contextRendering:$routing.rendering}',
+      'contextRendering:$routing.rendering,toolDescribeEpoch:$stamp,turnSections:$source}'
+    ) +
+  '}yield*$loop()}';
+const RENDER_2_1_299 = RENDER.replace(
+  '$memo(()=>$visible));',
+  '$memo(()=>$visible)),$rows=$tidy($rows);'
+);
+const PRISTINE_2_1_299 =
+  API_2_1_299 + CONTEXT + RENDER_2_1_299 + ';var $type="prompt_snapshot";';
 const TOOLS = [{ name: 'Bash' }, { name: 'Grep' }, { name: 'Glob' }];
 
 type Entry = {
@@ -298,9 +318,14 @@ describe('fff saved tool guidance hygiene', () => {
 });
 
 describe('fff hygiene native call sites', () => {
-  it.each([false, true])(
-    'cleans resumed API/context maps without changing saved records, enabled=%s',
-    async enabled => {
+  it.each([
+    ['2.1.296', PRISTINE, false],
+    ['2.1.296', PRISTINE, true],
+    ['2.1.299', PRISTINE_2_1_299, false],
+    ['2.1.299', PRISTINE_2_1_299, true],
+  ] as const)(
+    'cleans resumed API/context maps without changing saved records, shape=%s, enabled=%s',
+    async (_shape, pristine, enabled) => {
       const grep = {
         name: 'Grep',
         description: 'Native Grep.' + FFF_OWNED_TOOL_GUIDANCE_SUFFIXES.Grep[0],
@@ -314,7 +339,7 @@ describe('fff hygiene native call sites', () => {
         record,
         snapshotHash: 'unchanged hash',
       };
-      const repaired = writeFffInstructionHygiene(PRISTINE)!;
+      const repaired = writeFffInstructionHygiene(pristine)!;
       expect(repaired).not.toBeNull();
       expect(writeFffInstructionHygiene(repaired)).toBe(repaired);
       const source = enabled ? writeFffInstructions(repaired)! : repaired;

@@ -298,6 +298,11 @@ const selectSite = (
 
 const API_SCOPE =
   /(?:^|[;}])async function\*([$\w]+)\(([$\w]+),([$\w]+),([$\w]+),([$\w]+)\)\{let\{systemPrompt:[$\w]+,userContext:[$\w]+,systemContext:[$\w]+,canUseTool:/g;
+// CC 2.1.299+ moved the query loop body into a nested generator.
+const API_LOOP_SCOPE =
+  /(?:^|[;}])async function\*([$\w]+)\(\)\{if\([$\w]+&&[$\w]+\.toolUseContext\.shouldStopBeforeNextApiCall\?\.\(\)\)return yield\*[$\w]+,\{reason:"background_requested"\};/g;
+const readApiScope = (file: string): Scope | null =>
+  readScope(file, API_LOOP_SCOPE) ?? readScope(file, API_SCOPE);
 const CONTEXT_SCOPE =
   /(?:^|[;}])async function ([$\w]+)\(([$\w]+),([$\w]+),([$\w]+),([$\w]+),([$\w]+),([$\w]+)\)\{let\{session:[$\w]+,terminalWidth:[$\w]+,toolUseContext:[$\w]+,mainThreadAgentDefinition:/g;
 
@@ -305,12 +310,18 @@ export const writeFffInstructions = (
   file: string,
   guidance = FFF_PROJECT_GUIDANCE
 ): string | null => {
-  const api = readScope(file, API_SCOPE);
+  const api = readApiScope(file);
   const context = readScope(file, CONTEXT_SCOPE);
-  const renderer = readScope(
-    file,
-    /(?:^|[;}])function ([$\w]+)\(([$\w]+),([$\w]+)=\[\],([$\w]+),([$\w]+)\)\{\2=([$\w]+)\(\2,\5\?\.accountMemoryWithheld,([$\w]+)\(\(\)=>\3\)\);/g
-  );
+  const renderer =
+    // CC 2.1.299+: the fold assignment continues with `,rows=next(rows);`.
+    readScope(
+      file,
+      /(?:^|[;}])function ([$\w]+)\(([$\w]+),([$\w]+)=\[\],([$\w]+),([$\w]+)\)\{\2=([$\w]+)\(\2,\5\?\.accountMemoryWithheld,([$\w]+)\(\(\)=>\3\)\),\2=[$\w]+\(\2\);/g
+    ) ??
+    readScope(
+      file,
+      /(?:^|[;}])function ([$\w]+)\(([$\w]+),([$\w]+)=\[\],([$\w]+),([$\w]+)\)\{\2=([$\w]+)\(\2,\5\?\.accountMemoryWithheld,([$\w]+)\(\(\)=>\3\)\);/g
+    );
   const promptHelper = serialize(normalizeFffPrompt, '__tweakccFffPrompt');
   const autoHelper = serialize(normalizeFffAutoMode, '__tweakccFffAutoMode');
   const sites = [
@@ -374,7 +385,7 @@ export const writeFffInstructions = (
 
 export const writeFffInstructionHygiene = (file: string): string | null => {
   if (!file.includes('prompt_snapshot')) return file;
-  const api = readScope(file, API_SCOPE);
+  const api = readApiScope(file);
   const context = readScope(file, CONTEXT_SCOPE);
   const marker = '__tweakccFffToolRecords';
   const helper = serialize(normalizeFffRecordedTools, marker);
@@ -383,15 +394,26 @@ export const writeFffInstructionHygiene = (file: string): string | null => {
   );
   const sites: Array<Site | null> = [
     api &&
-      selectSite(
+      // CC 2.1.299+: a `restore=()=>...` declarator precedes the selection
+      // and further options follow `contextRendering`.
+      (selectSite(
         file,
         api,
-        /let\{advisorModel:[$\w]+,advisorDeferred:[$\w]+,advisorActive:[$\w]+\}=[$\w]+,([$\w]+)=(([$\w]+)\(([$\w]+),([$\w]+),\{options:[$\w]+\.options,querySource:[$\w]+,resumeActive:[$\w]+,stamp:[$\w]+,[\s\S]*?contextRendering:[$\w]+\.rendering\}\))/g,
+        /let\{advisorModel:[$\w]+,advisorDeferred:[$\w]+,advisorActive:[$\w]+\}=[$\w]+,[$\w]+=\(\)=>[^,;{}]+,([$\w]+)=(([$\w]+)\(([$\w]+),([$\w]+),\{options:[$\w]+\.options,querySource:[$\w]+,resumeActive:[$\w]+,stamp:[$\w]+,[\s\S]*?contextRendering:[$\w]+\.rendering(?:,[$\w]+:[$\w]+)*\}\))/g,
         marker,
         helper,
         FFF_OWNED_TOOL_GUIDANCE_SUFFIXES,
         match => ({ original: match[2], args: [] })
-      ),
+      ) ??
+        selectSite(
+          file,
+          api,
+          /let\{advisorModel:[$\w]+,advisorDeferred:[$\w]+,advisorActive:[$\w]+\}=[$\w]+,([$\w]+)=(([$\w]+)\(([$\w]+),([$\w]+),\{options:[$\w]+\.options,querySource:[$\w]+,resumeActive:[$\w]+,stamp:[$\w]+,[\s\S]*?contextRendering:[$\w]+\.rendering\}\))/g,
+          marker,
+          helper,
+          FFF_OWNED_TOOL_GUIDANCE_SUFFIXES,
+          match => ({ original: match[2], args: [] })
+        )),
   ];
   const contexts: Site[] = [];
   if (context) {
