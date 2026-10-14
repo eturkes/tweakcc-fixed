@@ -1057,5 +1057,23 @@
     "note": "Claude Desktop HybridServableConfig schema description (eue), read only by the generated hybrid-server schema artifact; classify ruled the same join internal",
     "shape": "concat",
     "excerpt": "The subset of Claude Desktop managed configuration an Anthropic-hosted (hybrid) config server may store — generated from buildHybridServable"
+  },
+  "efbcf6fdbf48b576": {
+    "verdict": "ui",
+    "note": "exit-time worktree resume hint printed to the terminal",
+    "shape": "array",
+    "excerpt": "This session ran in a worktree In its folder, run the command below to resume in it To find that folder, try git worktree list"
+  },
+  "78e200c6038ab2f8": {
+    "verdict": "ui",
+    "note": "window-scoped picker description for the effort command",
+    "shape": "array",
+    "excerpt": "effort Set effort for new sessions from this window (not saved)"
+  },
+  "d7d913cdeefd63d6": {
+    "verdict": "ui",
+    "note": "window-scoped picker description for the fast command",
+    "shape": "array",
+    "excerpt": "fast Turn fast mode on or off for new sessions from this window (not saved)"
   }
 }

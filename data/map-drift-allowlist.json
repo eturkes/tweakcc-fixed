@@ -1,5 +1,8 @@
 {
   "2.1.292->2.1.294": {
     "tool-description-projects": "2.1.292 picked the project_write sentence with an upload-mode ternary (slot 0, VAR_0) ahead of the memory flag (slot 1, VAR_1). 2.1.294 indexes an object literal with the upload mode instead, which the extractor now captures as a promoted slot. The names stay as shipped in 2.8.40, where the memory flag was the only slot and named VAR_0, so the new index slot takes VAR_1 and overrides written against 2.8.40 keep binding."
+  },
+  "2.1.296->2.1.299": {
+    "system-reminder-plan-mode-workflow": "2.1.299 hoisted the closing NOTE sentence into its own constant (catalogued as system-reminder-plan-mode-workflow-ask-questions-note), so slot 12 is that note instead of the AskUserQuestion tool name and is renamed PLAN_MODE_ASK_QUESTIONS_NOTE."
   }
 }
