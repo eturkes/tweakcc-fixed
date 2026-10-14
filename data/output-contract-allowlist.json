@@ -1,18 +1,18 @@
 {
   "system-prompts-lcc/agent-prompt-conversation-summarization::<summary>": {
     "verdict": "reviewed",
-    "why": "Pointer override: it defers to the summary contract carried by the live sibling system-prompt-context-compaction-summary ('Wrap it in <summary></summary> tags') and agent-prompt-conversation-summary-analysis-summary-blocks ('an <analysis> block followed by a <summary> block'), both deployed non-empty. The tag instruction still reaches the model."
+    "why": "The override names both tags itself ('Make that judgment in the <analysis> block; only what you write inside <summary></summary> tags is kept'), and the co-rendered no-tools guard states the reply shape as an <analysis> block followed by a <summary> block."
   },
   "system-prompts-lcc/agent-prompt-conversation-summarization::<analysis>": {
     "verdict": "reviewed",
-    "why": "Pointer override: it defers to the summary contract carried by the live sibling system-prompt-context-compaction-summary ('Wrap it in <summary></summary> tags') and agent-prompt-conversation-summary-analysis-summary-blocks ('an <analysis> block followed by a <summary> block'), both deployed non-empty. The tag instruction still reaches the model."
+    "why": "The override names both tags itself ('Make that judgment in the <analysis> block; only what you write inside <summary></summary> tags is kept'), and the co-rendered no-tools guard states the reply shape as an <analysis> block followed by a <summary> block."
   },
   "system-prompts-lcc/system-prompt-partial-compaction-instructions::<summary>": {
     "verdict": "reviewed",
-    "why": "Pointer override: it defers to the summary contract carried by the live sibling system-prompt-context-compaction-summary ('Wrap it in <summary></summary> tags') and agent-prompt-conversation-summary-analysis-summary-blocks ('an <analysis> block followed by a <summary> block'), both deployed non-empty. The tag instruction still reaches the model."
+    "why": "The override names both tags itself ('Make that judgment in the <analysis> block; only what you write inside <summary></summary> tags is kept'), and the co-rendered no-tools guard states the reply shape as an <analysis> block followed by a <summary> block."
   },
   "system-prompts-lcc/system-prompt-partial-compaction-instructions::<analysis>": {
     "verdict": "reviewed",
-    "why": "Pointer override: it defers to the summary contract carried by the live sibling system-prompt-context-compaction-summary ('Wrap it in <summary></summary> tags') and agent-prompt-conversation-summary-analysis-summary-blocks ('an <analysis> block followed by a <summary> block'), both deployed non-empty. The tag instruction still reaches the model."
+    "why": "The override names both tags itself ('Make that judgment in the <analysis> block; only what you write inside <summary></summary> tags is kept'), and the co-rendered no-tools guard states the reply shape as an <analysis> block followed by a <summary> block."
   }
 }
