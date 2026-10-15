@@ -4535,5 +4535,15 @@
     "verdict": "archived",
     "version": "2.1.300",
     "why": "Absent from the 2.1.300 bundle. Override matched superseded pristine (or was a wipe of now-removed text), so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.300/."
+  },
+  "system-reminder-coordinator-message-waiting-end-turn": {
+    "verdict": "archived",
+    "version": "2.1.301",
+    "why": "Absent from the 2.1.301 bundle. Override matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.301/."
+  },
+  "tool-result-hooks-catch-reentry-refused-op": {
+    "verdict": "archived",
+    "version": "2.1.301",
+    "why": "Absent from the 2.1.301 bundle. Override matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.301/."
   }
 }

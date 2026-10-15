@@ -124273,5 +124273,913 @@
     "id": "slash-command-remote-workflow-script-too-large",
     "name": "Slash Command: Remote Workflow Script Too Large",
     "desc": "Result line when a remote-launched workflow script exceeds the size limit."
+  },
+  "53e936d415ee25890b98310503a57295b6b44996": {
+    "facing": "model",
+    "id": "system-prompt-agent-thread-notes",
+    "name": "System Prompt: agent thread notes",
+    "desc": "Subagent notes: absolute paths, no emojis, no colon before tool calls, no report .md files"
+  },
+  "3d88a08b85cb06d4995cae3fb916a9bbd1c402ec": {
+    "facing": "model",
+    "id": "tool-description-agent-simple-usage-notes",
+    "name": "Tool Description: Agent simple usage notes",
+    "desc": "Agent prompt usage notes: final report not shown to user, continuation, definitions, worktree isolation"
+  },
+  "0296d153e621a1121e301b8ea5a442b6337ff18f": {
+    "facing": "model",
+    "id": "tool-result-start-task-input-wrong-type",
+    "name": "Tool Result: tool input wrong type",
+    "desc": "Input validation message that an argument must be one of the listed types"
+  },
+  "2e5645ed7b4b4f360c20f234433e46480809d09b": {
+    "facing": "model",
+    "id": "data-task-notification-agent-resumed-by-user-summary",
+    "name": "Data: task notification agent resumed by user summary",
+    "desc": "Summary line of the task notification sent when the user resumes an agent"
+  },
+  "6ab1f549b2d7993c2c13b924b161efbc47b489e6": {
+    "facing": "model",
+    "id": "skill-mod-sharing-existing-remotes-only",
+    "name": "Skill: mod sharing existing remotes only",
+    "desc": "Mod skill note that git pushes only to existing remotes and no new repository is created"
+  },
+  "d90a9f47a5c966823230cbcca948db4e738e88f3": {
+    "facing": "model",
+    "id": "tool-result-artifact-edits-files-root-refused",
+    "name": "Tool Result: artifact edits with files refused",
+    "desc": "edits changes only file_path, so it cannot accompany files; nothing published"
+  },
+  "23f32c4c649f61d1b42e92e1c657dfc0e2849419": {
+    "facing": "model",
+    "id": "tool-result-git-not-run-cancelled-before-start",
+    "name": "Tool Result: Git not run, cancelled before start",
+    "desc": "Reason clause of the git \"was not run\" stderr when the operation was cancelled before it started"
+  },
+  "f9224c12f112d06b47c35730013b7ff624079f33": {
+    "facing": "model",
+    "id": "tool-result-project-write-localpath-session-not-as-read",
+    "name": "Tool Result: project_write file changed since read",
+    "desc": "File at local_path changed since read or written; read again or pass text"
+  },
+  "f9367a5491a23bb01b161e387ea97f570af809d6": {
+    "facing": "model",
+    "id": "tool-result-served-hook-output-too-large",
+    "name": "Tool Result: served hook output too large",
+    "desc": "Placeholder replacing hook output that exceeds the passed-on size limit"
+  },
+  "d173dac64082edfadcb6d46f79939d29bc375aaf": { "facing": "internal" },
+  "519e04887bf783abb00f4d48d2d8867e98d8648a": { "facing": "internal" },
+  "feaebfeb326688aaddf9113d53dd0af3e6c11f13": { "facing": "internal" },
+  "326af46862c0b8dd77a4653a4b29ec3a6715f1c7": {
+    "facing": "model",
+    "id": "system-reminder-turn-not-ended-sibling-call-failed",
+    "name": "System Reminder: turn not ended because a sibling call failed",
+    "desc": "Meta message telling the model its end-turn call did not take effect because another call in the same message failed"
+  },
+  "e1836f97f5563037dd34e92e26d144f74ea8d8fe": { "facing": "internal" },
+  "b5ede4057e48ba48f405ccbe4facc9b8d33222b0": { "facing": "internal" },
+  "4cfe1121218479fc8fdd31830c26868bbaad8288": { "facing": "internal" },
+  "d1fc8dfaac874e164515d9bf18c70853dfae23c1": { "facing": "internal" },
+  "7894fb494eb5c31174bcfc159d39a0e47ee2c171": { "facing": "internal" },
+  "c2734255e6be983c6bbc1d3ae6609dc50a1d90a3": {
+    "facing": "model",
+    "id": "tool-description-mcp-call-sdk-servers-caller-provided",
+    "name": "Tool Description: mcp_call SDK servers caller-provided",
+    "desc": "Middle fragment of the mcp_call description: SDK servers are rejected as caller-provided, result processing, session expiry and URL elicitation behaviour"
+  },
+  "8cd740791cad30087c87d9ecabf0586cc081501f": { "facing": "internal" },
+  "00c603829d573d7f97c66701877bc13c1ccd1ad3": { "facing": "internal" },
+  "825b1b1fdc626ac942a2204da0059ba839128c10": { "facing": "internal" },
+  "b5e2ec8ff65c2790485fac3a02c9e5b6cbca7d28": { "facing": "internal" },
+  "8a31a5ceba765da8682a628f15a46d79b74d94e2": {
+    "facing": "model",
+    "id": "tool-result-plugin-data-dir-unavailable",
+    "name": "Tool Result: plugin data dir unavailable",
+    "desc": "Error when CLAUDE_PLUGIN_DATA cannot be substituted because the plugin's data folder did not come with it"
+  },
+  "8c117d38d130382475905447c0316c99f1da947b": { "facing": "internal" },
+  "3ce53d7409269b6a21466b847879a23295854c82": { "facing": "internal" },
+  "f0f3866e68d1bf11f75663c1e90c54802c4b616f": { "facing": "internal" },
+  "7336e93ad0371a1fdd206b5f49d03750e7accf0c": {
+    "facing": "model",
+    "id": "system-prompt-communicating-with-the-user-plain-updates",
+    "name": "System Prompt: Communicating with the user (plain updates)",
+    "desc": "Section on writing short, outcome-first, plain-language updates and final messages for a user who has not followed the work"
+  },
+  "53ebbaa6d8727c5b0c4f457f672a73c2f761c981": {
+    "facing": "model",
+    "id": "tool-description-agent-delegation-pros-and-cons",
+    "name": "Tool Description: Agent delegation pros and cons",
+    "desc": "Agent tool prompt section on when delegating to subagents helps (parallelism, side quests) and its cost (missing context)"
+  },
+  "5d9e2d4558986c2850177b739463eb98be295eb6": {
+    "facing": "model",
+    "id": "system-prompt-latest-claude-models-list",
+    "name": "System Prompt: latest Claude models list",
+    "desc": "Lists the most recent Claude model IDs and advises defaulting to the latest models when building AI apps"
+  },
+  "6e2830c6464512156dc95d0a8c46c0ab57e07c82": {
+    "facing": "model",
+    "id": "system-prompt-agent-thread-notes-plain",
+    "name": "System Prompt: agent thread notes (plain-language variant)",
+    "desc": "Subagent notes variant: absolute file paths, no colon before tool calls, report findings as final text rather than files"
+  },
+  "3d1e541dc2162b9b046f82bb639b06bcdd2a2cde": {
+    "facing": "model",
+    "id": "system-prompt-worktree-commit-and-push-before-finishing",
+    "name": "System Prompt: commit and push worktree before finishing",
+    "desc": "Background-session guidance to commit and push worktree changes before finishing unless the user said not to use git"
+  },
+  "5a0995203b67f1e3ba73c8be85ba03da70491eb0": {
+    "facing": "model",
+    "id": "tool-description-bash-working-directory-persists",
+    "name": "Tool Description: Bash working directory persists",
+    "desc": "Bash prompt bullet: working directory persists, prefer absolute paths over cd, shell state does not persist"
+  },
+  "2f44be92d1c04de39df51e2f4dc550a5f314ed0c": {
+    "facing": "model",
+    "id": "tool-description-poll-no-pending-events-caveat",
+    "name": "Tool Description: Poll no pending events caveat",
+    "desc": "Explains that the no-pending-events answer does not mean nothing is queued for the end of the turn"
+  },
+  "026e1ea5cebf3eebe9bd9e30d3f540093671641d": {
+    "facing": "model",
+    "id": "system-prompt-context-management",
+    "name": "System Prompt: Context management",
+    "desc": "Tells the model compaction handles long sessions so it need not wrap up early"
+  },
+  "00a4f2041d787a5154b1739676a2180b9dec58c8": {
+    "facing": "model",
+    "id": "system-prompt-corrections",
+    "name": "System Prompt: Corrections",
+    "desc": "Guidance to keep self-correction and apologies minimal and to weigh other agents' feedback"
+  },
+  "444409ae97ccf22c972b6874493ab0c18f363f50": {
+    "facing": "model",
+    "id": "system-prompt-delivering-work",
+    "name": "System Prompt: Delivering work",
+    "desc": "Guidance to do exactly what was asked, defer blocking questions, and decline succinctly"
+  },
+  "05a0fb4538734216bf143e9495224598dc32e092": {
+    "facing": "model",
+    "id": "system-prompt-focus-mode",
+    "name": "System Prompt: Focus mode",
+    "desc": "Focus mode section: the user sees only final messages, so put everything needed there"
+  },
+  "9af97e1d4fe567b475a61c4e008874c4b34a1a05": {
+    "facing": "model",
+    "id": "tool-description-ask-user-question-plan-mode-notes",
+    "name": "Tool Description: AskUserQuestion plan mode notes",
+    "desc": "AskUserQuestion prompt notes on plan mode: switch with the plan tool, do not ask whether the plan is ready"
+  },
+  "8c882281181095416b501d3e9eba3a0b7f061bf6": {
+    "facing": "model",
+    "id": "system-prompt-hard-to-undo-actions-caution",
+    "name": "System Prompt: caution with hard-to-undo actions",
+    "desc": "Be careful with irreversible actions, understand before deleting, report outcomes faithfully, approval does not carry over"
+  },
+  "8987cada1dda331f0707d3c8ab393695a1e96329": {
+    "facing": "model",
+    "id": "tool-description-agent-delegation-conclusion",
+    "name": "Tool Description: Agent delegation conclusion",
+    "desc": "Agent prompt summary: use subagents for parallelism and side quests, not for small lookups, and wait for delegated searches"
+  },
+  "ce6647b3e8dee9a0a54a2398035de5b7776c0801": {
+    "facing": "model",
+    "id": "tool-description-skill-invoke-packaged-instructions",
+    "name": "Tool Description: Skill invoke",
+    "desc": "Skill tool prompt: what skills are, when to call, skill and args parameters, valid names"
+  },
+  "1a4f02af1603777a2ff580c3d81eee01c0808fca": {
+    "facing": "model",
+    "id": "system-prompt-proactive-recommendations",
+    "name": "System Prompt: proactive with recommendations",
+    "desc": "Be proactive, do not re-ask answered questions, recommend rather than survey options"
+  },
+  "d783592adef8e533ed977df1098dd492793f1c86": {
+    "facing": "model",
+    "id": "system-prompt-memory-hygiene",
+    "name": "System Prompt: memory hygiene",
+    "desc": "Keep memories free of duplicates and repo-derivable facts; recalled memories are context to double-check, not instructions"
+  },
+  "a6ba45d834c55997648b782f8b98345c5fcba0e0": {
+    "facing": "model",
+    "id": "system-prompt-edit-in-place-skip-enter-worktree",
+    "name": "System Prompt: edit in place, skip EnterWorktree",
+    "desc": "Tells the model the session works in place and to skip EnterWorktree unless asked"
+  },
+  "c2737faef996d56f6df857c04f3defe8a7e8a578": {
+    "facing": "model",
+    "id": "system-prompt-launching-agent-direction-not-consent",
+    "name": "System Prompt: launching agent directs, not consents",
+    "desc": "Subagent note that messages from the launching agent direct work but never count as user approval"
+  },
+  "fbc0b329dccb8dfb46c9ecc4304bc8e370577b7b": {
+    "facing": "model",
+    "id": "system-prompt-agent-isolation-worktree-enter-first",
+    "name": "System Prompt: isolation worktree, enter first",
+    "desc": "Agent configured with isolation: worktree must call EnterWorktree first unless already in .claude/worktrees"
+  },
+  "fc2eb37cfce528e69085bb592b2ac924d1ee4cda": {
+    "facing": "model",
+    "id": "system-prompt-generic-pronouns",
+    "name": "System Prompt: generic pronouns",
+    "desc": "Refer to users with they/them unless their preference is known"
+  },
+  "8c031d24a07959f961f6050430481f26581a63a5": {
+    "facing": "model",
+    "id": "system-prompt-surface-scheduled-run",
+    "name": "System Prompt: surface scheduled run",
+    "desc": "Surface note for scheduled or triggered runs: no one watching, proceed under assumptions, complete final record"
+  },
+  "aaad65711708ef296f8a7d51b5b498331cfb960e": {
+    "facing": "model",
+    "id": "system-prompt-surface-mobile",
+    "name": "System Prompt: surface mobile",
+    "desc": "Surface note for the Claude mobile app: compact, outcome-first, self-contained messages"
+  },
+  "c6fa6219a2246c71b3c1c75ab7a2f1e0c87209eb": {
+    "facing": "model",
+    "id": "system-prompt-surface-web",
+    "name": "System Prompt: surface web",
+    "desc": "Surface note for Claude Code on the web: user checks in, final message must stand on its own"
+  },
+  "e6a86c05b4452280a5f5061b3bfbde67520a3283": {
+    "facing": "model",
+    "id": "system-prompt-surface-slack",
+    "name": "System Prompt: surface Slack",
+    "desc": "Surface note for Slack or Teams: replies relayed into a chat thread, self-contained and outcome first"
+  },
+  "5539c80049892c2de2dc40e655236b2563ca91fc": {
+    "facing": "model",
+    "id": "system-prompt-surface-terminal",
+    "name": "System Prompt: surface terminal CLI",
+    "desc": "Surface note for the terminal CLI: markdown in monospace, clickable file_path:line, ! prefix"
+  },
+  "ce84cb8f29085436a533bde28a06e1e1461e6dea": {
+    "facing": "model",
+    "id": "system-prompt-surface-vscode",
+    "name": "System Prompt: surface VS Code",
+    "desc": "Surface note for the VS Code extension: panel beside the editor, focused selection arrives as context"
+  },
+  "c9c2ae1592bddcaca82424feea0f8b06331cabb1": {
+    "facing": "model",
+    "id": "system-prompt-surface-github-actions",
+    "name": "System Prompt: surface GitHub Actions",
+    "desc": "Surface note for GitHub Actions: no human in real time, decide under assumptions, complete record"
+  },
+  "72dc4e006ec4d1ad48d010ca7b5417a192c27fe5": {
+    "facing": "model",
+    "id": "system-prompt-surface-cowork",
+    "name": "System Prompt: surface Cowork",
+    "desc": "Surface note for Cowork: general knowledge work, user may not be a developer, plain outcome-first messages"
+  },
+  "ec16637f7b2102d74312fd88b7255cfe4794e1a7": {
+    "facing": "model",
+    "id": "system-prompt-surface-desktop",
+    "name": "System Prompt: surface desktop app",
+    "desc": "Surface note for the Claude desktop app: rich markdown chat pane, no ! commands, permission prompts wait"
+  },
+  "12521b663e42a969b256d016e5479229d6bc1689": {
+    "facing": "model",
+    "id": "tool-description-ask-user-question-when-to-use",
+    "name": "Tool Description: AskUserQuestion when to use",
+    "desc": "AskUserQuestion prompt: use only when blocked on a genuine user decision; Other option, multiSelect, Recommended first"
+  },
+  "135504e5692fac896e7e743f1beaec6abbc7960b": {
+    "facing": "model",
+    "id": "system-prompt-interactive-agent-intro",
+    "name": "System Prompt: interactive agent intro",
+    "desc": "Opening line describing Claude as an interactive agent with powerful tools"
+  },
+  "e6e2293a1b813547900e980fba42d3e8d167dfe5": {
+    "facing": "model",
+    "id": "system-prompt-slash-skill-invoke-via-tool",
+    "name": "System Prompt: slash skill invoke via tool",
+    "desc": "When the user types /<skill-name>, invoke it via the Skill tool"
+  },
+  "794ccaa2b135d0c30fa236dd8ab771641fd78a37": {
+    "facing": "model",
+    "id": "system-prompt-surface-sdk",
+    "name": "System Prompt: surface SDK",
+    "desc": "Surface note when driven through the Agent SDK or claude -p by another program"
+  },
+  "c6a42cbc28836859db9ec58ebab71e25d630d530": {
+    "facing": "model",
+    "id": "system-prompt-environment-local-machine",
+    "name": "System Prompt: environment local machine",
+    "desc": "Session runs on the user's own machine so changes land directly in their working copy"
+  },
+  "cd71c62d29de51f43e2ee94574e79aa6916d69b5": {
+    "facing": "model",
+    "id": "system-prompt-environment-remote-sandbox",
+    "name": "System Prompt: environment remote sandbox",
+    "desc": "Session runs in a provisioned remote sandbox, work leaves via git or the conversation"
+  },
+  "b078d894377114599a9aadbb3cef93a7dc09c360": {
+    "facing": "model",
+    "id": "system-prompt-system-messages-delivery-mixed",
+    "name": "System Prompt: system message delivery (mixed)",
+    "desc": "Variant explaining system messages mostly arrive as short system messages, some wrapped in system-reminder tags"
+  },
+  "905654786a210c085f707d5c4621bc13b084fc98": {
+    "facing": "model",
+    "id": "system-prompt-system-messages-delivery-reminder-tags",
+    "name": "System Prompt: system message delivery (reminder tags)",
+    "desc": "Variant explaining system reminders arrive in system-reminder tags in user messages and tool results"
+  },
+  "0f6711faadbd1dea64a7c0ccfdb8115cdc8fabfd": {
+    "facing": "model",
+    "id": "tool-description-agent-subagents-background-notified",
+    "name": "Tool Description: Agent subagents run in background, notified",
+    "desc": "Fragment noting subagents run in the background and a notification arrives on completion"
+  },
+  "f39e3caee82054e4248b41810c0438fb437c9303": {
+    "facing": "model",
+    "id": "tool-description-agent-definition-and-worktree-isolation",
+    "name": "Tool Description: Agent definition and worktree isolation",
+    "desc": "Agent types take model, effort and tools from their definition; isolation worktree gives an own git worktree"
+  },
+  "337f8d7fa5a864bf164970a9dd5221ee81e2b09a": {
+    "facing": "model",
+    "id": "tool-description-tool-search-fetch-deferred-schemas",
+    "name": "Tool Description: ToolSearch fetch deferred schemas",
+    "desc": "ToolSearch opening: fetches full schemas for deferred tools announced by the system"
+  },
+  "e334100171127f9d28d8ce2014f5dea7e5611567": {
+    "facing": "model",
+    "id": "system-prompt-background-session-job",
+    "name": "System Prompt: background session job",
+    "desc": "Background session section: respond naturally, use CLAUDE_JOB_DIR/tmp, end with an actionable report"
+  },
+  "8b3b10321eabb1124c353059872cd2215e472ff5": {
+    "facing": "model",
+    "id": "system-prompt-general-tips-output-and-tools",
+    "name": "System Prompt: general tips on output and tools",
+    "desc": "file_path:line references, parallel tool calls, permission modes and denials, hook output"
+  },
+  "8469660eac009208704224acfc81d6a9bf994c74": {
+    "facing": "model",
+    "id": "system-prompt-messages-from-the-system",
+    "name": "System Prompt: Messages from the system",
+    "desc": "Explains system reminders come from the app, may be ignored if irrelevant, and never grant consent"
+  },
+  "e003b27327c325c77ca134fad3229dbe11aa330b": {
+    "facing": "model",
+    "id": "tool-description-agent-types-launch-intro",
+    "name": "Tool Description: Agent types launch intro",
+    "desc": "Agent prompt intro on agent types, subagent_type, fork semantics and default general-purpose agent"
+  },
+  "de5082f7967ff933587275af5482ac18df84ce76": {
+    "facing": "model",
+    "id": "tool-description-agent-types-announced-by-system",
+    "name": "Tool Description: Agent types announced by system",
+    "desc": "Agent types are announced in a system message at start and re-supplied when they change"
+  },
+  "773a57ec1fa2a69d958b45ded3b94e293dd3a945": {
+    "facing": "model",
+    "id": "tool-description-agent-subagent-observability",
+    "name": "Tool Description: Agent subagent observability",
+    "desc": "Less visibility into subagents: do not invent results of unfinished agents, relay important parts of reports"
+  },
+  "f33b04149d69c982dca03b58b68f789b1071104f": {
+    "facing": "model",
+    "id": "tool-description-agent-continue-previous-agent",
+    "name": "Tool Description: Agent continue previous agent",
+    "desc": "Use the continue tool with an agent ID or name to resume it with context; a new call starts fresh"
+  },
+  "948a1539e48c7030d9a5c2de6f7f7a668e89637d": {
+    "facing": "model",
+    "id": "tool-description-agent-continue-fork-exception",
+    "name": "Tool Description: Agent continue fork exception",
+    "desc": "Parenthetical that fork types inherit context, appended to the continue-agent sentence"
+  },
+  "1c50888d13cb00fe1e42fd3dfa8cd35b94c2d645": {
+    "facing": "model",
+    "id": "system-prompt-model-identity-current-named",
+    "name": "System Prompt: model identity (named)",
+    "desc": "States the marketing name and exact model ID currently powering the session"
+  },
+  "83dc8b344a0236f63162d4b5861fa5ca8fe3ae8d": {
+    "facing": "model",
+    "id": "system-prompt-model-identity-current-id-only",
+    "name": "System Prompt: model identity (ID only)",
+    "desc": "States only the model ID when no marketing name is known"
+  },
+  "3a0461065b55bade8ea5c16b33f90a00f0e529a2": {
+    "facing": "model",
+    "id": "system-prompt-knowledge-cutoff",
+    "name": "System Prompt: knowledge cutoff",
+    "desc": "States the knowledge cutoff and suggests tools for later events"
+  },
+  "6c04ee4d75d48c3345b82cb9a7ab3e5d3915fa54": {
+    "facing": "model",
+    "id": "tool-description-no-reread-after-edit",
+    "name": "Tool Description: no re-read after edit",
+    "desc": "Bullet: no need to re-read a file after editing since Edit/Write error on failure and state is tracked"
+  },
+  "05b10cbbb4fd3a40693acb2ad25e1e0e7c807db1": {
+    "facing": "model",
+    "id": "tool-result-write-denied-no-config-folder",
+    "name": "Tool Result: write denied, no config folder",
+    "desc": "Permission deny message when the session has no config folder to check the path against"
+  },
+  "ce4f58b016b5585310ceaeb384a63ef69a7df95c": { "facing": "internal" },
+  "838adace6cb087ed914559a5f75ff93f2ae0091e": { "facing": "internal" },
+  "30fb0e9e3f47167e1f330a284c6242c4291d1019": { "facing": "internal" },
+  "d6aecf0209f60643140082b92a8d65ae4b8b8484": { "facing": "internal" },
+  "ff664be045ad21babf7a9938e87d54decf5be295": {
+    "facing": "model",
+    "id": "tool-result-grep-search-failed-abnormal-exit",
+    "name": "Tool Result: Grep search failed (abnormal exit)",
+    "desc": "Error when ripgrep exits abnormally with no results: not a no-match result, retry once, do not fall back to shell search"
+  },
+  "2acb6c926753d8b60b527bc7e80377416be25719": {
+    "facing": "model",
+    "id": "tool-result-memory-write-secrets-blocked-diskless",
+    "name": "Tool Result: memory write secrets blocked (diskless)",
+    "desc": "Write refused because content contains potential secrets and every file of a memoryless session is checked as memory"
+  },
+  "30e51cc1f67c24a9bc9798c1ca322ece49f16fe6": {
+    "facing": "model",
+    "id": "tool-result-git-partial-clone-remote-name-not-plain",
+    "name": "Tool Result: git partial clone remote name not plain",
+    "desc": "Refusal when the fetchesFrom remote name is not plain letters, digits, '.', '_' and '-'"
+  },
+  "2c851e4a4f5f3efac707c11a67d64f4eb18b171f": {
+    "facing": "model",
+    "id": "tool-result-git-partial-clone-fetches-from-args-invalid",
+    "name": "Tool Result: git partial clone fetchesFrom args invalid",
+    "desc": "materializeWorkTree contract error describing the allowed argument shape with fetchesFrom"
+  },
+  "7cf51812bb01cc1db93273562f3f98ea41a361d7": { "facing": "ui" },
+  "5817e0c6febdde0d5e2e2ecffe77afcde5cadff7": { "facing": "ui" },
+  "d1ef66b23bac9fb3aa7911ffb46d02f5de5f3218": { "facing": "ui" },
+  "517723bd197c042268dcfa9eb1ca4f61cdb7eff0": { "facing": "internal" },
+  "0782f85d8900611cc7fcbe8cf96668164c4c64b8": { "facing": "ui" },
+  "b366b023804a8a0668cd1289eeae7a7fd9ffab46": { "facing": "ui" },
+  "4d8947dbda5ece4fdd1f1e3a2db1740e6b97276a": { "facing": "ui" },
+  "1d85309ea12866972201eb3cf0862f734ccaf9fa": {
+    "facing": "model",
+    "id": "tool-result-settings-change-not-applied-cloud-session",
+    "name": "Tool Result: settings change not applied (cloud session)",
+    "desc": "Settings-file edit not applied because a cloud session cannot take the required at-computer approval"
+  },
+  "34db16d00838e5f4d449a4a7047ca2fc5617ff96": { "facing": "ui" },
+  "645b858723b7f2d062d89294db95f5152cfac042": { "facing": "internal" },
+  "2df4bd6768a63ccf0806b4e3860393690464ca88": {
+    "facing": "model",
+    "id": "system-reminder-env-info-agent-proxy-inactive",
+    "name": "System Reminder: env info agent proxy inactive",
+    "desc": "Environment change note that the earlier announced agent proxy is no longer active"
+  },
+  "1b38e1f122d70bd75bdb35010209a0e5a25657ba": { "facing": "internal" },
+  "c261f16ef10eeedc348460acd7eac42633318f6f": { "facing": "internal" },
+  "3689bffd89d1a0a98d9c4d88624d385cdd18bdfe": { "facing": "ui" },
+  "66630a9c0f4453b5ae1ad8012f77ad0950586706": {
+    "facing": "model",
+    "id": "tool-result-skill-arguments-too-long",
+    "name": "Tool Result: skill arguments too long",
+    "desc": "Error when a skill, command or hook with filled-in arguments exceeds the character limit"
+  },
+  "1269472737795813f9484f151dfc542e64e99cbd": {
+    "facing": "model",
+    "id": "tool-result-send-message-agent-budget-exhausted",
+    "name": "Tool Result: SendMessage agent budget exhausted",
+    "desc": "Not sent: session agents reached their launch/resume/write limit before the user next writes"
+  },
+  "ae903639b26fb376a67ba8d00bbc5365ef8c61bb": {
+    "facing": "model",
+    "id": "tool-result-send-message-main-conversation-only",
+    "name": "Tool Result: SendMessage unavailable in this session",
+    "desc": "Not sent: SendMessage is switched off for subagents or the caller was stopped; pass info in the final response"
+  },
+  "b46d5223f67d2ace90887d1f20b196f2b548d91f": {
+    "facing": "model",
+    "id": "tool-result-agent-not-resumed-no-room",
+    "name": "Tool Result: agent not resumed, no room",
+    "desc": "Agent not resumed and message not delivered because the session has no room or hit its agent start limit"
+  },
+  "aa7234f9a4ac68d345cfb0e4e6614707e562846f": { "facing": "internal" },
+  "2ef885a6d2b573482b71a433eb1f2724b2e03ab8": { "facing": "ui" },
+  "386cf765eff0e94bcf7c5d154c6ebce16a257f0d": { "facing": "ui" },
+  "47293a875708b5746a59ed421d3a57a628778649": { "facing": "internal" },
+  "1f18b162769b87cd13e31794d7e57a6b7eb0413d": { "facing": "internal" },
+  "27ac7740f57c5af6d590c62314583136369a566b": { "facing": "internal" },
+  "50d3b0e83432c722941facd58e8942539f8fd1de": { "facing": "internal" },
+  "711ecec600802400df6cff95813eaefd8278c36a": {
+    "facing": "model",
+    "id": "tool-result-cloud-session-branch-ahead-of-remote",
+    "name": "Tool Result: cloud session branch ahead of remote",
+    "desc": "Notice that the branch is ahead of its remote so the cloud session starts without those commits"
+  },
+  "e53b6ffdc3834926771278b1cfce41977378f1a7": {
+    "facing": "model",
+    "id": "tool-result-cloud-session-push-branch-hint",
+    "name": "Tool Result: cloud session push branch hint",
+    "desc": "Fragment advising to push the branch and start a new session to include the commits"
+  },
+  "adca4a3dc2a65ff3ab52a5eb68a6301908d3b12f": {
+    "facing": "model",
+    "id": "tool-result-cloud-session-changes-stay-on-machine",
+    "name": "Tool Result: cloud session changes stay on machine",
+    "desc": "Fragment saying uncommitted changes or commits stay on this machine, with push hint"
+  },
+  "d8f502214cd690e57a6430d5ef9b7d31e3f1b293": {
+    "facing": "model",
+    "id": "tool-result-cloud-session-remote-unreadable-start-hint",
+    "name": "Tool Result: cloud session remote unreadable",
+    "desc": "Notice that no remote could be read so the branch or HEAD could not be checked on the host"
+  },
+  "d6cef14a48316571c2b3364cd724cbd4d3aa002b": {
+    "facing": "model",
+    "id": "tool-result-cloud-session-branch-not-on-remote",
+    "name": "Tool Result: cloud session branch not on remote",
+    "desc": "Bundle failure suffix: the branch shares no history with the remote as last fetched"
+  },
+  "4b330d11299e2f47bdfcf19d8f52e18a808a8a76": { "facing": "ui" },
+  "c8a092b7398ce7ac93bd8735e28779d65764dc7c": {
+    "facing": "model",
+    "id": "system-prompt-final-message-must-carry-everything",
+    "name": "System Prompt: final message carries everything",
+    "desc": "Text between tool calls may be hidden, so all answers and deliverables go in the final message"
+  },
+  "fa43440b17f2bf20b88f7035ce6f41bf05032169": {
+    "facing": "model",
+    "id": "system-prompt-agent-thread-cwd-reset-note",
+    "name": "System Prompt: agent thread cwd reset note",
+    "desc": "Notes bullet that agent threads reset cwd between bash calls so absolute paths are required"
+  },
+  "31993d0b0feb531c6437e16ad29a0061386c8647": { "facing": "internal" },
+  "29b2daa195f08eb0f29822ce0c064c3ca3b88609": { "facing": "internal" },
+  "0175bd4494be3bdd2fbf199bd2f71ddb5e516ed5": {
+    "facing": "model",
+    "id": "system-prompt-guide-agent-no-answer-report-issue",
+    "name": "System Prompt: guide agent no answer, report issue",
+    "desc": "Guide agent bullet: when no answer exists, direct the user to report the issue (ISSUES_EXPLAINER arm)"
+  },
+  "cf3b429d500dd42d479c0cabdac062c543e49555": { "facing": "ui" },
+  "e614157d8dbd2cee9c30937faa89ad03f1d2702d": { "facing": "ui" },
+  "ff72c6c5644be1814a756aa90c2d136f73bd0519": {
+    "facing": "model",
+    "id": "agent-prompt-conversation-summarization",
+    "name": "Agent Prompt: conversation summarization",
+    "desc": "Compaction summary instructions with the nine required sections and example"
+  },
+  "627396d2135ddba7be6bb3a2ed1fcb73bebab5d5": {
+    "facing": "model",
+    "id": "agent-prompt-conversation-summarization-analysis-block",
+    "name": "Agent Prompt: summarization analysis block",
+    "desc": "Example analysis block placed before the summary when analysisFirst is set"
+  },
+  "ad9faff0fb7fd8f2c63339b4c2209cb99fdb4977": {
+    "facing": "model",
+    "id": "agent-prompt-conversation-summarization-short-v2-instructions",
+    "name": "Agent Prompt: summarization keep earlier asks",
+    "desc": "Instruction to copy an earlier summary's record of user asks unchanged"
+  },
+  "345f9fbd616690de56d72ebb5265e1b832c46790": { "facing": "internal" },
+  "7332db7764a4a7d3ad2c82402f691e47af99a845": { "facing": "internal" },
+  "4a2d086abb97b3f23a9938466bb6558832b1641f": { "facing": "internal" },
+  "fe495505c54b3fa37082383cf3f499d3e34556f6": { "facing": "internal" },
+  "7e33640099a30ab75b8a44b01dd1778a13813add": {
+    "facing": "model",
+    "id": "tool-description-agent-types-section-with-listing",
+    "name": "Tool Description: Agent types section with listing",
+    "desc": "Agent prompt Lt arm combining the agent-types intro with the optional agent listing"
+  },
+  "4c7fe48b990c1b9d16d91656cb59930bd3c0d41d": {
+    "facing": "model",
+    "id": "tool-result-bash-backgrounded-cwd-note",
+    "name": "Tool Result: Bash backgrounded cwd note",
+    "desc": "Note that directory changes by a backgrounded command do not apply to later commands"
+  },
+  "426cffd8d2d28968043e6ac1d1b6c93ad15deff7": {
+    "facing": "model",
+    "id": "system-reminder-plan-file-reference",
+    "name": "System Reminder: plan file reference",
+    "desc": "Plan file location line in the plan_file_reference attachment"
+  },
+  "8e68b90c5dc7116fe036b3806a8775310e107abe": {
+    "facing": "model",
+    "id": "system-reminder-plan-file-contents-continue",
+    "name": "System Reminder: plan contents and continue",
+    "desc": "plan_file_reference body with plan contents and the instruction to continue if relevant"
+  },
+  "19e3898456411cc965b33ed7f4598195c57926c4": {
+    "facing": "model",
+    "id": "system-reminder-mcp-servers-refused-reserved-address",
+    "name": "System Reminder: MCP servers refused (reserved address)",
+    "desc": "MCP servers refused because Claude Code reserves their address; retrying will not help"
+  },
+  "36d6592ebfc823147488bd20c3dd05d7fe51079c": {
+    "facing": "model",
+    "id": "system-reminder-background-shell-still-running",
+    "name": "System Reminder: background shell still running",
+    "desc": "Background shell task still running line"
+  },
+  "f6ea4ddefd2ccdbd2b7538e47d40f9314a825a56": {
+    "facing": "model",
+    "id": "system-reminder-background-shell-read-output-path",
+    "name": "System Reminder: background shell output path",
+    "desc": "Where to read the running shell's output"
+  },
+  "4d4325f4430d388313305cb4080271eb48164edd": { "facing": "internal" },
+  "40875462f42176287e15f56d64f076ce90759919": { "facing": "internal" },
+  "9a39e3ae48801406d2e360f9ff00d2c51a981f29": { "facing": "internal" },
+  "81abc3dfdcf49a86ed3680fdc4807951d69de093": { "facing": "ui" },
+  "8a03fa3ff6cb5855fe8c7fd25dbc6a04d8d7c1a5": { "facing": "ui" },
+  "e1de98b0972c609f8b932e89488cddb37f944323": { "facing": "ui" },
+  "c79bc865c59e7585ea43adfc8e4a30dd807b0f45": { "facing": "internal" },
+  "e2ef94c69c38203a7cbafc46e348a48ee6b15a58": { "facing": "internal" },
+  "36792dbd81455a4a8d7f345e667b147677f967f1": { "facing": "internal" },
+  "48959af50d94aaf8733220f374b766327790766a": { "facing": "internal" },
+  "7ee5fe16b634cb5217425b30f39b71c8ffa79baf": { "facing": "ui" },
+  "aa34bb7a81526557cd9f13e413fe580d2b6bbe4d": { "facing": "ui" },
+  "320d06f883fd293bb92aeb0f210042c0a0a65e2a": { "facing": "internal" },
+  "e235f319804f1ec239eb2f259fa72028a22d4ce9": { "facing": "internal" },
+  "23a1a1b9a470460b8e079148284f6ba921393259": { "facing": "internal" },
+  "02d943b84fdf93fd01961e2a107c56b7b3a626bb": { "facing": "internal" },
+  "70cfc09c9f681f068a63eec95dc5f92e7dbc468b": { "facing": "internal" },
+  "9bfc1277ebba3e41466177af067e6d3aab56065e": {
+    "facing": "model",
+    "id": "slash-command-restart-refused-version-on-hold",
+    "name": "Slash Command: restart refused, version on hold",
+    "desc": "/restart refusal when the installed version is on hold and the session stays on the current version"
+  },
+  "4999ba9259b0e0fde18e39cc0eb344641dbbdd06": { "facing": "ui" },
+  "3f7c4b6c4c54a19dd1d3d4a3617e946af46f0544": {
+    "facing": "model",
+    "id": "system-prompt-workflow-task-not-a-skip-reason",
+    "name": "System Prompt: workflow task note not a skip reason",
+    "desc": "Workflow subagent note that a computed-task disclaimer is not itself a reason to skip the assigned step"
+  },
+  "8d517d9ad59c796173c104a5b6cac6ba406306c7": { "facing": "internal" },
+  "95941b8199366c3d645526dfa042b7d9c17c5132": {
+    "facing": "model",
+    "id": "tool-result-plugin-publish-upload-not-current",
+    "name": "Tool Result: plugin publish upload not current",
+    "desc": "Publish refused: the new version is uploaded but not current on claude.ai"
+  },
+  "271f8a509a412a8aadb583b3099a83761c306999": {
+    "facing": "model",
+    "id": "system-reminder-mod-command-ran-reply-briefly",
+    "name": "System Reminder: mod command ran, reply briefly",
+    "desc": "Note after the person ran a mod's command: reply in one or two lines, offer or report problems"
+  },
+  "6cdd5f63d9f4d02e343082eb7714b0abb18cea24": { "facing": "internal" },
+  "b834453f54fc194f32c626d1af02a742f9b084a9": { "facing": "ui" },
+  "272709e497a6824c6b5be084e8a6fc39c9a01b40": { "facing": "ui" },
+  "7e65e1f2d5c9bdf2b13082c85480338e8543b8e9": { "facing": "ui" },
+  "c4d06cf2bc9e135878eb67cd80131014416238ee": { "facing": "ui" },
+  "3a4f0d8055250bb04c70c8b661c8eb096140da4d": { "facing": "ui" },
+  "11c055a63f6a3a2610dc302759fe5a96dde4cafa": { "facing": "ui" },
+  "14905bef9fb72a9b185d7ebf72e77f56420b188d": { "facing": "ui" },
+  "64dcc36308be202725082a4ebf872c4c96c99a8c": {
+    "facing": "model",
+    "id": "data-task-notification-carried-agent-unconfirmed",
+    "name": "Data: task notification carried agent unconfirmed",
+    "desc": "Failed task-notification summary for a carried-over agent whose ownership and liveness could not be confirmed"
+  },
+  "c59375f42e768cbb51df86b12b5834f42775bf80": { "facing": "ui" },
+  "dcb427cec2d116963a1b59b18f04c408ab0a4383": { "facing": "ui" },
+  "9192acab384f00b76f4afbb4aea7abbc94bfdbf6": { "facing": "ui" },
+  "d6dd87640a5cbd307421fee32ee1620bd09650a1": { "facing": "ui" },
+  "b9f102f0ca5ec16be09a8de644084ef74ea95b77": { "facing": "ui" },
+  "eb3ec6ab81098b656f98a40d7f89462aeddc8b2e": {
+    "facing": "model",
+    "id": "slash-command-exit-worktree-changed-after-check",
+    "name": "Slash Command: exit worktree changed after check",
+    "desc": "Exit result when the worktree was not removed because it changed after Claude Code checked it"
+  },
+  "c4195fd328ff0f59bf79d43aa740364ee4dfe04b": { "facing": "ui" },
+  "6d96f50d9ad961b78fc877d038252f06815ea47d": { "facing": "ui" },
+  "a7520fab6752cc55866fa7772245f33b4773c062": { "facing": "ui" },
+  "440e921c624e8202dc870615c9685c4127adba97": { "facing": "ui" },
+  "d38998ad61cc2eaf2334bf7c9dd9a8331ee1938c": { "facing": "ui" },
+  "fdf9e23a19a7e84fe0ad1dbec36a4e544a2f3733": { "facing": "ui" },
+  "5f3f53a4ed5eb87ff1ae6026c90a97bd414214b2": { "facing": "ui" },
+  "263351be905be77ad8516b1646363ebf01c7024d": { "facing": "ui" },
+  "ee85ffb784227c801580d989e00eda0f1620d594": {
+    "facing": "model",
+    "id": "slash-command-exit-worktree-removed-commits-and-changes",
+    "name": "Slash Command: exit worktree removed commits and changes",
+    "desc": "Exit result reporting the worktree removed with its commits and uncommitted changes"
+  },
+  "8e0db95f9c45b80657dcb4379238acf14e79fa9e": {
+    "facing": "model",
+    "id": "tool-result-enable-claude-in-chrome-off-and-unlinked",
+    "name": "Tool Result: Claude in Chrome off and unlinked",
+    "desc": "Chrome is off and chat unlinked: tell the user plainly and continue another way"
+  },
+  "c3a7712828bd4615708c75aedae4c5bf23022bd2": {
+    "facing": "model",
+    "id": "tool-description-computer-use-unlinked-chat-guidance",
+    "name": "Tool Result: chat not linked to a computer",
+    "desc": "Chat not linked to a computer: tell the user plainly, suggest the desktop steps, continue another way"
+  },
+  "3394d6f80a189f73d4a854fea06b8ece828b3db3": {
+    "facing": "model",
+    "id": "tool-description-projects-write-session-local-path",
+    "name": "Tool Parameter: project_write local_path (session)",
+    "desc": "local_path describe: absolute path of a file read or written in full in this session"
+  },
+  "4bff5bc85858b32c57e3adb34afab8110a6a036d": {
+    "facing": "model",
+    "id": "tool-result-project-write-localpath-session-notebook",
+    "name": "Tool Result: project_write notebook by local_path",
+    "desc": "Notebooks are not uploaded by local_path in this session; pass text as content"
+  },
+  "0efb0d20870d9bd1324dfd1b4af92eebf082d1b2": {
+    "facing": "model",
+    "id": "tool-result-project-write-localpath-session-read-first",
+    "name": "Tool Result: project_write read local_path first",
+    "desc": "Read the whole file first (again if edited) or pass its text as content"
+  },
+  "80d5ce9a759f5bec6480a24b613a3267327c990a": {
+    "facing": "model",
+    "id": "tool-result-project-write-localpath-session-refused",
+    "name": "Tool Result: project_write local_path refused",
+    "desc": "File cannot be uploaded by path (missing, unreadable, location/name/type not allowed)"
+  },
+  "faaf4de6353901f99eb8c47caaa291a4d4eef0f5": { "facing": "internal" },
+  "cbe0a5f78054c43c49d81da118e98c0a27aae6a6": { "facing": "internal" },
+  "5b58644a98659231dabd18c2cc75013296578fb1": { "facing": "internal" },
+  "1ba0a035d9c6ee8419a23254447e25fc0c3537e0": { "facing": "internal" },
+  "8e8f91607b7a24db3ffaeef8f358fcbd71de5397": {
+    "facing": "model",
+    "id": "tool-result-mcp-call-result-not-for-model-over-limit",
+    "name": "Tool Result: mcp_call result over limit",
+    "desc": "Tool ran but its result exceeds the result_not_for_model character limit, so no result was returned"
+  },
+  "07f84b797a5cb44828dbd32164f89c7acb20fd11": {
+    "facing": "model",
+    "id": "skill-claude-code-help-recent-releases",
+    "name": "Skill: Claude Code help recent releases",
+    "desc": "Recent releases section with the running version in the Claude Code help skill output"
+  },
+  "0f0a9a91171402825234d8e180715f6791930262": { "facing": "internal" },
+  "f3950559d41bd18669c5076b6796722ef319e6ab": { "facing": "ui" },
+  "ffde6d004537f9984084f12e86aa58bf8fecc91a": { "facing": "internal" },
+  "7338ea89aeae38263b686d87f78fbd5cdc30a1aa": {
+    "facing": "model",
+    "id": "tool-result-bash-background-command-already-ended",
+    "name": "Tool Result: Bash background command already ended",
+    "desc": "Moving to background failed because the command had ended and its output was not kept; rerun without run_in_background"
+  },
+  "1936b6026bba614a341a1980ce07e62e1b1c4351": {
+    "facing": "model",
+    "id": "tool-result-served-read-file-too-large-for-text",
+    "name": "Tool Result: served read file too large for text",
+    "desc": "Served file read fails because the file is too large to send back as text"
+  },
+  "d8d96e458d649cb2f3401aca778cc1bb5f0e21cf": {
+    "facing": "model",
+    "id": "tool-result-served-tool-background-under-rule",
+    "name": "Tool Result: served tool run_in_background under a rule",
+    "desc": "Served tool not run because a deny or ask rule names run_in_background; resend without it"
+  },
+  "fa4459f9eae08b9dbfda0a40e0d2ac2337b2c6b2": {
+    "facing": "model",
+    "id": "data-claude-code-d-ts",
+    "name": "Data: claude-code.d.ts",
+    "desc": "Claude Code plugin API declarations written as the plugin-authoring skill file types/claude-code.d.ts, which SKILL.md points the model to as the API reference (also used for type-checking)."
+  },
+  "e8ca88195b851bcbf5c6780923046a60326a4b97": {
+    "facing": "model",
+    "id": "data-reference",
+    "name": "Data: reference",
+    "desc": "Long-form plugin/mod API reference (reference.md) extracted with the plugin-authoring skill and pointed to by its SKILL.md."
+  },
+  "1330c3e9341c5e34347929a7b16311a8cd99a75f": { "facing": "internal" },
+  "46e0e0d88f2efca8cdfe3776fb41591ccaa51a71": {
+    "facing": "model",
+    "id": "data-onboarding",
+    "name": "Data: onboarding",
+    "desc": "claude-test run-skill reference onboarding.md that the run SKILL.md tells the model to Read for machine setup and first run."
+  },
+  "e7e8870db75f557cbe735b404bed8821b4936507": {
+    "facing": "model",
+    "id": "data-ct-mjs",
+    "name": "Data: ct.mjs",
+    "desc": "claude-test helper script (skills/run/scripts/ct.mjs) that the run skill has the model execute; its JSON output (status notes, needsInput questions, forClaude remedies, errors) is written for the model to read."
+  },
+  "869448363c7ec8471a03203be8ee6c1bbb1288c0": {
+    "facing": "model",
+    "id": "data-allow-tool-mjs",
+    "name": "Data: allow-tool.mjs",
+    "desc": "claude-test browser-server module (skills/run/scripts/lib/allow-tool.mjs) defining the claude_test_allow / claude_test_app_up / claude_test_show_run MCP tool descriptions, input schemas and result texts the model receives."
+  },
+  "8e1604be0353c29706954625bc768f362a12a17b": {
+    "facing": "model",
+    "id": "data-config-mjs",
+    "name": "Data: config.mjs",
+    "desc": "claude-test shared library (skills/run/scripts/lib/config.mjs) whose config warnings, consent and sign-in notes surface in ct.mjs status JSON and the browser server's tool results that the model reads."
+  },
+  "e88087429bfcd7a7c1237940bd86a663ee677e67": {
+    "facing": "model",
+    "id": "data-runs-mjs",
+    "name": "Data: runs.mjs",
+    "desc": "claude-test shared library (skills/run/scripts/lib/runs.mjs) for run folders and file placement; its refusal strings return through the helper's tool results and ct.mjs output to the model."
+  },
+  "327dd78749063e771b79b1d77e000a078a3ebc7e": {
+    "facing": "model",
+    "id": "data-skill-claude-test-the-conversation-side",
+    "name": "Data: SKILL (Claude Test — the conversation side)",
+    "desc": "Prompt body of the claude-test \"run\" skill (conversation side), loaded as skill text by we()."
+  },
+  "116ac438dfd529a16609a4f10621d8dd520bbd35": {
+    "facing": "model",
+    "id": "skill-artifact-design",
+    "name": "Skill: artifact-design",
+    "desc": "Bundled artifact-design skill — Design guidance and fundamentals for Artifacts."
+  },
+  "14513ab84d700c52374434ea789eab399b5f536d": {
+    "facing": "model",
+    "id": "skill-building-llm-powered-applications-with-claude",
+    "name": "Skill: Building LLM-powered applications with Claude",
+    "desc": "Main prompt body of the claude-api skill (building LLM-powered applications with Claude), injected at skill invocation."
+  },
+  "dbb7e93e3fe4de6a139992296bf5a88664caac37": {
+    "facing": "model",
+    "id": "data-admin-api",
+    "name": "Data: admin-api",
+    "desc": "claude-api skill reference file (admin-api) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "ce13565cd038787dfa5e8bc293ce2de8c9796cb1": {
+    "facing": "model",
+    "id": "data-http-error-codes-reference",
+    "name": "Data: HTTP error codes reference",
+    "desc": "claude-api skill reference file (HTTP error codes reference) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "66d3436e807cbc04fedc65223f6f9ef8b3111585": {
+    "facing": "model",
+    "id": "skill-model-migration-guide",
+    "name": "Skill: Model migration guide",
+    "desc": "The claude-api skill's model-migration reference (shared/model-migration.md), read by `/claude-api migrate`: per-model breaking changes, behavioral shifts and migration checklists."
+  },
+  "3628e9d4ee1e8802f6c2dba8a23964f47c4c6b56": {
+    "facing": "model",
+    "id": "data-opentelemetry-opentelemetry-tracing-for-the-claude-api",
+    "name": "Data: opentelemetry (OpenTelemetry Tracing for the Claude API)",
+    "desc": "Shared OpenTelemetry guide for the Claude API: SDK vs API tracing, content modes, SDK setup, API destinations, reading traces, token counting and span reference."
+  },
+  "29c3dd30f8d2881b93acfeffcc448c850a89fa42": {
+    "facing": "model",
+    "id": "data-preserved-thinking-migration",
+    "name": "Data: preserved-thinking-migration",
+    "desc": "claude-api skill reference file (preserved-thinking-migration) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "ebcd925337a27cbea431a0000f18f3b94b24daea": {
+    "facing": "model",
+    "id": "data-causes",
+    "name": "Data: causes",
+    "desc": "claude-api skill reference file (causes) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "fda2387378ce88d1f2cde94fe128274c322fec22": {
+    "facing": "model",
+    "id": "data-drop-block-probe-py",
+    "name": "Data: drop_block_probe.py",
+    "desc": "Text asset drop_block_probe.py that Claude Code loads by path from its bundle."
+  },
+  "3b95ea2147abeb4a3fa0091b610494381aef25d6": {
+    "facing": "model",
+    "id": "data-prompt-caching",
+    "name": "Data: prompt-caching",
+    "desc": "claude-api skill reference file (prompt-caching) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "b65e9d8991e1f753b32b45d1987ea62e96568ccd": { "facing": "ui" },
+  "a3b26079053429c4ab8be9c11c0d0338d4ee2add": { "facing": "ui" },
+  "4f44aee294e4b9c447dbf16a4286c608357cbc7f": { "facing": "ui" },
+  "71d02924d9b233a4c8649430b93214071ca2b159": {
+    "facing": "model",
+    "id": "slash-command-exit-worktree-removed-uncommitted-changes",
+    "name": "Slash command: exit worktree removed with uncommitted changes",
+    "desc": "Exit-worktree result when the worktree was removed with no commits but uncommitted changes discarded, plus optional tmux termination note."
+  },
+  "1f4f36271ce5e859fe1101c7f3e5b0b079a0ae89": {
+    "facing": "model",
+    "id": "slash-command-exit-worktree-removed",
+    "name": "Slash command: exit worktree removed",
+    "desc": "Exit-worktree result when the worktree was removed with no commits or uncommitted changes, plus optional tmux termination note."
+  },
+  "2e5d30ad9a5e86eb34f78ac97e4892d67d271b0e": {
+    "facing": "model",
+    "id": "slash-command-exit-worktree-removed-commits",
+    "name": "Slash command: exit worktree removed with commits",
+    "desc": "Exit-worktree result reporting the worktree was removed along with a count of commits on its branch that were discarded."
+  },
+  "74b791f9625d5083f3e034543c3201c422de1888": {
+    "facing": "model",
+    "id": "slash-command-exit-worktree-removed-hook-based",
+    "name": "Slash command: exit worktree removed (hook-based)",
+    "desc": "Exit-worktree result for a WorktreeCreate-hook worktree whose commit count is unknown: worktree removed, with optional discarded-changes and tmux notes."
+  },
+  "c1a89b180c077078787fec32585b6976b33a6092": {
+    "facing": "model",
+    "id": "slash-command-exit-worktree-and-branch-removed",
+    "name": "Slash command: exit worktree and branch removed",
+    "desc": "Exit-worktree result when commit count is unknown for a git worktree: worktree and its branch removed, with optional discarded-changes and tmux notes."
   }
 }
