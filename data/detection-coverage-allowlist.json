@@ -1075,5 +1075,11 @@
     "note": "window-scoped picker description for the fast command",
     "shape": "array",
     "excerpt": "fast Turn fast mode on or off for new sessions from this window (not saved)"
+  },
+  "a5ba962c3d386929": {
+    "verdict": "internal",
+    "note": "SDK control-protocol zod schema description for the MCP tool-call result",
+    "shape": "concat",
+    "excerpt": "MCP tool result — the content array, structuredContent, and _meta from CallToolResult. Unless the request set result_not_for_model, content "
   }
 }

@@ -2028,6 +2028,33 @@ const PLAN_FILE_REF_INJECTION: ReminderInjection = {
   defaultBody:
     'A plan file exists from plan mode at: {{plan_file_path}}\n\nPlan contents:\n\n{{plan_content}}\n\nIf this plan is relevant to the current work and not already complete, continue working on it.',
   apply(content, body, isSuppressed) {
+    // Method 1 (2.1.301+): the path is optional, so pristine picks between a
+    // "plan file exists at …" and a "plan exists" sentence. The path slot is
+    // optional and renders empty rather than "undefined", so a body line that
+    // holds it drops when there is no path.
+    if (
+      matchComposedEntry(content, 'plan_file_reference') &&
+      !simpleEntryPattern('plan_file_reference').test(content)
+    ) {
+      return applySimpleEntry(
+        content,
+        'plan_file_reference',
+        [
+          {
+            placeholder: '${H.planFilePath}',
+            optional: true,
+            resolve: (template, param) => {
+              const expr = slotExpr(template, param, 'planFilePath');
+              return expr ? `${expr}??""` : null;
+            },
+          },
+          propSlot('${H.planContent}', 'planContent'),
+        ],
+        body,
+        isSuppressed
+      );
+    }
+    // Method 2 (<=2.1.300): one flat template, always with a path.
     return findAndReplace(
       content,
       /plan_file_reference:\(([$\w]+)\)=>([$\w]+)\(\[([$\w]+)\(\{content:`A plan file exists from plan mode at: \$\{\1\.planFilePath\}\n\nPlan contents:\n\n\$\{\1\.planContent\}\n\nIf this plan is relevant to the current work and not already complete, continue working on it\.`,isMeta:!0\}\)\]\)/,
