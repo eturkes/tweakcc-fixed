@@ -14,5 +14,9 @@
   "system-prompts-lcc/system-prompt-partial-compaction-instructions::<analysis>": {
     "verdict": "reviewed",
     "why": "The override names both tags itself ('Make that judgment in the <analysis> block; only what you write inside <summary></summary> tags is kept'), and the co-rendered no-tools guard states the reply shape as an <analysis> block followed by a <summary> block."
+  },
+  "system-prompts-lcc/system-prompt-memory-project-skill-upkeep::<name>": {
+    "verdict": "reviewed",
+    "why": "<name> here is a path placeholder in .claude/skills/<name>/SKILL.md, not a reply format. The override deliberately keeps only the verify-skill rule and never asked the model to emit a <name> tag."
   }
 }

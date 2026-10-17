@@ -94004,7 +94004,12 @@
     "name": "Tool Result: Cloud session starts empty notice",
     "desc": "Notice that the cloud session starts empty because the folder is not a git repository, its trust is unconfirmed or no GitHub repository was found"
   },
-  "a0c0fb45acec834f4701c04a9aee44c6717128ba": { "facing": "ui" },
+  "a0c0fb45acec834f4701c04a9aee44c6717128ba": {
+    "facing": "model",
+    "id": "data-cloud-session-bundle-notice-starts-empty",
+    "name": "Data: Cloud session bundle notice starts empty",
+    "desc": "Notice that the cloud session starts empty because nothing from the folder is copied"
+  },
   "7b5b73f67bd06bfb7e2e5f47d0d721ab9791f2d7": { "facing": "ui" },
   "5530753b74dd542c78e50f50fbc3ebcc3779eabc": { "facing": "ui" },
   "46d20152e7dc348d87be96bf4464253d592634b6": { "facing": "ui" },
@@ -125181,5 +125186,1441 @@
     "id": "slash-command-exit-worktree-and-branch-removed",
     "name": "Slash command: exit worktree and branch removed",
     "desc": "Exit-worktree result when commit count is unknown for a git worktree: worktree and its branch removed, with optional discarded-changes and tmux notes."
+  },
+  "4e0defe80f231c5a781d203566fac40d1961a5e6": { "facing": "ui" },
+  "242e24e70af38fce7f55f850191e6fbcae08ba51": { "facing": "internal" },
+  "67ca25010224afee4fa743e3b3648e89a1fed948": { "facing": "internal" },
+  "3dbf8e3b0799c7cc51ee39cbb06bdf8c829eed76": { "facing": "ui" },
+  "8a0674019295dcfd213e011ec17e38cd043104a0": { "facing": "internal" },
+  "258723474e88e1ab7fbc4f3d5027625e215ea22d": { "facing": "internal" },
+  "11d447d44f53e585fd436d04702419438a121551": { "facing": "internal" },
+  "735cc657d4ec9608fe00a62708b7bb2fedb8885d": { "facing": "internal" },
+  "fbc2e465698207fd03870ec40e1b80c65a7409c8": { "facing": "internal" },
+  "f55f76075ecf84d0935c0b50173eecc1a118e907": { "facing": "internal" },
+  "2931c9ee120619e2fe3e2b8f27ceb373d075e7e8": { "facing": "internal" },
+  "9dbbcd9850571e9f4c6fdde9ed0b58aa39953873": { "facing": "ui" },
+  "f93f14869bae424204038832e7154a91b7a19f32": {
+    "facing": "model",
+    "id": "slash-command-feedback-disabled-by-org-policy",
+    "name": "Slash command: feedback disabled by org policy",
+    "desc": "Inner sentence telling that /feedback (or /bug) is disabled by organization policy and where to open an issue instead."
+  },
+  "9a6f7db9c8c31fef26864bb200fe738afd468f56": {
+    "facing": "model",
+    "id": "slash-command-feedback-disabled-issues-public",
+    "name": "Slash command: feedback disabled, issues public note",
+    "desc": "Wrapper that appends the warning that GitHub issues are public, so confidential details should be left out, to the feedback-disabled sentence."
+  },
+  "f04ab8c24500b600e16804d7de750fdbf6002968": { "facing": "internal" },
+  "8acf6b2508387aa021f2dc7a70864b7a2078c961": { "facing": "internal" },
+  "5c7dc40abb80f52908e8c2eab0595a07b7504dc5": { "facing": "internal" },
+  "78bde76709dd54be2aed12b8f99ebd44faa81294": { "facing": "internal" },
+  "cd77c1fc4942ff1d0b3dd5180a826128ea9d1601": { "facing": "internal" },
+  "84fba221d63125b3d826567834f2f985b83e3bf4": { "facing": "internal" },
+  "47c18d0308550dcc51250dba06bf65abc5d5ae15": { "facing": "internal" },
+  "6892f0918eb52ba96a340638ec81ba9466154088": { "facing": "internal" },
+  "13d807dc1046d970e3d14671f652f2e4bbf97f70": { "facing": "internal" },
+  "89e42ef32e3a5ed6cdc82c98b88ee888dd63f29c": { "facing": "internal" },
+  "9e8be1d0e8450854d2fdffcec4cac08c002ccc79": { "facing": "internal" },
+  "d3c6498ddcf9a9c0ddfb42467db979955f1d11c4": { "facing": "internal" },
+  "77dc82258b0726d91836771e954b670c23db3f84": { "facing": "internal" },
+  "8b758178237199623748970318905e83dc78b724": { "facing": "internal" },
+  "a38e9cf429b005bb1d89b6284e36d41d3a867539": { "facing": "internal" },
+  "c0a009b155b2fb07ef2e71b32823ce035a1c94c1": { "facing": "internal" },
+  "ec1330261152adfed42607016dc8bc5f5205c400": {
+    "facing": "model",
+    "id": "tool-result-sandbox-error-message-unreadable",
+    "name": "Tool result: sandbox error message unreadable",
+    "desc": "Fallback error text when a sandbox error's own message cannot be read; it surfaces as the failed command's error."
+  },
+  "768b95d862b31f770a1c535d7d77176cbf0dabe9": { "facing": "internal" },
+  "892cf105e015291c6c4dc450e7bd748671c9a000": { "facing": "internal" },
+  "5a998d790ba3180bd6d1f458071a14ef3afffc22": { "facing": "internal" },
+  "73b623539b19421e7cf9188cccf08cd9231828a1": { "facing": "internal" },
+  "b41f9c9c798720dadcd38bf277a0c6ce36d187d5": { "facing": "ui" },
+  "602fad2fc11eb5da0bbf3326ca89a2f370d91c21": { "facing": "internal" },
+  "7fa142dde686d4da9654e46f38d977c39e5bbb1e": { "facing": "internal" },
+  "f8aa7d6174f50270e4b788102f2fab12abdf8632": { "facing": "internal" },
+  "bb35f09015862c80f1a1ab04678ff8476bb6e122": { "facing": "internal" },
+  "e40a0cec7acea22b53516d34b3ae9f050e0f2702": { "facing": "internal" },
+  "8e87b91ddfe6f5999aeb9bef0321cbc6b1cdb834": { "facing": "internal" },
+  "75d79de135e2db34329973e0aa51929b32dea4a3": { "facing": "internal" },
+  "8779eb304c778683d67d750dccf52878aa812b93": { "facing": "internal" },
+  "118fb7d932fb312c7f5b6ca2a7160437806acb2a": { "facing": "internal" },
+  "2a032d0e563938e03337170cb0349dde37d06e20": { "facing": "internal" },
+  "59286346bc699aff582f7265775151fe18013ff7": { "facing": "internal" },
+  "13552004e19082538c7376b9925841086c86a1bf": { "facing": "internal" },
+  "4dde3d77c8aa32756d646b5ada7d5e1b5b3df4c1": { "facing": "internal" },
+  "ea34eb21468a10a28c4376a104daaef89eab51b5": { "facing": "internal" },
+  "adae9acbcc87201c3f5ba5ecd6fcf962b90ee6f1": { "facing": "ui" },
+  "19f885a2800507850f2174e6162db727ecb627dc": { "facing": "ui" },
+  "16a3b39e7dce6e079888eff241cfbe593c02eaec": {
+    "facing": "model",
+    "id": "system-prompt-cross-session-messages-three-ways",
+    "name": "System prompt: cross-session messages three ways",
+    "desc": "Explains the three ways cross-session messages reach the agent, including the person sending one in this thread."
+  },
+  "8c6f9cb179c1ea21d8fb858c200cd0fc761666e5": {
+    "facing": "model",
+    "id": "system-prompt-cross-session-messages-two-ways",
+    "name": "System prompt: cross-session messages two ways",
+    "desc": "Explains the two ways cross-session messages reach the agent: the coordinator relay and the server read tools."
+  },
+  "2566c8184406aa2a370185cecaed2bd4509ac3a8": {
+    "facing": "model",
+    "id": "slash-command-design-login-standalone-signin-note",
+    "name": "Slash command: design login standalone sign-in note",
+    "desc": "Note in the Design login result that the sign-in is only for standalone Claude Design and expires when standalone closes."
+  },
+  "e671e9a610a9c1e4d9f979163df444ebba88a11e": {
+    "facing": "model",
+    "id": "data-standalone-claude-design-closing-notice",
+    "name": "Data: standalone Claude Design closing notice",
+    "desc": "Shared notice that standalone Claude Design closes by a set date and now lives in Claude."
+  },
+  "8e719beaeae3d98de85483a013661955743f2aa1": {
+    "facing": "model",
+    "id": "system-prompt-worker-tools-context-artifact-types",
+    "name": "System prompt: worker tools context artifact types",
+    "desc": "Coordinator guidance on delegating decks, designs and dashboards as published artifact types rather than .html pages."
+  },
+  "62f7d2322877f13b2cd9bf8079e32c9bb86f2918": {
+    "facing": "model",
+    "id": "tool-result-bash-agent-proxy-allowed-hosts-hint",
+    "name": "Tool result: agent proxy allowed hosts hint",
+    "desc": "Hint on where allowed network domains are configured per plan, appended to agent-proxy failure notes."
+  },
+  "00473742bd9b420c8229eb62daf934a51975a5e3": { "facing": "internal" },
+  "7fa22c8da6bde40c01305fb37a47afcd64f36c81": { "facing": "internal" },
+  "9b9b11a5a221255d6dcbd881231f3c784db438be": { "facing": "internal" },
+  "61ffd19155da44a98d31e5c75302520d4e27e432": { "facing": "internal" },
+  "b75995fb304f216720e4dfdb8e05768d80d5d944": { "facing": "internal" },
+  "b6a0b1c42362842ee2130dbd917282eeaceec324": { "facing": "ui" },
+  "746935146fd2c646892829bef0078d011b7bbfcb": { "facing": "ui" },
+  "fce7e2928b19132a49122af1c6ee6d2a5a01f4c4": { "facing": "ui" },
+  "fd8fa995d9bf8408f9a3bd44711f3d1252b73cda": { "facing": "ui" },
+  "1010b9193c5e9c0e58f8d7f8cf545c5d44006db1": {
+    "facing": "model",
+    "id": "system-reminder-tools-already-available-no-search",
+    "name": "System reminder: tools already available, no search needed",
+    "desc": "Meta message after a ToolSearch telling the model the requested tools are already loaded and can be called directly."
+  },
+  "76f35641d646db4a153015156365558444e6bad6": { "facing": "ui" },
+  "dba90ff3f168951c45fee97342320ecb49e8b579": { "facing": "ui" },
+  "934a341927a3abb81700ae006fb91cc5a6633dc7": {
+    "facing": "model",
+    "id": "tool-result-skill-moved-to-plugin-skill",
+    "name": "Tool result: skill moved to plugin skill",
+    "desc": "Skill tool validation message saying the skill is now a plugin skill and naming the slash command to use."
+  },
+  "3f2d03f6eb1aecdd0244c50ccf0d6636dbf77b9e": {
+    "facing": "model",
+    "id": "tool-result-skill-now-part-of-disabled-plugin",
+    "name": "Tool result: skill now part of disabled plugin",
+    "desc": "Skill tool validation message saying the skill moved into a plugin that is turned off, and pointing to /plugin."
+  },
+  "132ea5e8f8c4e9f1a617352fd86f909f708f11ed": { "facing": "internal" },
+  "5b5d02009aaa5e12f812b46dafc07871bb5f6598": { "facing": "internal" },
+  "2d5773b10060086a64e42450be71aa34c1812855": { "facing": "internal" },
+  "a6fddb298e03754f07a46817e0c6cbd67ee0d0e3": { "facing": "internal" },
+  "aec73b88493de5886c67db5292089d705c1632b3": {
+    "facing": "model",
+    "id": "tool-result-cloud-session-branch-not-on-github-default-branch",
+    "name": "Tool result: cloud session branch not on GitHub",
+    "desc": "Bundle notice that the branch is not on GitHub, so the cloud session starts from the default branch without local commits or changes."
+  },
+  "2e25956c3342af1aa25c2dc898f70a03a190eefa": {
+    "facing": "model",
+    "id": "tool-result-cloud-session-push-branch-start-new-session",
+    "name": "Tool result: cloud session push branch hint",
+    "desc": "Suffix advising to push the branch and start a new session to use it."
+  },
+  "6ea2d5929797fcb4bc625668924f93dd787d893e": {
+    "facing": "model",
+    "id": "tool-result-cloud-session-start-newest-commit-remote-has",
+    "name": "Tool result: cloud session starts from newest commit remote has",
+    "desc": "Fragment naming the newest commit beneath HEAD that the remote has, and how far back it is."
+  },
+  "48b9eb58548db10240e6778e4f06477f88c1b05a": {
+    "facing": "model",
+    "id": "tool-result-cloud-session-start-pushed-commit-beneath",
+    "name": "Tool result: cloud session starts from pushed commit beneath",
+    "desc": "Fragment naming a pushed commit beneath HEAD and how far back it is."
+  },
+  "2add3f8fb3e29d5ce4a152790b5b10897b9e2c3b": {
+    "facing": "model",
+    "id": "tool-result-cloud-session-start-newest-pushed-commit-beneath",
+    "name": "Tool result: cloud session starts from newest pushed commit",
+    "desc": "Fragment naming the newest pushed commit beneath HEAD and how far back it is."
+  },
+  "2fee85640c0d67d03b1615b22c17b7c40a2c079e": {
+    "facing": "model",
+    "id": "tool-result-cloud-session-changes-stay-on-machine",
+    "name": "Tool result: cloud session changes stay on machine",
+    "desc": "Trailer saying which commits and uncommitted changes stay on this machine, with an optional push hint."
+  },
+  "f289f870ec763e1e95acdd7f786fa6dc6a87d6cf": {
+    "facing": "model",
+    "id": "tool-result-cloud-session-commits-remote-lacks-stay-local",
+    "name": "Tool result: cloud session commits remote lacks stay local",
+    "desc": "Trailer arm saying the commits the remote lacks, plus uncommitted changes, stay on this machine."
+  },
+  "f35bcb281e296d32443cc614a2a5798afd20b5e6": { "facing": "internal" },
+  "d146d7d1144e3ad1bc3757ad089479cb1411351f": { "facing": "internal" },
+  "476fa886e36806fae283b8c37de515244c939306": {
+    "facing": "model",
+    "id": "task-notification-ultraplan-not-from-local-project",
+    "name": "Task notification: ultraplan not from local project",
+    "desc": "Meta task notification telling the model the ultraplan cloud session did not start from the local project and to wait for the user."
+  },
+  "e1b03110ccbba8a2be18d3c026ae7ab3e39d7a2f": {
+    "facing": "model",
+    "id": "tool-result-enterworktree-locked-by-other-session",
+    "name": "Tool result: EnterWorktree locked by other session",
+    "desc": "EnterWorktree error when the worktree belongs to another running Claude Code session."
+  },
+  "4599e86dde6d9244945fdb03727fa35cba34a85d": { "facing": "internal" },
+  "e7f4de6f2516232845179400d4ef10bd561d0485": { "facing": "internal" },
+  "f8e4c1ccbd305be6a90b97106dec7847324b5b83": {
+    "facing": "model",
+    "id": "system-prompt-guide-agent-no-answer-report-issue",
+    "name": "System prompt: guide agent no-answer report issue",
+    "desc": "Guide agent instruction to direct the user to report an issue when no answer or feature exists (variant used where /feedback is unavailable)."
+  },
+  "a51dfd16242e974e348b8bc40d2efe3c4e1a4951": { "facing": "internal" },
+  "223d6b448dd1059f2cd0b830b1793016c3be858e": {
+    "facing": "model",
+    "id": "tool-result-mcp-server-refused-by-plugin",
+    "name": "Tool result: MCP server refused by plugin",
+    "desc": "MCP tool error when the providing plugin refused the call; says to retry once and treat a second refusal as the server being off."
+  },
+  "c82995388365d4acbb076c94d5077ab90c0a16c3": {
+    "facing": "model",
+    "id": "tool-result-pretooluse-hook-did-not-finish",
+    "name": "Tool result: PreToolUse hook did not finish",
+    "desc": "Blocking error when a PreToolUse hook failed or did not finish, so the call was not run, followed by advice."
+  },
+  "5184a1b10c65177efd7d463cccd1462846021421": { "facing": "internal" },
+  "46ea1d15aa686d924cd471cac0c6978ae70ec6f9": {
+    "facing": "model",
+    "id": "tool-result-read-image-file-too-large",
+    "name": "Tool result: Read image file too large",
+    "desc": "Read tool error when a file is over the image read limit, suggesting resizing or exporting a smaller copy."
+  },
+  "45137f323ffb4cd5c7e81678ee12043bce131ac0": {
+    "facing": "model",
+    "id": "tool-result-read-image-stream-over-limit",
+    "name": "Tool result: Read image stream over limit",
+    "desc": "Read tool error when a pipe or device sent more than the image read limit without ending."
+  },
+  "570e5495892a91536342f51e1db4925a86020036": {
+    "facing": "model",
+    "id": "tool-description-agent-fork-keeps-output-out-of-context",
+    "name": "Tool description: Agent fork keeps output out of context",
+    "desc": "Agent tool prompt note that a fork keeps its tool output out of context, and a fork should execute directly."
+  },
+  "88e3991374e52d3cdac5cdd297fe69ddf1dc5df3": { "facing": "internal" },
+  "103a4d4fcb44c906cb968a776f6b4626d97bedc6": { "facing": "internal" },
+  "102e71e9308365dd7c2b50cecd15cbe8e94dab3d": { "facing": "internal" },
+  "f86cac300bea682ccbd4776b70ca4796d5bb75b3": {
+    "facing": "model",
+    "id": "system-reminder-mcp-servers-need-auth-authorize-via-mcp",
+    "name": "System reminder: MCP servers need auth, authorize via",
+    "desc": "Fragment naming how to authorize claude.ai connectors versus other servers in the needs-auth reminder."
+  },
+  "a7f071d8e49420168b261d430fffe0cb66d44253": {
+    "facing": "model",
+    "id": "system-reminder-mcp-servers-reserved-address-refused",
+    "name": "System reminder: MCP servers reserved address refused",
+    "desc": "Reminder that configured MCP servers are refused because Claude Code reserves their address, with guidance on what to tell the user."
+  },
+  "aeb4576bbec8533cb166e82c5d8c22ab1eb546d1": { "facing": "internal" },
+  "1e94b5700ceaeb07b89f5bc84088fd32df303dbe": { "facing": "internal" },
+  "6fea01a9f9957ff0603ec677dedb5a24b666f192": {
+    "facing": "model",
+    "id": "tool-result-artifact-publish-copies-left-out-rest-saved",
+    "name": "Tool result: artifact publish copies left out, rest saved",
+    "desc": "Artifact publish result saying some copied files were left out while the other files were saved, and how to handle references to them."
+  },
+  "68084692e76ff8324f0e49195d16afc0e7796d8e": {
+    "facing": "model",
+    "id": "tool-result-artifact-publish-nothing-published-copies-left-out",
+    "name": "Tool result: artifact publish nothing published, copies left out",
+    "desc": "Lead clause stating nothing was published because the server left out copied files."
+  },
+  "62ad138b0883c76cd40db8906baee9fcb5a387dc": {
+    "facing": "model",
+    "id": "tool-result-artifact-publish-left-out-removes-files",
+    "name": "Tool result: artifact publish left out, removes files",
+    "desc": "Publish refusal explaining that publishing without the left-out copies could remove a file they were meant to replace."
+  },
+  "7abb3d700889baf5d1e182261c4a485deb30c6c6": {
+    "facing": "model",
+    "id": "tool-result-artifact-publish-left-out-replaces-files",
+    "name": "Tool result: artifact publish left out, replaces files",
+    "desc": "Publish refusal for a full-replace publish whose left-out copies could delete existing files."
+  },
+  "54a226ea78d5327fa8ce6ad39977c80c552027e2": {
+    "facing": "model",
+    "id": "tool-result-artifact-publish-left-out-no-other-file",
+    "name": "Tool result: artifact publish left out, no other file",
+    "desc": "Publish refusal when nothing else in the publish would change the artifact; resend only when the reason no longer applies."
+  },
+  "6bb2db92771721c7142d565fe594157cf320c0f5": {
+    "facing": "model",
+    "id": "tool-result-artifact-publish-left-out-copy-entry",
+    "name": "Tool result: artifact publish left-out copy entry",
+    "desc": "Per-file entry listing a left-out copy, its source artifact and the reason."
+  },
+  "2de29397c71c4569544bb6302948a82502d0e4d7": {
+    "facing": "model",
+    "id": "system-prompt-agent-summary-generation",
+    "name": "System prompt: agent summary generation",
+    "desc": "Prompt asking for a 3-5 word present-tense description of the agent's latest action, with good and bad examples."
+  },
+  "8f454e4288a1e9e4b847dd8403f45696427296f8": {
+    "facing": "model",
+    "id": "system-prompt-agent-summary-previous-label",
+    "name": "System prompt: agent summary previous label",
+    "desc": "Line quoting the previous summary and asking for something new or to keep it if still accurate."
+  },
+  "b28e4b29140ba5b72618494ebcf15e0e6bfaa1ba": {
+    "facing": "model",
+    "id": "system-prompt-agent-summary-keep-if-still-doing",
+    "name": "System prompt: agent summary keep if still doing",
+    "desc": "Background-agent variant telling the labeler to keep the previous label if still accurate, otherwise say what is new."
+  },
+  "3d329de1df77e14a6a0d4f49a51d47fc2aa1a72c": {
+    "facing": "model",
+    "id": "system-prompt-agent-progress-label-writer",
+    "name": "System prompt: agent progress label writer",
+    "desc": "System prompt for writing a 3-5 word progress label for a background agent from escaped notes, treating notes as data."
+  },
+  "b097663f72f540181fefb2c60b1c0b5bb1e0ec22": {
+    "facing": "model",
+    "id": "system-prompt-agent-progress-label-language",
+    "name": "System prompt: agent progress label language",
+    "desc": "Instruction to write the progress label in the configured language, keeping technical terms intact."
+  },
+  "70d5bfc5b6a059e235b974053488969101167a11": {
+    "facing": "model",
+    "id": "system-prompt-agent-progress-label-predominant-language",
+    "name": "System prompt: agent progress label predominant language",
+    "desc": "Instruction to write the progress label in the notes' predominant language when no language is configured."
+  },
+  "b3719a201169879a8eefe81dc68feb62c6fd2a76": { "facing": "internal" },
+  "76440fb9efd78c6e7dfbbe0857a47ba59204012a": {
+    "facing": "model",
+    "id": "tool-result-entered-worktree",
+    "name": "Tool result: entered worktree",
+    "desc": "EnterWorktree result for a pinned-cwd session saying the working directory and write access now point at the worktree."
+  },
+  "e9b828450e36b73b79c7f327da1406cd6639e1da": {
+    "facing": "model",
+    "id": "tool-result-enterworktree-use-exitworktree-to-leave",
+    "name": "Tool result: EnterWorktree use ExitWorktree to leave",
+    "desc": "Trailer telling the model to use ExitWorktree to leave mid-session or exit to be prompted."
+  },
+  "ea568f7da066696dcb93818c2962fb7badc655e7": {
+    "facing": "model",
+    "id": "tool-result-enterworktree-now-working-message",
+    "name": "Tool result: EnterWorktree now working message",
+    "desc": "EnterWorktree result stating the worktree was created or entered and the session now works in it."
+  },
+  "9e63c5e9e7aa4e3ae94e5a36f36b2e98338cc2bc": {
+    "facing": "model",
+    "id": "tool-result-exitworktree-original-missing",
+    "name": "Tool result: ExitWorktree original missing",
+    "desc": "ExitWorktree note that the original directory is gone and where the session now is."
+  },
+  "da0ce1bba546fb25290d126eb3e2f59e443dc4f7": {
+    "facing": "model",
+    "id": "tool-result-exitworktree-session-is-now-back-in",
+    "name": "Tool result: ExitWorktree session back in",
+    "desc": "ExitWorktree note that the session is back in the original directory."
+  },
+  "6c2561116875ae0c2fcc6d4b87ec1df990085acd": {
+    "facing": "model",
+    "id": "tool-result-exitworktree-not-owner",
+    "name": "Tool result: ExitWorktree not owner",
+    "desc": "ExitWorktree validation error refusing to remove a worktree this session does not own."
+  },
+  "0f387e30ce3a0dcaeaf3ff07a2f9d1e3562c67e1": {
+    "facing": "model",
+    "id": "tool-result-exitworktree-verify-failed",
+    "name": "Tool result: ExitWorktree verify failed",
+    "desc": "ExitWorktree validation error when worktree state cannot be verified, requiring discard_changes or keep."
+  },
+  "9d8037b70cfbccf3c3521de5211fc9abab4e299d": {
+    "facing": "model",
+    "id": "tool-result-exitworktree-unmerged-commit-count",
+    "name": "Tool result: ExitWorktree unmerged commit count",
+    "desc": "Fragment counting commits on the worktree branch inside the uncommitted-work refusal."
+  },
+  "96922b858d356b0a72b2755dac2ef60aab2305cf": {
+    "facing": "model",
+    "id": "tool-result-exitworktree-kept-work-preserved",
+    "name": "Tool result: ExitWorktree kept, work preserved",
+    "desc": "ExitWorktree keep result saying where the work is preserved, plus directory and tmux notes."
+  },
+  "de2d880a47586eaec2bf5be7467022f12859f67d": {
+    "facing": "model",
+    "id": "tool-result-worktree-tmux-running",
+    "name": "Tool result: worktree tmux still running",
+    "desc": "Note that the tmux session is still running and how to reattach."
+  },
+  "283ff5f1f22e655061f36b299301614948d32fa7": {
+    "facing": "model",
+    "id": "tool-result-exitworktree-could-not-remove",
+    "name": "Tool result: ExitWorktree could not remove",
+    "desc": "ExitWorktree result when removal failed and the worktree was kept."
+  },
+  "d2236b538b1a2bde624178685322fd98957cdbb3": { "facing": "internal" },
+  "785ac4f8740f5b1110d060b926ee3dc150063f95": { "facing": "ui" },
+  "8fa061746a194b9671e6e4e6fb5da5e77025bcf0": { "facing": "ui" },
+  "4119cd0b5affac64ba7d469f5bea165318ccfed0": { "facing": "ui" },
+  "d4e013597550801722512892c51c8c8403d6a41e": { "facing": "ui" },
+  "6e28eded75dcd7fa585db01e105162daf12ff856": { "facing": "internal" },
+  "692bf461f435d20a055a44de0893172428d72e30": { "facing": "internal" },
+  "cac1b8278ea9aefb33f98e490d4fb457b16510ac": {
+    "facing": "model",
+    "id": "tool-description-artifact-dashboard-kinds",
+    "name": "Artifact Dashboard Kinds Phrase",
+    "desc": "Shared phrase (qpr/DASHBOARD_KINDS) naming dashboard-like requests, interpolated into the Artifact tool description and the quickstart dashboard-type suggestion."
+  },
+  "3c1b3cdce4f57844adca55453ff0a8aa7c75429c": {
+    "facing": "model",
+    "id": "tool-description-artifact-dashboard-kinds-entry",
+    "name": "Artifact Dashboard Kinds Entry",
+    "desc": "Dashboard-kinds entry (sit/DASHBOARD_KINDS_ENTRY) with its parenthetical scope, interpolated into the Artifact tool's quickstart/list_types trigger lists."
+  },
+  "8b1b8c031fe24af4641e86535d32f4023d22e68b": {
+    "facing": "model",
+    "id": "skill-design-sync-tell-user-preamble",
+    "name": "Design Sync Tell-User Preamble",
+    "desc": "Opening line of the /design-sync skill prompt telling the model to relay a fixed notice to the user verbatim before continuing."
+  },
+  "2eeb779e87f0976f2d96a79acf03919f5e2a4b9d": { "facing": "ui" },
+  "e5315abfe075af6d953b8943b9c04d26d851afe6": { "facing": "ui" },
+  "295e58358fdb73432ddfc5275af03027c3d88bcc": { "facing": "ui" },
+  "19b8b1d0ac844f3ab2bfc86df9020e50bafbe7a1": {
+    "facing": "model",
+    "id": "slash-command-restart-refused-version-on-hold",
+    "name": "/restart Refused: Version On Hold",
+    "desc": "/restart refusal when the installed version is above the allowed max (on hold), so the session stays on the running version."
+  },
+  "b710b3030d34450cfe260a6d7786fdf8c6b81d9c": { "facing": "internal" },
+  "f4ad9bc5903c75770654a5a227e93ae70cdb1738": {
+    "facing": "model",
+    "id": "tool-result-fs-file-call-failed",
+    "name": "Filesystem File Call Failed Error",
+    "desc": "Error message thrown by the native file backend when a file syscall fails; surfaces as the error text of the tool call that hit it."
+  },
+  "7483ed74914f1c295c4ed7c427c5b9b5aa351a2b": {
+    "facing": "model",
+    "id": "slash-command-design-consent-record-failed-cloud-session",
+    "name": "/design Consent Failed (Cloud Session)",
+    "desc": "/design consent error returned in a cloud session when recording Design agent access fails."
+  },
+  "f883ecc4909787e34550fc913f27f31260b4a95a": {
+    "facing": "model",
+    "id": "slash-command-design-revoke-failed-cloud-session",
+    "name": "/design Revoke Failed (Cloud Session)",
+    "desc": "/design revoke error returned in a cloud session when revoking Design agent access fails."
+  },
+  "f7e593a3d313cb6bf944a5ebeee2be0fb9f3a433": {
+    "facing": "model",
+    "id": "data-design-consent-access-granted",
+    "name": "Design Consent Access Granted",
+    "desc": "/design consent success text, now followed by a fixed notice slot."
+  },
+  "a80bab289bd6dfbe90996dfda55a2e4045ad8e2c": { "facing": "internal" },
+  "ebeebf990e121adb11683b9503db7f21685a4ef8": { "facing": "internal" },
+  "ae25f4cd6c2d333c04e15277832be4777275d24b": {
+    "facing": "model",
+    "id": "tool-result-artifact-resend-judged-by-file-clause",
+    "name": "Artifact Resend Judged By File Clause",
+    "desc": "Clause appended to Artifact identical-resubmission refusals noting a resend is judged by the file alone, not its edits."
+  },
+  "e960511c566075b974f2ca64f50be049d13c7494": {
+    "facing": "model",
+    "id": "tool-result-artifact-identical-resubmission-resent-unchanged",
+    "name": "Artifact Identical Resubmission Resent Unchanged",
+    "desc": "Artifact publish refusal: identical content already refused, resent unchanged."
+  },
+  "83bfefcb95ed1df239c62dcdfc0df5f69e6300ad": {
+    "facing": "model",
+    "id": "tool-result-artifact-identical-resubmission-unviewed",
+    "name": "Artifact Identical Resubmission Unviewed",
+    "desc": "Artifact refusal: the newer version still does not count as viewed, so the content/publish was not reconsidered."
+  },
+  "00dff9dbae56d3af991389f5229bdee74991ba4d": {
+    "facing": "model",
+    "id": "tool-result-artifact-identical-resubmission-unviewed-publish-arm",
+    "name": "Artifact Unviewed Refusal Publish Arm",
+    "desc": "Publish-mode arm of the unviewed identical-resubmission refusal (no edits applied; file already refused)."
+  },
+  "94e824d9824a294327e8905d3ba295ac8abec30f": {
+    "facing": "model",
+    "id": "tool-result-artifact-identical-resubmission-unviewed-content-arm",
+    "name": "Artifact Unviewed Refusal Content Arm",
+    "desc": "Content-mode arm of the unviewed identical-resubmission refusal (content already refused against it)."
+  },
+  "373141fc572df0748088dc861478c4b5fafad337": {
+    "facing": "model",
+    "id": "tool-description-artifact-known-version-resubmission-guidance",
+    "name": "Artifact Known-Version Resubmission Guidance",
+    "desc": "Guidance after an Artifact refusal to merge edits onto the named version's source and publish the merged result, with the refetch-confirm clause slotted in."
+  },
+  "4071dd499b8adb8fdbf1f45006c8b27bc923b23b": {
+    "facing": "model",
+    "id": "tool-result-artifact-resubmission-refetch-confirm-clause",
+    "name": "Artifact Resubmission Refetch-Confirm Clause",
+    "desc": "Shared clause (Tn) telling the model to refetch the artifact URL to confirm a version is viewed before publishing again."
+  },
+  "33ea15950900e66e689cd1473164664c03a09f71": {
+    "facing": "model",
+    "id": "tool-result-artifact-merge-version-lines-into-file",
+    "name": "Artifact Merge Version Lines Into File",
+    "desc": "File-mode guidance after an Artifact refusal: merge the version's lines into the file with Edit or Write, then send the publish again."
+  },
+  "a3e655128572356c203a921d6db0b04ad0284a34": {
+    "facing": "model",
+    "id": "tool-result-artifact-resend-without-version-lines-clause",
+    "name": "Artifact Resend Without Version Lines Clause",
+    "desc": "Clause (Cn) telling the model to resend the publish without pairs that add the version's lines, old_str copied from the merged file."
+  },
+  "8f2bd63cd368e65305523cce22d88a60e447a0a7": {
+    "facing": "model",
+    "id": "tool-result-artifact-seen-same-turn-content-advice",
+    "name": "Artifact Seen-Same-Turn Content Advice",
+    "desc": "Advice after a same-turn live-version refusal (content mode): publish again next turn if it includes the changes, else merge first."
+  },
+  "e7fb87fc71466a6b8608bd40105ff97953674346": {
+    "facing": "model",
+    "id": "tool-result-artifact-seen-same-turn-file-advice",
+    "name": "Artifact Seen-Same-Turn File Advice",
+    "desc": "Advice after a same-turn live-version refusal (file mode): send the publish again next turn if the file holds the changes, else merge with Edit or Write."
+  },
+  "e983932115112ef259eb4394726ec3e3b77e2d2e": {
+    "facing": "model",
+    "id": "tool-result-artifact-sourceless-file-merge-advice",
+    "name": "Artifact Sourceless File Merge Advice",
+    "desc": "File-mode advice in a sourceless Artifact refusal: merge anything missing into the file, else send the publish again."
+  },
+  "2d79443be7bc0d8022d11d37bc028112aac13094": { "facing": "ui" },
+  "06cb7f85cf71b8288b964a51ab7257dc2524805f": { "facing": "ui" },
+  "fc31b488ca30b1cbb1531fd428ec9833be0e4fb4": {
+    "facing": "model",
+    "id": "tool-result-artifact-stale-guard-merge-into-file-itself",
+    "name": "Artifact Stale Guard Merge Into File Itself",
+    "desc": "File-mode Artifact stale-guard instruction to merge what follows into the file itself and resend the same publish, old_str from the merged file."
+  },
+  "1f0d6f80ae285c07d7ec7aafc46a05c4a90ad3d5": {
+    "facing": "model",
+    "id": "tool-result-artifact-stale-guard-edits-not-applied-merge",
+    "name": "Artifact Stale Guard Edits Not Applied",
+    "desc": "File-mode Artifact stale-guard note that no edits were applied and the file at file_path is unchanged."
+  },
+  "cdd3c80798454c0505cee6bd9bc21bd0c46e2345": {
+    "facing": "model",
+    "id": "tool-result-artifact-stale-guard-autoread-header",
+    "name": "Artifact Stale Guard Auto-Read Header",
+    "desc": "Header of the Artifact stale-guard refusal that auto-reads the live version: it now counts as viewed, merge guidance, then the live content."
+  },
+  "fd4ca3aae02ee97a7260f23b1888150314507f31": {
+    "facing": "model",
+    "id": "tool-result-artifact-stale-guard-autoread-file-merge-arm",
+    "name": "Artifact Auto-Read File Merge Arm",
+    "desc": "File-mode arm of the auto-read header: carry its lines into the file with Edit or Write, then resend."
+  },
+  "1c17316e85ebd836ccdc92fd782b9c11b1d2f2e3": {
+    "facing": "model",
+    "id": "tool-result-artifact-stale-guard-autoread-content-arm",
+    "name": "Artifact Auto-Read Content Arm",
+    "desc": "Content-mode arm of the auto-read header: publish again, do not resend previous content unchanged."
+  },
+  "0843cd89883efbb080fb274df31dd98d10bf233b": {
+    "facing": "model",
+    "id": "tool-result-artifact-end-of-live-content-merge-reminder",
+    "name": "Artifact End Of Live Content Reminder",
+    "desc": "Trailer after the inlined live content in an Artifact stale-guard refusal, telling the model to merge and publish again."
+  },
+  "3b0317e64e46191a1e140948b29ffdba2221b609": {
+    "facing": "model",
+    "id": "tool-description-artifact-stale-publish-line-diff-guidance",
+    "name": "Artifact Stale Publish Line Diff Guidance",
+    "desc": "Artifact stale-guard refusal showing the live page as a line diff, with merge instructions for file and content modes."
+  },
+  "d66d5b3c8aa85c1c98548dd67a76ca7bb6a89ed5": {
+    "facing": "model",
+    "id": "tool-result-artifact-stale-diff-file-merge-arm",
+    "name": "Artifact Stale Diff File Merge Arm",
+    "desc": "File-mode arm of the line-diff guidance: carry the live page's lines into the file with Edit or Write, then resend."
+  },
+  "4af6dd47cf8a98ab718a89ace38ff92ccb1788c8": {
+    "facing": "model",
+    "id": "tool-result-artifact-identical-resubmission-resend-without-pairs",
+    "name": "Artifact Unviewed Resend Without Pairs",
+    "desc": "File-mode action in uis unviewed refusal: send the publish again without pairs that add the version's lines."
+  },
+  "1aea5234b44007f86116ff7fd6de6fa2d40baf2c": {
+    "facing": "model",
+    "id": "tool-result-artifact-identical-resubmission-merge-guidance",
+    "name": "Artifact Identical Resubmission Merge Guidance",
+    "desc": "Guidance in the unviewed refusal: merge from the saved copy and publish, or refetch the URL to confirm when the file already has the content."
+  },
+  "5d50631efa77e72fbee488d5cb297d2191564c7b": {
+    "facing": "model",
+    "id": "tool-result-artifact-identical-resubmission-refetch-arm",
+    "name": "Artifact Unviewed Refetch Arm",
+    "desc": "Else-arm of k038: refetch the artifact URL to confirm, then send/publish again once that result arrives."
+  },
+  "38a27243446e2daf70768db98d63be4272bbf250": { "facing": "internal" },
+  "03718cccdbb5a2dcb2134998d0048cd1d41ce807": {
+    "facing": "model",
+    "id": "tool-description-artifact-dashboard-type-respelling",
+    "name": "Artifact Dashboard Type Respelling",
+    "desc": "Respelling spliced into the Artifact tool description so 'apps, sites, dashboards and games' points data dashboards to the Dashboard Artifact type."
+  },
+  "e61ee74aaff78baf8f6937e04ac9d60332bf81b8": { "facing": "internal" },
+  "5e5cfe2d174ae8a2143df46531155965bf72cc92": { "facing": "internal" },
+  "1a1f92542b6d12523a7107ffc3c586d822cc3cb2": {
+    "facing": "model",
+    "id": "tool-description-artifact-hand-written-dashboard-respelling",
+    "name": "Artifact Hand-Written Dashboard Respelling",
+    "desc": "Respelling that turns 'a dashboard's numbers' into 'a hand-written dashboard's numbers' in the Artifact database guidance."
+  },
+  "d8f88cec67c9b7bb3bbae0ca7bfb9ec888a2b084": {
+    "facing": "model",
+    "id": "tool-result-agent-resume-forked-skill-hidden-behind-plugin",
+    "name": "Agent Resume Forked Skill Hidden Behind Plugin",
+    "desc": "Agent resume refusal when the forked skill is now hidden behind a plugin, with the reason."
+  },
+  "f205d3f7720449edfce70e047e82a3071302f593": {
+    "facing": "model",
+    "id": "tool-result-agent-resume-stop-state-unreadable",
+    "name": "Agent Resume Stop State Unreadable",
+    "desc": "Agent resume refusal clause: the agent's saved state cannot be read, so whether the user stopped it is unknown."
+  },
+  "03c81e069df75a49d7a80dc848bec0c67cabccdc": {
+    "facing": "model",
+    "id": "tool-result-agent-resume-stop-state-retry-arm",
+    "name": "Agent Resume Stop State Retry Arm",
+    "desc": "Retryable arm of the stop-state-unreadable refusal: send the message again in a moment."
+  },
+  "83e82ea257c0741caffbf8647569aa23c1563c54": { "facing": "ui" },
+  "3ba6e35357b4842372eef4a8e025813f15af55d5": { "facing": "internal" },
+  "5858276e2b6d77c5906060a23db107ff17ecad70": { "facing": "ui" },
+  "dc504e03d4d4faefa483ad5fa8a5d44ff11fc820": {
+    "facing": "model",
+    "id": "tool-description-artifact-quickstart-dashboard-type-suggestion",
+    "name": "Artifact Quickstart Dashboard Type Suggestion",
+    "desc": "Quickstart result suggestion to start dashboards from the Dashboard type via type_url."
+  },
+  "b334e84d1c77f76dde2d98e28b1a487a9ed32a63": {
+    "facing": "model",
+    "id": "system-reminder-projects-reply-gate-reply-errored",
+    "name": "Projects Reply Gate: Reply Errored",
+    "desc": "Projects reply-gate bounce when the reply tool call errored."
+  },
+  "1d99c19a1f44542bc20b4fcfd6b9d66a10c4a28a": {
+    "facing": "model",
+    "id": "system-reminder-tool-hosts-correction-failed-code",
+    "name": "Tool Hosts Correction: Failed Code",
+    "desc": "Tool-hosts correction reminder when the remote machine reports a failure code."
+  },
+  "6dca12464094985a064f547ebc5cc78fbc01e0da": { "facing": "internal" },
+  "26406539af72a0195d261b45ecdceb88e47412cd": { "facing": "internal" },
+  "d18754d9d3140b68f2ea28b8e0b2885da593775b": { "facing": "ui" },
+  "eb356d2ead0e47f93eb4eec496a7968a33e05a6e": { "facing": "ui" },
+  "4a38cec2696a103ddd6b6b3a5f76b24def7d3511": { "facing": "ui" },
+  "132511a4127bf15dd9dad3b80ec53f0c2bb43e77": {
+    "facing": "model",
+    "id": "skill-claude-test-login-changed",
+    "name": "Claude Test Login Changed",
+    "desc": "Claude Test command prompt text when the login or plan changed since the browser helper started."
+  },
+  "1b734b3eef3319486242f19cec56a8af04d4de9b": {
+    "facing": "model",
+    "id": "skill-claude-test-not-offered",
+    "name": "Claude Test Not Offered",
+    "desc": "Claude Test command prompt text when Claude Test is not available in the session."
+  },
+  "22e1b475f12f2cbc59c9edff7febb62738dde377": {
+    "facing": "model",
+    "id": "skill-claude-test-own-agent-not-listed",
+    "name": "Claude Test Agent Not Listed",
+    "desc": "Claude Test command prompt text when its test agent could not be started in the session."
+  },
+  "95572fa96486b2a8ff1c534c0dd13c75ad3753ac": { "facing": "ui" },
+  "cab0ffbaf4be45103376ba20c315b7ce4aae79e0": { "facing": "ui" },
+  "83525658160fd9573e884bce30d6fb222e87bc6b": {
+    "facing": "model",
+    "id": "skill-claude-test-watch-failed",
+    "name": "Claude Test Watch Failed",
+    "desc": "Claude Test command prompt text when it could not check the Claude Code login."
+  },
+  "adbb1e04e21d88f0e2f0c7e18586397ebf69d942": { "facing": "internal" },
+  "b44500ec93efe64113af8edada479540cc4ea0e0": { "facing": "internal" },
+  "0650816fb82e7dceaf87b0b38a310b47ee553742": { "facing": "internal" },
+  "e67c271e9cfc4e7857d1d96da7e99bf8010a1954": { "facing": "internal" },
+  "a040315d0fc137a949789e2302b8d94abe47f430": { "facing": "internal" },
+  "a2681fde846f55e5b143f2a18519b8def51310a0": {
+    "facing": "model",
+    "id": "skill-claude-code-help-recent-releases",
+    "name": "Claude Code Help: Recent Releases",
+    "desc": "Recent-releases section of the claude-code help skill's Current Build block, listing the latest release notes and running version."
+  },
+  "5601e7b405d2b5a00c3699cca186ff1a42debcc3": { "facing": "internal" },
+  "9bcb12e3821c290e34563defa88dee7f7a251e2a": {
+    "facing": "model",
+    "id": "tool-result-mcp-server-headers-helper-credential-rejected-new-task",
+    "name": "MCP HeadersHelper Rejected (New Task)",
+    "desc": "MCP tool error when the server rejects the headersHelper credential, in hosts where the fix is starting a new task or chat."
+  },
+  "b59f571b006ecbb8347ba436da51a72ac1609d5d": {
+    "facing": "model",
+    "id": "tool-result-mcp-server-headers-helper-credential-rejected",
+    "name": "MCP HeadersHelper Credential Rejected",
+    "desc": "MCP tool error when the server rejects the headersHelper credential; run /mcp to reconnect."
+  },
+  "a045103aaa8d973be8f95f2cfd9544618688ba87": {
+    "facing": "model",
+    "id": "tool-result-mcp-server-config-authorization-header-rejected-new-task",
+    "name": "MCP Authorization Header Rejected (New Task)",
+    "desc": "MCP tool error when the configured Authorization header is rejected, in hosts where the fix is starting a new task or chat."
+  },
+  "c11ac321ddf36a05113d7e998935b0e8e842e039": {
+    "facing": "model",
+    "id": "tool-result-mcp-server-config-authorization-header-rejected",
+    "name": "MCP Config Authorization Header Rejected",
+    "desc": "MCP tool error when the configured Authorization header is rejected; update it and run /mcp."
+  },
+  "63cd2c19dbcb15017dbc9451cd316c6d4be3badc": { "facing": "internal" },
+  "3952fde6b7978dc2181e242f283479e318808909": { "facing": "ui" },
+  "e0f99bd17f2ec8f240b8cbfff2089a4d4d4d3918": { "facing": "ui" },
+  "627bbfe76bf93e4f26a78fa4be3d9ab0aa868ce0": {
+    "facing": "model",
+    "id": "slash-command-resume-attached-to-remote-session",
+    "name": "/resume Refused While Attached Remotely",
+    "desc": "/resume result when the terminal is attached to a remote session, telling the user to exit and run claude --resume."
+  },
+  "05df4a5d7b830e9116284f189cf04a854c66d43c": { "facing": "ui" },
+  "ed392163cbca55e12b2ae03221840dca9499428a": {
+    "facing": "model",
+    "id": "tool-result-mcp-skill-server-not-connected-new-task",
+    "name": "MCP Skill Server Not Connected (New Task)",
+    "desc": "Error loading an MCP skill when its server is no longer connected, in hosts where the fix is starting a new task or chat."
+  },
+  "3daff70567e7eff0a7ff503dc6d812ce9decbb1f": {
+    "facing": "model",
+    "id": "tool-result-mcp-skill-no-longer-served",
+    "name": "MCP Skill No Longer Served",
+    "desc": "Error when an MCP skill is no longer served by its server in this session, plus a refresh hint."
+  },
+  "cb9e0efcfe47b57191e3ea1bdf127673838e5cb5": {
+    "facing": "model",
+    "id": "tool-result-mcp-skill-read-failed",
+    "name": "MCP Skill Read Failed",
+    "desc": "Error when reading an MCP skill's SKILL.md failed, plus a retry hint."
+  },
+  "b316a6c0719879365e44ca84fd6f63ea6c0d5d7c": {
+    "facing": "model",
+    "id": "tool-result-mcp-skill-entry-refresh-failed",
+    "name": "MCP Skill Entry Refresh Failed",
+    "desc": "Error when asking the MCP server for a skill's current entry failed, plus a retry hint."
+  },
+  "add319dac475a285587f501f30abb221ef32aa3d": {
+    "facing": "model",
+    "id": "tool-result-mcp-skill-no-longer-served-by-server",
+    "name": "MCP Skill No Longer Served By Server",
+    "desc": "Error when the MCP server reports it no longer serves the skill, plus a refresh hint."
+  },
+  "db1e558ac22fc93b54483973e0b09c3b1ed8326c": {
+    "facing": "model",
+    "id": "tool-result-mcp-skill-retry-or-reconnect-hint",
+    "name": "MCP Skill Retry Or Reconnect Hint",
+    "desc": "Hint appended to MCP skill load errors: try again or reconnect the server from /mcp."
+  },
+  "7de5cc8d11bae2c2ab88aa685b79c45f87cd03a5": {
+    "facing": "model",
+    "id": "tool-result-mcp-skill-new-task-refresh-hint",
+    "name": "MCP Skill New Task Refresh Hint",
+    "desc": "Hint appended to MCP skill not-served errors in hosts where a new task or chat refreshes skills."
+  },
+  "db53a4df9900f9dcfa4a6d7c84e24f9bdf4c8f8f": {
+    "facing": "model",
+    "id": "tool-result-mcp-skill-reconnect-refresh-hint",
+    "name": "MCP Skill Reconnect Refresh Hint",
+    "desc": "Hint appended to MCP skill not-served errors: reconnect the server from /mcp to refresh its skills."
+  },
+  "5b4efc6d7735ba9769b977ae76130cef6b1b9071": { "facing": "internal" },
+  "6784bcc4258b6a7756f6aa82206787d54f510f47": { "facing": "internal" },
+  "bc212e7bb2206819c8555b9f1737b654d8058ccb": {
+    "facing": "model",
+    "id": "tool-result-chart-not-a-field",
+    "name": "Chart Tool: Not A Field",
+    "desc": "Chart tool input validation error naming an unknown field and listing valid ones."
+  },
+  "ea375dbf5c0483918e7d8eed280c0bb9c7ccea76": {
+    "facing": "model",
+    "id": "tool-result-chart-must-be-one-of",
+    "name": "Chart Tool: Must Be One Of",
+    "desc": "Chart tool input validation error for a value outside an enum."
+  },
+  "4d34a58f779bf7dfd1bbb2145e4a31e19d62c028": {
+    "facing": "model",
+    "id": "tool-result-chart-wrong-type",
+    "name": "Chart Tool: Wrong Type",
+    "desc": "Chart tool input validation error for a value of the wrong JSON type."
+  },
+  "7a48a66195d56abb6652d46fd5b9587718d19c5e": {
+    "facing": "model",
+    "id": "tool-parameter-chart-log",
+    "name": "Chart Tool Parameter: log",
+    "desc": "Chart tool input schema description for log (log scale for lines)."
+  },
+  "3a0d769d92bed2d8955ae2e7b24a2bd04a749a22": {
+    "facing": "model",
+    "id": "tool-parameter-chart-marks-at",
+    "name": "Chart Tool Parameter: marks.at",
+    "desc": "Chart tool input schema description for a mark's at time."
+  },
+  "c5dfa8cfb5b0d154aa008cf2d314335bf3b0eea9": {
+    "facing": "model",
+    "id": "tool-parameter-chart-marks",
+    "name": "Chart Tool Parameter: marks",
+    "desc": "Chart tool input schema description for marks (events on a time chart)."
+  },
+  "e0eca8188d9f06a1486e576d99828a624855a6e8": {
+    "facing": "model",
+    "id": "tool-parameter-chart-top",
+    "name": "Chart Tool Parameter: top",
+    "desc": "Chart tool input schema description for top (how many series/bars to draw, per form)."
+  },
+  "c6e43d0650d37a60a20ee3cf8bce8ae4f3c0d0d3": {
+    "facing": "model",
+    "id": "tool-parameter-chart-data",
+    "name": "Chart Tool Parameter: data",
+    "desc": "Chart tool input schema description for data (prior tool result, an earlier result id, or an inline table)."
+  },
+  "44a06b6e746991b7bd920729eb82ecf61e9ddc40": {
+    "facing": "model",
+    "id": "tool-parameter-chart-unit",
+    "name": "Chart Tool Parameter: unit",
+    "desc": "Chart tool input schema description for unit."
+  },
+  "749159fd8a288154f95c57d9a04289cc05c43963": {
+    "facing": "model",
+    "id": "tool-parameter-chart-x",
+    "name": "Chart Tool Parameter: x",
+    "desc": "Chart tool input schema description for x."
+  },
+  "b04c12eae28733394c2add638f114ad790b2434a": {
+    "facing": "model",
+    "id": "tool-parameter-chart-form",
+    "name": "Chart Tool Parameter: form",
+    "desc": "Chart tool input schema description for form (line, columns, bars, sparks, share)."
+  },
+  "97936573c3215b1080414bab623bde5b6cca12e0": {
+    "facing": "model",
+    "id": "tool-parameter-chart-y",
+    "name": "Chart Tool Parameter: y",
+    "desc": "Chart tool input schema description for y (value columns, plot sharing rules)."
+  },
+  "b98ec3d661d1c8a9bda7296e743b5c7b7e692cc9": {
+    "facing": "model",
+    "id": "tool-parameter-chart-by",
+    "name": "Chart Tool Parameter: by",
+    "desc": "Chart tool input schema description for by (series split columns)."
+  },
+  "95893bac1af9a51c259ed849f4f7ce5a30a5ccaf": {
+    "facing": "model",
+    "id": "tool-parameter-chart-combine",
+    "name": "Chart Tool Parameter: combine",
+    "desc": "Chart tool input schema description for combine (how rows sharing x and series merge)."
+  },
+  "0cfd902be3f1da9f75d3fb5f12239619fd3c7ead": {
+    "facing": "model",
+    "id": "tool-parameter-chart-zone",
+    "name": "Chart Tool Parameter: zone",
+    "desc": "Chart tool input schema description for zone."
+  },
+  "4af935a660a9dcdeca508c130d4810729d70ec7f": {
+    "facing": "model",
+    "id": "tool-description-chart",
+    "name": "Tool Description: chart",
+    "desc": "Description of the builtin chart tool: what it draws, accepted data, and what it will not read."
+  },
+  "9f35fb3f068bcc4c96ca511dfce5586634d60337": {
+    "facing": "model",
+    "id": "tool-result-chart-read-as-metrics-clause",
+    "name": "Chart Tool: Read As Metrics Clause",
+    "desc": "Clause appended to chart refusals when the input was read as a metrics format, so x and y can be omitted."
+  },
+  "514941a2e05a9de3b92fe9923c8c32bcda96f3bb": {
+    "facing": "model",
+    "id": "tool-result-chart-time-formats",
+    "name": "Chart Tool: Accepted Time Formats",
+    "desc": "Sentence listing the time spellings the chart tool reads, appended to date-parsing refusals."
+  },
+  "bf20d046e5fb59349d44ec2dee0e03b902262e2a": {
+    "facing": "model",
+    "id": "tool-result-chart-names-repeat",
+    "name": "Chart Tool: Column Names Repeat",
+    "desc": "Chart refusal when two columns share a name."
+  },
+  "923d969375a9f685a048597c08f71170c53d1d7b": {
+    "facing": "model",
+    "id": "tool-result-chart-column-dates-unread",
+    "name": "Chart Tool: Column Dates Unread",
+    "desc": "Chart refusal when a column looks like dates in an unread spelling."
+  },
+  "3a32aede3c81d2cf298fa623ccb350b9da16bfea": {
+    "facing": "model",
+    "id": "tool-result-chart-few-times",
+    "name": "Chart Tool: Too Few Times",
+    "desc": "Chart refusal when a time column has too few distinct times to infer the axis."
+  },
+  "feb6cc1fcdc392a667e2ccd8485eca702fbf0e6f": {
+    "facing": "model",
+    "id": "tool-result-chart-no-numbers",
+    "name": "Chart Tool: No Numbers",
+    "desc": "Chart refusal when no column holds a number."
+  },
+  "cc12687f639106a4196434535098fd864eaefe8d": {
+    "facing": "model",
+    "id": "tool-result-chart-no-y",
+    "name": "Chart Tool: No Y Columns",
+    "desc": "Chart refusal asking which columns are y, noting rows are not counted."
+  },
+  "624b7772006ac9a9fc5cdfa7564203a776841aa9": {
+    "facing": "model",
+    "id": "tool-result-chart-names-read-as-bars",
+    "name": "Chart Tool: Names Read As Bars",
+    "desc": "Prefix on a chart result/refusal when x held names so bars were read."
+  },
+  "8e64d8057541e3978db526c2734072b7e173450b": {
+    "facing": "model",
+    "id": "tool-result-chart-lists-not-read",
+    "name": "Chart Tool: Lists Not Read",
+    "desc": "Column description in chart refusals when a column holds lists, with how to pass them."
+  },
+  "93a56e65723a3af2acee35e45191ffac24feb5a5": {
+    "facing": "model",
+    "id": "tool-result-chart-x-dates-unread",
+    "name": "Chart Tool: X Dates Unread",
+    "desc": "Chart refusal when x holds dates in an unread spelling."
+  },
+  "f511e54c949b5ac5e7615fb31d19d84d2fba2ba1": {
+    "facing": "model",
+    "id": "tool-result-chart-x-numbers-not-times",
+    "name": "Chart Tool: X Numbers Not Times",
+    "desc": "Chart refusal when x holds numbers that are not times; suggests form bars."
+  },
+  "d8e635ed69f486856c78e34c94013335170d19c9": {
+    "facing": "model",
+    "id": "tool-result-chart-x-names-not-times",
+    "name": "Chart Tool: X Names Not Times",
+    "desc": "Chart refusal when x holds names, not times; suggests form bars."
+  },
+  "c2732217dd44beb99348d6bf0303405b10a35a2e": {
+    "facing": "model",
+    "id": "tool-result-easel-chart-column-unread",
+    "name": "Tool result: easel chart column unread",
+    "desc": "easel chart refusal reason when a whole column of the source data was not read."
+  },
+  "9eb502d7dc3364fe12b076c73dfb3eea058bf83f": {
+    "facing": "model",
+    "id": "tool-result-easel-chart-rows-share-x",
+    "name": "Tool result: easel chart rows share x",
+    "desc": "easel chart refusal asking the model to name split columns or a combine method when several rows share one x value."
+  },
+  "75e8e9f091ada8d1430fe90a06b2341337efedd5": {
+    "facing": "model",
+    "id": "tool-result-easel-chart-no-values",
+    "name": "Tool result: easel chart no numeric values",
+    "desc": "easel chart refusal when no cell of the y columns holds a number."
+  },
+  "e47bf4365c57e1b6518f27eff9913059a77f22f5": {
+    "facing": "model",
+    "id": "tool-result-easel-chart-bars-partly-unread",
+    "name": "Tool result: easel chart bars partly unread",
+    "desc": "easel chart refusal when bars are requested but part of the list was not read."
+  },
+  "19d724beaf4d6d63441ba0ab28054c23f5a75da2": {
+    "facing": "model",
+    "id": "tool-result-easel-chart-share-not-summed",
+    "name": "Tool result: easel chart share not summed",
+    "desc": "easel chart refusal when a share chart is combined other than by sum."
+  },
+  "45864e3e24d9e4c501fc9155329858af10e3ea9e": {
+    "facing": "model",
+    "id": "tool-result-easel-chart-share-not-whole",
+    "name": "Tool result: easel chart share not whole",
+    "desc": "easel chart refusal when share parts are negative or do not add up to a positive whole."
+  },
+  "013428c88cbe26b0003d5fa7acf5cf116d8071ac": {
+    "facing": "model",
+    "id": "tool-result-easel-chart-log-not-line",
+    "name": "Tool result: easel chart log scale only on line",
+    "desc": "easel chart refusal when a log scale is requested for a form other than a line."
+  },
+  "925e3fe0542e246f3e1df5b1c1f99ddaf6f3ed61": {
+    "facing": "model",
+    "id": "tool-result-easel-chart-uneven-step",
+    "name": "Tool result: easel chart uneven time step",
+    "desc": "easel chart refusal when column timestamps have no even step, telling the model to pass one row per period, draw a line, or pass zone local."
+  },
+  "45fe4140026888719f313fbeb3e656f62b864409": {
+    "facing": "model",
+    "id": "tool-result-easel-chart-column-below-zero",
+    "name": "Tool result: easel chart column below zero",
+    "desc": "easel chart refusal when a columns chart has a value below zero."
+  },
+  "393ebb234a62beea003ace22f0b125fccca9741b": {
+    "facing": "model",
+    "id": "tool-result-easel-chart-mark-not-drawn-prefix",
+    "name": "Tool result: easel chart mark not drawn prefix",
+    "desc": "Prefix naming a chart mark (label and time) that was not drawn, followed by the reason."
+  },
+  "5e16687bd4e69fdcadf125849aceb2e1596759ec": {
+    "facing": "model",
+    "id": "tool-result-easel-chart-mark-zone-mismatch",
+    "name": "Tool result: easel chart mark zone mismatch",
+    "desc": "Note that a mark was not drawn because the mark and the times disagree on naming a time zone."
+  },
+  "a31b4e77ab0b5a4252b60121665d82eeb07b9115": {
+    "facing": "model",
+    "id": "tool-result-easel-chart-units-mixed",
+    "name": "Tool result: easel chart units mixed",
+    "desc": "Opening of the easel chart refusal when one column's values carry different units."
+  },
+  "968d5baeac4853be52f4d4438afc7ff6cab9f998": {
+    "facing": "model",
+    "id": "tool-result-easel-chart-units-mixed-convert",
+    "name": "Tool result: easel chart units mixed convert",
+    "desc": "Tail of the mixed-units refusal telling the model to convert to one unit or chart each unit in its own call."
+  },
+  "055f5d5140a9a7f6a4f9eea44689739c7c23ff0b": {
+    "facing": "model",
+    "id": "tool-result-easel-chart-units-differ",
+    "name": "Tool result: easel chart units differ",
+    "desc": "Middle of the easel chart refusal when bars or sparks share one scale but y columns are in different units."
+  },
+  "468fc0b89dff5c62d074948a4d0a38830557e478": {
+    "facing": "model",
+    "id": "tool-result-easel-chart-last-point-filling",
+    "name": "Tool result: easel chart last point filling",
+    "desc": "Chart note that the last point may still be filling because its period had not ended."
+  },
+  "85566eaad75371a5196d618aacbc5b99419e5246": {
+    "facing": "model",
+    "id": "tool-result-easel-chart-ask-fewer-rows",
+    "name": "Tool result: easel chart ask fewer rows",
+    "desc": "Shared advice suffix telling the model to ask for fewer rows or a shorter span, then chart that."
+  },
+  "1b48e2846cc11154443f543ae022c3e7eab8cc90": {
+    "facing": "model",
+    "id": "tool-result-easel-chart-data-too-long",
+    "name": "Tool result: easel chart data too long",
+    "desc": "easel chart refusal when the data is 64 KiB or longer."
+  },
+  "62df6888b5ab3bcba5c29014b019311f6cd3dd73": {
+    "facing": "model",
+    "id": "tool-result-easel-chart-result-cut-short",
+    "name": "Tool result: easel chart result cut short",
+    "desc": "easel chart refusal when the source tool result was cut short or saved to a file."
+  },
+  "01601154a13164f96c4334293cd8d7c7d188b39d": {
+    "facing": "model",
+    "id": "tool-result-easel-chart-json-unclosed",
+    "name": "Tool result: easel chart JSON unclosed",
+    "desc": "easel chart refusal when the result is JSON that does not close."
+  },
+  "6d7ea4de466fb0ac381e2ae928cb4a2f0e732d95": {
+    "facing": "model",
+    "id": "tool-result-easel-chart-no-table-read",
+    "name": "Tool result: easel chart no table read",
+    "desc": "easel chart refusal when the result holds no table or record list, telling the model to pass rows as data."
+  },
+  "21fc3f6c4acfe09df46b01df0642c040a93ea5eb": {
+    "facing": "model",
+    "id": "tool-result-easel-chart-table-unpicked",
+    "name": "Tool result: easel chart table unpicked",
+    "desc": "easel chart refusal when the result holds several tables and none was picked."
+  },
+  "a34cddd7d6cf04b173ecb868abe4419b64aaa81c": {
+    "facing": "model",
+    "id": "tool-result-easel-chart-partly-charted",
+    "name": "Tool result: easel chart partly charted",
+    "desc": "Left-out note that only part of the result was charted, followed by what else it holds."
+  },
+  "3b7deb8adba73355e0606abba4ba8ac34e1dfabf": {
+    "facing": "model",
+    "id": "tool-result-easel-chart-distribution-hint",
+    "name": "Tool result: easel chart distribution hint",
+    "desc": "Note suffix telling the model to pass counts per range for a distribution."
+  },
+  "3a763e684757b3fb20baa94d99fec0ab36c89f3a": {
+    "facing": "model",
+    "id": "tool-result-easel-chart-top-over-limit",
+    "name": "Tool result: easel chart top over limit",
+    "desc": "Note that a requested top N exceeds what one chart can draw."
+  },
+  "e0c870b29aa1ca2027fd62d8d89c8194e953c752": {
+    "facing": "model",
+    "id": "tool-result-easel-chart-series-is-total",
+    "name": "Tool result: easel chart series is total",
+    "desc": "Note that a series equals the sum of the others and should be left out if it is their total."
+  },
+  "af1a3c00a6cbbe657cd8107d7c0aa40005816ea6": {
+    "facing": "model",
+    "id": "tool-result-easel-chart-missing-samples",
+    "name": "Tool result: easel chart missing samples",
+    "desc": "Note counting missing samples, left blank where the gap is visible."
+  },
+  "5cd85ab8afd3a374463982e5232cbd37f4ea1587": {
+    "facing": "model",
+    "id": "tool-result-easel-chart-columns-drawn-as-lines",
+    "name": "Tool result: easel chart columns drawn as lines",
+    "desc": "Note that too many columns do not fit so they are drawn as a line or lines."
+  },
+  "d51d9f4a6f72dfc9f8a670d89b3541ec608545d7": {
+    "facing": "model",
+    "id": "tool-result-easel-chart-plots-not-shown",
+    "name": "Tool result: easel chart plots not shown",
+    "desc": "Note that some plots were not shown because a chart has a plot limit."
+  },
+  "990a1118a9ea74aa905f0285676c46b0d4384326": {
+    "facing": "model",
+    "id": "tool-result-easel-chart-narrow-screen-note",
+    "name": "Tool result: easel chart narrow screen note",
+    "desc": "Model-only note that on a narrow screen the columns fall back to lines."
+  },
+  "1ba8a45d3ea338f79c811f5ae619a1122055b18a": {
+    "facing": "model",
+    "id": "tool-result-easel-chart-terminal-thin-parts-note",
+    "name": "Tool result: easel chart terminal thin parts note",
+    "desc": "Model-only note that in a terminal thin column parts may not show."
+  },
+  "ccb59016f4a91fefcd5d67df4cf2f19816516df0": {
+    "facing": "model",
+    "id": "tool-result-easel-chart-drawn-as-bars",
+    "name": "Tool result: easel chart drawn as bars",
+    "desc": "Note that the chart was drawn as bars instead of the requested form because x holds names."
+  },
+  "1ca43172df8655f0905863718366d2f874a05fc8": {
+    "facing": "model",
+    "id": "tool-result-easel-chart-no-result-yet",
+    "name": "Tool result: easel chart no result yet",
+    "desc": "easel chart refusal when no tool has answered yet, telling the model to pass rows as data."
+  },
+  "df4987ee0cf65b2a8cd7ee8af60403b41a889424": {
+    "facing": "model",
+    "id": "tool-result-easel-chart-data-not-found",
+    "name": "Tool result: easel chart data not found",
+    "desc": "easel chart refusal when data is neither a tool result id nor a table."
+  },
+  "278d95add157aa02266c2a6677f0b410b8edd4e5": {
+    "facing": "model",
+    "id": "tool-result-easel-auto-chart-made",
+    "name": "Tool result: easel auto chart made",
+    "desc": "Context appended to a tool result that easel auto-charted, telling the model to chart it again only for a different chart."
+  },
+  "1512474150dac155530e6e8419fb384e229c2929": { "facing": "ui" },
+  "eeb2687c162f5f6d09016160c3317659a2194627": { "facing": "ui" },
+  "642e2ba6a6ab464454fe6671ba8e72a4025306b0": {
+    "facing": "model",
+    "id": "tool-result-easel-chart-internal-failure",
+    "name": "Tool result: easel chart internal failure",
+    "desc": "easel chart deny text when the chart tool itself failed on this call."
+  },
+  "d87fe47f3eaf2f24b07a1bd27d85140dfc6ad43d": {
+    "facing": "model",
+    "id": "system-prompt-easel-chart-tool-hint",
+    "name": "System prompt: easel chart tool hint",
+    "desc": "Line appended to the env_info_simple system prompt section telling the model to call mcp__easel__chart when a chart would be clearer."
+  },
+  "4cce9f11ece98c39e0f4908be21bd9d79898076b": { "facing": "internal" },
+  "58629f50a7475ac05ba1c02c9cab72efef56a378": { "facing": "internal" },
+  "85a1b5cb1e06a0905c68349facc06aa4a1518831": {
+    "facing": "model",
+    "id": "tool-result-read-calls-invalid-tool-use-id",
+    "name": "Tool result: ReadCalls invalid tool_use_id",
+    "desc": "ReadCalls served-tool error when a passed tool_use_id is not valid."
+  },
+  "4f32c7ff2cfb6d024fb9b6224715db54feb9772e": {
+    "facing": "model",
+    "id": "tool-result-served-tool-repo-rules-unreadable",
+    "name": "Tool result: served tool repo rules unreadable",
+    "desc": "Served-tool error when the repo permission rules a call brought could not be read."
+  },
+  "2c475cbe926995ab36dc2398ca141db9644bccde": { "facing": "internal" },
+  "4b92224e328b36df2d1b6cbd7ddd0b80e36f24b9": {
+    "facing": "model",
+    "id": "tool-result-monitor-command-tool-host-request-missing",
+    "name": "Tool result: RunMonitorCommand ToolHost request missing",
+    "desc": "RunMonitorCommand error when monitor_input comes without a ToolHost permission request this server decides."
+  },
+  "8b5ca23913ba9bc97b637b168b9743542c4050da": {
+    "facing": "model",
+    "id": "tool-result-monitor-command-tool-host-request-mismatch",
+    "name": "Tool result: RunMonitorCommand ToolHost request mismatch",
+    "desc": "RunMonitorCommand error when a ToolHost permission request comes without its monitor_input or with rules of its own."
+  },
+  "f0dd325669c9e0fcf3c265ad67e2c601311b13ed": { "facing": "internal" },
+  "8bfaa0af91d92173557a58b1ea60572bf7c9f188": {
+    "facing": "model",
+    "id": "tool-result-monitor-command-call-barred",
+    "name": "Tool result: RunMonitorCommand call barred",
+    "desc": "RunMonitorCommand error when the session was already told the call had not started."
+  },
+  "9d9f5315401fb47185fcbebb320de21c3fb19ec2": {
+    "facing": "model",
+    "id": "tool-result-monitor-command-duplicate-call-not-run-again",
+    "name": "Tool result: RunMonitorCommand duplicate call",
+    "desc": "RunMonitorCommand error when this very call was already started once."
+  },
+  "b0c01655e9cf063bbac9dba9d4c9ba4efeceaf66": { "facing": "internal" },
+  "a3a7052daedc6a2980a92be91952b319e1a7d531": { "facing": "internal" },
+  "e70f99373714c5968dca6d5298636cd9572c6049": {
+    "facing": "model",
+    "id": "tool-result-served-tool-call-barred",
+    "name": "Tool result: served tool call barred",
+    "desc": "Served-tool result when the session was already told this call had not started, so it can no longer run."
+  },
+  "9c3417d06c774e4491a567389aa00a52f97589f4": {
+    "facing": "model",
+    "id": "tool-result-served-tool-monitor-approval-required",
+    "name": "Tool result: served Monitor approval required",
+    "desc": "Monitor run refusal when a person has to approve it first and the attached approval is not for this question."
+  },
+  "7f89ccf52aadb20a0980e6e59eab19bbf393f794": {
+    "facing": "model",
+    "id": "tool-result-served-tool-monitor-command-not-checked",
+    "name": "Tool result: served Monitor command not checked",
+    "desc": "Monitor run refusal when its command is not the command of the Monitor call that was checked."
+  },
+  "f39ad795bf687b9e6710e3321fe66c5b1db46ec8": {
+    "facing": "model",
+    "id": "tool-result-served-tool-monitor-check-command-differs",
+    "name": "Tool result: served Monitor check command differs",
+    "desc": "Monitor run refusal when the permission check gives another command than the one sent."
+  },
+  "655605433ecf955b3fd02cd803e704deb6521abe": { "facing": "internal" },
+  "623dc69d33a2a69fb42c899d272c0008c499b834": {
+    "facing": "model",
+    "id": "data-onboarding",
+    "name": "Data: onboarding",
+    "desc": "claude-test run-skill reference onboarding.md that the run SKILL.md tells the model to Read for machine setup and first run."
+  },
+  "4e109545e576dde9a4a4c988ccec97e5448d6fb2": {
+    "facing": "model",
+    "id": "data-ct-mjs",
+    "name": "Data: ct.mjs",
+    "desc": "claude-test helper script (skills/run/scripts/ct.mjs) that the run skill has the model execute; its JSON output (status notes, needsInput questions, forClaude remedies, errors) is written for the model to read."
+  },
+  "8aa3e3b37ef3cb5981e1740c4286e79e8a29dc71": {
+    "facing": "model",
+    "id": "data-allow-tool-mjs",
+    "name": "Data: allow-tool.mjs",
+    "desc": "claude-test browser-server module (skills/run/scripts/lib/allow-tool.mjs) defining the claude_test_allow / claude_test_app_up / claude_test_show_run MCP tool descriptions, input schemas and result texts the model receives."
+  },
+  "3e669a4c54646bed73c417ac5ee98733bf0738a5": {
+    "facing": "model",
+    "id": "data-config-mjs",
+    "name": "Data: config.mjs",
+    "desc": "claude-test shared library (skills/run/scripts/lib/config.mjs) whose config warnings, consent and sign-in notes surface in ct.mjs status JSON and the browser server's tool results that the model reads."
+  },
+  "aca3470eb1edbcd0a9fd3b8eac5b4329dd30ac69": {
+    "facing": "model",
+    "id": "data-run-tools-mjs",
+    "name": "Data: run-tools.mjs",
+    "desc": "claude-test browser-server module (skills/run/scripts/lib/run-tools.mjs) defining the background runner's claude_test_save / status / elapsed / progress / write_log / finish / read MCP tool descriptions, input schemas and result texts the model receives."
+  },
+  "cd91040005610d7c4e0faab1ec630a6e4c90b923": {
+    "facing": "model",
+    "id": "data-runs-mjs",
+    "name": "Data: runs.mjs",
+    "desc": "claude-test shared library (skills/run/scripts/lib/runs.mjs) for run folders and file placement; its refusal strings return through the helper's tool results and ct.mjs output to the model."
+  },
+  "8c308683620772193758ce49a396a004c238c914": {
+    "facing": "model",
+    "id": "data-tools-mjs",
+    "name": "Data: tools.mjs",
+    "desc": "claude-test shared library (skills/run/scripts/lib/tools.mjs) for installing the browser tooling and checking the Chrome sandbox; its remedy and problem texts (addressed to Claude: 'Tell the person this. Do not install another way.') reach the model through ct.mjs output and the claude_test_install tool results."
+  },
+  "002ef7c2ba32f9bdc577172a58bfd1f0db094f71": {
+    "facing": "model",
+    "id": "data-playwright-mcp-mjs",
+    "name": "Data: playwright-mcp.mjs",
+    "desc": "claude-test plugin browser MCP server launcher (skills/run/scripts/playwright-mcp.mjs) whose setup-stub tool descriptions (browser_setup_needed, claude_test_install and its noLock/allowFallback/downloadHost schema), tools/call result texts and launcher refusal/warning notes are delivered to the model."
+  },
+  "7d7bb589cc40ca9cfbd9681e89111adcfd9747f5": {
+    "facing": "model",
+    "id": "data-skill-claude-test-the-spec-author-background",
+    "name": "Data: SKILL (Claude Test — the spec author (background; nobody is watchin)",
+    "desc": "Prompt body of the claude-test \"draft\" skill (spec-author background), loaded as skill text by we()."
+  },
+  "bf0aa7a3b6729af1497148574160dfc5b71826e4": {
+    "facing": "model",
+    "id": "data-skill-claude-test-runner-drive-the-app",
+    "name": "Data: SKILL (Claude Test runner — drive the app in a browser, judge each )",
+    "desc": "Prompt body of the claude-test \"execute\" skill (runner that drives the app), loaded as skill text by we()."
+  },
+  "ad926cddcddf1d5a2e352700e067d164c4904860": {
+    "facing": "model",
+    "id": "data-skill-claude-test-the-conversation-side",
+    "name": "Data: SKILL (Claude Test — the conversation side)",
+    "desc": "Prompt body of the claude-test \"run\" skill (conversation side), loaded as skill text by we()."
+  },
+  "357eaffeda1c95787ddb6d8f1fc4549554701002": {
+    "facing": "model",
+    "id": "tool-result-easel-chart-cut-series-not-shown",
+    "name": "Tool Result: Easel chart cut series not shown",
+    "desc": "Chart tool note fragment saying the series cut from the chart are not shown (else arm of drawn-as-one)."
+  },
+  "3628cb840674b8fa332647b1ecf26a47ba825e99": {
+    "facing": "model",
+    "id": "skill-design-sync-hint-block",
+    "name": "Skill: design-sync hint block",
+    "desc": "Appends the user's design-system hint in a fenced Hint section to the design-sync skill prompt."
+  },
+  "4cfc547ec0a1d21932a1144c65a7dcde3da13795": {
+    "facing": "model",
+    "id": "tool-result-artifact-identical-resubmission-no-edits-applied",
+    "name": "Tool Result: artifact identical resubmission no edits applied",
+    "desc": "Refusal text when an identical publish with edit pairs is resubmitted: no edits applied and the file is unchanged since refused."
+  },
+  "e5f4b3ca44c79af916c77dbdb45681ed53ca3392": { "facing": "ui" },
+  "f4151e7cc0ccf27ae623b737e3f6f9d792b94673": { "facing": "ui" },
+  "9bda377f60ffdfb9ecc028d292bac52031d85347": {
+    "facing": "model",
+    "id": "tool-result-mcp-skill-retry-hint",
+    "name": "Tool Result: MCP skill retry hint",
+    "desc": "Short retry hint appended to MCP skill load failures when reconnecting from /mcp is not offered."
+  },
+  "6048262cbed3621769354024936deeeb3cc2d933": {
+    "facing": "model",
+    "id": "tool-result-chart-field-missing",
+    "name": "Tool Result: chart field missing",
+    "desc": "Chart tool input validation error naming a required field that is missing."
+  },
+  "1f2c326bfaa2c9b8968a3a8b0513682ab78fb770": {
+    "facing": "model",
+    "id": "tool-result-chart-max-items",
+    "name": "Tool Result: chart list too long",
+    "desc": "Chart tool input validation error when a list field exceeds its maxItems."
+  },
+  "1be1ceeadc8724346b894649c57da1c8b9ef9e1f": {
+    "facing": "model",
+    "id": "tool-result-chart-minimum",
+    "name": "Tool Result: chart number below minimum",
+    "desc": "Chart tool input validation error when a number field is below its minimum."
+  },
+  "036054adc80c822f0f5a1d4f1679f7cf01901b4e": {
+    "facing": "model",
+    "id": "tool-result-chart-must-be-any-of-types",
+    "name": "Tool Result: chart field must be one of types",
+    "desc": "Chart tool input validation error listing the allowed types of an anyOf field."
+  },
+  "92ac2799345df09fd0776a318431984aafdaf28b": {
+    "facing": "model",
+    "id": "tool-result-easel-chart-mark-outside-times",
+    "name": "Tool Result: Easel chart mark outside times",
+    "desc": "Chart note that a mark was not drawn because its time lies outside the times drawn."
+  },
+  "eff5b6a07cbceba816e0e604d58a66943f0b74b7": {
+    "facing": "model",
+    "id": "tool-result-easel-chart-mark-unread-time",
+    "name": "Tool Result: Easel chart mark time unread",
+    "desc": "Chart note that a mark was not drawn, followed by why its time could not be read."
+  },
+  "62983f8c9a348affb3207183d966ebee89c428e5": {
+    "facing": "model",
+    "id": "tool-result-easel-chart-mark-sparks-no-time-axis",
+    "name": "Tool Result: Easel chart mark sparks no time axis",
+    "desc": "Chart note that a mark was not drawn because sparks have no time axis."
+  },
+  "4fa68537aa89aeffe24ff449f7cf41e8909ffaaa": {
+    "facing": "model",
+    "id": "tool-result-easel-chart-mark-no-times",
+    "name": "Tool Result: Easel chart mark form has no times",
+    "desc": "Chart note that a mark was not drawn because the bars/share form has no times."
+  },
+  "cb4270fa94cd3498dba3bbd2df628fe45ef041d5": {
+    "facing": "model",
+    "id": "tool-result-easel-chart-units-differ-call-once",
+    "name": "Tool Result: Easel chart units differ, call once per unit",
+    "desc": "Closing clause of the units-differ refusal telling the model to call once for each unit."
+  },
+  "67c6f757c82044d7f58977e3de87c0b71bd2c241": {
+    "facing": "model",
+    "id": "tool-result-easel-chart-units-mixed-name-unit",
+    "name": "Tool Result: Easel chart units mixed, name the unit",
+    "desc": "Units-mixed refusal advice to name the unit of bare numbers via unit."
+  },
+  "6b7e53def865c411f658a89b1b072b24ad33612b": {
+    "facing": "model",
+    "id": "tool-result-easel-chart-lines-outside-table",
+    "name": "Tool Result: Easel chart lines outside any table",
+    "desc": "Partly-charted note counting result lines that lie outside any table."
+  },
+  "6fa432de78be7428e39cac2d42f70e295ffc3b60": {
+    "facing": "model",
+    "id": "tool-result-easel-chart-top-rest-as-one",
+    "name": "Tool Result: Easel chart top rest drawn as one",
+    "desc": "Clause appended to the top-over-limit note when the remaining series are drawn as one."
+  },
+  "7882d0d1f11d985deda2e7f2cc787b3cd6803d78": {
+    "facing": "model",
+    "id": "tool-result-easel-chart-cut-series-count",
+    "name": "Tool Result: Easel chart cut series count",
+    "desc": "Opening fragment of the cut-series note naming how many series were cut."
+  },
+  "6e6a8772fba0fc4c877f0ccc82bee25d7b276a37": {
+    "facing": "model",
+    "id": "tool-result-easel-chart-cut-series-drawn-as-one",
+    "name": "Tool Result: Easel chart cut series drawn as one",
+    "desc": "Cut-series note fragment saying the cut series are drawn as one."
+  },
+  "6e53b93a6920b9b4b71de313972f76eb2e07d080": {
+    "facing": "model",
+    "id": "tool-result-easel-chart-cut-series-names",
+    "name": "Tool Result: Easel chart cut series names",
+    "desc": "Parenthetical listing the cut series names when few enough."
+  },
+  "e8a209f412fc70072da66ac3c03680a41d63140c": {
+    "facing": "model",
+    "id": "tool-result-easel-chart-drawn-alone-of-total",
+    "name": "Tool Result: Easel chart drawn alone of total",
+    "desc": "Cut-series note fragment giving how many series are drawn alone out of the total."
+  },
+  "6d450a72bf7d117df3008b84a50a5ff6b91ffe69": {
+    "facing": "model",
+    "id": "tool-result-read-calls-list-too-long",
+    "name": "Tool Result: ReadCalls list too long",
+    "desc": "ReadCalls error when a told or tool_use_ids list has more entries than accepted."
+  },
+  "1f722e76e2a2c9ad7e52df5208332e019759ec62": {
+    "facing": "model",
+    "id": "tool-result-mcp-server-needs-reauth",
+    "name": "Tool Result: MCP Server Needs Re-authentication",
+    "desc": "McpAuthError message surfaced as the MCP tool call's error result when the server needs the user to sign in again via /mcp."
+  },
+  "f9d9d7a1e2be72f258f63543f1b5145162603cce": {
+    "facing": "model",
+    "id": "tool-description-agent-simple-when-to-use",
+    "name": "Tool Description: Agent simple When to use",
+    "desc": "When to use section header of the simple Agent tool prompt with delegation-cost guidance"
+  },
+  "0caddf40c94f4c67050f830cdc924822b3e4e5f6": { "facing": "internal" },
+  "a79715e334e9b7231d1fa3759d6e1105e2bc105d": {
+    "facing": "model",
+    "id": "tool-result-mcp-server-needs-reauth-run-mcp-hint",
+    "name": "Tool Result: MCP server needs reauth run /mcp hint",
+    "desc": "Suffix appended to the MCP sign-in-again error in an interactive CLI session, telling the user to run /mcp to re-authenticate"
   }
 }

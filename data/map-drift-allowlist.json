@@ -7,5 +7,13 @@
   },
   "2.1.300->2.1.301": {
     "tool-description-updating-existing-artifacts-app-wording": "Slot 2 holds the same variable; it now carries the descriptive name SELECT_ARTIFACT_EDIT_REPUBLISH_GUIDANCE_FN from the upstream map in place of the generic VAR_2 placeholder. The override was renamed to match."
+  },
+  "2.1.301->2.1.302": {
+    "agent-prompt-workflow-script-structured-return-note": "Same slots and variables; the generic or older slot names are replaced by the descriptive names from the upstream map. Overrides were renamed to match.",
+    "agent-prompt-workflow-script-plain-text-return-note": "Same slots and variables; the generic or older slot names are replaced by the descriptive names from the upstream map. Overrides were renamed to match.",
+    "system-prompt-memory-instructions": "Same slots and variables; the generic or older slot names are replaced by the descriptive names from the upstream map. Overrides were renamed to match.",
+    "system-prompt-agent-thread-notes": "Same slots and variables; the generic or older slot names are replaced by the descriptive names from the upstream map. Overrides were renamed to match.",
+    "agent-prompt-workflow-subagent-structured-output": "Same slots and variables; the generic or older slot names are replaced by the descriptive names from the upstream map. Overrides were renamed to match.",
+    "agent-prompt-workflow-subagent-plain-text-output": "Same slots and variables; the generic or older slot names are replaced by the descriptive names from the upstream map. Overrides were renamed to match."
   }
 }

@@ -4545,5 +4545,20 @@
     "verdict": "archived",
     "version": "2.1.301",
     "why": "Absent from the 2.1.301 bundle. Override matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.301/."
+  },
+  "tool-result-artifact-identical-resubmission-merge-source": {
+    "verdict": "archived",
+    "version": "2.1.302",
+    "why": "2.1.302 rebuilt the refusal from shared parts; its sentences now live in other catalogued ids. Override matched pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.302/."
+  },
+  "tool-result-artifact-stale-guard-autoread-footer": {
+    "verdict": "archived",
+    "version": "2.1.302",
+    "why": "Replaced by tool-result-artifact-end-of-live-content-merge-reminder, which adds a branch to the same footer. Override matched pristine. Archived to ~/.tweakcc/orphans-removed-for-2.1.302/."
+  },
+  "tool-result-mcp-server-needs-reauth-connector-settings": {
+    "verdict": "archived",
+    "version": "2.1.302",
+    "why": "2.1.302 split the sentence: the base is tool-result-mcp-server-needs-reauth and the connector-settings hint is a separate constant. Override matched pristine. Archived to ~/.tweakcc/orphans-removed-for-2.1.302/."
   }
 }

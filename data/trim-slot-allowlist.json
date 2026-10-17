@@ -416,5 +416,12 @@
       "TOOL_DESCRIPTION_BASH_RUN_IN_BACKGROUND_DEADLINE_SUFFIX_VAR_0": "Standing wipe-merge: the background-timeout default/max are carried by tool-description-bash-run-in-background-detached's timeout clause; 2.1.292 only reshaped the number formatting inside the suppressed sentence.",
       "TOOL_DESCRIPTION_BASH_RUN_IN_BACKGROUND_DEADLINE_SUFFIX_VAR_2": "New 2.1.292 slot (minutes/hours rounding) inside the same suppressed sentence; the detached bullet carries default and max."
     }
+  },
+  "tool-result-enterworktree-now-working-message": {
+    "bodyHash": "72a94039ac12",
+    "reviewed": "2026-10-17 (CC 2.1.302)",
+    "tokens": {
+      "TOOL_RESULT_ENTERWORKTREE_NOW_WORKING_MESSAGE_VAR_5": "2.1.302 hoisted the ExitWorktree how-to-leave sentence into this slot. The override has cut that sentence since 2.1.210; the ExitWorktree tool description carries it."
+    }
   }
 }
