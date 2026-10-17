@@ -141,6 +141,28 @@ const CURATED_IDENTIFIER_MAPS = {
       },
     },
   ],
+  'system-prompt-agent-summary-generation': [
+    {
+      // CC 2.1.302 hoisted the previous-summary line into a local and added a
+      // background-agent flag that picks the subject and drops the no-tools
+      // sentence, so the old map no longer matches the slots.
+      identifiers: [0, 0, 1],
+      identifierMap: {
+        0: 'IS_BACKGROUND_AGENT',
+        1: 'PREVIOUS_SUMMARY_LINE',
+      },
+    },
+  ],
+  'system-prompt-forked-agent-guidance': [
+    {
+      // CC 2.1.302 made the runs-in-the-background clause conditional.
+      identifiers: [0, 1],
+      identifierMap: {
+        0: 'AGENT_TOOL_NAME',
+        1: 'IS_FORK_BACKGROUND_ENABLED_FN',
+      },
+    },
+  ],
   'system-reminder-plan-mode-workflow-ask-questions-note': [
     {
       identifiers: [0],
