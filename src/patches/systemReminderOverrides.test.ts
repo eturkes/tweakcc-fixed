@@ -1481,3 +1481,37 @@ describe('second review fixes', () => {
     ).toBeNull();
   });
 });
+
+const planFileRef = REMINDER_REGISTRY.find(
+  r => r.id === 'plan-file-reference'
+)!;
+
+// CC 2.1.302's plan_file_reference: the path is optional, so the template picks
+// between two sentences with a nested template literal.
+const PLAN_FILE_REF_2_1_302 =
+  'x={plan_file_reference:(e)=>Al([Ae({content:`${e.planFilePath?`A plan file exists from plan mode at: ${e.planFilePath}`:"A plan exists from plan mode."}\n\nPlan contents:\n\n${e.planContent}\n\nIf this plan is relevant to the current work and not already complete, continue working on it.`,isMeta:!0})]),nested_memory:(e)=>Al([Ae({content:`Contents of ${e.content.path}`,isMeta:!0})])}';
+
+describe('plan-file-reference reminder', () => {
+  const body = 'Plan at ${H.planFilePath}\n\n${H.planContent}';
+
+  it('binds the optional path and the plan content', () => {
+    const once = planFileRef.apply(PLAN_FILE_REF_2_1_302, body, false);
+    expect(once).not.toBeNull();
+    expect(once).toContain('e.planFilePath??""');
+    expect(once).toContain('${e.planContent}');
+    expect(once).not.toContain('H.plan');
+    expect(once).toContain('nested_memory:(e)=>Al([Ae({content:`Contents of');
+  });
+
+  it('is idempotent on its own output', () => {
+    const once = planFileRef.apply(PLAN_FILE_REF_2_1_302, body, false)!;
+    const twice = planFileRef.apply(once, body, false);
+    expect(twice).toBe(once);
+  });
+
+  it('suppresses, and stays suppressed on re-apply', () => {
+    const once = planFileRef.apply(PLAN_FILE_REF_2_1_302, '', true)!;
+    expect(once).toContain('plan_file_reference:(e)=>[]');
+    expect(planFileRef.apply(once, '', true)).toBe(once);
+  });
+});

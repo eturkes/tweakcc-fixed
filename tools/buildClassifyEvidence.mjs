@@ -506,14 +506,10 @@ async function main() {
     existingIdsPath: path.join(outDir, 'existing-ids.json'),
     previousJson: path.resolve(opt.prev),
     verdictsPath: path.join(outDir, `verdicts-${nn}.json`),
-    verifyScopePath: path.join(outDir, `verify-scope-${nn}.json`),
-    verifyPath: path.join(outDir, `verify-${nn}.json`),
     commands: {
       check: `node ${path.join(tools, 'checkClassifyVerdicts.mjs')} ${outDir} ${nn}`,
-      checkVerify: `node ${path.join(tools, 'checkClassifyVerdicts.mjs')} ${outDir} ${nn} --stage verify`,
       trace: `node ${path.join(tools, 'traceEmissionRoute.mjs')} --cache ${cachePath} --offset <N>`,
       write: `node ${path.join(tools, 'writeClassifyVerdicts.mjs')} ${outDir} ${nn}`,
-      writeVerify: `node ${path.join(tools, 'writeClassifyVerdicts.mjs')} ${outDir} ${nn} --stage verify`,
       query: queryCmd,
     },
   });
@@ -615,7 +611,7 @@ async function main() {
   console.log(`  settings oracle: ${oracle ? `${oracle.length} description(s) from ${oraclePath}; ${entries.filter(e => e.settingsOracle).length} candidate(s) match` : `none at ${oraclePath} (capture it first: node tools/captureSettingsOracle.mjs)`}`);
   console.log(`  sites: located ${stats.located}/${stats.candidates} (${stats.multiSite} at several sites) ${JSON.stringify(stats.siteMethods)}`);
   console.log(`  routes: ${stats.routes.withVerdict}/${stats.candidates} with a route verdict ${JSON.stringify(stats.routes.verdicts)}; fully resolved ${stats.routes.resolved}`);
-  console.log(`  workflow args: {"version":"${version}","evidenceDir":"${outDir}","chunkCount":${packed.length},"mdParts":${JSON.stringify(partCounts)},"model":…,"verifyModel":…,"classifyEffort":…,"verifyEffort":…,"repoDir":"${path.dirname(HERE)}"}`);
+  console.log(`  workflow args: {"version":"${version}","evidenceDir":"${outDir}","chunkCount":${packed.length},"mdParts":${JSON.stringify(partCounts)},"model":…,"classifyEffort":…,"repoDir":"${path.dirname(HERE)}"}`);
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

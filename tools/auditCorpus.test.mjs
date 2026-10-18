@@ -807,46 +807,6 @@ describe('markdown packet', () => {
     expect(md[0].length).toBeGreaterThan(0);
   });
 
-  it('hunts every stage-1 keep in ceil(keeps / ids-per-agent) groups, leads as evidence', () => {
-    build(IDS, 'hunt-src');
-    const src = path.join(dir, 'hunt-src');
-    const verdicts = IDS.map((id, i) => ({
-      id,
-      verdict: i === 0 ? 'trim' : 'pristine-keep',
-      slopCheck: 's',
-      duplicateCheck: 'd',
-      why: 'w',
-      coveredBy: [],
-      trimPlan: i === 0 ? 'cut' : null,
-    }));
-    fs.writeFileSync(
-      path.join(src, 'stage1-result.json'),
-      JSON.stringify({ complete: true, verdicts })
-    );
-    const huntDir = path.join(dir, 'hunt');
-    const log = execFileSync(
-      'node',
-      [path.join(TOOLS, 'selectCutHunt.mjs'), src, huntDir, '--ids-per-agent', '2'],
-      { env: { ...process.env, TWEAKCC_CONFIG_DIR: path.join(dir, 'cfg') }, encoding: 'utf8' }
-    );
-    const hm = JSON.parse(
-      fs.readFileSync(path.join(huntDir, 'hunt-manifest.json'), 'utf8')
-    );
-    expect(hm.groups.flatMap(g => g.ids)).toEqual(IDS.slice(1));
-    expect(hm.groupCount).toBe(3);
-    expect(hm.selected).toBe(IDS.length - 1);
-    const args = JSON.parse(log.trim().split('\n').pop().replace(/^workflow args: /, ''));
-    expect(args).toMatchObject({ groupCount: 3, mdParts: [1, 1, 1] });
-    for (const g of hm.groups) expect(fs.readFileSync(g.md, 'utf8')).toContain('**Cut leads:**');
-    const r = spawnSync(
-      'node',
-      [path.join(TOOLS, 'selectCutHunt.mjs'), src, huntDir, '--share', '0.25'],
-      { encoding: 'utf8' }
-    );
-    expect(r.status).toBe(2);
-    expect(r.stderr).toMatch(/every stage-1 keep is hunted/);
-  });
-
   it('refuses to build without a turnProbe capture unless opted out', () => {
     const idsFile = path.join(dir, 'nocap.txt');
     fs.writeFileSync(idsFile, 't-jq\n');

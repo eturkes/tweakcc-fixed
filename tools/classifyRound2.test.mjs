@@ -679,7 +679,7 @@ describe('writeClassifyVerdicts', () => {
       version: '9.9.9',
       bundle,
       corpus,
-      commands: { writeVerify: 'W --stage verify', query: 'Q' },
+      commands: { query: 'Q' },
       families: [{ key: 'fn:1', md: '## F1 · fn x' }],
       candidates: [
         {
@@ -704,7 +704,7 @@ describe('writeClassifyVerdicts', () => {
     });
   });
 
-  it('maps keys to hashes, nulls non-model names, writes, checks, and renders the verifier packet', () => {
+  it('maps keys to hashes, nulls non-model names, writes and checks', () => {
     const r = run([
       {
         k: 'k01',
@@ -729,10 +729,7 @@ describe('writeClassifyVerdicts', () => {
     expect(file.bundleSha).toBe(man.bundle.sha256);
     expect(file.verdicts.map(v => v.hash)).toEqual([A, B]);
     expect(file.verdicts[0].id).toBeNull();
-    const md = fs.readFileSync(path.join(dir, 'verify-00.md'), 'utf8');
-    expect(md).toContain('### k02 body b');
-    expect(md).toContain('draft contradicts the traced model route');
-    expect(md).not.toContain('### k01');
+    expect(fs.existsSync(path.join(dir, 'verify-00.md'))).toBe(false);
   });
 
   it('merges a fix into the file on disk and reports problems by key', () => {

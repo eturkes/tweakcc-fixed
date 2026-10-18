@@ -201,7 +201,7 @@ describe.skipIf(!hasS3)(
 describe.skipIf(!hasCls)(
   'classify retries continue from the file on disk',
   () => {
-    const ok = { chunk: '00', pass: true, verdicts: 2, scope: 1, note: '' };
+    const ok = { chunk: '00', pass: true, verdicts: 2, note: '' };
 
     it('re-asks with the rejection reason and returns the first passing receipt', async () => {
       const reject = r =>

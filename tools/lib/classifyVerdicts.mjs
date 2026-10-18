@@ -8,43 +8,11 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import { writeMarkdownParts } from './packetParts.mjs';
 
 export const FACINGS = new Set(['model', 'ui', 'internal']);
 export const RESERVED_PREFIXES = ['inline-', 'workflow-script-'];
 const NULLISH = new Set(['null', 'undefined', 'none', 'n/a', '']);
 const ID_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-
-// Which drafts get an independent second read. A mistake costs where a
-// verdict mints or keeps a catalogue id, where it reverses what the tracer
-// proved, or where its author was unsure; that is the scope:
-//   - every model verdict (id, name and desc are judged too);
-//   - every candidate carrying a continuity or piebald id (reusedFrom,
-//     possibleSuccessorOf, piebaldExact), whatever its facing;
-//   - hedged evidence;
-//   - a non-model draft on a route the tracer proved model-facing.
-// A non-model draft on an open route is NOT re-read on that ground alone: the
-// classifier had the open branches in its packet with their code and was
-// required to follow them. Measured on the CC 2.1.288 replay: re-reading every
-// open route put 1,042 of 1,067 drafts in scope; the verifier changed 25 of
-// them, and every facing or id change but one (an internal -> ui swap with no
-// catalogue effect) fell inside this narrower scope, which holds ~550.
-const HEDGE = /uncertain|unclear|assume|likely|probabl|not located|placeholder|unsure|cannot tell|can't tell|guess/i;
-
-export function scopeReasons(v, cand) {
-  const why = [];
-  if (v.facing === 'model') why.push('model verdict');
-  if (cand && (cand.reusedFrom || cand.possibleSuccessorOf)) why.push('continuity id');
-  if (cand && cand.piebaldExact) why.push('piebald id');
-  if (HEDGE.test(v.evidence || '')) why.push('hedged evidence');
-  const r = (cand && cand.route) || {};
-  if (r.verdict === 'model' && v.facing !== 'model') why.push('draft contradicts the traced model route');
-  return why;
-}
-
-export function needsVerify(v, cand) {
-  return scopeReasons(v, cand).length > 0;
-}
 
 export const pad = (n, width) => String(n).padStart(width, '0');
 export const sha256 = buf => crypto.createHash('sha256').update(buf).digest('hex');
@@ -62,8 +30,6 @@ export function loadManifest(dir) {
 
 export const chunkFile = (dir, m, nn) => path.join(dir, `chunk-${nn}.json`);
 export const verdictsFile = (dir, nn) => path.join(dir, `verdicts-${nn}.json`);
-export const verifyFile = (dir, nn) => path.join(dir, `verify-${nn}.json`);
-export const scopeFile = (dir, nn) => path.join(dir, `verify-scope-${nn}.json`);
 
 // Accept "3", "03", "chunk-03".
 export function normalizeChunk(m, arg) {
@@ -134,7 +100,7 @@ export function fieldProblems(v, cand, where) {
   return out;
 }
 
-// Verdict-file envelope and per-hash checks for one stage.
+// Verdict-file envelope and per-hash checks.
 //   expected: hashes the file must cover exactly
 //   cands: Map(hash -> packet candidate)
 export function checkVerdictSet(file, { m, nn, expected, cands, label }) {
@@ -159,7 +125,7 @@ export function checkVerdictSet(file, { m, nn, expected, cands, label }) {
     seen.set(v.hash, v);
     if (!want.has(v.hash)) {
       const near = expected.filter(h => h.startsWith(v.hash.slice(0, 8)));
-      problems.push(`${label}: ${v.hash} is not ${label === 'verify' ? 'in this chunk\'s verify scope' : 'a candidate of this chunk'}${near.length === 1 ? ` (did you mean ${near[0]}? copy hashes verbatim)` : ''}`);
+      problems.push(`${label}: ${v.hash} is not a candidate of this chunk${near.length === 1 ? ` (did you mean ${near[0]}? copy hashes verbatim)` : ''}`);
       continue;
     }
     problems.push(...fieldProblems(v, cands.get(v.hash), label));
@@ -206,8 +172,8 @@ export function loadCatalogue(dir, m) {
   return fs.existsSync(f) ? readJson(f) : {};
 }
 
-// Full per-chunk evaluation. stage: 'classify' | 'verify'.
-export function evaluateChunk(dir, m, nn, { stage = 'classify', checkFiles = true, otherChunks = true } = {}) {
+// Full per-chunk evaluation.
+export function evaluateChunk(dir, m, nn, { checkFiles = true, otherChunks = true } = {}) {
   const { packet, cands } = loadChunk(dir, m, nn);
   const catalogue = loadCatalogue(dir, m);
   const problems = [...digestProblems(m, { checkFiles })];
@@ -215,31 +181,19 @@ export function evaluateChunk(dir, m, nn, { stage = 'classify', checkFiles = tru
   const expected = packet.candidates.map(c => c.hash);
   const cls = checkVerdictSet(verdictsFile(dir, nn), { m, nn, expected, cands, label: 'classify' });
   problems.push(...cls.problems);
-  const result = { chunk: nn, stage, candidates: expected.length, classified: false, verified: false, scope: null, problems };
+  const result = { chunk: nn, candidates: expected.length, classified: false, problems };
   if (!cls.verdicts) return result;
-  const draft = new Map(cls.verdicts.filter(v => v && cands.has(v.hash)).map(v => [v.hash, v]));
-  const scope = expected.filter(h => draft.has(h) && needsVerify(draft.get(h), cands.get(h)));
-  result.scope = scope;
-  let merged = [...draft.values()];
-  if (stage === 'verify' && !(scope.length === 0 && !fs.existsSync(verifyFile(dir, nn)))) {
-    const ver = checkVerdictSet(verifyFile(dir, nn), { m, nn, expected: scope, cands, label: 'verify' });
-    problems.push(...ver.problems);
-    if (ver.verdicts) {
-      const audited = new Map(ver.verdicts.filter(v => v && scope.includes(v.hash)).map(v => [v.hash, v]));
-      merged = merged.map(v => audited.get(v.hash) || v);
-    }
-  }
-  problems.push(...collisionProblems(merged, { cands, catalogue, label: stage, version: m.version }));
-  problems.push(...identityProblems(merged, { cands, label: stage, fragmentVerdicts: fragmentVerdictsFor(dir, m, nn, cands, merged) }));
+  const merged = cls.verdicts.filter(v => v && cands.has(v.hash));
+  problems.push(...collisionProblems(merged, { cands, catalogue, label: 'classify', version: m.version }));
+  problems.push(...identityProblems(merged, { cands, label: 'classify', fragmentVerdicts: fragmentVerdictsFor(dir, m, nn, cands, merged) }));
   if (otherChunks) problems.push(...crossChunkProblems(dir, m, nn, merged));
   result.merged = merged;
-  result.classified = cls.problems.length === 0;
-  result.verified = stage === 'verify' && problems.length === 0;
+  result.classified = problems.length === 0;
   return result;
 }
 
-// The final verdicts another chunk currently holds on disk (its verify file
-// over its draft), used to catch one id minted in two chunks.
+// The verdicts another chunk currently holds on disk, used to catch one id
+// minted in two chunks.
 export function currentVerdicts(dir, m, nn) {
   const vf = verdictsFile(dir, nn);
   if (!fs.existsSync(vf)) return [];
@@ -249,16 +203,7 @@ export function currentVerdicts(dir, m, nn) {
   } catch {
     return [];
   }
-  const map = new Map(draft.filter(v => v && v.hash).map(v => [v.hash, v]));
-  const xf = verifyFile(dir, nn);
-  if (fs.existsSync(xf)) {
-    try {
-      for (const v of readJson(xf).verdicts || []) if (v && map.has(v.hash)) map.set(v.hash, v);
-    } catch {
-      /* an unreadable verify file is that chunk's own failure */
-    }
-  }
-  return [...map.values()];
+  return draft.filter(v => v && v.hash);
 }
 
 export function crossChunkProblems(dir, m, nn, merged) {
@@ -286,53 +231,17 @@ export function keyedProblems(problems, cands) {
   return problems.map(p => p.replace(/\b([0-9a-f]{10})[0-9a-f]{0,30}\b/g, (all, pre) => (byPrefix.has(pre) ? `${byPrefix.get(pre)} (${all})` : all)));
 }
 
-export const verifyMdFile = (dir, nn) => path.join(dir, `verify-${nn}.md`);
-
-// After a classify PASS: the verify scope (hashes) and the verifier's packet,
-// verify-NN.md — only the in-scope candidates, each with why it is in scope
-// and the draft it must confirm or correct, under its family block.
-export async function writeScopeArtifacts(dir, m, nn, r) {
-  const { packet, cands } = loadChunk(dir, m, nn);
-  const draft = new Map((r.merged || []).map(v => [v.hash, v]));
-  fs.writeFileSync(scopeFile(dir, nn), JSON.stringify({ chunk: nn, bundleSha: m.bundle.sha256, scope: r.scope }, null, 1));
-  const { renderVerifyMd } = await import('./classifyPacketMd.mjs');
-  const families = new Map((packet.families || []).map(f => [f.key, f.md]));
-  const items = r.scope.map(h => {
-    const c = cands.get(h);
-    return { family: c.family, md: c.md || `### ${c.key || h.slice(0, 12)}\n> ${c.body}`, draft: draft.get(h), why: scopeReasons(draft.get(h), c) };
-  });
-  const cmd = packet.commands || {};
-  const header = [
-    `# Verify chunk ${nn} — Claude Code ${packet.version}: ${items.length} of ${packet.candidates.length} draft verdict(s) in scope`,
-    `Only these are yours; the rest of the chunk is settled. Each entry: the evidence block the classifier had, then its draft and why it is in scope.`,
-    '',
-    `- write + check, one step: \`${cmd.writeVerify} <<'V'\` then a JSON array with one entry per in-scope key, \`[{"k":"k03","facing":"model","id":"…","name":"…","desc":"…","evidence":"…"}, …]\`, then \`V\` (the draft when it holds, your correction when it does not; merges with what is on disk).`,
-    `- bundle lookups, MANY per call: \`${cmd.query} <<'Q'\` then a JSON array of queries then \`Q\` (kinds: slice, fn, callers, refs, prop, guards, text, regex, trace, siblings, aliases, catalogue).`,
-  ].join('\n');
-  // Larger than one Read: part files beside verify-NN.md, read in one message.
-  return writeMarkdownParts(verifyMdFile(dir, nn), renderVerifyMd({ header, families, items }));
-}
-
-// Print the checker's verdict (first line PASS/FAIL) and, on a classify PASS,
-// write the verify scope and verify-NN.md (and its parts). The PASS line names
-// the verify packet's part count: the classify agent relays it in its receipt
-// and the workflow hands the verifier exactly those files. Returns the exit
-// code.
-export async function report(dir, m, nn, stage, r) {
+// Print the checker's verdict (first line PASS/FAIL). Returns the exit code.
+export function report(dir, m, nn, r) {
   const { cands } = loadChunk(dir, m, nn);
   if (r.problems.length) {
     const ps = keyedProblems(r.problems, cands);
-    console.log(`FAIL chunk ${nn} (${stage}): ${ps.length} problem(s)`);
+    console.log(`FAIL chunk ${nn} (classify): ${ps.length} problem(s)`);
     for (const p of ps.slice(0, 60)) console.log(`  - ${p}`);
     if (ps.length > 60) console.log(`  … ${ps.length - 60} more`);
     return 1;
   }
-  if (stage === 'classify') {
-    const md = await writeScopeArtifacts(dir, m, nn, r);
-    console.log(`PASS chunk ${nn} (classify): ${r.candidates} verdict(s); verify scope ${r.scope.length}; verify parts ${md.length} -> ${path.basename(scopeFile(dir, nn))}, ${md.map(f => path.basename(f)).join(', ')}`);
-  } else {
-    console.log(`PASS chunk ${nn} (verify): ${r.scope.length} in-scope verdict(s) audited of ${r.candidates}`);
-  }
+  console.log(`PASS chunk ${nn} (classify): ${r.candidates} verdict(s)`);
   return 0;
 }
 
@@ -374,7 +283,7 @@ export function identityProblems(merged, { cands, label, fragmentVerdicts = new 
   return out;
 }
 
-// Current verdicts (draft over verify) of the fragments of every join in this
+// Current verdicts of the fragments of every join in this
 // chunk, from whichever chunk holds them.
 export function fragmentVerdictsFor(dir, m, nn, cands, merged) {
   const want = new Set();

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Write a chunk's verdicts AND check them, in one step (one agent turn).
 //
-//   node tools/writeClassifyVerdicts.mjs <evidenceDir> <NN> [--stage classify|verify] [--replace] <<'V'
+//   node tools/writeClassifyVerdicts.mjs <evidenceDir> <NN> [--stage classify] [--replace] <<'V'
 //   [{"k":"k01","facing":"ui","id":null,"name":null,"desc":null,"evidence":"…"}, …]
 //   V
 //
@@ -9,11 +9,10 @@
 // writer fills the hash, chunk, bundleSha and corpusDigest from the packet,
 // sets id/name/desc to JSON null on a ui/internal verdict, MERGES the entries
 // into the verdict file already on disk (so a fix re-sends only the entries
-// it changes; --replace starts from an empty file), writes verdicts-NN.json
-// (classify) or verify-NN.json (verify), and runs the same check as
-// checkClassifyVerdicts.mjs. Output and exit code are the checker's: first
-// line PASS or FAIL, then the problems by key. A classify PASS also writes
-// verify-scope-NN.json and verify-NN.md.
+// it changes; --replace starts from an empty file), writes verdicts-NN.json,
+// and runs the same check as checkClassifyVerdicts.mjs. Output and exit code
+// are the checker's: first line PASS or FAIL, then the problems by key.
+// --stage verify is rejected.
 import fs from 'node:fs';
 import path from 'node:path';
 import {
@@ -23,7 +22,6 @@ import {
   evaluateChunk,
   report,
   verdictsFile,
-  verifyFile,
   readJson,
 } from './lib/classifyVerdicts.mjs';
 
@@ -34,8 +32,8 @@ const replace = args.includes('--replace');
 const inIdx = args.indexOf('--in');
 const pos = args.filter((a, i) => !a.startsWith('--') && !(stageIdx >= 0 && i === stageIdx + 1) && !(inIdx >= 0 && i === inIdx + 1));
 const [dirArg, chunkArg] = pos;
-if (!dirArg || chunkArg == null || !['classify', 'verify'].includes(stage)) {
-  console.error("usage: writeClassifyVerdicts.mjs <evidenceDir> <NN> [--stage classify|verify] [--replace] [--in file] <<'V' [...] V");
+if (!dirArg || chunkArg == null || stage !== 'classify') {
+  console.error("usage: writeClassifyVerdicts.mjs <evidenceDir> <NN> [--stage classify] [--replace] [--in file] <<'V' [...] V");
   process.exit(2);
 }
 const dir = path.resolve(dirArg);
@@ -56,7 +54,7 @@ try {
   incoming = Array.isArray(doc) ? doc : doc && Array.isArray(doc.verdicts) ? doc.verdicts : null;
   if (!incoming) throw new Error('expected a JSON array of verdicts (or {"verdicts":[…]})');
 } catch (e) {
-  console.log(`FAIL chunk ${nn} (${stage}): input is not usable — ${e.message}`);
+  console.log(`FAIL chunk ${nn} (classify): input is not usable — ${e.message}`);
   process.exit(1);
 }
 
@@ -85,11 +83,11 @@ for (const v of incoming) {
   entries.push(out);
 }
 if (unknown.length) {
-  console.log(`FAIL chunk ${nn} (${stage}): ${unknown.length} entr${unknown.length === 1 ? 'y names' : 'ies name'} no candidate of this chunk: ${unknown.slice(0, 12).join(', ')} — use the packet keys (k01…) or full hashes; nothing was written`);
+  console.log(`FAIL chunk ${nn} (classify): ${unknown.length} entr${unknown.length === 1 ? 'y names' : 'ies name'} no candidate of this chunk: ${unknown.slice(0, 12).join(', ')} — use the packet keys (k01…) or full hashes; nothing was written`);
   process.exit(1);
 }
 
-const file = stage === 'verify' ? verifyFile(dir, nn) : verdictsFile(dir, nn);
+const file = verdictsFile(dir, nn);
 const merged = new Map();
 if (!replace && fs.existsSync(file)) {
   try {
@@ -103,5 +101,4 @@ const order = packet.candidates.map(c => c.hash);
 const verdicts = order.filter(h => merged.has(h)).map(h => merged.get(h));
 fs.writeFileSync(file, JSON.stringify({ chunk: nn, bundleSha: m.bundle.sha256, corpusDigest: m.corpus.digest, verdicts }, null, 1));
 
-const r = evaluateChunk(dir, m, nn, { stage });
-process.exit(await report(dir, m, nn, stage, r));
+process.exit(report(dir, m, nn, evaluateChunk(dir, m, nn)));

@@ -379,11 +379,6 @@
     "version": "2.1.295",
     "why": ".describe() on the SDK background_tasks_changed system event: SDK control-protocol schema for host consumers, not sent to the model."
   },
-  "data-cloud-session-unverified-remote-branch-push-notice": {
-    "verdict": "not-model-facing",
-    "version": "2.1.295",
-    "why": "Cloud-session start notice on the non-environment path: reaches only the CLI warnings and SDK notices lines; /ultrareview returns before this branch (verified from the bundle)."
-  },
   "data-turn-handoff-hydrates-carried-lines-field": {
     "verdict": "not-model-facing",
     "version": "2.1.296",
@@ -398,5 +393,10 @@
     "verdict": "not-model-facing",
     "version": "2.1.296",
     "why": "[runner:fatal] line the self-hosted runner prints when RegisterRunner is refused; operator-facing process output, ruled ui by classify."
+  },
+  "data-managed-settings-x-whenunreadable-field": {
+    "verdict": "not-model-facing",
+    "version": "2.1.302",
+    "why": "Clause of the description string of the managed-settings bootstrap JSON schema (editor autocomplete, beside 'Structural reference for editor autocomplete'); the schema object is returned to config tooling, not sent as a prompt or tool schema. Sibling clauses are ruled internal in the classification cache."
   }
 }
