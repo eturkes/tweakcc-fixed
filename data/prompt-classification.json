@@ -26729,7 +26729,12 @@
     "name": "Skill Reference: Data-viz Components",
     "desc": "Data-viz skill reference file (references/components.md) listing the component pieces a chart is assembled from"
   },
-  "9efc58fdbddc160fad45ed8ee6e34a2c429b5de6": { "facing": "internal" },
+  "9efc58fdbddc160fad45ed8ee6e34a2c429b5de6": {
+    "facing": "model",
+    "id": "slash-command-remote-workflow-script-nondeterministic",
+    "name": "Slash Command: Remote Workflow Script Nondeterministic",
+    "desc": "Result line when a remote-launched workflow script uses Date.now(), Math.random() or new Date(), which break resume."
+  },
   "9f05bf156847e238de0605b984e7f0142060e678": { "facing": "ui" },
   "9f11a7a1f4f50500a4511ae9eccbc17240e14273": {
     "facing": "model",
@@ -57989,12 +57994,7 @@
     "name": "Tool Result: Cloud Session Local Changes Bundle Failed",
     "desc": "Cloud-session create-fail message when working-tree upload fails without a detail string, including the unsupported_layout recovery."
   },
-  "68afa647fe2eebf82449df56ed9ca24deb9d39a8": {
-    "facing": "model",
-    "id": "tool-result-worktree-create-pr-fetch-failed",
-    "name": "Tool Result: Worktree Create Pr Fetch Failed",
-    "desc": "Error text from worktree create when fetching PR/MR head from origin fails, surfaced as the tool result."
-  },
+  "68afa647fe2eebf82449df56ed9ca24deb9d39a8": { "facing": "ui" },
   "59d2e1806f66ea41ed567a4e76e1381c2cf9c02a": { "facing": "internal" },
   "3f2fbc7ae321bc10174250bf5b7a2254d71e9db8": {
     "facing": "model",
@@ -94429,12 +94429,7 @@
     "name": "Tool result: worktree resume foreign repo",
     "desc": "Error when the existing worktree directory belongs to a different repository."
   },
-  "8eed4c48ecde12c443ec7cc9b5051c4611e2c916": {
-    "facing": "model",
-    "id": "tool-result-worktree-create-pr-fetch-failed",
-    "name": "Tool result: worktree create PR fetch failed",
-    "desc": "Error when fetching a PR/MR for a new worktree failed."
-  },
+  "8eed4c48ecde12c443ec7cc9b5051c4611e2c916": { "facing": "ui" },
   "ee39aea425771cc106c8607c40edca335431742f": {
     "facing": "model",
     "id": "tool-result-worktree-create-containment-failed",
@@ -124230,12 +124225,7 @@
     "name": "Tool result: scan secrets none found",
     "desc": "Secret scan result line when no known key or token format was found and nothing was skipped."
   },
-  "8135058490e5641dfc4f19fe7e05661f26d2c973": {
-    "facing": "model",
-    "id": "tool-result-worktree-create-pr-fetch-failed",
-    "name": "Tool result: worktree create PR fetch failed",
-    "desc": "Error when fetching a PR/MR for a new worktree failed."
-  },
+  "8135058490e5641dfc4f19fe7e05661f26d2c973": { "facing": "ui" },
   "1054f804d6e9a08345a96485afeb8a86f649a7ef": {
     "facing": "model",
     "id": "tool-result-workflow-adopted-resume-compile-failed",
@@ -126622,5 +126612,11 @@
     "id": "tool-result-mcp-server-needs-reauth-run-mcp-hint",
     "name": "Tool Result: MCP server needs reauth run /mcp hint",
     "desc": "Suffix appended to the MCP sign-in-again error in an interactive CLI session, telling the user to run /mcp to re-authenticate"
+  },
+  "572e9f229f7acb2422028cc19d809a1c6be64f79": {
+    "facing": "model",
+    "id": "tool-result-scan-secrets-could-not-run-reason",
+    "name": "Tool Result: scan_secrets could not run (reason)",
+    "desc": "Result line opening every scan_secrets refusal, followed by the reason the scan could not run."
   }
 }

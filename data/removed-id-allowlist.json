@@ -4560,5 +4560,12 @@
     "verdict": "archived",
     "version": "2.1.302",
     "why": "2.1.302 split the sentence: the base is tool-result-mcp-server-needs-reauth and the connector-settings hint is a separate constant. Override matched pristine. Archived to ~/.tweakcc/orphans-removed-for-2.1.302/."
+  },
+  "tool-result-worktree-create-pr-fetch-failed": {
+    "verdict": "archived",
+    "version": "2.1.302",
+    "facing": "ui",
+    "hash": "8135058490e5641dfc4f19fe7e05661f26d2c973",
+    "why": "ruled ui in the 2026-10-18 rulings: R9e only builds it when a PR number is passed, and only the CLI paths pass one (Noi @11424026 returns it to startup, Mt @38030827 writes it to stderr and exits). EnterWorktree and agent worktrees never pass prNumber. Override matched pristine."
   }
 }

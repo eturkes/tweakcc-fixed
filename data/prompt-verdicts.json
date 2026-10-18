@@ -74276,5 +74276,100 @@
     "verdict": "pristine-keep",
     "version": "2.1.302",
     "why": "Strongest cut: none; moved-to-plugin-skill is the alternative return. Carries /plugin, frozen and unique."
+  },
+  "slash-command-remote-workflow-script-nondeterministic": {
+    "verdict": "pristine-keep",
+    "version": "2.1.302",
+    "why": "Strongest cut: wipe-merge onto tool-result-workflow-script-determinism-error. Fails: this line is the error result oAn returns for a remote-launched script (s(\"nondeterminism\",…) at 22914088); the other carrier is emitted from a different module on a different path, so it does not co-render with this result. The sentence is also frozen by the tripwire (enumeration Date.now()/Math.random()/new Date(), 'must', 'after'), so no rewording trim either. Wiping would leave the remote refusal with no reason."
+  },
+  "system-prompt-project-thread-marker-answers-nothing-clause-answers-nothing-label": {
+    "verdict": "pristine-keep",
+    "version": "2.1.302",
+    "why": "Strongest cut: wipe. Fails the external-reference rule: the label is a marker another prompt names, through the same const se (bundle refs at 8301417), so the explaining text keys on this exact literal. It is frozen; changing or wiping it would break that rule's match."
+  },
+  "system-prompt-project-thread-reply-marker-consent-next-after-reply-marker": {
+    "verdict": "pristine-keep",
+    "version": "2.1.302",
+    "why": "Strongest cut: wipe or shorten. Fails the external-reference rule: the consent rule quotes this marker through the same const re (bundle ref 8300378), so the literal is frozen text another prompt depends on."
+  },
+  "system-reminder-mcp-servers-need-auth-without-naming-command": {
+    "verdict": "pristine-keep",
+    "version": "2.1.302",
+    "why": "Strongest cut: wipe. Fails: this is the Qve() arm of the qn ternary, spliced mid-sentence into the parent reminder ('tell them that it needs to be authorized — … —'). An empty value would leave a broken dash pair and drop the only instruction not to name a command in this host. The body opensWithSlot (${on}), and it is the unique arm text for its branch."
+  },
+  "tool-description-agent-simple-usage-notes-fork-exception": {
+    "verdict": "pristine-keep",
+    "version": "2.1.302",
+    "why": "Strongest cut: wipe-merge onto system-prompt-forked-agent-guidance ('it inherits your full conversation context'). Fails: co-render with this Agent-description fragment is not proven from the emission sites, and the fragment qualifies the adjacent sentence 'every … call starts fresh'. Without it that sentence is false for fork. It is also frozen by the tripwire (parameter name subagent_type, enum value \"fork\")."
+  },
+  "tool-description-poll-no-pending-events-caveat-sentinel": {
+    "verdict": "pristine-keep",
+    "version": "2.1.302",
+    "why": "Strongest cut: wipe. Fails the external-reference and tripwire rules: this is a sentinel that the code compares by equality (_sn) and returns as the literal tool result. The caveat Ui and the Poll schema quote it via ${Lft}. It is frozen verbatim."
+  },
+  "tool-result-artifact-identical-resubmission-no-edits-applied-not-viewed": {
+    "verdict": "pristine-keep",
+    "version": "2.1.302",
+    "why": "Strongest cut: wipe. Fails: this is the e===void 0 arm of the reason ternary in Nt, spliced into the parent refusal sentence ('…unchanged since it was refused ${o}'). An empty value leaves 'refused' with no reason, and the sibling results are alternatives, not co-rendering carriers."
+  },
+  "tool-result-artifact-identical-resubmission-unviewed-source-changed-publish-goes-through": {
+    "verdict": "pristine-keep",
+    "version": "2.1.302",
+    "why": "Strongest cut: wipe. Fails: it is the r-arm value spliced mid-sentence into merge guidance. Wiping leaves the conditional 'if … content,' with no consequence, and the seen-same-turn advice is an alternative result that does not co-render."
+  },
+  "tool-result-artifact-identical-resubmission-unviewed-source-changed-publish-unchanged-goes-through": {
+    "verdict": "pristine-keep",
+    "version": "2.1.302",
+    "why": "Strongest cut: wipe. Fails: it is the non-r arm of R, spliced into merge guidance's conditional sentence. It is the only text completing that sentence on this branch, and the other arm is an alternative."
+  },
+  "tool-result-artifact-publish-left-out-copy-entry-no-file": {
+    "verdict": "pristine-keep",
+    "version": "2.1.302",
+    "why": "Strongest cut: wipe. Fails: it is the r===Vo arm of the per-entry reason ternary in Ki, spliced into '(a copy of … in artifact …, ${s})'. Wiping leaves a dangling comma and no reason. The other arms are alternatives."
+  },
+  "tool-result-bash-sandbox-windows-self-exec-permission-not-given-needs-install": {
+    "verdict": "pristine-keep",
+    "version": "2.1.302",
+    "why": "Strongest cut: wipe. Fails: it is the fallback text Gie uses when the stripped message is empty (r===\"\"), and later regex replacements run over it. Wiping leaves the sandbox failure with no detail, and the not-provisioned result does not co-render on this path. The literal is also one the bundle matches by regex, so it is frozen."
+  },
+  "tool-result-hook-blocking-git-bash-not-found-install-git": {
+    "verdict": "pristine-keep",
+    "version": "2.1.302",
+    "why": "Strongest cut: none possible. The body is a single sentence containing a URL (a tripwire token), it is shared through UF by 4 hook and skill error messages, and no other prompt says it. Wiping would break all four sentences ('${UF} and start a new session')."
+  },
+  "tool-result-mcp-server-config-authorization-header-rejected-new-task-rejected-header": {
+    "verdict": "pristine-keep",
+    "version": "2.1.302",
+    "why": "Strongest cut: wipe. Fails: this is the n string both siblings wrap ('${n} (update it, …)'). Wiping leaves only a remedy with no failure named. The headersHelper result is another error, not a co-render. It also names the Authorization header (a tripwire token)."
+  },
+  "tool-result-mcp-server-headers-helper-credential-rejected-statement": {
+    "verdict": "pristine-keep",
+    "version": "2.1.302",
+    "why": "Strongest cut: wipe. Fails: this is the n string the helperRejected siblings wrap, and it is the only statement of the failure. It also names headersHelper (a tripwire token) and carries a slot that must be kept."
+  },
+  "tool-result-plugin-hook-event-not-deliverable-post-failed": {
+    "verdict": "pristine-keep",
+    "version": "2.1.302",
+    "why": "Strongest cut: wipe. Fails: it is the non-mt arm of gt, spliced into '${y} event ${gt}: ${vt}'. Wiping yields 'X event : err', and the alternative arm never co-renders."
+  },
+  "tool-result-read-file-unsupported-encoding-note-fffd": {
+    "verdict": "pristine-keep",
+    "version": "2.1.302",
+    "why": "Strongest cut: wipe. Fails: it is the only text telling the model that the U+FFFD characters in a not_utf8 Read are replacement artifacts, not file content. That cannot be inferred, and it guards against writing the replacement characters back. It also contains a code point (a tripwire token)."
+  },
+  "tool-result-scan-secrets-could-not-run-reason": {
+    "verdict": "pristine-keep",
+    "version": "2.1.302",
+    "why": "Strongest cut: wipe. Fails the external-reference rule: data-reference tells the model the scan failed when the answer 'says `Result: the scan could not run`' or has no `Result:` line, so this literal is a sentinel another prompt keys on. It is frozen verbatim."
+  },
+  "tool-result-served-bash-truncated-output-saved-file-whole-output": {
+    "verdict": "pristine-keep",
+    "version": "2.1.302",
+    "why": "Strongest cut: wipe. Fails: it is the subject of the parent sentence ('${s} in the file ${path}'). Wiping yields ' in the file X.', which loses the claim that the file holds the whole output. This is a rewrite-style splice that must stay a completing phrase."
+  },
+  "tool-result-served-read-result-too-large-fewer-pages-narrow-the-search": {
+    "verdict": "pristine-keep",
+    "version": "2.1.302",
+    "why": "Strongest cut: wipe. Fails: it is the only remedy on the Grep/Glob arm of wn. Wiping leaves 'result is too large to send back.' with no next step, and no sibling co-renders on this arm."
   }
 }
