@@ -3,7 +3,7 @@ import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { probeModelEnvironmentArgs } from './probeEnvironment.mjs';
+import { probeCommandPrefix, probeModelEnvironmentArgs } from './probeEnvironment.mjs';
 
 describe('probe model environment arguments', () => {
   it('leaves an absent model to the existing tmux environment', () => {
@@ -15,6 +15,17 @@ describe('probe model environment arguments', () => {
       '-e',
       'ANTHROPIC_MODEL=',
     ]);
+  });
+});
+
+describe('probe command prefix', () => {
+  it('drops host credentials and base URL before the probed binary starts', () => {
+    const r = spawnSync(
+      '/bin/sh',
+      ['-c', probeCommandPrefix() + 'echo "${ANTHROPIC_AUTH_TOKEN-u}${ANTHROPIC_API_KEY-u}${ANTHROPIC_BASE_URL-u}"'],
+      { encoding: 'utf8', env: { ...process.env, ANTHROPIC_AUTH_TOKEN: 't', ANTHROPIC_API_KEY: 'k', ANTHROPIC_BASE_URL: 'http://x' } }
+    );
+    expect(r.stdout.trim()).toBe('uuu');
   });
 });
 

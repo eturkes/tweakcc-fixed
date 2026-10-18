@@ -2428,14 +2428,21 @@ const NEW_PROMPT_ASSIGNMENTS = [
     id: 'tool-description-croncreate',
     description:
       'Describes the CronCreate tool for enqueuing one-shot or recurring cron-based jobs with jitter and off-minute scheduling guidance',
+    // Later releases added the jitter constants and the CronList name: the
+    // map below is the 12-slot shape (identical to the carried map).
     identifierMap: {
       0: 'CRON_DURABILITY_SECTION',
       1: 'IS_MONITOR_TOOL_ENABLED_FN',
       2: 'CRON_CREATE_TOOL_NAME',
       3: 'MONITOR_TOOL_NAME',
       4: 'CRON_DURABLE_RUNTIME_NOTE',
-      5: 'CANCEL_TIMEFRAME_DAYS',
-      6: 'CRON_DELETE_TOOL_NAME',
+      5: 'MATH_OBJECT',
+      6: 'RECURRING_JITTER_FRACTION',
+      7: 'RECURRING_JITTER_CAP_MS',
+      8: 'ONE_SHOT_JITTER_MAX_MS',
+      9: 'CRON_LIST_TOOL_NAME',
+      10: 'CANCEL_TIMEFRAME_DAYS',
+      11: 'CRON_DELETE_TOOL_NAME',
     },
   },
   // 2.1.167

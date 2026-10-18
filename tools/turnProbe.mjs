@@ -30,7 +30,7 @@ import http from 'node:http';
 import https from 'node:https';
 import os from 'node:os';
 import path from 'node:path';
-import { probeModelEnvironmentArgs } from './lib/probeEnvironment.mjs';
+import { probeCommandPrefix, probeModelEnvironmentArgs } from './lib/probeEnvironment.mjs';
 
 const args = process.argv.slice(2);
 const argOf = f => {
@@ -206,6 +206,7 @@ const main = async () => {
 
   tmux('kill-session', '-t', SESSION);
   const cmd =
+    probeCommandPrefix() +
     `ANTHROPIC_BASE_URL=http://127.0.0.1:${port} ${JSON.stringify(bin)} ${SKIP_PERMISSIONS}${EXTRA_ARGS}; ` +
     `echo "[EXIT=$?]"; sleep 600`;
   const started = tmux(
