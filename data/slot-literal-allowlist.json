@@ -4182,5 +4182,288 @@
     "desc": "Tells the model to remove the MCP server again if the check shows it is still configured.",
     "text": "remove the server again if it is still listed",
     "reason": "In Q9t the remove branch of `b=r===\"add\"?…:\"remove the server again if it is still listed\"` binds b, interpolated as the final `then ${b}.` in the unconfirmed-write error template; it is the conditional remedy instruction for a removal."
+  },
+  "fe0a480547c1bf6c": {
+    "promptId": "tool-result-read-file-unsupported-encoding-note",
+    "label": "TOOL_RESULT_READ_FILE_UNSUPPORTED_ENCODING_NOTE_VAR_1",
+    "verdict": "catalogue",
+    "id": "tool-result-read-file-unsupported-encoding-note-fffd",
+    "name": "Tool Result: Read file unsupported encoding note — undecodable bytes shown as U+FFFD",
+    "desc": "For not-UTF-8 files the note states that the undecodable bytes appear above as U+FFFD.",
+    "text": " Its undecodable bytes show above as U+FFFD.",
+    "reason": "$Gs @2316809 sets s to this sentence only for e==='not_utf8' and returns it inside the bracketed note; its sole caller is YOn @13038259 (KOn.set(Jn,$Gs(vt.notText)) in the Read tool), and trace reaches a tool-result-content [model] sink @13022352. It tells the model the U+FFFD characters are decode artifacts, a fact it acts on."
+  },
+  "62db84a271a55f77": {
+    "promptId": "tool-result-bash-sandbox-windows-self-exec-blocked-despite-permission",
+    "promptIds": [
+      "tool-result-bash-sandbox-windows-self-exec-permission-not-given"
+    ],
+    "label": "TOOL_RESULT_BASH_SANDBOX_WINDOWS_SELF_EXEC_BLOCKED_DESPITE_PERMISSION_VAR_1",
+    "verdict": "catalogue",
+    "id": "tool-result-bash-sandbox-windows-self-exec-permission-not-given-needs-install",
+    "name": "Tool Result: Windows sandbox — sandbox needs a one-time install",
+    "desc": "Fallback sandbox-failure detail (Gie's text when the sandbox-runtime message is only its install notice) stating the Windows sandbox needs a one-time install.",
+    "text": "Windows sandbox needs a one-time install.",
+    "reason": "In Gie @6712492 the literal is y's fallback when r (e with the install notice stripped) is empty. The self-exec host is reached only when Qx(e) matches the CreateProcessWithLogonW regex, so r is almost never empty there. The literal's real model route is Gie's bare `return y` (Qx false): yF @6870784 stores it in initFailureReason, and ev @6860286 throws it as P0 `Sandbox is enabled but failed to initialize: ${s}` out of sandboxed Bash, an is_error tool_result. It is a model-facing fact (a one-time install is needed), so catalogue it, but under ONE id shared with the slot-1 row. Keep the slot-1 id; the slot-0 id is dropped."
+  },
+  "f42778fc10548413": {
+    "promptId": "system-prompt-project-thread-reply-marker-consent",
+    "label": "SYSTEM_PROMPT_PROJECT_THREAD_REPLY_MARKER_CONSENT_VAR_0",
+    "verdict": "catalogue",
+    "id": "system-prompt-project-thread-reply-marker-consent-next-after-reply-marker",
+    "name": "System Prompt: Project thread reply marker consent — \"next after this session's last delivered reply\" marker",
+    "desc": "Marker wording on a thread message saying it came next after this session's last delivered reply, which the consent rule keys on.",
+    "text": "next after this session's last delivered reply",
+    "reason": "No name collision. Binding re @8289217 is read at @8300378 directly in this host (`A marker that says \"${re}\": ...`). It is also read in Yws @8289336, whose marker CKe @10681533 puts into user text blocks of b4t (@10688106/@10688673/@10691576, text-block [model] sinks). The model has to match this exact marker wording between the system prompt rule and the message marker, so it is a matched marker literal, not glue. That is consistent with its sibling se (921244bf810f3802), which was ruled catalogue."
+  },
+  "af4af372bb08518a": {
+    "promptId": "tool-result-plugin-skill-prompt-called-with-bad-frontmatter",
+    "label": "TOOL_RESULT_PLUGIN_SKILL_PROMPT_CALLED_WITH_BAD_FRONTMATTER_VAR_0",
+    "verdict": "glue",
+    "text": " that is no text",
+    "reason": "xmt @9102135 (the Mmt['skill.prompt'] payload normaliser, called from $i @14036763) builds y=`a ${s} that is no text`, where s is the offending field name, and throws Oe(`$.skill.prompt: called with ${y}`). The literal is the complement of a noun phrase naming a non-string field, the same shape as its sibling 'a frontmatter that ' ruled glue in slot-2. It carries no instruction the model acts on."
+  },
+  "ce6b5a4f6108f757": {
+    "promptId": "tool-result-plugin-hook-event-not-deliverable",
+    "label": "TOOL_RESULT_PLUGIN_HOOK_EVENT_NOT_DELIVERABLE_VAR_1",
+    "verdict": "catalogue",
+    "id": "tool-result-plugin-hook-event-not-deliverable-post-failed",
+    "name": "Tool Result: Plugin hook event not deliverable — could not be posted to the hooks worker",
+    "desc": "Reason text saying the hook event could not be posted to the hooks worker.",
+    "text": "could not be posted to the hooks worker",
+    "reason": "In Gkn's promise executor @12070051, gt picks this phrase over 'is not plain data' when posting the dispatch to the hooks worker throws. It rejects with Oe(`${y} event ${gt}: ${vt}`) through dispatch @12080198 → vvr @4958903, whose catch rethrows unless rt() recovers. The host is all slots, and this phrase is its only failure statement. Trace stays open past vvr, so facing rests on the host's existing model classification."
+  },
+  "1e1f642431de4bf8": {
+    "promptId": "system-prompt-windows-sandbox-excluded-commands-remedy",
+    "promptIds": [
+      "system-prompt-windows-sandbox-allow-read-tool-folder-remedy"
+    ],
+    "label": "SYSTEM_PROMPT_WINDOWS_SANDBOX_EXCLUDED_COMMANDS_REMEDY_VAR_0",
+    "verdict": "glue",
+    "text": "their user settings",
+    "reason": "Ge @13052742 = nn('userSettings')?'their user settings':'the managed or `--settings` configuration'. It is read at @13054012 (excludedCommands remedy) and @13056467 (allowRead remedy), only as the noun phrase naming where the setting goes. The instruction lives in the host. Same verdict as the slot-2 row."
+  },
+  "d036cad1985dba41": {
+    "promptId": "system-prompt-windows-sandbox-allow-read-tool-folder-remedy",
+    "promptIds": ["system-prompt-windows-sandbox-excluded-commands-remedy"],
+    "label": "SYSTEM_PROMPT_WINDOWS_SANDBOX_ALLOW_READ_TOOL_FOLDER_REMEDY_VAR_0",
+    "verdict": "glue",
+    "text": "the managed or `--settings` configuration",
+    "reason": "Other arm of Ge @13052742, read at @13056467 as `allowRead\\` in ${Ge}`. It only names the settings location; the remedy is host text."
+  },
+  "0ecb2cd034875c58": {
+    "promptId": "tool-result-artifact-publish-left-out-copy-entry",
+    "label": "TOOL_RESULT_ARTIFACT_PUBLISH_LEFT_OUT_COPY_ENTRY_VAR_2",
+    "verdict": "catalogue",
+    "id": "tool-result-artifact-publish-left-out-copy-entry-no-file",
+    "name": "Tool result: artifact publish left-out copy entry — source has no file there",
+    "desc": "Per-entry reason that the copied-from path has no file at the source.",
+    "text": "which has no file there",
+    "reason": "In Ki @16513313, s is this phrase when why===Vo (Vo='no_file' @16511206). It is interpolated into each entry, which Gi/En join into the 'Left out: ...' artifact publish tool result. It states the specific fact that the copy source had no file at that path, unlike the generic 'left out by the server' arms (ruled glue)."
+  },
+  "7f58b7f41564b7aa": {
+    "promptId": "tool-result-artifact-identical-resubmission-no-edits-applied",
+    "promptIds": [
+      "tool-result-artifact-identical-resubmission-resent-unchanged"
+    ],
+    "label": "TOOL_RESULT_ARTIFACT_IDENTICAL_RESUBMISSION_NO_EDITS_APPLIED_VAR_1",
+    "verdict": "catalogue",
+    "id": "tool-result-artifact-identical-resubmission-no-edits-applied-not-viewed",
+    "name": "Tool Result: artifact identical resubmission — refused because live version not viewed",
+    "desc": "Reason clause saying the content was refused because the model had not viewed the artifact's live version.",
+    "text": "because you had not viewed this artifact's live version",
+    "reason": "In Nt @23902633, o is this clause when e===void 0. Both arms of n splice it into the refusal text: `...unchanged since it was refused ${o}${mr}` (this host) and `...already refused ${o}, resent unchanged` (the slot-2 host). It states why the content was refused. ONE id for this hash: keep this one and drop slot-2's '...resent-unchanged-unviewed-live-version-reason'."
+  },
+  "3e3b98abf7cea4a8": {
+    "promptId": "tool-result-artifact-identical-resubmission-resent-unchanged",
+    "promptIds": [
+      "tool-result-artifact-identical-resubmission-no-edits-applied"
+    ],
+    "label": "TOOL_RESULT_ARTIFACT_IDENTICAL_RESUBMISSION_RESENT_UNCHANGED_VAR_1",
+    "verdict": "glue",
+    "text": "against the newer version ",
+    "reason": "Nt @23902633 builds o=`against the newer version ${e}`. The literal only prefixes the version value; the refusal meaning is host text. Same verdict for the slot-1 row of this hash."
+  },
+  "1f181452474705f8": {
+    "promptId": "tool-result-artifact-diff-unshown-summary",
+    "promptIds": [
+      "tool-result-artifact-stale-guard-identical-author-content",
+      "tool-description-artifact-stale-publish-line-diff-guidance"
+    ],
+    "label": "TOOL_RESULT_ARTIFACT_DIFF_UNSHOWN_SUMMARY_VAR_0",
+    "verdict": "glue",
+    "text": "the content you just sent",
+    "reason": "Ne @23912329 = R?'your file at file_path (as it is, before the edits)':'the content you just sent', read at @23917750, @23918212 and @23919933 only as `Against ${Ne}` / `Compared with ${Ne}`. It is a noun phrase naming the compared content, glue in all three hosts."
+  },
+  "4e925cfac2942617": {
+    "promptId": "tool-result-scan-secrets-none-found-partial",
+    "label": "TOOL_RESULT_SCAN_SECRETS_NONE_FOUND_PARTIAL_VAR_0",
+    "verdict": "glue",
+    "text": "file or folder was",
+    "reason": "Ge @37858937: f=[`${r.length} ${I(r.length,'file or folder was','files or folders were')} not scanned`,...].join('; '). I is the pluralizer (also I(i.length,'file') @37859134), so the literal does flow into f, but only as the count's noun and verb."
+  },
+  "2d483e9c23d2d5a2": {
+    "promptId": "tool-result-mcp-server-headers-helper-credential-rejected",
+    "promptIds": [
+      "tool-result-mcp-server-headers-helper-credential-rejected-new-task"
+    ],
+    "label": "TOOL_RESULT_MCP_SERVER_HEADERS_HELPER_CREDENTIAL_REJECTED_VAR_0",
+    "verdict": "catalogue",
+    "id": "tool-result-mcp-server-headers-helper-credential-rejected-statement",
+    "name": "MCP HeadersHelper Credential Rejected — server rejected headersHelper credential",
+    "desc": "Names the failure: the MCP server rejected the credential produced by its headersHelper.",
+    "text": "\" rejected the credential from its headersHelper",
+    "reason": "v2.helperRejected builds n=`MCP server \"${e}\" rejected the credential from its headersHelper` and returns it with either remedy suffix. Trace from @39460427 goes through @39632004 → YT error → tool-throw [model] sink @39587712. The literal is the failure statement itself. ONE id for this hash: keep this one and drop slot-2's '...-new-task-headers-helper-rejected-cause'."
+  },
+  "0854b8405a7c26ac": {
+    "promptId": "tool-result-served-bash-truncated-output-saved-file",
+    "label": "TOOL_RESULT_SERVED_BASH_TRUNCATED_OUTPUT_SAVED_FILE_VAR_1",
+    "verdict": "glue",
+    "text": " of the command's output are",
+    "reason": "D @46803051: s=`The first ${Zt(kX)} of the command's output are`. This literal is only the tail joining the size value to 'in the file ${path}'; 'The first' and the host carry the meaning. It is spliced into the served Bash stdout header r."
+  },
+  "88c55ff6f0b9159a": {
+    "promptId": "tool-description-poll-no-pending-events-caveat",
+    "promptIds": ["tool-description-poll-idle-behavior"],
+    "label": "TOOL_DESCRIPTION_POLL_NO_PENDING_EVENTS_CAVEAT_VAR_0",
+    "verdict": "catalogue",
+    "id": "tool-description-poll-no-pending-events-caveat-sentinel",
+    "name": "Tool Description: Poll no pending events caveat — the \"(no pending events)\" sentinel result",
+    "desc": "Sentinel text the Poll tool returns when no event was delivered, which the caveat says does not mean nothing is queued.",
+    "text": "(no pending events)",
+    "reason": "Lft @5205781 is the Poll sentinel. IAo returns it as the idle result, _sn compares against it, and it is quoted in Ui @5205886 (this caveat) and in OAo @5206422 (the Poll description). The model must recognise this literal result. ONE id for this hash: keep this one and drop slot-2's '...poll-idle-behavior-poll-idle-behavior-no-events-result' (which also doubles the prefix)."
+  },
+  "921244bf810f3802": {
+    "promptId": "system-prompt-project-thread-unanchored-marker-consent",
+    "promptIds": ["system-prompt-project-thread-marker-answers-nothing-clause"],
+    "label": "SYSTEM_PROMPT_PROJECT_THREAD_UNANCHORED_MARKER_CONSENT_VAR_0",
+    "verdict": "catalogue",
+    "id": "system-prompt-project-thread-marker-answers-nothing-clause-answers-nothing-label",
+    "name": "System Prompt: Project thread marker — \"answers nothing above it\" marker text",
+    "desc": "Marker wording on a thread message that tells the model it answers nothing earlier in the transcript.",
+    "text": "answers nothing above it",
+    "reason": "se @8289269 is read in Yws @8289347, whose marker goes into model user text blocks via CKe @10681533 → b4t. It is also read @8301417 in this host (`Any other marker, whether it says \"${se}\"...`). It is a marker literal the model matches. ONE id for this hash: keep this one and drop slot-2's '...marker-answers-nothing-clause-answers-nothing-label'."
+  },
+  "ce3fca90847a1594": {
+    "promptId": "tool-result-hook-blocking-git-bash-not-found",
+    "promptIds": [
+      "tool-result-hook-git-bash-not-found",
+      "tool-result-skill-requires-git-bash"
+    ],
+    "label": "TOOL_RESULT_HOOK_BLOCKING_GIT_BASH_NOT_FOUND_VAR_0",
+    "verdict": "catalogue",
+    "id": "tool-result-hook-blocking-git-bash-not-found-install-git",
+    "name": "Tool Result: Git Bash not found — install Git for Windows",
+    "desc": "Remedy telling the user to install Git for Windows (with download URL) so bash hooks and skills can run.",
+    "text": "Install Git for Windows (https://git-scm.com/downloads/win)",
+    "reason": "UF @10116940 has four reads: Kfe @10117326 (informational notice), this host @10195409, the thrown hook Error @12657582 and the skill requires-bash Error @12966062. Each splices it as the remedy instruction with the download URL. This hash has three hosts across slots 1-2, so it needs ONE id: keep 'tool-result-hook-git-bash-not-found-install-git' and drop '-hook-blocking-...-install-git' and slot-2's 'tool-result-skill-requires-git-bash-install-git-for-windows'."
+  },
+  "115ba6a4009f285a": {
+    "promptId": "tool-description-agent-simple-usage-notes",
+    "label": "TOOL_DESCRIPTION_AGENT_SIMPLE_USAGE_NOTES_VAR_15",
+    "verdict": "catalogue",
+    "id": "tool-description-agent-simple-usage-notes-fork-exception",
+    "name": "Tool Description: Agent (simple usage notes) — fork exception to fresh start",
+    "desc": "Notes that subagent_type \"fork\" is the exception to calls starting fresh because it inherits the parent context.",
+    "text": " (except subagent_type: \"fork\", which inherits your context)",
+    "reason": "zn @13110633 = ke?' (except subagent_type: \"fork\", which inherits your context)':''. It is read @13110937 (yn=`${tn}${zn}.`) and @13112195 (after the continue/starts-fresh clause) in the Agent tool description. It adds a real exception to the 'every call starts fresh' rule and names the subagent_type value."
+  },
+  "e66cd1770b5387b7": {
+    "promptId": "tool-result-artifact-publish-left-out-copy-entry",
+    "label": "TOOL_RESULT_ARTIFACT_PUBLISH_LEFT_OUT_COPY_ENTRY_VAR_2",
+    "verdict": "glue",
+    "text": "left out by the server for the reason ",
+    "reason": "In Ki @16513313, s=`left out by the server for the reason ${_(r)}` when Wo matches. The literal only prefixes the server's reason code; the instructions are in Gi/En."
+  },
+  "38a9a3430d03fe1a": {
+    "promptId": "tool-result-artifact-identical-resubmission-unviewed-source-changed",
+    "label": "TOOL_RESULT_ARTIFACT_IDENTICAL_RESUBMISSION_UNVIEWED_SOURCE_CHANGED_VAR_8",
+    "verdict": "catalogue",
+    "id": "tool-result-artifact-identical-resubmission-unviewed-source-changed-publish-goes-through",
+    "name": "Tool Result: Artifact resubmission saved source changed — resent publish will go through",
+    "desc": "States that if the file already has that version's content, the publish sent again will be accepted.",
+    "text": "the publish sent again will then go through",
+    "reason": "In uis, R @23933608 = r?'the publish sent again will then go through':'publishing it unchanged will then go through'. It is read @23934106 (this host's h.file==='changed' text) and @23934255. It promises the outcome of the conditional re-publish the model is told to do. Consistent with its sibling 80446792d7ff6eb6, ruled catalogue in slot-2."
+  },
+  "489b26668a05a1aa": {
+    "promptId": "tool-result-scan-secrets-none-found-partial",
+    "label": "TOOL_RESULT_SCAN_SECRETS_NONE_FOUND_PARTIAL_VAR_0",
+    "verdict": "glue",
+    "text": "files or folders were",
+    "reason": "Ge @37858937: I(r.length,'file or folder was','files or folders were'). I is the pluralizer (I(i.length,'file') @37859134, I(o,'file') @37859382), so it returns this argument when the count is plural, and the value does flow into f, the slot. It is not a resolution artifact. It is only the count's noun/verb, glue, matching the singular sibling 4e925cfac2942617."
+  },
+  "42107200e86d721b": {
+    "promptId": "tool-result-mcp-server-config-authorization-header-rejected-new-task",
+    "promptIds": [
+      "tool-result-mcp-server-config-authorization-header-rejected"
+    ],
+    "label": "TOOL_RESULT_MCP_SERVER_CONFIG_AUTHORIZATION_HEADER_REJECTED_NEW_TASK_VAR_0",
+    "verdict": "catalogue",
+    "id": "tool-result-mcp-server-config-authorization-header-rejected-new-task-rejected-header",
+    "name": "MCP Authorization Header Rejected — server rejected the configured Authorization header",
+    "desc": "States that the MCP server rejected the Authorization header in its config.",
+    "text": "\" rejected the Authorization header in its config",
+    "reason": "v2.headerRejected builds n=`MCP server \"${e}\" rejected the Authorization header in its config` under both Qve() arms. Trace from @39460691 goes through @39632028 → YT → tool-throw [model] sink @39587712. It states the failure cause. ONE id for this hash: keep this one and drop slot-2's '...-authorization-header-rejected-authorization-header-rejected-cause'."
+  },
+  "816a831619f7f9c5": {
+    "promptId": "tool-result-served-bash-truncated-output-saved-file",
+    "label": "TOOL_RESULT_SERVED_BASH_TRUNCATED_OUTPUT_SAVED_FILE_VAR_1",
+    "verdict": "catalogue",
+    "id": "tool-result-served-bash-truncated-output-saved-file-whole-output",
+    "name": "Tool Result: Served Bash truncated output saved file — whole output is in the file",
+    "desc": "Tells the model the saved file contains the command's whole output.",
+    "text": "The command's whole output is",
+    "reason": "D @46803051: s='The command's whole output is' when persistedOutputSize < kX (or not a number). It is spliced into r, which prefixes the served Bash result stdout (`...${s} in the file ${t.persistedOutputPath}`). It is the complete fact that the saved file holds the whole output, so the model can Read it instead of re-running."
+  },
+  "7499467959f23b1a": {
+    "promptId": "tool-result-plugin-skill-prompt-called-with-bad-frontmatter",
+    "label": "TOOL_RESULT_PLUGIN_SKILL_PROMPT_CALLED_WITH_BAD_FRONTMATTER_VAR_0",
+    "verdict": "glue",
+    "text": "a frontmatter that ",
+    "reason": "xmt @9102144 (the skill.prompt arg normaliser in Mmt @9103182) builds y=`a frontmatter that ${h}` where h is the frontmatter problem text, and throws Oe(`$.skill.prompt: called with ${y}`); the literal only introduces h, the substance is h itself (consistent with ' that is no text' glue in out-slot-0)."
+  },
+  "ad2f18c50f9b72f0": {
+    "promptId": "tool-result-worktree-create-pr-fetch-failed",
+    "label": "TOOL_RESULT_WORKTREE_CREATE_PR_FETCH_FAILED_VAR_1",
+    "verdict": "off-route",
+    "text": "it may not exist, the fetch may have timed out, or the repository may not have a remote named \"origin\"",
+    "reason": "The fallback Gt @11367961 and the `Failed to fetch PR/MR #${r.prNumber}` throw @11368121 sit in R9e's PR branch (needs r.prNumber). R9e callers: XXt @11380953 passes its 4th arg s through; EnterWorktree.call @17680855 calls XXt(q(),name,void 0,{fromCwd,repoRoot,fromHead:void 0,storageV5,credentials}) with no prNumber; a4e @11395073 (agent/bridge worktrees) passes only {fromHead,fromCwd}. The only callers that pass prNumber are Noi @11424026 (--worktree --tmux CLI; catch returns {error:`Error: ${d(Dn)}`} to startup) and Mt @38030827 (CLI setup; catch does process.stderr.write(`Error creating worktree: ...`) then process.exit(1)). So this text reaches only the terminal; the host itself looks misclassified as model and should be re-checked."
+  },
+  "32f87696a1e78c5f": {
+    "promptId": "system-reminder-mcp-servers-need-auth",
+    "label": "SYSTEM_REMINDER_MCP_SERVERS_NEED_AUTH_VAR_2",
+    "verdict": "catalogue",
+    "id": "system-reminder-mcp-servers-need-auth-without-naming-command",
+    "name": "System Reminder: MCP servers need authentication — authorize without naming a command or settings page",
+    "desc": "Branch telling the model to say the server needs authorization without naming a command or settings page to do it.",
+    "text": "without naming a command or settings page",
+    "reason": "qn @13994282 takes the Qve() arm `${on}without naming a command or settings page` and is spliced into V.push(`...tell them that it needs to be authorized — ${qn} — ...`), inside Tct @13975424, the attachment renderer (callers K$e/W4e → wT @13914856 builds the API messages). It is a model-facing system-reminder, and the arm constrains what the model may say (name no command or settings page)."
+  },
+  "b3bd562ae8abbe11": {
+    "promptId": "tool-result-artifact-publish-left-out-copy-entry",
+    "label": "TOOL_RESULT_ARTIFACT_PUBLISH_LEFT_OUT_COPY_ENTRY_VAR_2",
+    "verdict": "glue",
+    "text": "left out by the server",
+    "reason": "The map callback @16513331 in Ki sets s = r===Vo?\"which has no file there\":Wo.test(r)?`left out by the server for the reason ${_(r)}`:\"left out by the server\" and emits `${path} (a copy of ${from.path} in artifact ${slug}, ${s})` into the Left out: list of Gi/En. This bare arm only restates 'left out', which the entry and the surrounding Gi/En text already say, and it carries no reason or action (consistent with out-slot-1, which ruled the 'for the reason' arm glue)."
+  },
+  "80446792d7ff6eb6": {
+    "promptId": "tool-result-artifact-identical-resubmission-unviewed-source-changed",
+    "label": "TOOL_RESULT_ARTIFACT_IDENTICAL_RESUBMISSION_UNVIEWED_SOURCE_CHANGED_VAR_8",
+    "verdict": "catalogue",
+    "id": "tool-result-artifact-identical-resubmission-unviewed-source-changed-publish-unchanged-goes-through",
+    "name": "Tool Result: Artifact resubmission saved source changed — publishing it unchanged will then go through",
+    "desc": "Tells the model that, once its file already holds that version's content, republishing unchanged will be accepted.",
+    "text": "publishing it unchanged will then go through",
+    "reason": "In uis @23933193, R=r?\"the publish sent again will then go through\":\"publishing it unchanged will then go through\" is spliced into `...if your file already contains that version's content, ${R}` (h.file===\"changed\" branch) and the UQr arm of S. uis's only caller, the artifact publish call @34690681, throws new De(text), which becomes the tool error. It tells the model a plain republish will succeed. The sibling arm is catalogued in out-slot-1, so this is consistent."
+  },
+  "7ff340cead2bf50f": {
+    "promptId": "tool-result-served-read-result-too-large-fewer-pages",
+    "label": "TOOL_RESULT_SERVED_READ_RESULT_TOO_LARGE_FEWER_PAGES_VAR_1",
+    "verdict": "catalogue",
+    "id": "tool-result-served-read-result-too-large-fewer-pages-narrow-the-search",
+    "name": "Tool Result: Served tool result too large — narrow the search",
+    "desc": "Tells the model to narrow the search when a search tool's result was too large to send back.",
+    "text": "Narrow the search.",
+    "reason": "wn @46974837 sets n=\"Narrow the search.\" for Pr/ao tools and returns `${e.name} ran, but its result is too large to send back. ${n}`. Its only caller, An @46976064, uses xet(wn(e),\"ran\",h) as the call result when S.unsent===\"result_too_large\". An is reached from gn → To @46965867, the served-tool handler of the MCP tools/call server @46425567, so the text is the tool result returned to the calling model. It instructs the model."
   }
 }

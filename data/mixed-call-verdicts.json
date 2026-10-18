@@ -54,7 +54,13 @@
   "184c92ea25e554fe": {
     "at": 6998948,
     "model": {
+      "328c1476bf5771c999a32db85bfe0682ea229306": "${}: your organization's settings haven't been read, so it …",
+      "411fcc65a6ad7ec7b5b6613a418b2c7e042bef87": "${}: your organization's managed settings disable marketpla…",
       "5d8d4d7fdbe1b06773d05feb33f333de4b052c18": "${}: headersHelper not run — ${}. The marketplace was not f…",
+      "5efaa7218dafae414a6fb2a02d7f3c6ceb9d35c4": "and this marketplace's headersHelper is not declared in man…",
+      "71573f6ee6feaee6aa211a7d0190bba3537fa1fb": "A tool server doesn't run a plugin's command on its own. Th…",
+      "879bf59359564445ba81751f46d5278753a36985": "${}: a tool server doesn't run a marketplace's headersHelpe…",
+      "953c98989e771ba8f0d78e49a1006d00c0e4eb28": "and in this session a declaration in managed settings does …",
       "e86df59697c217f037ecf79a5ea118414c1ac11b": "${} is installed by running a command on this machine (\\`${…"
     },
     "position": 0,
@@ -119,6 +125,55 @@
           }
         },
         "why": "Ql is the plugin command-source refusal, and its message reaches the model only where the caller joins it into slash-command output. Bulk /plugin install xu() (40336943) sends XEt's error to setResult/setError, which become onComplete (model); dependency installs there carry consent {kind:'none'} (Si 12581230), which raises the model 'not been reviewed yet' arm (6845230). The single-plugin Ru() passes consent kind 'shown' and shows failures through setInstallError C(U.error) (40339572), which is UI-only. Update XYe/vi uses 'recorded' consent (19082278) and /plugin update reports failure through ve('Failed to update: ...') (40465836), also UI. The network-path and link-farm refusals need the source command to run, and xu skips command-source entries before XEt. After the headersHelper correction the remaining ui arms all sit on those UI-only routes."
+      },
+      {
+        "arms": {
+          "328c1476bf5771c999a32db85bfe0682ea229306": {
+            "facing": "model",
+            "preview": "${}: your organization's settings haven't been read, so it …"
+          },
+          "411fcc65a6ad7ec7b5b6613a418b2c7e042bef87": {
+            "facing": "model",
+            "preview": "${}: your organization's managed settings disable marketpla…"
+          },
+          "5efaa7218dafae414a6fb2a02d7f3c6ceb9d35c4": {
+            "facing": "model",
+            "preview": "and this marketplace's headersHelper is not declared in man…"
+          },
+          "71573f6ee6feaee6aa211a7d0190bba3537fa1fb": {
+            "facing": "model",
+            "preview": "A tool server doesn't run a plugin's command on its own. Th…"
+          },
+          "879bf59359564445ba81751f46d5278753a36985": {
+            "facing": "model",
+            "preview": "${}: a tool server doesn't run a marketplace's headersHelpe…"
+          },
+          "953c98989e771ba8f0d78e49a1006d00c0e4eb28": {
+            "facing": "model",
+            "preview": "and in this session a declaration in managed settings does …"
+          }
+        },
+        "why": "328c1476 model: hWn @6997420 (marketplace headersHelper gate) throws new Yl (extends x, @6980616). It runs from ZMt @7002807, awaited inside Cuo @13452490 during an install; Cuo's .catch in Mi @13485932 returns only CMe/a6/B7t and rethrows Yl; z7t @13488236 rethrows unless the plugin is a force-included dependency; mtt @19838520 rethrows; wk @42274182 (rendered by Ns in the /plugin command, Cc @42295567) catches and returns `${te.cross} ${d(C)}`, which Ns passes to onComplete(Wn(A)) @42274305: a local-jsx onDone without display:\"skip\" -> model. trace @6997933 proves that local-jsx-ondone [model] sink /plugin @42274310. Same route as the cached-model sibling 5d8d4d7 (remote_policy_unconsented arm thrown two statements later in hWn). The other packet offsets 5161226 (/goal hooks text) and 6993430 (bnn archive text) are different strings that merely share wording; the arm's own literal is @6998225. | 411fcc65 model: hWn @6997420 (marketplace headersHelper gate) throws new Yl (extends x, @6980616). It runs from ZMt @7002807, awaited inside Cuo @13452490 during an install; Cuo's .catch in Mi @13485932 returns only CMe/a6/B7t and rethrows Yl; z7t @13488236 rethrows unless the plugin is a force-included dependency; mtt @19838520 rethrows; wk @42274182 (rendered by Ns in the /plugin command, Cc @42295567) catches and returns `${te.cross} ${d(C)}`, which Ns passes to onComplete(Wn(A)) @42274305: a local-jsx onDone without display:\"skip\" -> model. trace @6997933 proves that local-jsx-ondone [model] sink /plugin @42274310. Same route as the cached-model sibling 5d8d4d7 (remote_policy_unconsented arm thrown two statements later in hWn). | 5efaa721 model: hWn @6997420 (marketplace headersHelper gate) throws new Yl (extends x, @6980616). It runs from ZMt @7002807, awaited inside Cuo @13452490 during an install; Cuo's .catch in Mi @13485932 returns only CMe/a6/B7t and rethrows Yl; z7t @13488236 rethrows unless the plugin is a force-included dependency; mtt @19838520 rethrows; wk @42274182 (rendered by Ns in the /plugin command, Cc @42295567) catches and returns `${te.cross} ${d(C)}`, which Ns passes to onComplete(Wn(A)) @42274305: a local-jsx onDone without display:\"skip\" -> model. trace @6997933 proves that local-jsx-ondone [model] sink /plugin @42274310. Same route as the cached-model sibling 5d8d4d7 (remote_policy_unconsented arm thrown two statements later in hWn). | 879bf593 model: hWn @6997420 (marketplace headersHelper gate) throws new Yl (extends x, @6980616). It runs from ZMt @7002807, awaited inside Cuo @13452490 during an install; Cuo's .catch in Mi @13485932 returns only CMe/a6/B7t and rethrows Yl; z7t @13488236 rethrows unless the plugin is a force-included dependency; mtt @19838520 rethrows; wk @42274182 (rendered by Ns in the /plugin command, Cc @42295567) catches and returns `${te.cross} ${d(C)}`, which Ns passes to onComplete(Wn(A)) @42274305: a local-jsx onDone without display:\"skip\" -> model. trace @6997933 proves that local-jsx-ondone [model] sink /plugin @42274310. Same route as the cached-model sibling 5d8d4d7 (remote_policy_unconsented arm thrown two statements later in hWn). | 953c9898 model: hWn @6997420 (marketplace headersHelper gate) throws new Yl (extends x, @6980616). It runs from ZMt @7002807, awaited inside Cuo @13452490 during an install; Cuo's .catch in Mi @13485932 returns only CMe/a6/B7t and rethrows Yl; z7t @13488236 rethrows unless the plugin is a force-included dependency; mtt @19838520 rethrows; wk @42274182 (rendered by Ns in the /plugin command, Cc @42295567) catches and returns `${te.cross} ${d(C)}`, which Ns passes to onComplete(Wn(A)) @42274305: a local-jsx onDone without display:\"skip\" -> model. trace @6997933 proves that local-jsx-ondone [model] sink /plugin @42274310. Same route as the cached-model sibling 5d8d4d7 (remote_policy_unconsented arm thrown two statements later in hWn). | 71573f6e model: CPs @6986864 throws new Yl(...) when Pl() (tool-server daemon). CPs is called only from qlt @13544480 case \"command\" @13546020, which Cuo @13452490 awaits; from there the propagation is identical to the headersHelper arms: Mi's .catch @13487072 rethrows non-CMe/a6/B7t, z7t @13488236 rethrows, mtt @19838520 rethrows, and wk @42274182 turns it into `${te.cross} ${d(C)}` for Ns's onComplete @42274305 (local-jsx onDone of /plugin, no display:\"skip\") -> model. trace @6986914 stops at the dynamic .catch callback @13487072 (and otherwise reaches only the ui install dialog @15766356), so this model route is from the hand trace above; the ui arms of the group (link-farm/source-command path refusals) are thrown later in CPs's po() callback but would ride the same wk route."
+      }
+    ]
+  },
+  "1ab6b858df0df67b": {
+    "at": 7354438,
+    "model": {
+      "2c851e4a4f5f3efac707c11a67d64f4eb18b171f": "materializeWorkTree: with fetchesFrom, the arguments must b…",
+      "634181bb01bdecdb09efc1ea32cbd6708f19343d": "programs.buildInvocation must return the environment it was…",
+      "90322d65d6702d019c306879d31c7333c61aba35": "programs.buildInvocation must return an absolute path to a …"
+    },
+    "position": 0,
+    "reviews": [
+      {
+        "arms": {
+          "725cd8789fc064cfe8034ea65306751d882a0224": {
+            "facing": "internal",
+            "preview": "gitInOwnWorkTree runs reads only, not git ${??\"(no subcomma…"
+          }
+        },
+        "why": "725cd878 internal: w$n @7352282 throws new x(...) only when the subcommand found by De() is not in Kt={diff,format-patch,log,show} @7352552. Its three callers fix the subcommand: X @7373778 prepends Se=[\"--no-optional-locks\",\"-c\",\"diff.relative=false\",\"diff\",...] (@7369511; De skips the -c value and lands on \"diff\"), and tlr @23346444/@23349414 pass [...vn,\"diff\",...]. So the throw is an unreachable programmer-invariant guard; trace @7352364 has only open throw edges via tlr/pKe and debug-log sinks, no model sink. The model arms of the group are Jt/qt @7354069 checks on embedder-supplied programs.buildInvocation/fetchesFrom input, which can fire."
       }
     ]
   },
@@ -252,6 +307,7 @@
     "at": 12974174,
     "model": {
       "3716a3ddd4f08822728a7148ec941f50424cb5b4": "Shell command permission check failed for pattern \"${}\" (de…",
+      "66630a9c0f4453b5ae1ad8012f77ad0950586706": "This skill, command or hook and the arguments filled into i…",
       "87dc46ee47468a8ba0a68111ff89a22132e6ec1e": "Shell command failed for pattern \"${}\": ${}",
       "94b507338c5479946d93089c9619161c48e7d9a3": "Shell substitution failed for pattern \"${}\" (detail withhel…",
       "c74b48fb8017ad70267d2d2985b6957a418754f1": "Shell command interrupted for pattern \"${}\": [Command inter…",
@@ -267,6 +323,15 @@
           }
         },
         "why": "KP is the prompt-command error class surfaced to the model. The model arms are the skill shell-substitution errors and '[Error...]' wrappers thrown while expanding a prompt command (11957917-11959991). 'frontmatter was not read' (11964474) is thrown only when qlr() gets untrusted:true, and none of qlr's three callers passes it: mO 11974767, zts 11983128 and Ye 44589428. The throw is unreachable, so internal is right."
+      },
+      {
+        "arms": {
+          "66630a9c0f4453b5ae1ad8012f77ad0950586706": {
+            "facing": "model",
+            "preview": "This skill, command or hook and the arguments filled into i…"
+          }
+        },
+        "why": "66630a9c model: cFe @~9797300 throws new mC(...) from its substitution closure b() when the expanded body exceeds kmr=4000000. cFe runs inside getPromptForCommand of skills (hQt @12977458) and plugin commands (iq @10583939), i.e. when the skill is expanded for the model; J7t @12207923 awaits getPromptForCommand and is called by the Skill tool's Re @17466068 from its call() Ue @17472580 (and by the prompt-slash-command path zt @30898855), so the throw propagates out of a tool call as an is_error tool_result. The internal sibling 'frontmatter was not read' is thrown by Vwr @~12973800 at skill load time for untrusted frontmatter, a different route."
       }
     ]
   },
@@ -359,7 +424,10 @@
     "at": 14037999,
     "model": {
       "22cbfc9405a370f7dc5901b1a4da174fbfffee1a": "${}: surface module ${.split(\"/\").join()} ",
+      "466777501251e1f5211c19f5ad66e6cb13f91281": "${} event ${}: ${}",
       "54d5eba613f21e16b27c54802d0de87cc4fbffa3": "${} event is not plain data: ${()}",
+      "831f9ddffe3bb43a3e91d26b634a05bb911fb01d": "${}: ${}: could not be given its argument: ",
+      "e8838dd5b1bdb22fb6f590f9e5188a5d61a2268f": "$.skill.prompt: called with ${}",
       "fbc21bfcd0755f75f4f04f3fc5f66eb85b4b68c6": "$.${}: no core at the bottom of the chain (the site did not…"
     },
     "position": 0,
@@ -884,6 +952,47 @@
           }
         },
         "why": "He is the generic HooksError class (320434). The model arms come from event dispatch on the chain that runs the model's tool calls: k7t installs core tool.call (10861652); the worker dispatch rejects with \"${y} event is not plain data\" (11001352, 11002669); ga/Ydn have the no-core rejection (11659973, 11660967); and cWt's surface-module refusal reaches /plugin validate (10275208). The internal arms are $.<api> refusals and host invariants returned to plugin hook code, which go to hookFailed and the debug log. \"HTTP ${.status}\" is thrown here inside $.audio.play's fetch (10447102, caught and rewrapped) and is model only because the same text appears elsewhere (tool-result-http-status-code)."
+      },
+      {
+        "arms": {
+          "17e0bfad86632fa8469b5e1d1aa36a9d6bb24640": {
+            "facing": "internal",
+            "preview": "${}: plugin ${}, which provides $.${}, is not loaded"
+          },
+          "2b3610c6de373db07436cf83d22d3c9e3f03971e": {
+            "facing": "internal",
+            "preview": "${}: $.command.run: ${}"
+          },
+          "3d23df41853f30c0658cb699178894bb2ceb429f": {
+            "facing": "internal",
+            "preview": "${.plugin}: $.${} refused: its hooks module was judged unde…"
+          },
+          "466777501251e1f5211c19f5ad66e6cb13f91281": {
+            "facing": "model",
+            "preview": "${} event ${}: ${}"
+          },
+          "61dbc9f73fe5c189587c19d7974c4ff6302cac25": {
+            "facing": "internal",
+            "preview": "${}: arguments are not plain data: ${()}"
+          },
+          "831f9ddffe3bb43a3e91d26b634a05bb911fb01d": {
+            "facing": "model",
+            "preview": "${}: ${}: could not be given its argument: "
+          },
+          "97fbade0cb8466990f975c896f23168761e6aae4": {
+            "facing": "internal",
+            "preview": "$.${}.${}: plugin ${}, which provides $.${}, or its caller …"
+          },
+          "c595cb922014e3234056bf574e542f3aab6060e2": {
+            "facing": "internal",
+            "preview": "${}: plugin ${}, which provides $.${}, is not admitted yet …"
+          },
+          "e8838dd5b1bdb22fb6f590f9e5188a5d61a2268f": {
+            "facing": "model",
+            "preview": "$.skill.prompt: called with ${}"
+          }
+        },
+        "why": "46677750 model: Gkn @12069590 catch: Xe(new Oe(`${y} event ${gt}: ${vt}`)) rejects the host dispatch promise; Gkn is the host's dispatch @12080198 (17 callers, vvr/rt hop chain), the same route as the cached model arms '${} event is not plain data' / '$.${}: no core...'. Agree model. | 831f9ddf model: Site @12071065 is the sibling ternary arm in Gkn's catch (Xe(jqn(new Oe(...)))) rejecting the host dispatch exactly like the event arm; the worker-side Y @4110269 (-> vo @4122346 / T @4121292 rethrow) is the same dispatch's other end. Same route as the group's model arms. | e8838dd5 model: xmt @9102135 is Mmt['skill.prompt'], run synchronously in $i @14036763; $('skill.prompt') is awaited by Zgr @9133774 without a catch, and Zgr's callers include J7t @12207904 -> Re @17467417 (skill invocation) and the agent preload @17228758, so a throw propagates up the skill-load path like the 'no core' model arm. Not traced to the final tool_result wrapper. | 61dbc9f7 internal: jkn @12068665 is callInterface @12080686, used only by plugin-to-plugin interface calls (lJe -> _e.callInterface @11451716); the rejection goes to lJe's .then error handler (t(`...failed`,{level:'error'}) then rethrow to the calling plugin). @1191247 is the yHr template in the worker. Not the host dispatch route. | c595cb92 internal: lJe @11996787 Promise.reject answers a plugin's $.x.y interface call (callers run @12003046 via hJe @12012450 host op, routeInterfaceCall @12085297); goes back to the calling plugin's code, not to the model. | 97fbade0 internal: lJe @11997306 policy-changed reject, same plugin-to-plugin interface-call route (hJe/routeInterfaceCall) back to plugin code; @11459359 is the slice where Nwe's similar string lives. Internal. | 17e0bfad internal: lJe @11997092 'is not loaded' reject goes back to the calling plugin via hJe @12012450 / routeInterfaceCall @12085297; stays in the plugin runtime. | 3d23df41 internal: Nwe @11459333 builds the refusal for a plugin's own $.x host-op call (host-op run path); returned to plugin code, no tool_result or host dispatch. | 2b3610c6 internal: enr @11440693 is only reached via QOr's 'command.run' op @12006886 (host op the plugin calls through $.command.run); the Promise.reject goes back to the plugin. Internal."
       }
     ]
   },
@@ -1271,6 +1380,7 @@
       "027674e155bf621524d0b6701494798e91b462bc": "Failed to create worktree: ${((,\"git's error\"))}",
       "0780ddc4dd58363a005ca8b0ec0748b0f5f6f9da": "Cannot enter worktree: ${} is a UNC network path.",
       "0b91370c8a6aa972eac57d0a42210fc9b32ffbb2": "Cannot create agent worktree: not in a git repository and n…",
+      "11d071084c5be1280529e125ad4ee3aa0d2e3ce4": "The .git in ${()} points to a bare repository, so Claude Co…",
       "14607a97357ff6e3c234c689fbf7893b16e43afe": "Worktree directory does not exist at ${} after creation. ",
       "151519f12f0d62af8d0e661924c3cbb1fc48f3be": "Cannot create a worktree: not in a git repository and no Wo…",
       "18dba3d6ab0651e269843768e29116e6d1cc14ee": "${} Nothing was removed: the checkout was written wherever …",
@@ -1299,6 +1409,7 @@
       "c5f5a834124015d19c27905d474820299bc4e7a4": "Cannot enter worktree: ${} resolves to a UNC network path (…",
       "d1e13f280b2c063e9ddb16b77372b5f41d5dbe00": "symlink screen cannot verify a dotted spelling — have the ",
       "df3ae3fbc78e8100d0f35c7c55d3c4f2239ddf34": "could not be verified. ",
+      "e1b03110ccbba8a2be18d3c026ae7ab3e39d7a2f": "Cannot enter worktree: ${} belongs to another running Claud…",
       "e3ea90e3c89bd802f38f09447057cc566a09b007": "Cannot enter worktree: ${} resolves to ${}; the managed wor…",
       "e733d8aaaecbd19bd767992801e5c7d20663ed6f": "Cannot enter worktree: ${} is the current working directory.",
       "f2ab7b3ec8af13df8e170b1728f342bc575f3a0e": "Cannot enter worktree: ${} is a network automount path.",
@@ -1339,6 +1450,19 @@
           }
         },
         "why": "Vp is the worktree error class. The model arms are thrown on routes that reach a tool: EnterWorktree (asr 10353725, called from call() 16926463), Agent worktree isolation (Pze/C1t, 10362765, through xo 16608455) and the createWorktree helpers. The 7 ui arms are thrown only inside the --worktree CLI startup path (10392882-10393410), whose catch returns {handled:!1,error:`Error: ${l(Vt)}`} to CLI startup, not to a tool. After the 4 corrections no internal arm remains."
+      },
+      {
+        "arms": {
+          "11d071084c5be1280529e125ad4ee3aa0d2e3ce4": {
+            "facing": "model",
+            "preview": "The .git in ${()} points to a bare repository, so Claude Co…"
+          },
+          "e1b03110ccbba8a2be18d3c026ae7ab3e39d7a2f": {
+            "facing": "model",
+            "preview": "Cannot enter worktree: ${} belongs to another running Claud…"
+          }
+        },
+        "why": "11d07108 model: new df(...) @11364225 in R9e (worktree create); trace @11364225 proves a tool-throw [model] sink @17679473 (EnterWorktree call via @11380953 -> @17680855) besides the CLI --worktree route Noi @11423490 that prints `Error: ${d(Dn)}`. The ui arms of the group are only built in Noi's WorktreeCreate-hook branch, so this arm routes differently. | e1b03110 model: new df(...) @11387268 in e_r (EnterWorktree path resolution), next to the 'marked prunable'/'not a registered worktree' throws; trace @11387268 is resolved with a single tool-throw [model] sink @17679473 (thrown from @17679603 in EnterWorktree's call()), unlike the ui hook-path arms printed by Noi @11423490."
       }
     ]
   },
@@ -1515,6 +1639,7 @@
       "bff7b4b9c8104509a9db70486b3739cbad40d53a": "${}: ${} does not parse: ${()}",
       "c5c87c2402ee7c465a063d933adf69a1a2e80e50": "${}: ${} was not linked",
       "d01c9f35ae9a8f2e6ad1850bb62b87c1f32de525": "${} it is outside the plugin's folder (${})",
+      "d4adcfb99654cbfe895acb363102effd20c10726": "${}: ${}: changed while it was read",
       "e108d9ab4ac7458a77201d93c927ec6872cf9b6e": "${}: ${}: not read, no file descriptor free (${})",
       "f9a02d8bb902f5300b3f4cebfd0a79f4b553c6a4": "${}: cannot import \"${}\" (from ${}): a hooks module imports…"
     },
@@ -1528,6 +1653,15 @@
           }
         },
         "why": "He is the plugin-host hooks error. The 12 model arms are thrown by the hooks-module graph loader yn (3679514; Pe file reader, Xws import resolver, nEs/ho parse, Yws specifier check) that /plugin validate runs through Un → NFs → oUn → yn (29427456), whose catch puts them in result.errors returned to the model. The internal arm is Ok (3682016), oUn's resolver only when Fe.source(e) is set; that map is filled only by hb's `\"shipped\"in o` branch (3684984), and no hooksModule in this build has `shipped` (every hb goes through oW, which returns {module,scan,files} or {module,folder}), so it never runs in production. This agrees with the internal ruling made earlier this run."
+      },
+      {
+        "arms": {
+          "d4adcfb99654cbfe895acb363102effd20c10726": {
+            "facing": "model",
+            "preview": "${}: ${}: changed while it was read"
+          }
+        },
+        "why": "d4adcfb9 model: Ye @1785692 builds new Oe(`${e}: ${o}: changed while it was read`); its callers are all in Je @1788324 (ELOOP on open, !isFile(), real path changed), the hooks-module file reader used by nx @1790370 (Nqn @1857703 entry file) and dBs @1789448 (relative imports). trace @1785717 finds local-jsx-ondone [model] sinks for the /plugin command (@42270219.., @42273445: the plugin validate report that lists each error's U.message and hands H to onDone h(H) @42272745), the same route as the sibling no-such-file Pr / not-readable ju arms in Je. The internal arm GE @1857605 is only taken when Ze.source(e) has an in-memory module (no files beside it), a different branch of Nqn."
       }
     ]
   },
@@ -1624,6 +1758,7 @@
       "1b11c7f5d1dc0a73b319073fbe8a364c5b9fba1f": "Could not link ${} ${}: another session is recorded as usin…",
       "1c7fd2dfb2b34e10a483bfd504d556338abe8e57": "PDF extraction handed over no page names: ${}",
       "1cd40f8b8935d62f2b01d7ec1ed25c78afc272dd": "Could not prepare ${} for its ${} (it could not be examined…",
+      "223d6b448dd1059f2cd0b830b1793016c3be858e": "MCP server \"${}\" was not called: the plugin that provides i…",
       "24ece801a52c6349f8eb06fd12891aeccfcd04c5": "Cannot add marketplace \"${(,64)}\": Claude Code cannot insta…",
       "252aade464c62330238e0c819b72a27df36eb870": "installed_plugins.json was not changed: it holds records un…",
       "25de3e54220d90ca5c041e1afafafc21f6a3c913": "Can't read .mcp.json: it isn't a regular file or is larger …",
@@ -1638,7 +1773,9 @@
       "3e560e7e62b3a03d694854a323fd09d879906476": "Could not re-screen ${} after its dependency install (the c…",
       "43882207d662c8570893e55f0c58dc70fa733e40": "Could not prepare ${} for its dependency install (this sess…",
       "440fdb1275001895b49f4ef6074beb873585a1f9": "Plugin archive from ${(.url)} has no plugin content at its …",
+      "45137f323ffb4cd5c7e81678ee12043bce131ac0": "Cannot read this as an image: ${} is a pipe or a device, no…",
       "45dfa120aedc3aa32a0bdda0054969ccf53ddb84": "Cannot add this marketplace: ${.cause}; ${[.kind]}.",
+      "46ea1d15aa686d924cd471cac0c6978ae70ec6f9": "File is too large to read as an image (the limit is ${()}):…",
       "470b35fa5ade0c888d884426991378e062dcd09a": "MCP server \"${}\" ${}${()}. If that file is read-only or pro…",
       "49e9fffd974611cb44623ce3864b8e888abfe59b": "Could not ${} ${} ${}: a link sits at its archive path and …",
       "4b04048bb36b61111058ec88d90ac4f1805d1ff2": "'${()}'. ${?`Run \\`${}\\``:\"Remove the entry\"} and re-add it.",
@@ -1900,6 +2037,23 @@
           }
         },
         "why": "x is chunk-886tf6ja's generic TelemetrySafeError thrown across chunk-sfn1dbxq. After the corrections the model arms are tool and slash-command errors: Read/WebFetch/MCP/Skill/hook throws and plugin install, import and marketplace throws that reach /plugin, /import or /plugin update output (Ck 40513124, /import 22720650, vi 19073700). The remaining ui arms belong to other paths: the plugin loader (ZQe/FEn 12678571-12679015 via WEn/pEn; monitors and hooks-file reads caught into the plugin error list at 12645332/12642968; the v5 manifest read variant only via wne/GEn load paths), the /plugin Marketplaces and Errors tabs (Qze remove errors → setError/ge at 40374298/40525675, Svt toggle → Ct at 40380393, $es auto-update toggle), CLI-only --scope removes (12393026/12393245), claude mcp add CLI checks in h2 (10767489/10767721; /import's converters never build those transport types), and partial or auto compaction (Eon via Lir/ees). The internal arms are logged with c()/t() (12864203, 9586780, 9582757, 8832224/8832747), caught as ENOENT or by storage callers (13225011, 13118849, 13186817-13188562, 12454078, 12404252), dead or caught-and-recorded in DV ($e at CIe 8943242), J('warn')-logged sync-owned probes (8867413), or poll-event rejections returned to the poll producer (settleDropped 8819588)."
+      },
+      {
+        "arms": {
+          "223d6b448dd1059f2cd0b830b1793016c3be858e": {
+            "facing": "model",
+            "preview": "MCP server \"${}\" was not called: the plugin that provides i…"
+          },
+          "45137f323ffb4cd5c7e81678ee12043bce131ac0": {
+            "facing": "model",
+            "preview": "Cannot read this as an image: ${} is a pipe or a device, no…"
+          },
+          "46ea1d15aa686d924cd471cac0c6978ae70ec6f9": {
+            "facing": "model",
+            "preview": "File is too large to read as an image (the limit is ${()}):…"
+          }
+        },
+        "why": "223d6b44 model: Jlt @11829028 is thrown by Ut @39571333/@39572755 and ao @39764480/@39765902; Ut is awaited in the MCP tool call Be @39588738 (call @39591835) and @39594674 ('MCP tool call' context), so the throw leaves the MCP tool's call() and becomes an is_error tool_result. Model. | 45137f32 model: HOn @13039157 -> qXr @13038857 -> lmo @13039912, which is called from Read's YOn @13029382 without a catch, so the throw becomes Read's is_error tool_result. Model. | 46ea1d15 model: Same HOn @13039370 -> qXr -> lmo -> Read YOn @13029382 route, uncaught, so it becomes an is_error tool_result. Model."
       }
     ]
   },
@@ -2005,7 +2159,13 @@
       "0f06d761fe2d4e96173bc644e68f1a5aa9250e2c": "yielded a chunk with ${}",
       "2e7228d8fc32d442f04abe32b1283b15ced2a7f0": "${}: next() after it settled",
       "627d8e5f58096c51c5843b80fc3783b007c0fd22": "returned ${}",
-      "b93081ac734ee8ffefe4df6bdcb911fa4e3ad59e": "a plugin's list claims a length no list has (got ${??`a ${t…"
+      "8074f5661a475f7abebd4e9ee1ac199af4f3c3d4": "holds a list with a hole or a key",
+      "808081e6c36af7646d3387a220109f4d13362c59": "holds what JSON cannot (${typeof })",
+      "afdee4a57acef849af80df5d8c1f7ea5bfd40239": "holds an accessor",
+      "b8f1aaa701f72696085f3fee5ff3ffe2d0260b07": "holds a Proxy",
+      "b93081ac734ee8ffefe4df6bdcb911fa4e3ad59e": "a plugin's list claims a length no list has (got ${??`a ${t…",
+      "f8c0710d0d9ede26b5b0ae5da0b9efed94f9c460": "holds an object that is not plain",
+      "f90b10a415eac727e3d121f58f6c837f4b780663": "holds a key ${}"
     },
     "position": 0,
     "reviews": [
@@ -2373,6 +2533,35 @@
           }
         },
         "why": "He (HooksError, 320434) is the plugin-host's generic error. The ui arms are $-API argument and registration checks that reject into the calling plugin's code; when a hook throws them, the dispatch catch (3818300) reports them through np()/Nl().hookFailed (3809709), which the CC host routes to the UI (gen() 11014066), and then skips to what is below. The model arms are dispatch-result problems ('returned ${}', 'returned no result', 'yielded a chunk with ${}', '.catch threw', 'next() after it settled'). They become the dispatch's rejection when nothing is below (`if(d.inFlight===void 0&&p)throw F`) or pass up through De(), and runToolUse turns that into the 'Error calling tool' tool_result (10860151). '${.name}: ${}' is model only through identical text (deferred-tool line). This upholds the earlier review of this group; the model-arm route was not re-traced end to end."
+      },
+      {
+        "arms": {
+          "8074f5661a475f7abebd4e9ee1ac199af4f3c3d4": {
+            "facing": "model",
+            "preview": "holds a list with a hole or a key"
+          },
+          "808081e6c36af7646d3387a220109f4d13362c59": {
+            "facing": "model",
+            "preview": "holds what JSON cannot (${typeof })"
+          },
+          "afdee4a57acef849af80df5d8c1f7ea5bfd40239": {
+            "facing": "model",
+            "preview": "holds an accessor"
+          },
+          "b8f1aaa701f72696085f3fee5ff3ffe2d0260b07": {
+            "facing": "model",
+            "preview": "holds a Proxy"
+          },
+          "f8c0710d0d9ede26b5b0ae5da0b9efed94f9c460": {
+            "facing": "model",
+            "preview": "holds an object that is not plain"
+          },
+          "f90b10a415eac727e3d121f58f6c837f4b780663": {
+            "facing": "model",
+            "preview": "holds a key ${}"
+          }
+        },
+        "why": "8074f566 model: Mo @3957388 throws new Oe(this phrase); Yan @3958706 catches Oe and returns t.message; xmt @9102135 (the $.skill.prompt argument normaliser, Mmt['skill.prompt']) re-throws it inside `$.skill.prompt: called with a frontmatter that ${...}`, and wn @3958838 (checkArgument of the skill.prompt site Qa) returns it to lt @3907440 which throws `${name}: next() passed an argument with a frontmatter that ...`. trace @3958440 follows that throw through G6n @14037807 / the turn.step dispatch Mr @17205104 into the query loop @17999497 and Nd @17968845, which yields it as tool_result content (is_error) and api-message @13877666: a model sink, same route as the cached-model sibling `next() after it settled` (yr @3909224, tool-result-plugin-hook-next-after-settled). The ui arms of this group are module-load/registration refusals (on() registered twice, exports \"then\") raised in the hooks-module loader g/H @4101784, a different route. | 808081e6 model: Mo @3957388 throws new Oe(this phrase); Yan @3958706 catches Oe and returns t.message; xmt @9102135 (the $.skill.prompt argument normaliser, Mmt['skill.prompt']) re-throws it inside `$.skill.prompt: called with a frontmatter that ${...}`, and wn @3958838 (checkArgument of the skill.prompt site Qa) returns it to lt @3907440 which throws `${name}: next() passed an argument with a frontmatter that ...`. trace @3958440 follows that throw through G6n @14037807 / the turn.step dispatch Mr @17205104 into the query loop @17999497 and Nd @17968845, which yields it as tool_result content (is_error) and api-message @13877666: a model sink, same route as the cached-model sibling `next() after it settled` (yr @3909224, tool-result-plugin-hook-next-after-settled). The ui arms of this group are module-load/registration refusals (on() registered twice, exports \"then\") raised in the hooks-module loader g/H @4101784, a different route. | afdee4a5 model: Mo @3957388 throws new Oe(this phrase); Yan @3958706 catches Oe and returns t.message; xmt @9102135 (the $.skill.prompt argument normaliser, Mmt['skill.prompt']) re-throws it inside `$.skill.prompt: called with a frontmatter that ${...}`, and wn @3958838 (checkArgument of the skill.prompt site Qa) returns it to lt @3907440 which throws `${name}: next() passed an argument with a frontmatter that ...`. trace @3958440 follows that throw through G6n @14037807 / the turn.step dispatch Mr @17205104 into the query loop @17999497 and Nd @17968845, which yields it as tool_result content (is_error) and api-message @13877666: a model sink, same route as the cached-model sibling `next() after it settled` (yr @3909224, tool-result-plugin-hook-next-after-settled). The ui arms of this group are module-load/registration refusals (on() registered twice, exports \"then\") raised in the hooks-module loader g/H @4101784, a different route. | b8f1aaa7 model: Mo @3957388 throws new Oe(this phrase); Yan @3958706 catches Oe and returns t.message; xmt @9102135 (the $.skill.prompt argument normaliser, Mmt['skill.prompt']) re-throws it inside `$.skill.prompt: called with a frontmatter that ${...}`, and wn @3958838 (checkArgument of the skill.prompt site Qa) returns it to lt @3907440 which throws `${name}: next() passed an argument with a frontmatter that ...`. trace @3958440 follows that throw through G6n @14037807 / the turn.step dispatch Mr @17205104 into the query loop @17999497 and Nd @17968845, which yields it as tool_result content (is_error) and api-message @13877666: a model sink, same route as the cached-model sibling `next() after it settled` (yr @3909224, tool-result-plugin-hook-next-after-settled). The ui arms of this group are module-load/registration refusals (on() registered twice, exports \"then\") raised in the hooks-module loader g/H @4101784, a different route. | f8c0710d model: Mo @3957388 throws new Oe(this phrase); Yan @3958706 catches Oe and returns t.message; xmt @9102135 (the $.skill.prompt argument normaliser, Mmt['skill.prompt']) re-throws it inside `$.skill.prompt: called with a frontmatter that ${...}`, and wn @3958838 (checkArgument of the skill.prompt site Qa) returns it to lt @3907440 which throws `${name}: next() passed an argument with a frontmatter that ...`. trace @3958440 follows that throw through G6n @14037807 / the turn.step dispatch Mr @17205104 into the query loop @17999497 and Nd @17968845, which yields it as tool_result content (is_error) and api-message @13877666: a model sink, same route as the cached-model sibling `next() after it settled` (yr @3909224, tool-result-plugin-hook-next-after-settled). The ui arms of this group are module-load/registration refusals (on() registered twice, exports \"then\") raised in the hooks-module loader g/H @4101784, a different route. | f90b10a4 model: Mo @3957388 throws new Oe(this phrase); Yan @3958706 catches Oe and returns t.message; xmt @9102135 (the $.skill.prompt argument normaliser, Mmt['skill.prompt']) re-throws it inside `$.skill.prompt: called with a frontmatter that ${...}`, and wn @3958838 (checkArgument of the skill.prompt site Qa) returns it to lt @3907440 which throws `${name}: next() passed an argument with a frontmatter that ...`. trace @3958440 follows that throw through G6n @14037807 / the turn.step dispatch Mr @17205104 into the query loop @17999497 and Nd @17968845, which yields it as tool_result content (is_error) and api-message @13877666: a model sink, same route as the cached-model sibling `next() after it settled` (yr @3909224, tool-result-plugin-hook-next-after-settled). The ui arms of this group are module-load/registration refusals (on() registered twice, exports \"then\") raised in the hooks-module loader g/H @4101784, a different route."
       }
     ]
   },
@@ -2497,6 +2686,132 @@
           }
         },
         "why": "x is the generic error in plugin-fetch chunk-x1hnhzq0. The composite arm (corrected to model) is the literal+literal head of the one message rus (6853867) throws when a marketplace-catalog redirect is refused; rus is the beforeRedirect of S7e (beforeRedirect:rus(...), 12369521), whose axios failure is rethrown as that x by nio (6865111) and propagates through b7e (12373227) to /plugin marketplace add/update (12383987, 12416447) local_command output, the same route as its already-model leaves a7e00639/b78b1406. The ui arms are the consent-gated plugin-source-command and directory texts (6839262-6846621 under tus 6850103, and yt/sn 6861904-6862968) that the model route never reaches, as in the existing review."
+      }
+    ]
+  },
+  "eeda48189e528277": {
+    "at": 8112526,
+    "model": {
+      "527880c5d37405e026cff34ebff6f2cf2c1c3961": "${} did not say what became of background command ${}: it i…"
+    },
+    "position": 0,
+    "reviews": [
+      {
+        "arms": {
+          "0fdb01555d7bc9b838abb304ba7d1c2bf5eeb1c7": {
+            "facing": "internal",
+            "preview": "Read tool is restricted for this session"
+          },
+          "118fb7d932fb312c7f5b6ca2a7160437806acb2a": {
+            "facing": "internal",
+            "preview": "local entry not statable via storage: ${(.error)}"
+          },
+          "13552004e19082538c7376b9925841086c86a1bf": {
+            "facing": "internal",
+            "preview": "multi-store-sync: local entry not deletable via storage: ${…"
+          },
+          "1974ac1e1dff16550e0ec61fab3ecfb83bd240ed": {
+            "facing": "internal",
+            "preview": "alias namespace path not allowed: ${}"
+          },
+          "2a032d0e563938e03337170cb0349dde37d06e20": {
+            "facing": "internal",
+            "preview": "local entry not readable via storage: ${(.error)}"
+          },
+          "45e23fa14a49195e98c24ccfec24606be02e0594": {
+            "facing": "internal",
+            "preview": "backslash in a POSIX spelling: ${}"
+          },
+          "4dde3d77c8aa32756d646b5ada7d5e1b5b3df4c1": {
+            "facing": "internal",
+            "preview": "script hook: ${}"
+          },
+          "59286346bc699aff582f7265775151fe18013ff7": {
+            "facing": "internal",
+            "preview": "multi-store-sync: local entry not writable via storage: ${(…"
+          },
+          "5a998d790ba3180bd6d1f458071a14ef3afffc22": {
+            "facing": "internal",
+            "preview": "read requires approval: ${}"
+          },
+          "602fad2fc11eb5da0bbf3326ca89a2f370d91c21": {
+            "facing": "internal",
+            "preview": "too many stream-base spellings"
+          },
+          "61c97b519ebdd0956aef038ab339500bebef76c1": {
+            "facing": "internal",
+            "preview": "read not allowed: ${}"
+          },
+          "62596775bb4b08266fae5e31ceed9c50d9e21d62": {
+            "facing": "internal",
+            "preview": "path could not be vetted (symbolic link chain or unreadable…"
+          },
+          "73b623539b19421e7cf9188cccf08cd9231828a1": {
+            "facing": "internal",
+            "preview": "read denied: ${}"
+          },
+          "75d79de135e2db34329973e0aa51929b32dea4a3": {
+            "facing": "internal",
+            "preview": "basis write failed: ${(.error)}"
+          },
+          "7d10998a1b56969e5b829cb7d4ce97b3f30fd564": {
+            "facing": "internal",
+            "preview": "parent-segment spelling not allowed: ${}"
+          },
+          "7fa142dde686d4da9654e46f38d977c39e5bbb1e": {
+            "facing": "internal",
+            "preview": "trailing separator"
+          },
+          "8779eb304c778683d67d750dccf52878aa812b93": {
+            "facing": "internal",
+            "preview": "mount walk failed: ${()}"
+          },
+          "892cf105e015291c6c4dc450e7bd748671c9a000": {
+            "facing": "internal",
+            "preview": "suspicious path spelling: ${}"
+          },
+          "8e87b91ddfe6f5999aeb9bef0321cbc6b1cdb834": {
+            "facing": "internal",
+            "preview": "manifest create failed: ${(.error)}"
+          },
+          "b41f9c9c798720dadcd38bf277a0c6ce36d187d5": {
+            "facing": "ui",
+            "preview": "path too long"
+          },
+          "bb35f09015862c80f1a1ab04678ff8476bb6e122": {
+            "facing": "internal",
+            "preview": "surrounding whitespace"
+          },
+          "db519b19de685f4b01f4762943797cffd2dd80df": {
+            "facing": "internal",
+            "preview": "kernel or device path, or one of Claude Code's credentials:…"
+          },
+          "e40a0cec7acea22b53516d34b3ae9f050e0f2702": {
+            "facing": "internal",
+            "preview": "manifest write failed: ${(.error)}"
+          },
+          "ea054e7c63ab39b98874455822a59d311c0540be": {
+            "facing": "internal",
+            "preview": "network path not allowed: ${}"
+          },
+          "ea34eb21468a10a28c4376a104daaef89eab51b5": {
+            "facing": "internal",
+            "preview": "memory head read failed: ${(.error)}"
+          },
+          "ec463e6b5f91cf821354ad355528bb721537cc72": {
+            "facing": "internal",
+            "preview": "multi-store-sync: empty store receipt not removed"
+          },
+          "f8aa7d6174f50270e4b788102f2fab12abdf8632": {
+            "facing": "internal",
+            "preview": "nested percent-encoding: ${}"
+          },
+          "faa404963027cbc9b0e1476075f6e2d844e62e9c": {
+            "facing": "internal",
+            "preview": "network path not allowed: ${()?:}"
+          }
+        },
+        "why": "ea34eb21 internal: QF @7900694 throws inside Promise.allSettled(...).filter(status==='fulfilled'), so a rejected head read is dropped; QF's only caller Lkr @7897642 feeds P9e @7898809 (catch -> telemetry p('memory_scan',...), returns []) and uNo @10223455 (catch -> t('memory index backfill')). Never reaches a tool_result, unlike MRs @8112526 (GetTask background status). | 4dde3d77 internal: OTs @7847662's only caller Z4r @12676228 wraps MTs(OTs(s.file)) in try{}catch{ke=void 0} and returns {held:'unreadable'}; the message text is discarded (Z4r's own caller @12705595 .catch logs t('Hooks: could not judge a hook...')). | 13552004 internal: jS @7650650 is called from LM @7664269 inside try/catch (Ie++), LM->NM->nD @7692167 catch stores {error:d(Z)} in the sync result; background multi-store-sync, no tool_result route. | 59286346 internal: $f @7645117 callers: LM inline @7662284, handleMemory @7667843 (cS @7625691 .catch(R??=_e)), SS @7678851 (in try) -> JM -> $i(sync) -> nD @7692167 try/catch storing d(V) as failureReason:'exception'. Background memory sync only. | 2a032d0e internal: HS @7644649 callers: US @7650173 (try{...}catch{return!1}) and FM's re @7668175 (try{...}); thrown error swallowed inside the memory-sync loop; no model sink. | 118fb7d9 internal: gs @7644267 callers vf/us/US/oc (@7649605/@7649710/@7650090/@7650262) all wrap it in try{}catch{return!1 / {}}, kS @7629120 maps it via .then(()=>!1,G); memory-sync internal. | 8779eb30 internal: _f @7638665 is called only from RM (@7641493/@7643266/@7643501) -> Fi; Fi callers AM @7653462 (catch -> {outcome:'failed',error:d(R)}), FM @7669039 (catch -> t(...basis_unusable walk failed)), XM @7680470 (catch -> t(...)), LM/JM which end in nD @7692167's catch storing error:d(Z). All background sync results, no tool_result. | ec463e6b internal: DS @7637553 callers: $f @7645258 (memory-sync write, ends in nD catch) and LM @7661731 inside try{await DS}catch{return{success:!1,...}}; sync-loop internal. | 75d79de1 internal: Di @7636996: the throw at @7637205 is inside Di's own try whose catch logs t(`multi-store-sync[..]: basis write failed: ${d(r)}`,{level:'warn'}); log only. | 8e87b91d internal: hM @7631606's only caller Wl @7630825; Wl callers LM @7665734 and FM @7669526 use .catch(t(...manifest write failed,{level:'warn'})), nD inline @7691399/@7691865 wrap in try/catch -> telemetry p('team_memory_multistore_conflict'). No model route. | e40a0cec internal: Wl @7631038 throw; same Wl callers (LM @7665734 / FM @7669526 .catch -> t warn, nD @7691399/@7691865 try/catch -> telemetry). The other two literal sites @7665809/@7669573 are themselves those warn log templates. Internal. | 61c97b51 internal: Thrown in Dct @7617814 (read-permission checks @7619470/@7619703). Dct callers: LI @7612825 catch -> t('[chrome file_upload] rejected path') + fixed K_/tS text; its @35135902 -> screen @46303039 catch -> t(...) and undefined ('path_rejected' code); J @46163152/@46163487 catch -> t(...) + I(y,jYr(S)) error code. The message text never reaches the model. | 0fdb0155 internal: Sites @7615465 (ff) and @7619176 (Dct). ff's caller ksi @7610345 catches and returns NI/DI/tS fixed text after t('[chrome file_upload] rejected path (pass-through)'); Dct callers LI/its/J catch likewise (log + fixed text or code). Internal. | db519b19 internal: Dct @7618257 throw; Dct callers LI @7612825 (catch -> fixed K_/tS), screen @46303039 (catch -> undefined), start_task J @46163152 (catch -> code via jYr). Text logged only. | b41f9c9c ui: Sites @7614655 (ff) and @7617867 (Dct) are caught by ksi/LI and swapped for fixed text (internal); @31197290 sits in a t() log line about the uds socket path; @32104569 is ZVt.ENAMETOOLONG, rendered by f1e in the Ink 'Transcript writes are failing' notice (ui). No model route, so non-model is right; keeping ui for the Ink render. | 1974ac1e internal: df @7617598 is called from ff (pass-through, caught by ksi @7610345 -> fixed NI/DI/tS) and from the Dct path (caught by LI/screen/J); logged via t() only. | 602fad2f internal: ff @7616161 stream-base fan-out throw; ff's external caller ksi @7610345 catches -> t(...rejected path (pass-through)) + fixed DI(P) text. Internal. | 7fa142dd internal: The real throw is in ff (/[/\\\\]\\.?$/ test) caught by ksi @7610345 -> fixed text; offsets 950252/950525/1611970/1612144 are substring hits inside the zod 'no doubled or trailing separators' message of pb() (a settings-validation message, not this arm). Internal. | 45e23fa1 internal: ff @7615148 POSIX backslash throw, caught by ksi @7610345 -> t() log + fixed DI/NI text returned as {error}. Internal. | 7d10998a internal: ff @7614937 dot-dot throw, caught by ksi @7610345 and replaced by fixed text. Internal. | f8aa7d61 internal: ff @7614764 nested percent-encoding throw (recursion via ff @7615915), caught at ksi @7610345 -> t() + fixed text. Internal. | bb35f090 internal: ff @7614521 throw caught by ksi @7610345 -> fixed text; the other offset @26613364 is the telemetry 2nd arg 'skill name with surrounding whitespace rejected' (substring). Internal. | 5a998d79 internal: uf @7614333 ask-rule throw, called from ff and Dct, both caught (ksi @7610345 / LI @7612825 / screen / start_task J) and replaced by fixed text or a code. Internal. | 73b62353 internal: uf @7614215 is caught like the other file-upload arms. @17737553 R() builds the bridge read_file error, rethrown at @17739572 to the remote sidebar viewer RPC (readFileForRemote), not a model tool; @2697292 is a zod .describe of that bridge request schema. No model route. | 892cf105 internal: pf @7614034 is called from nS/ff/Dct; all paths end in ksi @7610345 / LI @7612825 / screen @46303039 / start_task J catches that log and return fixed text/codes. Internal. | ea054e7c internal: pf @7613926 / nS @7613457 throws inside Dct/ff; LI @7612825 catch returns {error:H instanceof p9e?tS(b):K_(b)} (fixed text) after t() logging. Internal. | 62596775 internal: nS @7613621 unvettable-path throw, reached from Dct/ff; caught by LI @7612825 / ksi @7610345 -> fixed K_/DI text. Internal. | faa40496 internal: nS @7613457 network-path throw (same template with ternary); caught by LI @7612825 / ksi @7610345 -> fixed text. Internal."
       }
     ]
   },

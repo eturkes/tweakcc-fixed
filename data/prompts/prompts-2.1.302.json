@@ -9904,6 +9904,17 @@
       "version": "2.1.295"
     },
     {
+      "name": "Tool Description: Agent (simple usage notes) — fork exception to fresh start",
+      "id": "tool-description-agent-simple-usage-notes-fork-exception",
+      "description": "Notes that subagent_type \"fork\" is the exception to calls starting fresh because it inherits the parent context.",
+      "pieces": [
+        " (except subagent_type: \"fork\", which inherits your context)"
+      ],
+      "identifiers": [],
+      "identifierMap": {},
+      "version": "2.1.302"
+    },
+    {
       "name": "File-state-current tool_result suffix",
       "id": "tool-result-file-state-current",
       "description": "Model-facing suffix appended to an Edit/Write tool_result block (mapToolResultToToolResultBlockParam) telling the model the file state is current so it need not re-read the file.",
@@ -15022,6 +15033,17 @@
         "0": "DATA_ARTIFACT_TYPE_RELEASE_ACCESS_LOST_VAR_0"
       },
       "version": "2.1.237"
+    },
+    {
+      "name": "Tool Result: Read file unsupported encoding note — undecodable bytes shown as U+FFFD",
+      "id": "tool-result-read-file-unsupported-encoding-note-fffd",
+      "description": "For not-UTF-8 files the note states that the undecodable bytes appear above as U+FFFD.",
+      "pieces": [
+        " Its undecodable bytes show above as U+FFFD."
+      ],
+      "identifiers": [],
+      "identifierMap": {},
+      "version": "2.1.302"
     },
     {
       "name": "Artifact Attached Stop-Latched Watch Note",
@@ -30316,6 +30338,17 @@
       "identifiers": [],
       "identifierMap": {},
       "version": "2.1.228"
+    },
+    {
+      "name": "Tool Description: Poll no pending events caveat — the \"(no pending events)\" sentinel result",
+      "id": "tool-description-poll-no-pending-events-caveat-sentinel",
+      "description": "Sentinel text the Poll tool returns when no event was delivered, which the caveat says does not mean nothing is queued.",
+      "pieces": [
+        "(no pending events)"
+      ],
+      "identifiers": [],
+      "identifierMap": {},
+      "version": "2.1.302"
     },
     {
       "name": "Watches List - No Other-Activity Row Readable",
@@ -80418,6 +80451,22 @@
       "version": "2.1.285"
     },
     {
+      "name": "System Reminder: MCP servers need authentication — authorize without naming a command or settings page",
+      "id": "system-reminder-mcp-servers-need-auth-without-naming-command",
+      "description": "Branch telling the model to say the server needs authorization without naming a command or settings page to do it.",
+      "pieces": [
+        "${",
+        "}without naming a command or settings page"
+      ],
+      "identifiers": [
+        0
+      ],
+      "identifierMap": {
+        "0": "SYSTEM_REMINDER_MCP_SERVERS_NEED_AUTH_WITHOUT_NAMING_COMMAND_VAR_0"
+      },
+      "version": "2.1.302"
+    },
+    {
       "name": "Plugin marketplace version update notice",
       "id": "slash-command-plugin-marketplace-version-update-notice",
       "description": "Availability and installed-version detail appended to an installed plugin's result when a newer marketplace version exists.",
@@ -91812,6 +91861,17 @@
       "version": "2.1.201"
     },
     {
+      "name": "System Prompt: Project thread marker — \"answers nothing above it\" marker text",
+      "id": "system-prompt-project-thread-marker-answers-nothing-clause-answers-nothing-label",
+      "description": "Marker wording on a thread message that tells the model it answers nothing earlier in the transcript.",
+      "pieces": [
+        "answers nothing above it"
+      ],
+      "identifiers": [],
+      "identifierMap": {},
+      "version": "2.1.302"
+    },
+    {
       "name": "Data: allowedProviders setting description (part 2 of 9)",
       "id": "data-settings-allowed-providers-description-part-2",
       "description": "Description of the `allowedProviders` setting in Claude Code's settings JSON schema. The model reads it through /update-config and settings validation errors; it is also shown to users in the settings help.",
@@ -96787,6 +96847,17 @@
       "identifiers": [],
       "identifierMap": {},
       "version": "2.1.299"
+    },
+    {
+      "name": "Tool Result: artifact identical resubmission — refused because live version not viewed",
+      "id": "tool-result-artifact-identical-resubmission-no-edits-applied-not-viewed",
+      "description": "Reason clause saying the content was refused because the model had not viewed the artifact's live version.",
+      "pieces": [
+        "because you had not viewed this artifact's live version"
+      ],
+      "identifiers": [],
+      "identifierMap": {},
+      "version": "2.1.302"
     },
     {
       "name": "Tool Result: bash dangerous — becomes \\`/…\\`.",
@@ -109151,6 +109222,17 @@
       "identifiers": [],
       "identifierMap": {},
       "version": "2.1.238"
+    },
+    {
+      "name": "Tool Result: Plugin hook event not deliverable — could not be posted to the hooks worker",
+      "id": "tool-result-plugin-hook-event-not-deliverable-post-failed",
+      "description": "Reason text saying the hook event could not be posted to the hooks worker.",
+      "pieces": [
+        "could not be posted to the hooks worker"
+      ],
+      "identifiers": [],
+      "identifierMap": {},
+      "version": "2.1.302"
     },
     {
       "name": "SendFile source unreadable/too large",
@@ -122594,25 +122676,6 @@
       "version": "2.1.291"
     },
     {
-      "name": "Tool result: worktree create PR fetch failed",
-      "id": "tool-result-worktree-create-pr-fetch-failed",
-      "description": "Error when fetching a PR/MR for a new worktree failed.",
-      "pieces": [
-        "Failed to fetch PR/MR #${",
-        ".prNumber}: ${",
-        "}"
-      ],
-      "identifiers": [
-        0,
-        1
-      ],
-      "identifierMap": {
-        "0": "TOOL_RESULT_WORKTREE_CREATE_PR_FETCH_FAILED_VAR_0",
-        "1": "TOOL_RESULT_WORKTREE_CREATE_PR_FETCH_FAILED_VAR_1"
-      },
-      "version": "2.1.300"
-    },
-    {
       "name": "/plugin marketplace: finalize cache failed",
       "id": "slash-command-plugin-marketplace-finalize-cache-failed",
       "description": "Error when the marketplace cache directory holding the catalog name cannot be removed",
@@ -135444,6 +135507,17 @@
       "version": "2.1.294"
     },
     {
+      "name": "Tool Result: Git Bash not found — install Git for Windows",
+      "id": "tool-result-hook-blocking-git-bash-not-found-install-git",
+      "description": "Remedy telling the user to install Git for Windows (with download URL) so bash hooks and skills can run.",
+      "pieces": [
+        "Install Git for Windows (https://git-scm.com/downloads/win)"
+      ],
+      "identifiers": [],
+      "identifierMap": {},
+      "version": "2.1.302"
+    },
+    {
       "name": "Slash Command: /install-github-app — cancelled by the user",
       "id": "slash-command-install-github-app-cancelled",
       "description": "Tells the model the GitHub App installation flow was abandoned rather than completed, so it should not proceed as though workflows or credentials now exist.",
@@ -146401,6 +146475,38 @@
       "version": "2.1.284"
     },
     {
+      "name": "MCP Authorization Header Rejected — server rejected the configured Authorization header",
+      "id": "tool-result-mcp-server-config-authorization-header-rejected-new-task-rejected-header",
+      "description": "States that the MCP server rejected the Authorization header in its config.",
+      "pieces": [
+        "MCP server \"${",
+        "}\" rejected the Authorization header in its config"
+      ],
+      "identifiers": [
+        0
+      ],
+      "identifierMap": {
+        "0": "TOOL_RESULT_MCP_SERVER_CONFIG_AUTHORIZATION_HEADER_REJECTED_NEW_TASK_REJECTED_HEADER_VAR_0"
+      },
+      "version": "2.1.302"
+    },
+    {
+      "name": "MCP HeadersHelper Credential Rejected — server rejected headersHelper credential",
+      "id": "tool-result-mcp-server-headers-helper-credential-rejected-statement",
+      "description": "Names the failure: the MCP server rejected the credential produced by its headersHelper.",
+      "pieces": [
+        "MCP server \"${",
+        "}\" rejected the credential from its headersHelper"
+      ],
+      "identifiers": [
+        0
+      ],
+      "identifierMap": {
+        "0": "TOOL_RESULT_MCP_SERVER_HEADERS_HELPER_CREDENTIAL_REJECTED_STATEMENT_VAR_0"
+      },
+      "version": "2.1.302"
+    },
+    {
       "name": "Tool Result: MCP malformed result",
       "id": "tool-result-mcp-response-schema-invalid",
       "description": "Error returned when an MCP server's tool result fails schema validation.",
@@ -149569,6 +149675,17 @@
       "version": "2.1.286"
     },
     {
+      "name": "Tool Result: Served tool result too large — narrow the search",
+      "id": "tool-result-served-read-result-too-large-fewer-pages-narrow-the-search",
+      "description": "Tells the model to narrow the search when a search tool's result was too large to send back.",
+      "pieces": [
+        "Narrow the search."
+      ],
+      "identifiers": [],
+      "identifierMap": {},
+      "version": "2.1.302"
+    },
+    {
       "name": "Tool Result: Computer Use app_ax_find — showing first N matches, narrow with role or title_contains",
       "id": "tool-result-computer-use-ax-find-matches-truncated-narrow",
       "description": "Tells the model the match list was cut off and that it should narrow the search with role or title_contains.",
@@ -150013,6 +150130,17 @@
         "darwin"
       ],
       "version": "2.1.246"
+    },
+    {
+      "name": "System Prompt: Project thread reply marker consent — \"next after this session's last delivered reply\" marker",
+      "id": "system-prompt-project-thread-reply-marker-consent-next-after-reply-marker",
+      "description": "Marker wording on a thread message saying it came next after this session's last delivered reply, which the consent rule keys on.",
+      "pieces": [
+        "next after this session's last delivered reply"
+      ],
+      "identifiers": [],
+      "identifierMap": {},
+      "version": "2.1.302"
     },
     {
       "name": "Hooks module: next destructured oddly",
@@ -169572,6 +169700,17 @@
       "version": "2.1.292"
     },
     {
+      "name": "Tool Result: Artifact resubmission saved source changed — publishing it unchanged will then go through",
+      "id": "tool-result-artifact-identical-resubmission-unviewed-source-changed-publish-unchanged-goes-through",
+      "description": "Tells the model that, once its file already holds that version's content, republishing unchanged will be accepted.",
+      "pieces": [
+        "publishing it unchanged will then go through"
+      ],
+      "identifiers": [],
+      "identifierMap": {},
+      "version": "2.1.302"
+    },
+    {
       "name": "Tool Result: Plugin publish needs claude.ai sign-in",
       "id": "tool-result-plugin-publish-needs-claude-ai-sign-in",
       "description": "Says publishing needs a claude.ai sign-in and suggests publishing from claude.ai or a signed-in session",
@@ -176546,6 +176685,38 @@
         "2": "TOOL_RESULT_SCAN_SECRETS_COULD_NOT_RUN_VAR_2"
       },
       "version": "2.1.300"
+    },
+    {
+      "name": "Tool Result: scan_secrets could not run (reason)",
+      "id": "tool-result-scan-secrets-could-not-run-reason",
+      "description": "Result line opening every scan_secrets refusal, followed by the reason the scan could not run.",
+      "pieces": [
+        "Result: the scan could not run: ${",
+        "}"
+      ],
+      "identifiers": [
+        0
+      ],
+      "identifierMap": {
+        "0": "TOOL_RESULT_SCAN_SECRETS_COULD_NOT_RUN_REASON_VAR_0"
+      },
+      "version": "2.1.302"
+    },
+    {
+      "name": "Tool Result: scan_secrets could not run (reason)",
+      "id": "tool-result-scan-secrets-could-not-run-reason",
+      "description": "Result line opening every scan_secrets refusal, followed by the reason the scan could not run.",
+      "pieces": [
+        "Result: the scan could not run: ${",
+        "}"
+      ],
+      "identifiers": [
+        0
+      ],
+      "identifierMap": {
+        "0": "TOOL_RESULT_SCAN_SECRETS_COULD_NOT_RUN_REASON_VAR_0"
+      },
+      "version": "2.1.302"
     },
     {
       "name": "Slash Command: /resume — cancelled",
@@ -194771,6 +194942,17 @@
       "version": "2.1.281"
     },
     {
+      "name": "Tool Result: Served Bash truncated output saved file — whole output is in the file",
+      "id": "tool-result-served-bash-truncated-output-saved-file-whole-output",
+      "description": "Tells the model the saved file contains the command's whole output.",
+      "pieces": [
+        "The command's whole output is"
+      ],
+      "identifiers": [],
+      "identifierMap": {},
+      "version": "2.1.302"
+    },
+    {
       "name": "Data: Task Notification Ultrareview Post Withheld By Screen",
       "id": "data-task-notification-ultrareview-post-withheld-by-screen",
       "description": "Ultrareview post-failure reason that a content-safety screen withheld the comment.",
@@ -202220,6 +202402,17 @@
       "identifiers": [],
       "identifierMap": {},
       "version": "2.1.292"
+    },
+    {
+      "name": "Tool Result: Artifact resubmission saved source changed — resent publish will go through",
+      "id": "tool-result-artifact-identical-resubmission-unviewed-source-changed-publish-goes-through",
+      "description": "States that if the file already has that version's content, the publish sent again will be accepted.",
+      "pieces": [
+        "the publish sent again will then go through"
+      ],
+      "identifiers": [],
+      "identifierMap": {},
+      "version": "2.1.302"
     },
     {
       "name": "Publish source mismatch approval reason",
@@ -226572,6 +226765,17 @@
       "version": "2.1.259"
     },
     {
+      "name": "Tool result: artifact publish left-out copy entry — source has no file there",
+      "id": "tool-result-artifact-publish-left-out-copy-entry-no-file",
+      "description": "Per-entry reason that the copied-from path has no file at the source.",
+      "pieces": [
+        "which has no file there"
+      ],
+      "identifiers": [],
+      "identifierMap": {},
+      "version": "2.1.302"
+    },
+    {
       "name": "Computer-use click tier restriction",
       "id": "tool-result-computer-use-click-tier-restriction",
       "description": "Tool-result explaining a click app grants only left-click at its tier.",
@@ -227028,6 +227232,17 @@
       "identifiers": [],
       "identifierMap": {},
       "version": "2.1.282"
+    },
+    {
+      "name": "Tool Result: Windows sandbox — sandbox needs a one-time install",
+      "id": "tool-result-bash-sandbox-windows-self-exec-permission-not-given-needs-install",
+      "description": "Fallback sandbox-failure detail (Gie's text when the sandbox-runtime message is only its install notice) stating the Windows sandbox needs a one-time install.",
+      "pieces": [
+        "Windows sandbox needs a one-time install."
+      ],
+      "identifiers": [],
+      "identifierMap": {},
+      "version": "2.1.302"
     },
     {
       "name": "Tool Result: Bash sandbox Windows user not provisioned",
@@ -229003,6 +229218,17 @@
         "0": "TOOL_RESULT_WORKFLOW_SYNTAX_ERROR_VAR_0"
       },
       "version": "2.1.191"
+    },
+    {
+      "name": "Slash Command: Remote Workflow Script Nondeterministic",
+      "id": "slash-command-remote-workflow-script-nondeterministic",
+      "description": "Result line when a remote-launched workflow script uses Date.now(), Math.random() or new Date(), which break resume.",
+      "pieces": [
+        "workflow scripts must be deterministic: Date.now()/Math.random()/new Date() are unavailable (breaks resume). Stamp results after the workflow returns, or pass timestamps via args."
+      ],
+      "identifiers": [],
+      "identifierMap": {},
+      "version": "2.1.302"
     },
     {
       "name": "Tool Result: Workflow Script Determinism Error",
