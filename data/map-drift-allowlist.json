@@ -15,5 +15,18 @@
     "system-prompt-agent-thread-notes": "Same slots and variables; the generic or older slot names are replaced by the descriptive names from the upstream map. Overrides were renamed to match.",
     "agent-prompt-workflow-subagent-structured-output": "Same slots and variables; the generic or older slot names are replaced by the descriptive names from the upstream map. Overrides were renamed to match.",
     "agent-prompt-workflow-subagent-plain-text-output": "Same slots and variables; the generic or older slot names are replaced by the descriptive names from the upstream map. Overrides were renamed to match."
+  },
+  "2.1.302->2.1.303": {
+    "system-prompt-fork-usage-guidelines": "Same slots and variables; the generic or older slot names are replaced by the descriptive names from the upstream map. Overrides were renamed to match.",
+    "system-prompt-project-thread-in-thread-message-provenance": "Same slot and variable; the previous name was wrong (the slot is the reply tool name). Adopted the upstream name and renamed the override.",
+    "system-prompt-project-timeline-user-message-provenance": "Same slots and variables; the generic or older slot names are replaced by the descriptive names from the upstream map. Overrides were renamed to match.",
+    "tool-description-artifact-known-version-resubmission-guidance": "Same slots and variables; the generic or older slot names are replaced by the descriptive names from the upstream map. Overrides were renamed to match.",
+    "tool-description-artifact-quickstart-type-guidance-app-wording": "Same slots and variables; the generic or older slot names are replaced by the descriptive names from the upstream map. Overrides were renamed to match.",
+    "tool-description-artifact-type-discovery-guidance-app-wording": "Same slots and variables; the generic or older slot names are replaced by the descriptive names from the upstream map. Overrides were renamed to match.",
+    "tool-description-artifact-type-discovery-guidance": "Same slots and variables; the generic or older slot names are replaced by the descriptive names from the upstream map. Overrides were renamed to match.",
+    "tool-description-artifact-quickstart-type-guidance": "Same slots and variables; the generic or older slot names are replaced by the descriptive names from the upstream map. Overrides were renamed to match.",
+    "tool-description-agent-usage-notes": "Same slots and variables; the generic or older slot names are replaced by the descriptive names from the upstream map. Overrides were renamed to match.",
+    "system-prompt-project-coordinator-relay-trust-boundary": "Same slots and variables; the generic or older slot names are replaced by the descriptive names from the upstream map. Overrides were renamed to match.",
+    "tool-description-designsync": "Same slots and variables; the generic or older slot names are replaced by the descriptive names from the upstream map. Overrides were renamed to match."
   }
 }
