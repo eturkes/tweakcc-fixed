@@ -392,7 +392,7 @@ const PATCH_DEFINITIONS = [
     name: 'Hide terminal title spinner',
     group: PatchGroup.MISC_CONFIGURABLE,
     description:
-      'Terminal title drops the ◐/◑ spinner while busy; ✳ still marks idle/waiting',
+      'Terminal title drops the ◐/◑ spinner while busy (background shells included); ✳ still marks idle/waiting',
   },
   {
     id: 'increase-file-read-limit',

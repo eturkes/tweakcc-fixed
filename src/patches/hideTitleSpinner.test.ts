@@ -3,7 +3,13 @@ import { writeHideTitleSpinner } from './hideTitleSpinner';
 
 // Terminal-title component, verbatim from CC 2.1.282 (minified names kept).
 const FIXTURE =
-  'var y5=["\\u25D0","\\u25D1"],S5="\\u2733",ZJe=960;function b5(h){let Le=w(1),{titles:M,isAnimating:E,noPrefix:V}=h,ee=xe(M,b7t),Se=xe(M,k7t),ve=El(),Ce=kCt()!==null&&x("tengu_static_title_under_mux",!0),[Pe,Me]=g(0),je;if(Le[0]===b)je=()=>Me(v7t),Le[0]=je;else je=Le[0];Bs(je,Se||V||Ce||!E||!ve?null:ZJe);let $e=E&&!Ce?y5[Pe]??S5:S5;return Bce(Se?null:V?ee:`${$e} ${ee}`),null}';
+  'var y5=["\\u25D0","\\u25D1"],S5="\\u2733",ZJe=960;function b5(h){let Le=w(1),{titles:M,isAnimating:E,noPrefix:V}=h,ee=xe(M,b7t),Se=xe(M,k7t),ve=El(),Ce=kCt()!==null&&x("tengu_static_title_under_mux",!0),[Pe,Me]=g(0),je;if(Le[0]===b)je=()=>Me(v7t),Le[0]=je;else je=Le[0];Bs(je,Se||V||Ce||!E||!ve?null:ZJe);let $e=E&&!Ce?y5[Pe]??S5:S5;return Bce(Se?null:V?ee:`${$e} ${ee}`),null}' +
+  // Status call site, from CC 2.1.296, reduced to the title's busy flag.
+  'function Ive(po,yo,En,Jn){let $o=po==="idle"&&yo?"shell":po,fn,On;const tr=po==="busy",Bn=En||Jn;return tr}';
+
+// Ive → the isAnimating value the title component receives.
+const titleBusy = (src: string, status: string, shell: boolean): boolean =>
+  new Function(`${src};return Ive;`)()(status, shell, false, false);
 
 interface State {
   busy: boolean;
@@ -67,10 +73,21 @@ describe('writeHideTitleSpinner', () => {
     expect(render(patched, { busy: true, disabled: true })).toBeNull();
   });
 
+  it('busy flag also holds for an idle turn with a background shell', () => {
+    expect(titleBusy(FIXTURE, 'idle', true)).toBe(false);
+    expect(titleBusy(patched, 'idle', true)).toBe(true);
+    expect(titleBusy(patched, 'busy', false)).toBe(true);
+    expect(titleBusy(patched, 'idle', false)).toBe(false);
+    expect(titleBusy(patched, 'waiting', true)).toBe(false);
+  });
+
   it('returns null (logging) when the title statement is absent', () => {
     const errSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     expect(writeHideTitleSpinner('x=1;function y(){}')).toBeNull();
     expect(writeHideTitleSpinner(patched)).toBeNull();
+    expect(
+      writeHideTitleSpinner(FIXTURE.replace('"shell"', '"sh"'))
+    ).toBeNull();
     errSpy.mockRestore();
   });
 });

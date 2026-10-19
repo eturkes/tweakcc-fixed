@@ -331,7 +331,7 @@ export function MiscView({ onSubmit }: MiscViewProps) {
         id: 'hideTitleSpinner',
         title: 'Hide terminal title spinner',
         description:
-          'Shows the bare title while Claude works and "✳ title" when idle or waiting.',
+          'Shows the bare title while Claude works or a background shell runs, and "✳ title" when idle or waiting.',
         getValue: () => settings.misc?.hideTitleSpinner ?? false,
         toggle: () => {
           updateSettings(settings => {
