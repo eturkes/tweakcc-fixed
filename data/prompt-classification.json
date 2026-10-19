@@ -126618,5 +126618,43 @@
     "id": "tool-result-scan-secrets-could-not-run-reason",
     "name": "Tool Result: scan_secrets could not run (reason)",
     "desc": "Result line opening every scan_secrets refusal, followed by the reason the scan could not run."
+  },
+  "3f616bfd9660492c7fe881d44194137576da9d8b": { "facing": "ui" },
+  "7c684929b3ad4fe0472422824ae266f81de4be12": { "facing": "ui" },
+  "9b87c9c68a074a584a73f242638d38a36263232b": { "facing": "ui" },
+  "ebd357a29c5afd6393229992a6f9813fdac9c6df": { "facing": "internal" },
+  "5eda8e692e92b600fd11b4b38329cc6358351070": { "facing": "internal" },
+  "e9a09acb2186f046b6248c495e3ba576373eb168": { "facing": "internal" },
+  "962fdb667b45c09eafd2d463c525feeec1ae49a0": { "facing": "internal" },
+  "db32f94f2dae8850273742012ead80a537b28db6": {
+    "facing": "model",
+    "id": "tool-result-ca-certs-no-trusted-roots-error",
+    "name": "Tool Result: CA certs no trusted roots error",
+    "desc": "Error thrown when every root certificate built into the runtime is on Claude Code's deny list and no root is left to trust; it surfaces as the error text of a network-using tool call."
+  },
+  "3c242b5ea2511f9515d82f1855b02894db23a6b6": { "facing": "internal" },
+  "e49c681b3ed6ae27fc40ebfd7a528a5e90e9484a": {
+    "facing": "model",
+    "id": "system-prompt-guide-agent-no-answer-report-issue",
+    "name": "System Prompt: guide agent no-answer report issue",
+    "desc": "Claude guide agent instruction: when no answer is found or the feature does not exist, direct the user to the build's issue-reporting channel (ISSUES_EXPLAINER) instead of /feedback."
+  },
+  "901ce87be26332a0d257d8dee71aba7948feaa49": {
+    "facing": "model",
+    "id": "system-reminder-mcp-servers-refused-reserved-address",
+    "name": "System Reminder: MCP servers refused reserved address",
+    "desc": "Reminder listing configured MCP servers that Claude Code itself refuses because it reserves their address, saying retrying won't help and how the user can remove the entry, change its address or report the issue."
+  },
+  "c4c55b282d204d66dca37803b976cd69e1121cd7": {
+    "facing": "model",
+    "id": "slash-command-restart-refused-version-on-hold",
+    "name": "Slash Command: restart refused version on hold",
+    "desc": "/restart refusal: the installed version is on hold (above the max allowed version), so the session stays on the current version and nothing was changed."
+  },
+  "7db6ee5a580e1b4f3e6e192cf422792239fe1f53": {
+    "facing": "model",
+    "id": "skill-claude-code-help-recent-releases",
+    "name": "Skill: Claude Code help recent releases",
+    "desc": "Current Build section of the claude-code help skill listing the most recent release notes (up to 10) alongside the running version."
   }
 }

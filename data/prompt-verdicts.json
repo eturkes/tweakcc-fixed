@@ -74371,5 +74371,10 @@
     "verdict": "pristine-keep",
     "version": "2.1.302",
     "why": "Strongest cut: wipe. Fails: it is the only remedy on the Grep/Glob arm of wn. Wiping leaves 'result is too large to send back.' with no next step, and no sibling co-renders on this arm."
+  },
+  "tool-result-ca-certs-no-trusted-roots-error": {
+    "verdict": "pristine-keep",
+    "version": "2.1.303",
+    "why": "Strongest possible cut: drop the remedy sentence 'Update Claude Code.' because sibling errors say the same. That fails. The siblings are separate throw sites in other modules and never render with this error (fn qn at chunk-mg7dvfgv.js@2124107 throws it alone). The first sentence is frozen by the tripwire ('every', 'deny list') and is the only explanation of a TLS failure the model cannot infer. This error is the only text the model sees when it happens, so it is the sole copy of both its cause and its fix. It is also conditional, so it costs nothing until it fires. Nothing is covered and nothing is slop, so the body stays pristine."
   }
 }
