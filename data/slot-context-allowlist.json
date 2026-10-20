@@ -45,12 +45,12 @@
     }
   },
   "system-reminder-plan-approved": {
-    "bodyHash": "9e6f011c2a41",
-    "pristineHash": "16c4cf8a64c9",
-    "valueHash": "7987695113f0",
-    "reviewed": "2026-10-07 (CC 2.1.292)",
+    "bodyHash": "de1c3a800d84",
+    "pristineHash": "0f4f9ecdf366",
+    "valueHash": "d2b4ce9e3501",
+    "reviewed": "2026-10-20 (CC 2.1.304)",
     "tokens": {
-      "PLAN_FILE_PATH": "Runtime value: the plan file path. Renders `Saved plan: <path>` as a label/value line. The TEAM_PARALLELIZATION_NOTE after it resolves to \"\" or \"\\n\\nIf this plan can be broken down …\", so the path never runs into prose."
+      "PLAN_FILE_PATH": "Runtime value: the plan file path. 2.1.304 wrapped the saved-plan line in a ternary that drops it when there is no path; renders `Saved plan: <path>` as a label/value line. The TEAM_PARALLELIZATION_NOTE after it resolves to \"\" or \"\\n\\nIf this plan can be broken down …\", so the path never runs into prose."
     }
   },
   "tool-description-artifact-comments-section": {
@@ -99,12 +99,12 @@
     }
   },
   "tool-description-bash-run-in-background-detached": {
-    "bodyHash": "abd19cd0a2a2",
-    "pristineHash": "ad1f3933f2b8",
-    "valueHash": "49dca50f2f29",
-    "reviewed": "2026-10-10 (CC 2.1.296)",
+    "bodyHash": "15b0513e45fa",
+    "pristineHash": "4d091b4c9f74",
+    "valueHash": "f965e79b6119",
+    "reviewed": "2026-10-20 (CC 2.1.304)",
     "tokens": {
-      "TOOL_DESCRIPTION_BASH_RUN_IN_BACKGROUND_DETACHED_VAR_3": "Value is \"\" or \" A command started with run_in_background keeps running after your reply ends, until it finishes or reaches its timeout; a process the shell itself detaches (nohup, &) is usually stopped a few minutes after the reply.\" (EPt -> ` ${kro}`), a whole space-led sentence. It ends the bullet after \"re-invoked.\"; only the trimmed \" No `&` needed.\" used to follow it."
+      "TOOL_DESCRIPTION_BASH_RUN_IN_BACKGROUND_DETACHED_VAR_4": "Value is \"\" or \" A command started with run_in_background keeps running after your reply ends, until it finishes or reaches its timeout; a process the shell itself detaches (nohup, &) is usually stopped a few minutes after the reply.\" (EPt -> ` ${kro}`), a whole space-led sentence. It ends the bullet after \"re-invoked.\"; 2.1.304 renumbered the slot (a new notify flag took slot 0); only the trimmed \" No `&` needed.\" used to follow it."
     }
   },
   "tool-description-webfetch-private-url-warning": {

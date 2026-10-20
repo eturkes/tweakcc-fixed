@@ -28,5 +28,8 @@
     "tool-description-agent-usage-notes": "Same slots and variables; the generic or older slot names are replaced by the descriptive names from the upstream map. Overrides were renamed to match.",
     "system-prompt-project-coordinator-relay-trust-boundary": "Same slots and variables; the generic or older slot names are replaced by the descriptive names from the upstream map. Overrides were renamed to match.",
     "tool-description-designsync": "Same slots and variables; the generic or older slot names are replaced by the descriptive names from the upstream map. Overrides were renamed to match."
+  },
+  "2.1.303->2.1.304": {
+    "system-reminder-attached-machine-could-not-be-reached-oversized-call": "2.1.304 inserted a sentence naming the machine after the notice slot. Slot 0 is still the could-not-be-reached notice and slot 1 is the new machine name, so the binding is correct; only the surrounding text changed."
   }
 }
