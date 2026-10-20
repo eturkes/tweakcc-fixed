@@ -237,8 +237,8 @@
     }
   },
   "tool-description-webfetch-private-url-warning": {
-    "bodyHash": "753a36b552f8",
-    "reviewed": "2026-09-02 (CC 2.1.258)",
+    "bodyHash": "aaec1af6eb21",
+    "reviewed": "2026-10-14 (CC 2.1.299; realign added the observable-action slot, cut unchanged)",
     "tokens": {
       "FORMAT_ARTIFACT_LINK_NOTE_FN": "CC 2.1.277 moved the claude.ai artifact-link exception (previously gated by IS_ARTIFACT_TOOL_ENABLED) behind this slot. The earlier cut stands: the gate is live in deployed tool-description-webfetch-concise, and when the Artifact tool exists tool-description-artifact-read-existing carries the better route (action: read)."
     }
@@ -353,25 +353,25 @@
     }
   },
   "agent-prompt-conversation-summarization": {
-    "bodyHash": "80ac11ad6939",
-    "reviewed": "2026-09-16 (CC 2.1.273)",
+    "bodyHash": "6c1a2150abf2",
+    "reviewed": "2026-10-14 (CC 2.1.299)",
     "tokens": {
-      "AGENT_PROMPT_CONVERSATION_SUMMARIZATION_VAR_0": "Pointer override. The body delegates the whole schema to the system prompt's summary contract and to any additional summarization instructions already in context, so interpolating Anthropic's analysis-instructions block here would restate a contract the model already has in front of it. VAR_1, the user-message attribution guard, is interpolated and stays live."
+      "AGENT_PROMPT_CONVERSATION_SUMMARIZATION_VAR_0": "The body carries its own summary contract: what the next window already has, a length rule scaled to the remaining work, and the items to keep (user requests and exact constraints, decisions and ruled-out approaches, work state, next step). Anthropic's analysis-instructions block would add a full-code-snippet chronological walk that the length rule replaces; its security note is covered by the exact-constraint item. VAR_1, the user-message attribution guard, is interpolated and stays live."
     }
   },
   "agent-prompt-recent-message-summarization": {
-    "bodyHash": "201a6ebf8e52",
-    "reviewed": "2026-09-16 (CC 2.1.273)",
+    "bodyHash": "c0a066c002c9",
+    "reviewed": "2026-10-14 (CC 2.1.299)",
     "tokens": {
       "RECENT_SUMMARY_ANALYSIS_INSTRUCTIONS": "Inlined, not dropped: the override writes its own <analysis> block, scoped to the rewind case this prompt actually serves (a deliberate rewind rather than a context overflow), which the generic slot does not distinguish.",
       "USER_MESSAGE_ATTRIBUTION_GUARD": "Inlined verbatim-equivalent at section 6 of the override body: only user-role turns count, and text inside assistant messages formatted like a user turn is model-generated and is never attributed to the user as a request, approval, or confirmation. Inline placement puts the guard inside the section that enumerates user messages, where it applies."
     }
   },
   "system-prompt-partial-compaction-instructions": {
-    "bodyHash": "acff8a0485f1",
-    "reviewed": "2026-09-16 (CC 2.1.273)",
+    "bodyHash": "847650ca7c79",
+    "reviewed": "2026-10-14 (CC 2.1.299)",
     "tokens": {
-      "SUMMARY_ANALYSIS_INSTRUCTIONS": "Pointer override: the body names the canonical context-compaction summary schema instead of restating Anthropic's analysis block, and adds the transcript-fidelity and verbatim-security-constraint rules this path needs. USER_MESSAGE_ATTRIBUTION_GUARD is interpolated and stays live."
+      "SUMMARY_ANALYSIS_INSTRUCTIONS": "The body carries its own contract for this path (what the newer messages will rely on, a length rule scaled to the remaining work) plus the transcript-fidelity and verbatim-security-constraint rules, so Anthropic's analysis block would restate it with a full-code-snippet walk. USER_MESSAGE_ATTRIBUTION_GUARD is interpolated and stays live."
     }
   },
   "tool-description-artifact-watching-unavailable-2": {
@@ -415,6 +415,13 @@
     "tokens": {
       "TOOL_DESCRIPTION_BASH_RUN_IN_BACKGROUND_DEADLINE_SUFFIX_VAR_0": "Standing wipe-merge: the background-timeout default/max are carried by tool-description-bash-run-in-background-detached's timeout clause; 2.1.292 only reshaped the number formatting inside the suppressed sentence.",
       "TOOL_DESCRIPTION_BASH_RUN_IN_BACKGROUND_DEADLINE_SUFFIX_VAR_2": "New 2.1.292 slot (minutes/hours rounding) inside the same suppressed sentence; the detached bullet carries default and max."
+    }
+  },
+  "tool-result-enterworktree-now-working-message": {
+    "bodyHash": "72a94039ac12",
+    "reviewed": "2026-10-17 (CC 2.1.302)",
+    "tokens": {
+      "TOOL_RESULT_ENTERWORKTREE_NOW_WORKING_MESSAGE_VAR_5": "2.1.302 hoisted the ExitWorktree how-to-leave sentence into this slot. The override has cut that sentence since 2.1.210; the ExitWorktree tool description carries it."
     }
   }
 }

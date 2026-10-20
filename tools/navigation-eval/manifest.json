@@ -1,0 +1,625 @@
+{
+  "schemaVersion": 1,
+  "id": "native-grep-visible-evidence-v1",
+  "corpus": {
+    "repository": "https://github.com/skrabe/tweakcc-fixed",
+    "revision": "85ae46fe322de92aa909dadc28847556a6d53a63"
+  },
+  "selection": {
+    "method": "Ten public repository behavior investigations selected before native Grep implementation, across independent subsystems. Fixed literal/regex queries were authored from the questions and source. Synthetic counterexamples are reported separately.",
+    "notMeasured": [
+      "speed",
+      "semantic symbol resolution",
+      "representative model-quality effect size",
+      "private session history"
+    ]
+  },
+  "policy": {
+    "byteBudgets": [2048, 8192],
+    "budgetUnit": "UTF-8 bytes of visible result text per fixed query",
+    "instructions": "Answer the question using only the supplied search results. Cite repository paths and line numbers. Distinguish implementation from tests and examples. Report missing evidence or uncertainty; do not infer completeness from a truncated search. Include every requested constraint and counterexample.",
+    "queryPolicy": "Same fixed query, scope, context, result budget, and instructions for each condition. Native raw rg has deterministic path order, with no candidate ranking. Report each task and budget separately; do not collapse results into a marketing aggregate."
+  },
+  "tasks": [
+    {
+      "id": "release-prompt-source",
+      "corpus": "repository",
+      "question": "For an installed package, where do prompt JSONs come from, how is the cache separated by release, and does a newer Claude Code version bypass the support check? Explain the checkout exception and identify regression coverage.",
+      "queries": [
+        {
+          "pattern": "downloadStringsFile|TWEAKCC_SUPPORTED_CC",
+          "path": "src",
+          "context": 0
+        },
+        {
+          "pattern": "refs/tags|cacheDir|newer requested version|repo-local prompts",
+          "path": "src",
+          "context": 0
+        }
+      ],
+      "requiredEvidence": [
+        {
+          "id": "release-tag",
+          "path": "src/systemPromptDownload.ts",
+          "line": 189,
+          "snippet": "refs/tags/v${TWEAKCC_VERSION}/data/prompts/"
+        },
+        {
+          "id": "release-cache",
+          "path": "src/systemPromptDownload.ts",
+          "line": 161,
+          "snippet": "const cacheDir = path.join(PROMPT_CACHE_DIR, `v${TWEAKCC_VERSION}`);"
+        },
+        {
+          "id": "release-reject-test",
+          "path": "src/systemPromptDownload.test.ts",
+          "line": 188,
+          "snippet": "rejects a newer requested version before cache or fetch"
+        },
+        {
+          "id": "release-local-test",
+          "path": "src/systemPromptDownload.test.ts",
+          "line": 159,
+          "snippet": "uses repo-local prompts before checking the supported version"
+        },
+        {
+          "id": "release-meta",
+          "path": "src/packageMeta.ts",
+          "line": 25,
+          "snippet": "PACKAGE_META.supportedClaudeCode"
+        }
+      ],
+      "expectedAnswerFacts": [
+        {
+          "id": "release-prompt-source-fact-1",
+          "text": "Network reads use the package release tag, not the main branch; cache paths include the package release version.",
+          "evidenceIds": ["release-tag", "release-cache"]
+        },
+        {
+          "id": "release-prompt-source-fact-2",
+          "text": "Newer requested versions fail before cache or network, but a checkout-local prompts file is used first.",
+          "evidenceIds": ["release-reject-test", "release-local-test"]
+        },
+        {
+          "id": "release-prompt-source-fact-3",
+          "text": "The supported Claude Code bound comes from package metadata.",
+          "evidenceIds": ["release-meta"]
+        }
+      ]
+    },
+    {
+      "id": "config-location-precedence",
+      "corpus": "repository",
+      "question": "Which configuration directory wins when the explicit override, legacy directory, Claude-aligned directory, and XDG location coexist? Explain whitespace and tilde handling and find the tests covering precedence.",
+      "queries": [
+        {
+          "pattern": "getConfigDir|TWEAKCC_CONFIG_DIR|XDG_CONFIG_HOME",
+          "path": "src",
+          "context": 0
+        },
+        {
+          "pattern": "highest priority|prioritize TWEAKCC_CONFIG_DIR|prefer.*XDG",
+          "path": "src",
+          "context": 0
+        }
+      ],
+      "requiredEvidence": [
+        {
+          "id": "config-trim",
+          "path": "src/config.ts",
+          "line": 45,
+          "snippet": "process.env.TWEAKCC_CONFIG_DIR?.trim()"
+        },
+        {
+          "id": "config-tilde",
+          "path": "src/config.ts",
+          "line": 47,
+          "snippet": "return expandTilde(tweakccConfigDir);"
+        },
+        {
+          "id": "config-explicit-test",
+          "path": "src/tests/tweakccConfigDir.test.ts",
+          "line": 90,
+          "snippet": "prioritize TWEAKCC_CONFIG_DIR over all other locations"
+        },
+        {
+          "id": "config-claude-test",
+          "path": "src/tests/tweakccConfigDir.test.ts",
+          "line": 114,
+          "snippet": "prefer ~/.claude/tweakcc over XDG_CONFIG_HOME"
+        },
+        {
+          "id": "config-legacy-test",
+          "path": "src/tests/xdgConfigHome.test.ts",
+          "line": 44,
+          "snippet": "should use ~/.tweakcc when it exists, even if XDG_CONFIG_HOME is set"
+        }
+      ],
+      "expectedAnswerFacts": [
+        {
+          "id": "config-location-precedence-fact-1",
+          "text": "A nonempty trimmed explicit override wins, with tilde expansion.",
+          "evidenceIds": ["config-trim", "config-tilde"]
+        },
+        {
+          "id": "config-location-precedence-fact-2",
+          "text": "Then precedence is existing ~/.tweakcc, existing ~/.claude/tweakcc, XDG_CONFIG_HOME/tweakcc, then ~/.tweakcc.",
+          "evidenceIds": [
+            "config-explicit-test",
+            "config-claude-test",
+            "config-legacy-test"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "default-merge-semantics",
+      "corpus": "repository",
+      "question": "Trace settings default merging. Are supplied arrays extended with defaults, is an explicit nested null replaced, and which migration must run before the merge? Cite implementation and regression tests.",
+      "queries": [
+        {
+          "pattern": "deepMergeWithDefaults",
+          "path": "src",
+          "context": 0
+        },
+        {
+          "pattern": "preserve arrays|preserve null|Array.isArray\\(defaults\\)|migrateUserMessageDisplayToV320",
+          "path": "src",
+          "context": 0
+        }
+      ],
+      "requiredEvidence": [
+        {
+          "id": "merge-array",
+          "path": "src/utils.ts",
+          "line": 561,
+          "snippet": "return Array.isArray(partial) ? partial : defaults;"
+        },
+        {
+          "id": "merge-array-test",
+          "path": "src/tests/deepMergeWithDefaults.test.ts",
+          "line": 131,
+          "snippet": "should preserve arrays from partial when they exist"
+        },
+        {
+          "id": "merge-null-test",
+          "path": "src/tests/deepMergeWithDefaults.test.ts",
+          "line": 147,
+          "snippet": "should preserve null value from partial when it is explicitly set"
+        },
+        {
+          "id": "merge-migration",
+          "path": "src/config.ts",
+          "line": 204,
+          "snippet": "migrateUserMessageDisplayToV320(config);"
+        },
+        {
+          "id": "merge-call",
+          "path": "src/config.ts",
+          "line": 208,
+          "snippet": "config.settings = deepMergeWithDefaults("
+        }
+      ],
+      "expectedAnswerFacts": [
+        {
+          "id": "default-merge-semantics-fact-1",
+          "text": "Supplied arrays are preserved rather than merged or extended, and an explicit null for an array-valued object property is preserved.",
+          "evidenceIds": ["merge-array", "merge-array-test", "merge-null-test"]
+        },
+        {
+          "id": "default-merge-semantics-fact-2",
+          "text": "The userMessageDisplay migration runs before settings merging so defaults do not obscure the old shape.",
+          "evidenceIds": ["merge-migration", "merge-call"]
+        }
+      ]
+    },
+    {
+      "id": "patch-filter-validation",
+      "corpus": "repository",
+      "question": "How does --patches handle unknown IDs, whitespace, prompt IDs, and IDs shadowed by another override? Trace validation from CLI to implementation and identify tests for mixed failures.",
+      "queries": [
+        {
+          "pattern": "resolvePatchFilter",
+          "path": "src",
+          "context": 0
+        },
+        {
+          "pattern": "shadowed|unknown patch|loadShadowDeclarations",
+          "path": "src",
+          "context": 0
+        }
+      ],
+      "requiredEvidence": [
+        {
+          "id": "filter-trim",
+          "path": "src/patchFilter.ts",
+          "line": 31,
+          "snippet": ".map(id => id.trim())"
+        },
+        {
+          "id": "filter-unknown",
+          "path": "src/patchFilter.ts",
+          "line": 65,
+          "snippet": "unknown patch or system prompt ID(s) in --patches:"
+        },
+        {
+          "id": "filter-owner",
+          "path": "src/patchFilter.ts",
+          "line": 57,
+          "snippet": "pass --patches ${owner} instead"
+        },
+        {
+          "id": "filter-load",
+          "path": "src/index.tsx",
+          "line": 510,
+          "snippet": "await loadShadowDeclarations()"
+        },
+        {
+          "id": "filter-mixed-test",
+          "path": "src/patchFilter.test.ts",
+          "line": 79,
+          "snippet": "reports unknown and shadowed IDs together"
+        }
+      ],
+      "expectedAnswerFacts": [
+        {
+          "id": "patch-filter-validation-fact-1",
+          "text": "Comma-separated IDs are trimmed; patch IDs and loaded prompt IDs are accepted while unknown IDs produce an error.",
+          "evidenceIds": ["filter-trim", "filter-unknown"]
+        },
+        {
+          "id": "patch-filter-validation-fact-2",
+          "text": "CLI loads shadow declarations; shadowed prompt IDs are rejected and an addressable owning prompt is suggested instead.",
+          "evidenceIds": ["filter-load", "filter-owner"]
+        },
+        {
+          "id": "patch-filter-validation-fact-3",
+          "text": "A regression test checks unknown and shadowed IDs in one request.",
+          "evidenceIds": ["filter-mixed-test"]
+        }
+      ]
+    },
+    {
+      "id": "native-bytecode-roundtrip",
+      "corpus": "repository",
+      "question": "Trace how readContent and writeContent carry native bytecode invalidation. What happens when native dependencies are unavailable, and how does an explicit repack decide whether to clear cached bytecode?",
+      "queries": [
+        {
+          "pattern": "clearBytecode",
+          "path": "src",
+          "context": 0
+        },
+        {
+          "pattern": "node-lief native module unavailable|repackNativeInstallation",
+          "path": "src",
+          "context": 0
+        }
+      ],
+      "requiredEvidence": [
+        {
+          "id": "bytecode-read",
+          "path": "src/lib/content.ts",
+          "line": 49,
+          "snippet": "return { content: buffer.toString('utf8'), clearBytecode };"
+        },
+        {
+          "id": "bytecode-write",
+          "path": "src/lib/content.ts",
+          "line": 76,
+          "snippet": "await repackNativeInstallation("
+        },
+        {
+          "id": "bytecode-unavailable",
+          "path": "src/nativeInstallationLoader.ts",
+          "line": 66,
+          "snippet": "node-lief native module unavailable on this platform/runtime"
+        },
+        {
+          "id": "bytecode-repack",
+          "path": "src/commands.ts",
+          "line": 482,
+          "snippet": "const clearBytecode = !newJs.startsWith('// @bun @bytecode');"
+        }
+      ],
+      "expectedAnswerFacts": [
+        {
+          "id": "native-bytecode-roundtrip-fact-1",
+          "text": "Native reads return a clearBytecode flag and native writes pass it to repack; npm reads return false.",
+          "evidenceIds": ["bytecode-read", "bytecode-write"]
+        },
+        {
+          "id": "native-bytecode-roundtrip-fact-2",
+          "text": "Unavailable native dependencies produce an extraction error instead of an import crash; explicit repack clears bytecode unless its input has the Bun bytecode prefix.",
+          "evidenceIds": ["bytecode-unavailable", "bytecode-repack"]
+        }
+      ]
+    },
+    {
+      "id": "theme-binding-regression",
+      "corpus": "repository",
+      "question": "Why can a themes patch appear to apply and still break /config? Find the assignment-preservation fix and the tests proving custom theme IDs are registered without dropping built-ins.",
+      "queries": [
+        {
+          "pattern": "objPrefix|objMatch|writeThemes",
+          "path": "src",
+          "context": 0
+        },
+        {
+          "pattern": "preserves the name-map|registers custom ids|arrayContaining",
+          "path": "src",
+          "context": 0
+        }
+      ],
+      "requiredEvidence": [
+        {
+          "id": "theme-prefix",
+          "path": "src/patches/themes.ts",
+          "line": 255,
+          "snippet": "const objPrefix = locations.obj.identifiers?.[0] ?? 'return';"
+        },
+        {
+          "id": "theme-capture",
+          "path": "src/patches/themes.ts",
+          "line": 180,
+          "snippet": "/(return|[$\\w]+=)"
+        },
+        {
+          "id": "theme-binding-test",
+          "path": "src/patches/themes.test.ts",
+          "line": 25,
+          "snippet": "preserves the name-map assignment prefix"
+        },
+        {
+          "id": "theme-registry-test",
+          "path": "src/patches/themes.test.ts",
+          "line": 37,
+          "snippet": "registers custom ids in the theme-id whitelist, keeping the built-ins"
+        }
+      ],
+      "expectedAnswerFacts": [
+        {
+          "id": "theme-binding-regression-fact-1",
+          "text": "The regex must capture the original assignment/return prefix so rewriting the theme name map preserves its variable binding.",
+          "evidenceIds": ["theme-prefix", "theme-capture", "theme-binding-test"]
+        },
+        {
+          "id": "theme-binding-regression-fact-2",
+          "text": "Custom theme IDs must join the validation whitelist while built-in IDs remain; the tests separately cover this behavior.",
+          "evidenceIds": ["theme-registry-test"]
+        }
+      ]
+    },
+    {
+      "id": "virtual-bundle-regions",
+      "corpus": "repository",
+      "question": "When the same prompt appears in JavaScript and a bundled text asset, how is replacement kept in the correct region, and how are regions kept correct after splicing? Find implementation, call sites, and regression tests.",
+      "queries": [
+        {
+          "pattern": "BundleRegions|matchesInRegion",
+          "path": "src",
+          "context": 0
+        },
+        {
+          "pattern": "recordSplice|keeps JS prompts",
+          "path": "src",
+          "context": 0
+        }
+      ],
+      "requiredEvidence": [
+        {
+          "id": "regions-allows",
+          "path": "src/virtualBundle.ts",
+          "line": 74,
+          "snippet": "if (!asset) return end <= this.jsEnd;"
+        },
+        {
+          "id": "regions-splice",
+          "path": "src/virtualBundle.ts",
+          "line": 87,
+          "snippet": "recordSplice(start: number, end: number, replacementLength: number): void"
+        },
+        {
+          "id": "regions-call",
+          "path": "src/patches/systemPrompts.ts",
+          "line": 485,
+          "snippet": "regions?.recordSplice("
+        },
+        {
+          "id": "regions-test",
+          "path": "src/virtualBundle.test.ts",
+          "line": 36,
+          "snippet": "keeps JS prompts in the JS and asset prompts inside one asset"
+        }
+      ],
+      "expectedAnswerFacts": [
+        {
+          "id": "virtual-bundle-regions-fact-1",
+          "text": "JS prompts may only match before the JS boundary, while asset matches must stay within one asset literal.",
+          "evidenceIds": ["regions-allows", "regions-test"]
+        },
+        {
+          "id": "virtual-bundle-regions-fact-2",
+          "text": "Splices shift the stored boundaries and the prompt apply path records each splice.",
+          "evidenceIds": ["regions-splice", "regions-call"]
+        }
+      ]
+    },
+    {
+      "id": "preflight-apply-policy",
+      "corpus": "repository",
+      "question": "Compare explicit --validate-system-prompts with the automatic apply preflight. Do no-input validation, advisory failures, and raw non-ASCII findings block both paths in the same way?",
+      "queries": [
+        {
+          "pattern": "runSystemPromptPreflight",
+          "path": "src",
+          "context": 0
+        },
+        {
+          "pattern": "promptsChecked === 0|raw-non-ascii|preflight skipped",
+          "path": "src",
+          "context": 0
+        }
+      ],
+      "requiredEvidence": [
+        {
+          "id": "preflight-empty",
+          "path": "src/index.tsx",
+          "line": 716,
+          "snippet": "chalk.red('Error: no system prompts resolved — nothing was validated.')"
+        },
+        {
+          "id": "preflight-skip",
+          "path": "src/patches/index.ts",
+          "line": 944,
+          "snippet": "system-prompt preflight skipped:"
+        },
+        {
+          "id": "preflight-block",
+          "path": "src/patches/index.ts",
+          "line": 967,
+          "snippet": "f => f.check === 'raw-non-ascii'"
+        },
+        {
+          "id": "preflight-no-input",
+          "path": "src/systemPromptPreflight.ts",
+          "line": 484,
+          "snippet": "return { version, promptsChecked: 0, sitesChecked: 0, findings: [] };"
+        }
+      ],
+      "expectedAnswerFacts": [
+        {
+          "id": "preflight-apply-policy-fact-1",
+          "text": "The shared preflight returns an empty result when no prompts load; explicit validation treats that as failure.",
+          "evidenceIds": ["preflight-empty", "preflight-no-input"]
+        },
+        {
+          "id": "preflight-apply-policy-fact-2",
+          "text": "Apply tolerates failure to run the advisory preflight, but blocks raw-non-ASCII findings before mutation.",
+          "evidenceIds": ["preflight-skip", "preflight-block"]
+        }
+      ]
+    },
+    {
+      "id": "backup-pristine-guard",
+      "corpus": "repository",
+      "question": "How are npm and native backups protected from replacing a pristine copy with patched bytes, and how does marker scanning handle a marker that crosses a stream chunk? Explain whether config version alone is trusted.",
+      "queries": [
+        {
+          "pattern": "assertPristineSource|NonPristineBackupError|fileLooksPatched",
+          "path": "src",
+          "context": 0
+        },
+        {
+          "pattern": "PATCH_MARKERS|MAX_MARKER_LENGTH|atomicCopyFile",
+          "path": "src",
+          "context": 0
+        }
+      ],
+      "requiredEvidence": [
+        {
+          "id": "backup-guard",
+          "path": "src/installationBackup.ts",
+          "line": 46,
+          "snippet": "throw new NonPristineBackupError(sourcePath);"
+        },
+        {
+          "id": "backup-npm",
+          "path": "src/installationBackup.ts",
+          "line": 76,
+          "snippet": "await assertPristineSource(ccInstInfo.cliPath);"
+        },
+        {
+          "id": "backup-native",
+          "path": "src/installationBackup.ts",
+          "line": 96,
+          "snippet": "await assertPristineSource(ccInstInfo.nativeInstallationPath);"
+        },
+        {
+          "id": "backup-markers",
+          "path": "src/patchMarkers.ts",
+          "line": 12,
+          "snippet": "export const PATCH_MARKERS = ['__tweakcc', 'tweakcc v'];"
+        },
+        {
+          "id": "backup-overlap",
+          "path": "src/patchMarkers.ts",
+          "line": 58,
+          "snippet": "carry = window.slice(-(MAX_MARKER_LENGTH - 1));"
+        }
+      ],
+      "expectedAnswerFacts": [
+        {
+          "id": "backup-pristine-guard-fact-1",
+          "text": "Both backup entry points check source bytes and reject patched sources before copying; a config version is not sufficient evidence of pristine bytes.",
+          "evidenceIds": ["backup-guard", "backup-npm", "backup-native"]
+        },
+        {
+          "id": "backup-pristine-guard-fact-2",
+          "text": "Marker scanning looks for __tweakcc or tweakcc v and retains overlap between chunks so split markers are found.",
+          "evidenceIds": ["backup-markers", "backup-overlap"]
+        }
+      ]
+    },
+    {
+      "id": "remote-response-caps",
+      "corpus": "repository",
+      "question": "Trace remote JSON body limits for config URLs and prompt downloads. What default and override caps apply, and are both declared Content-Length and streamed overflow checked? Find regression coverage.",
+      "queries": [
+        {
+          "pattern": "readResponseTextCapped|MAX_FETCH_BYTES",
+          "path": "src",
+          "context": 0
+        },
+        {
+          "pattern": "Content-Length|reader.cancel|8 \\* 1024 \\* 1024",
+          "path": "src",
+          "context": 0
+        }
+      ],
+      "requiredEvidence": [
+        {
+          "id": "cap-default",
+          "path": "src/utils.ts",
+          "line": 604,
+          "snippet": "export const MAX_FETCH_BYTES = 32 * 1024 * 1024;"
+        },
+        {
+          "id": "cap-stream",
+          "path": "src/utils.ts",
+          "line": 645,
+          "snippet": "await reader.cancel().catch(() => {});"
+        },
+        {
+          "id": "cap-config",
+          "path": "src/config.ts",
+          "line": 542,
+          "snippet": "await readResponseTextCapped(response, 8 * 1024 * 1024);"
+        },
+        {
+          "id": "cap-prompts",
+          "path": "src/systemPromptDownload.ts",
+          "line": 218,
+          "snippet": "await readResponseTextCapped(response)"
+        },
+        {
+          "id": "cap-test",
+          "path": "src/utils.test.ts",
+          "line": 70,
+          "snippet": "fast-rejects an oversized Content-Length without reading the body"
+        }
+      ],
+      "expectedAnswerFacts": [
+        {
+          "id": "remote-response-caps-fact-1",
+          "text": "The default cap used for prompt downloads is 32 MiB and config URL responses use an explicit 8 MiB cap.",
+          "evidenceIds": ["cap-default", "cap-config", "cap-prompts"]
+        },
+        {
+          "id": "remote-response-caps-fact-2",
+          "text": "Oversized declared Content-Length is rejected before reading; streamed overflow cancels the reader and throws.",
+          "evidenceIds": ["cap-stream", "cap-test"]
+        }
+      ]
+    }
+  ]
+}

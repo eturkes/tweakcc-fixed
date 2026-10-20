@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Builds the task files the stage-2 trim-and-verify and wipe-verify fan-outs
-// take, from the final stage-1 result (after the cut hunt).
+// take, from the final stage-1 result (the cut argument is part of stage 1).
 //
 //   node tools/buildTrimTasks.mjs <prompts.json> <stage1-result.json> <auditPacketDir> \
 //     --set=<abs active set dir> --reminders=<abs reminders dir> \
@@ -24,7 +24,7 @@
 // the active set), `system-reminders/<name>` (file required) and
 // MODEL_DEFAULT (no file). Exits 2 on an id missing from the catalogue or the
 // audit packets, a carrier that resolves to nothing, a missing reminder file,
-// a stage-1 result that is not complete and post-cut-hunt, or catalogue,
+// a stage-1 result that is not complete, or catalogue,
 // result and audit-manifest versions that disagree.
 //
 // The result is checked with `driver tasks-check`; the printed hints are the
@@ -60,9 +60,6 @@ export function buildTrimTasks({ catalogue, result, auditPackets, setDir, remind
   const problems = [];
   if (result.complete !== true) {
     problems.push('the stage-1 result is not complete (missing verdicts or checker errors): finish stage 1 first');
-  }
-  if (!result.cutHunt || result.cutHunt.complete !== true) {
-    problems.push('the stage-1 result is not the post-cut-hunt result (no cutHunt.complete): run harvestCutHunt.mjs first, not --allow-partial');
   }
   const versions = { catalogue: catalogue.version, 'stage-1 result': result.version, 'audit manifest': manifestVersion };
   if (new Set(Object.values(versions)).size !== 1) {

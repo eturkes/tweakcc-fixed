@@ -108,6 +108,19 @@ async function flush() {
 afterEach(() => vi.useRealTimers());
 
 describe('Jev router generated runtime', () => {
+  it('does not consult file history when selecting effort', async () => {
+    const h = harness();
+    const scope = vi.fn(() => {
+      throw Error('File history is unrelated to routing');
+    });
+    h.context.__tweakccFffScope = scope;
+    await h.route('Edit the synthetic component');
+    const body = JSON.parse(h.fetch.mock.calls[0][1].body);
+    expect(body.state.fffScope).toBeUndefined();
+    expect(scope).not.toHaveBeenCalled();
+    expect(h.state().effort).toBe('max');
+  });
+
   it('does no routing or summary work for normal model selections', async () => {
     const h = harness();
     h.context.__tweakccRouterSelectedModel = () => null;

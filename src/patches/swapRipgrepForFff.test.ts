@@ -1,27 +1,41 @@
 import { describe, expect, it, vi } from 'vitest';
-import { writeSwapRipgrepForFff } from './swapRipgrepForFff';
+import { spawnSync } from 'node:child_process';
+import * as fs from 'node:fs/promises';
+import * as os from 'node:os';
+import * as path from 'node:path';
+import {
+  hasFffShellIntegration,
+  restoreNativeSearchTools,
+  writeSwapRipgrepForFff,
+} from './swapRipgrepForFff';
+import { FFF_PROJECT_GUIDANCE } from './fffInstructions';
 
 const WRAPPER = '/Users/x/.tweakcc/fff/aarch64-apple-darwin/rg-fff';
-const WQ = JSON.stringify(WRAPPER); // "..."
+const VISIBILITY =
+  'var $glob="Glob";var $grep="Grep";' +
+  'var $empty=new Set;var $excluded=new Set([$glob,$grep]);' +
+  'function hidden(){if(!searchGate()||!hasBash())return $empty;' +
+  'let $names=$excluded,$aliases;for(let name of $names){let alias=aliasFor(name);' +
+  'if(alias!==void 0)$aliases??=new Set($names),$aliases.add(alias.name)}return $aliases??$names}';
 
-// The grep/find shadow template as CC's snapshot-generator emits it (3× "$_cc_bin").
 const SHADOW =
-  'function grep {\n' +
-  '  local _cc_bin="${CLAUDE_CODE_EXECPATH:-}"\n' +
+  'function shadow($name,$tool,$arguments){return`function ${$name} {\n' +
+  '  local _cc_bin="\\${CLAUDE_CODE_EXECPATH:-}"\n' +
   '  [[ -x $_cc_bin ]] || _cc_bin=/Users/x/.local/bin/claude\n' +
-  '  if [[ ! -x $_cc_bin ]]; then command grep "$@"; return; fi\n' +
-  '  if [[ -n "${ZSH_VERSION:-}" ]]; then\n' +
-  '    ARGV0=${t} "$_cc_bin" ${o}\n' +
+  '  if [[ ! -x $_cc_bin ]]; then command ${$name} "$@"; return; fi\n' +
+  '  if [[ -n "\\${ZSH_VERSION:-}" ]]; then\n' +
+  '    ARGV0=${$tool} "$_cc_bin" ${$arguments}\n' +
   '  elif [[ "$OSTYPE" == "msys" ]]; then\n' +
-  '    ARGV0=${t} "$_cc_bin" ${o}\n' +
+  '    ARGV0=${$tool} "$_cc_bin" ${$arguments}\n' +
   '  else\n' +
-  '    (exec -a ${t} "$_cc_bin" ${o})\n' +
-  '  fi\n}';
-
-const DESCRIPTOR =
-  '{mode:"embedded",command:process.execPath,args:["--no-config"],argv0:"rg"}';
-const RESOLVER = `if(Af()){let n=${DESCRIPTOR};return n}`;
-
+  '    (exec -a ${$tool} "$_cc_bin" ${$arguments})\n' +
+  '  fi\n}`;}';
+const SETUP =
+  ';function snippets(){if(!searchGate())return null;return["unalias find 2>/dev/null || true","unalias grep 2>/dev/null || true",shadow("find","bfs",\'"$@"\'),shadow("grep","ugrep",\'"$@"\')].join("\\n")}';
+const SNAPSHOT =
+  ';function snapshot(){let $commands=snippets();if($commands!==null){const marker="FIND_GREP_FUNC_END";return $commands}return""}';
+const RESOLVER =
+  ';function resolver(){return{mode:"embedded",command:process.execPath,args:["--no-config"],argv0:"rg"}}';
 const BT = '`';
 const GREP_DESC = `;function gVr(e){if(xh(e))return${BT}Content search built on ripgrep. Bare identifiers.${BT};return${BT}A powerful search tool built on ripgrep. Full regex syntax.${BT}}`;
 
@@ -52,114 +66,346 @@ const GREP_DESC_NESTED =
   BT +
   '}';
 
-const COMBINED = SHADOW + RESOLVER + GREP_DESC + BASH_DESC;
+const INSTRUCTIONS =
+  ';async function*fffQuery($input,$events,$commands,$runner){let{systemPrompt:$base,userContext:$user,systemContext:$environment,canUseTool:$permission}=$input;' +
+  'let $current=$input.toolUseContext,$selected={systemPrompt:$base},$routing={systemContext:$environment},$rows=[],$source="fixture",$stamp={};' +
+  'let $wire=$identity($merge($selected.systemPrompt,$routing.systemContext)),$unused,$other,$entries,$copies,$record=()=>{let $next=$extra($rows,$entries,{options:$current.options,querySource:$source,stamp:$stamp,toolInputCopies:$copies});return $next};yield $wire;}' +
+  ';async function fffContext($messages,$model,$permissions,$visible,$agents,$details){let{session:$session,terminalWidth:$width,toolUseContext:$current,mainThreadAgentDefinition:$agent}=$details;' +
+  'let $saved=$details.snapshot,$fallback=$details.prompt,$tools={};let $counted=$saved?.systemPrompt??$fallback,$descriptions=$tools?.toolDescriptions,$schemas=$tools?.toolEntries;return $counted;}' +
+  ';function fffRender($rows,$visible=[],$model,$config){$rows=$fold($rows,$config?.accountMemoryWithheld,$memo(()=>$visible));let $output=[];for(let $row of $rows){' +
+  'let $options={},$active=false,$result=$config?.withoutAttachmentHooks?$live($row,$options):$recorded($row,$options,$active),$rendered=$result.messages,{isKnownType:$known,recordedRole:$role}=$result;$output.push(...$rendered)}return $output;}';
+const BASE = VISIBILITY + SHADOW + SETUP + SNAPSHOT + INSTRUCTIONS;
+const COMBINED = BASE + RESOLVER + GREP_DESC + BASH_DESC;
+const countOf = (source: string, part: string) => source.split(part).length - 1;
+const shellCommands = (source: string, enabled = true): string[] =>
+  new Function(
+    'process',
+    'searchGate',
+    source + ';const result=snapshot();return result?result.split("\\n"):[];'
+  )({ pid: 31415 }, () => enabled) as string[];
 
-const countOf = (s: string, sub: string) => s.split(sub).length - 1;
+describe('native search visibility', () => {
+  it('restores Grep and Glob without skipping permission and enabled filters', () => {
+    const catalog =
+      ';function catalog(tools,denied){return tools.filter(tool=>!hidden().has(tool.name)).filter(tool=>tool.enabled&&!denied.includes(tool.name))}';
+    const source = restoreNativeSearchTools(VISIBILITY + catalog)!;
+    const tools = [
+      { name: 'Grep', enabled: true },
+      { name: 'Glob', enabled: true },
+      { name: 'Bash', enabled: true },
+      { name: 'Disabled', enabled: false },
+    ];
+    const evaluate = (code: string, denied: string[]) =>
+      new Function(
+        'searchGate',
+        'hasBash',
+        'aliasFor',
+        'tools',
+        'denied',
+        code + ';return catalog(tools,denied).map(tool=>tool.name);'
+      )(
+        () => true,
+        () => true,
+        () => undefined,
+        tools,
+        denied
+      ) as string[];
+    expect(evaluate(VISIBILITY + catalog, [])).toEqual(['Bash']);
+    expect(evaluate(source, [])).toEqual(['Grep', 'Glob', 'Bash']);
+    expect(evaluate(source, ['Grep'])).toEqual(['Glob', 'Bash']);
+    expect(source).toContain(catalog);
+    expect(restoreNativeSearchTools(source)).toBe(source);
+  });
+
+  it('requires an unambiguous omission set for the actual native tool names', () => {
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+    try {
+      expect(restoreNativeSearchTools(VISIBILITY + VISIBILITY)).toBeNull();
+      expect(
+        restoreNativeSearchTools(VISIBILITY.replace('"Grep"', '"Edit"'))
+      ).toBeNull();
+      expect(restoreNativeSearchTools('unrelated')).toBeNull();
+    } finally {
+      error.mockRestore();
+    }
+  });
+});
 
 describe('swapRipgrepForFff', () => {
-  it('repoints all 3 bash-search shadow sites at the wrapper', () => {
-    const out = writeSwapRipgrepForFff(COMBINED, WRAPPER);
-    expect(out).not.toBeNull();
-    expect(out).not.toContain('"$_cc_bin"');
-    // wrapper appears 3× (shadow) + 1× (rg resolver) = 4
-    expect(countOf(out!, WRAPPER)).toBeGreaterThanOrEqual(4);
-    expect(out).toContain('ARGV0=${t} ' + WQ);
-    expect(out).toContain('exec -a ${t} ' + WQ);
+  it('keeps shell search generators and the native ripgrep resolver intact', () => {
+    const patched = writeSwapRipgrepForFff(COMBINED, WRAPPER)!;
+    expect(patched).not.toBeNull();
+    expect(patched).toContain(SHADOW);
+    expect(patched).toContain(SETUP);
+    expect(patched).toContain(RESOLVER);
+    expect(patched).not.toContain('--fff-claude-bin=');
+    expect(patched).not.toContain('fff locate');
+    expect(hasFffShellIntegration(patched, WRAPPER)).toBe(true);
+    expect(hasFffShellIntegration(patched, '/other-wrapper')).toBe(false);
+    expect(() => new Function(patched)).not.toThrow();
+    expect(writeSwapRipgrepForFff(patched, WRAPPER)).toBe(patched);
   });
 
-  it('also repoints the rg resolver and appends fff guidance to both grep variants', () => {
-    const out = writeSwapRipgrepForFff(COMBINED, WRAPPER)!;
-    expect(out).toContain('--fff-claude-bin='); // rg resolver
-    expect(out).not.toContain('mode:"embedded"');
-    expect(countOf(out, 'Search backend note (fff):')).toBe(2); // concise + full
-  });
-
-  it('appends minimal ranking/--fuzzy guidance to both Bash description variants', () => {
-    const out = writeSwapRipgrepForFff(COMBINED, WRAPPER)!;
-    expect(countOf(out, 'most-relevant-first')).toBe(2); // both bash variants
-    expect(out).toContain('grep --fuzzy SomeName');
-    // inserted inside the bullet (after the pristine phrasing), before its closing
-    // backtick (no raw backticks)
-    expect(out).toContain('when one fits. grep/find results are ranked');
-    // the structured Grep tool has no --fuzzy flag, so its desc must NOT mention it
-    const grepNote = out.slice(out.indexOf('Search backend note (fff):'));
-    expect(grepNote.slice(0, 120)).not.toContain('--fuzzy');
-  });
-
-  it('splices at the TRUE closing backtick past a nested ${…} template', () => {
-    const out = writeSwapRipgrepForFff(SHADOW + GREP_DESC_NESTED, WRAPPER)!;
-    const fn = out.slice(out.indexOf('function gVr'));
-    expect(() => new Function(fn)).not.toThrow();
-    expect(countOf(out, 'Search backend note (fff):')).toBe(1);
-    // the note lands after the whole ternary, not inside its consequent
-    expect(out.indexOf('Search backend note (fff):')).toBeGreaterThan(
-      out.indexOf('Pattern syntax: rg-flavored')
-    );
-  });
-
-  it('refuses to splice when the template never closes', () => {
-    const errSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+  it('requires native tool visibility and unique shell setup', () => {
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
     try {
-      const file = SHADOW + ';var d=' + BT + 'unterminated, built on ripgrep';
-      const out = writeSwapRipgrepForFff(file, WRAPPER)!;
-      expect(out).not.toBeNull();
-      expect(out).not.toContain('Search backend note (fff):');
-      expect(out).toContain('unterminated, built on ripgrep');
-      expect(errSpy).toHaveBeenCalledWith(
-        expect.stringContaining('no balanced closing backtick')
-      );
+      expect(
+        writeSwapRipgrepForFff(VISIBILITY + SHADOW + RESOLVER, WRAPPER)
+      ).toBeNull();
+      expect(writeSwapRipgrepForFff(BASE + SETUP, WRAPPER)).toBeNull();
+      expect(writeSwapRipgrepForFff(BASE + SNAPSHOT, WRAPPER)).toBeNull();
+      expect(
+        writeSwapRipgrepForFff(VISIBILITY + SHADOW + SETUP, WRAPPER)
+      ).toBeNull();
+      expect(writeSwapRipgrepForFff(SHADOW + SETUP, WRAPPER)).toBeNull();
     } finally {
-      errSpy.mockRestore();
+      error.mockRestore();
     }
   });
 
-  it('is idempotent (no-op when already applied)', () => {
-    const once = writeSwapRipgrepForFff(COMBINED, WRAPPER)!;
-    const twice = writeSwapRipgrepForFff(once, WRAPPER);
-    expect(twice).toBe(once);
-  });
-
-  it('succeeds on a shadow-only file (rg/guidance are best-effort)', () => {
-    const out = writeSwapRipgrepForFff(SHADOW, WRAPPER);
-    expect(out).not.toBeNull();
-    expect(out).not.toContain('"$_cc_bin"');
-    // 3 repointed invocations (2 ARGV0 + 1 exec-a) + 1 in the -x guard = 4
-    expect(countOf(out!, WRAPPER)).toBe(4);
-    expect(out).toContain('|| ! -x ' + WQ); // wrapper-executable guard
-  });
-
-  it('returns null (critical) when the shadow anchor is absent', () => {
-    const errSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+  it('requires the real instruction hooks before reporting the feature applied', () => {
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
     try {
-      // RESOLVER alone has no "$_cc_bin" shadow token.
-      expect(writeSwapRipgrepForFff(RESOLVER, WRAPPER)).toBeNull();
-      expect(errSpy).toHaveBeenCalledWith(
-        'patch: swapRipgrepForFff: bash-search shadow anchor "$_cc_bin" not found'
+      const source = VISIBILITY + SHADOW + SETUP + SNAPSHOT;
+      expect(writeSwapRipgrepForFff(source, WRAPPER)).toBeNull();
+      expect(error).toHaveBeenCalledWith(
+        'patch: swapRipgrepForFff: failed to find unique scoped search instruction boundaries'
       );
+      const patched = writeSwapRipgrepForFff(BASE, WRAPPER)!;
+      expect(patched).toContain('function __tweakccFffPrompt');
+      expect(patched).toContain('function __tweakccFffAutoMode');
+      expect(patched).toContain(FFF_PROJECT_GUIDANCE);
+      expect(() => new Function(patched)).not.toThrow();
     } finally {
-      errSpy.mockRestore();
+      error.mockRestore();
     }
   });
 
-  it('injects shell-valid wrapper paths (quoted)', () => {
-    const out = writeSwapRipgrepForFff(SHADOW, WRAPPER)!;
-    // each repointed invocation is ARGV0=${t} "<path>" ${o} or exec -a ${t} "<path>" ${o}
-    expect(out).toContain('ARGV0=${t} ' + WQ + ' ${o}');
-    expect(out).toContain('(exec -a ${t} ' + WQ + ' ${o})');
+  it('refuses legacy interception instead of leaving native searches redirected', () => {
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+    try {
+      for (const legacy of [
+        'export RG_FFF_SESSION="${process.pid}"; local _cc_bin=',
+        'args:["--fff-claude-bin="+process.execPath]',
+      ]) {
+        expect(writeSwapRipgrepForFff(BASE + legacy, WRAPPER)).toBeNull();
+      }
+      expect(error).toHaveBeenCalledWith(
+        'patch: swapRipgrepForFff: legacy search interception requires applying from pristine Claude Code'
+      );
+    } finally {
+      error.mockRestore();
+    }
   });
 
-  it('escapes non-ASCII / backtick / ${} in the wrapper path for the backtick shadow', () => {
-    // A path with a non-ASCII char, a backtick, and a ${} — all hazards in the
-    // backtick-template shadow (Bun Latin-1 mojibake / template-termination /
-    // interpolation → the "function wrapper" boot crash).
-    const tricky = '/Users/José/`x${HOME}/rg-fff';
-    const out = writeSwapRipgrepForFff(SHADOW, tricky)!;
-    expect(out).not.toBeNull();
-    expect(out).not.toContain('José'); // no RAW non-ASCII byte in cli.js
-    expect(out).toContain('Jos\\u00e9'); // escaped to \uXXXX
-    expect(out).toContain('\\`'); // backtick escaped, can't terminate the template
-    expect(out).toContain('\\${HOME}'); // ${ escaped, no live interpolation
-    // the guard now also gates on the wrapper being executable
-    expect(out).toContain('|| ! -x ');
+  it('keeps native descriptions intact and confines guidance to request hooks', () => {
+    const patched = writeSwapRipgrepForFff(COMBINED, WRAPPER)!;
+    expect(patched).toContain(GREP_DESC);
+    expect(patched).toContain(BASH_DESC);
+    expect(countOf(patched, 'Native Grep navigation:')).toBe(0);
+    expect(countOf(patched, 'Native search and fff files:')).toBe(0);
+    expect(patched).toContain(FFF_PROJECT_GUIDANCE);
+    for (const stale of [
+      'most-relevant-first',
+      'likely declarations first',
+      'After two locating searches',
+      'grep --fuzzy',
+      '[def]',
+      'interleave',
+    ]) {
+      expect(patched).not.toContain(stale);
+    }
+  });
+
+  it('preserves custom Grep descriptions at the tool boundary', async () => {
+    const custom =
+      ';async function customPrompt(model,lean){return lean?"My concise grep instructions.":"My full grep instructions."}' +
+      ';var tool={searchHint:"search file contents with regex (ripgrep)",async description(){return customPrompt(void 0)},async prompt({model:$model,leanPrompt:$lean}){return customPrompt($model,$lean)},create(){return{}}};';
+    const patched = writeSwapRipgrepForFff(BASE + custom, WRAPPER)!;
+    const tool = new Function(patched + ';return tool;')() as {
+      description: () => Promise<string>;
+      prompt: (input: { leanPrompt: boolean }) => Promise<string>;
+    };
+    for (const leanPrompt of [true, false]) {
+      const prompt = await tool.prompt({ leanPrompt });
+      expect(prompt).toBe(
+        leanPrompt
+          ? 'My concise grep instructions.'
+          : 'My full grep instructions.'
+      );
+      expect(countOf(prompt, 'Native Grep navigation:')).toBe(0);
+      expect(prompt).not.toContain('[object Promise]');
+    }
+    expect(await tool.description()).toBe('My full grep instructions.');
+    expect(writeSwapRipgrepForFff(patched, WRAPPER)).toBe(patched);
+  });
+
+  it.each([
+    [
+      'Custom lean overview.',
+      'Executes a given bash command and returns its output.',
+    ],
+    [
+      'Executes a bash command and returns its output.',
+      'Custom full overview.',
+    ],
+    ['Custom lean overview.', 'Custom full overview.'],
+  ])(
+    'preserves overridden Bash headers %s / %s',
+    async (leanHeader, fullHeader) => {
+      const separatePrompt =
+        ';var separatePrompt=`Prefer dedicated tools over shell commands.`;';
+      const custom =
+        ';async function makeBash(model,allowed,tools,lean,trimmed){return(lean?' +
+        JSON.stringify(leanHeader) +
+        ':' +
+        JSON.stringify(fullHeader) +
+        ')+(trimmed?"":" Custom tool instructions.")}' +
+        ';async function allowedTools(tools){return tools}' +
+        ';var tool={searchHint:"execute shell commands",async description({description:value}){return value||"Run shell command"},async prompt({model:$model,tools:$tools,leanPrompt:$lean,bashFirstTrimmed:$trimmed}){return makeBash($model,await allowedTools($tools),$tools,$lean,$trimmed)},isConcurrencySafe(){return false}};' +
+        separatePrompt;
+      const patched = writeSwapRipgrepForFff(BASE + custom, WRAPPER)!;
+      const tool = new Function(patched + ';return tool;')() as {
+        description: (input: { description?: string }) => Promise<string>;
+        prompt: (input: {
+          leanPrompt: boolean;
+          bashFirstTrimmed: boolean;
+        }) => Promise<string>;
+      };
+      for (const leanPrompt of [true, false]) {
+        for (const bashFirstTrimmed of [true, false]) {
+          const description = await tool.prompt({
+            leanPrompt,
+            bashFirstTrimmed,
+          });
+          expect(description).toBe(
+            (leanPrompt ? leanHeader : fullHeader) +
+              (bashFirstTrimmed ? '' : ' Custom tool instructions.')
+          );
+          expect(description.includes('Custom tool instructions.')).toBe(
+            !bashFirstTrimmed
+          );
+          expect(countOf(description, 'Native search and fff files:')).toBe(0);
+          expect(description).not.toContain('[object Promise]');
+        }
+      }
+      expect(await tool.description({})).toBe('Run shell command');
+      expect(await tool.description({ description: 'My command' })).toBe(
+        'My command'
+      );
+      expect(patched).toContain(separatePrompt);
+      expect(writeSwapRipgrepForFff(patched, WRAPPER)).toBe(patched);
+    }
+  );
+
+  it('preserves Bash description arrays when custom bullets are hidden', async () => {
+    const custom =
+      ';async function lean(hide){let notes=[];if(!hide)notes.push("Custom lean instructions.");return["Executes a bash command and returns its output.",...notes].join("\\n")}' +
+      ';async function full(hide){let notes=[];if(!hide)notes.push("Custom full instructions.");return["Executes a given bash command and returns its output.",...notes].join("\\n")}';
+    const patched = writeSwapRipgrepForFff(BASE + custom, WRAPPER)!;
+    const descriptions = new Function(patched + ';return{lean,full}')() as {
+      lean: (hide: boolean) => Promise<string>;
+      full: (hide: boolean) => Promise<string>;
+    };
+    for (const make of [descriptions.lean, descriptions.full]) {
+      for (const hide of [true, false]) {
+        const description = await make(hide);
+        expect(description).toMatch(
+          /^Executes (a|a given) bash command and returns its output\./
+        );
+        expect(countOf(description, 'Native search and fff files:')).toBe(0);
+        if (!hide) expect(description).toContain('Custom');
+      }
+    }
+    expect(writeSwapRipgrepForFff(patched, WRAPPER)).toBe(patched);
+  });
+
+  it('preserves native nested description templates', () => {
+    const patched = writeSwapRipgrepForFff(BASE + GREP_DESC_NESTED, WRAPPER)!;
+    expect(() => new Function(patched)).not.toThrow();
+    expect(countOf(patched, 'Native Grep navigation:')).toBe(0);
+    expect(patched).toContain(GREP_DESC_NESTED);
+  });
+
+  it('does not search description templates for guidance insertion', () => {
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+    try {
+      const source = BASE + ';var description=`unterminated, built on ripgrep';
+      const patched = writeSwapRipgrepForFff(source, WRAPPER)!;
+      expect(patched).not.toBeNull();
+      expect(patched).not.toContain('Native Grep navigation:');
+      expect(patched).toContain(
+        ';var description=`unterminated, built on ripgrep'
+      );
+      expect(error).not.toHaveBeenCalled();
+    } finally {
+      error.mockRestore();
+    }
+  });
+
+  it('executes literal wrapper paths through Bash and zsh without affecting native functions', async () => {
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), 'fff-shell-path-'));
+    try {
+      const directory = path.join(
+        root,
+        "José ' $HOME ${HOME} $(touch injected) `touch injected` \\"
+      );
+      await fs.mkdir(directory);
+      const wrapper = path.join(directory, 'rg-fff');
+      await fs.writeFile(
+        wrapper,
+        '#!/bin/sh\nprintf "%s\\n" "$RG_FFF_SESSION" "$@"\n',
+        {
+          mode: 0o700,
+        }
+      );
+      const patched = writeSwapRipgrepForFff(BASE, wrapper)!;
+      expect(patched).not.toContain('José');
+      expect(patched).toContain('Jos\\u00e9');
+      expect(countOf(patched, ' --warmup ')).toBe(1);
+      for (const enabled of [true, false]) {
+        const commands = shellCommands(patched, enabled);
+        expect(commands.slice(1)).toEqual(shellCommands(BASE, enabled));
+        expect(commands.join('\n').includes('function grep')).toBe(enabled);
+        expect(commands.join('\n').includes('function find')).toBe(enabled);
+        for (const executable of ['/bin/bash', '/bin/zsh']) {
+          const result = spawnSync(
+            executable,
+            ['-c', commands.join('\n') + '\nfff files "literal argument"'],
+            { cwd: root, encoding: 'utf8' }
+          );
+          if (!result.error) {
+            expect(result.status, result.stderr).toBe(0);
+            expect(result.stdout).toBe('31415\nfiles\nliteral argument\n');
+            expect(result.stderr).toBe('');
+          }
+        }
+      }
+      await expect(fs.stat(path.join(root, 'injected'))).rejects.toThrow();
+      expect(writeSwapRipgrepForFff(patched, wrapper)).toBe(patched);
+    } finally {
+      await fs.rm(root, { recursive: true, force: true });
+    }
+  });
+
+  it('keeps shell setup working when the optional filename wrapper is absent', () => {
+    const patched = writeSwapRipgrepForFff(BASE, '/missing/rg-fff')!;
+    const commands = shellCommands(patched).join('\n');
+    for (const executable of ['/bin/bash', '/bin/zsh']) {
+      const result = spawnSync(
+        executable,
+        [
+          '-c',
+          commands +
+            '\nif typeset -f fff >/dev/null; then exit 3; fi; printf task',
+        ],
+        { encoding: 'utf8' }
+      );
+      if (!result.error) {
+        expect(result.status, result.stderr).toBe(0);
+        expect(result.stdout).toBe('task');
+        expect(result.stderr).toBe('');
+      }
+    }
   });
 });

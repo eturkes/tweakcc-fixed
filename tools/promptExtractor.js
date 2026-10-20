@@ -118,6 +118,57 @@ const COORDINATOR_MODE_2_1_257_MAP = {
 };
 
 const CURATED_IDENTIFIER_MAPS = {
+  'system-reminder-plan-mode-workflow': [
+    {
+      // CC 2.1.299 hoisted the closing NOTE sentence into its own constant, so
+      // slot 12 is that note instead of the AskUserQuestion tool name. The
+      // reworded tail broke carryover; slots 0-11 are unchanged.
+      identifiers: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 10, 11, 9, 12],
+      identifierMap: {
+        0: 'PLAN_MODE_READONLY_INSTRUCTIONS',
+        1: 'PLAN_FILE_INFO',
+        2: 'INTERACTIVE_WORKSHOP_OPTION_BLOCK',
+        3: 'ACTIVE_WORKSHOP_INSTRUCTIONS_BLOCK',
+        4: 'PROTOTYPE_ARTIFACT_OPTION_BLOCK',
+        5: 'PLAN_MODE_PHASE_1_INITIAL_UNDERSTANDING',
+        6: 'PLAN_MODE_PHASE_2_DESIGN',
+        7: 'PLAN_MODE_PHASE_3_REVIEW',
+        8: 'PLAN_MODE_PHASE_4_FINAL_PLAN_FN',
+        9: 'PLAN_MODE_CONTEXT',
+        10: 'EXIT_PLAN_MODE_TOOL_NAME',
+        11: 'EXIT_PLAN_MODE_INSTRUCTIONS_FN',
+        12: 'PLAN_MODE_ASK_QUESTIONS_NOTE',
+      },
+    },
+  ],
+  'system-prompt-agent-summary-generation': [
+    {
+      // CC 2.1.302 hoisted the previous-summary line into a local and added a
+      // background-agent flag that picks the subject and drops the no-tools
+      // sentence, so the old map no longer matches the slots.
+      identifiers: [0, 0, 1],
+      identifierMap: {
+        0: 'IS_BACKGROUND_AGENT',
+        1: 'PREVIOUS_SUMMARY_LINE',
+      },
+    },
+  ],
+  'system-prompt-forked-agent-guidance': [
+    {
+      // CC 2.1.302 made the runs-in-the-background clause conditional.
+      identifiers: [0, 1],
+      identifierMap: {
+        0: 'AGENT_TOOL_NAME',
+        1: 'IS_FORK_BACKGROUND_ENABLED_FN',
+      },
+    },
+  ],
+  'system-reminder-plan-mode-workflow-ask-questions-note': [
+    {
+      identifiers: [0],
+      identifierMap: { 0: 'ASK_USER_QUESTION_TOOL_NAME' },
+    },
+  ],
   'system-reminder-prefetched-artifact-type-instruction-files': [
     {
       // CC 2.1.277 turned slot 1 from the planned-read boolean into the
@@ -2377,14 +2428,21 @@ const NEW_PROMPT_ASSIGNMENTS = [
     id: 'tool-description-croncreate',
     description:
       'Describes the CronCreate tool for enqueuing one-shot or recurring cron-based jobs with jitter and off-minute scheduling guidance',
+    // Later releases added the jitter constants and the CronList name: the
+    // map below is the 12-slot shape (identical to the carried map).
     identifierMap: {
       0: 'CRON_DURABILITY_SECTION',
       1: 'IS_MONITOR_TOOL_ENABLED_FN',
       2: 'CRON_CREATE_TOOL_NAME',
       3: 'MONITOR_TOOL_NAME',
       4: 'CRON_DURABLE_RUNTIME_NOTE',
-      5: 'CANCEL_TIMEFRAME_DAYS',
-      6: 'CRON_DELETE_TOOL_NAME',
+      5: 'MATH_OBJECT',
+      6: 'RECURRING_JITTER_FRACTION',
+      7: 'RECURRING_JITTER_CAP_MS',
+      8: 'ONE_SHOT_JITTER_MAX_MS',
+      9: 'CRON_LIST_TOOL_NAME',
+      10: 'CANCEL_TIMEFRAME_DAYS',
+      11: 'CRON_DELETE_TOOL_NAME',
     },
   },
   // 2.1.167
@@ -5612,6 +5670,8 @@ function disambiguateIdCollisions(prompts, existingData) {
     for (const p of family) {
       const fp = fingerprint(p);
       if (!fp || claimed.has(p.id)) continue;
+      // A sibling still live on its own body cannot be this body's old id.
+      if (p.id !== id && idShapes.get(p.id)?.size) continue;
       if (!unclaimedByFp.has(fp)) unclaimedByFp.set(fp, new Set());
       unclaimedByFp.get(fp).add(p.id);
     }

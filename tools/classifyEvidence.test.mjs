@@ -9,7 +9,6 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { sitesFor, buildSiteIndex, combineRoutes, compactRoute, sha1 } from './lib/classifyRoutes.mjs';
 import { packFamilies } from './buildClassifyEvidence.mjs';
-import { needsVerify } from './lib/classifyVerdicts.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const H = c => c.repeat(40);
@@ -91,24 +90,6 @@ describe('packFamilies', () => {
   });
 });
 
-describe('needsVerify', () => {
-  it('scopes model verdicts, continuity and piebald ids, hedges and drafts against the traced model route', () => {
-    const settled = { verdict: 'ui', resolved: true };
-    const open = { verdict: null, resolved: false };
-    const v = (facing, evidence) => ({ facing, evidence });
-    expect(needsVerify(v('model', 'console.error'), { route: settled })).toBe(true);
-    expect(needsVerify(v('ui', 'console.log, probably the CLI'), { route: settled })).toBe(true);
-    expect(needsVerify(v('ui', 'console.log at 5'), { route: { verdict: 'model', resolved: true } })).toBe(true);
-    expect(needsVerify(v('internal', 'debug log at 5'), { route: { verdict: 'model', resolved: false } })).toBe(true);
-    expect(needsVerify(v('ui', 'console.log at 5'), { route: settled, reusedFrom: { id: 'x' } })).toBe(true);
-    expect(needsVerify(v('ui', 'console.log at 5'), { route: settled, possibleSuccessorOf: { id: 'x' } })).toBe(true);
-    expect(needsVerify(v('ui', 'console.log at 5'), { route: settled, piebaldExact: { id: 'x' } })).toBe(true);
-    // Settled by the classifier: a non-model draft on a non-model or open route.
-    expect(needsVerify(v('ui', 'Ink children at 99'), { route: settled })).toBe(false);
-    expect(needsVerify(v('ui', 'followed both open branches to Ink children @12'), { route: open })).toBe(false);
-  });
-});
-
 describe('checker and harvest over an evidence directory', () => {
   let dir;
   let bundlePath;
@@ -142,13 +123,13 @@ describe('checker and harvest over an evidence directory', () => {
   const ui = h => ({ hash: h, facing: 'ui', id: null, name: null, desc: null, evidence: 'console.error at 12 in the CLI entry point' });
   const model = (h, id) => ({ hash: h, facing: 'model', id, name: 'Name', desc: 'What the model reads here.', evidence: 'route sink local-jsx-ondone @ 4242' });
 
-  it('passes a complete, well-formed chunk and writes its verify scope', () => {
+  it('passes a complete, well-formed chunk', () => {
     write('verdicts-00.json', env('00', [ui(A), model(B, 'tool-result-own-body')]));
     const r = run('checkClassifyVerdicts.mjs', '00');
     expect(r.stdout).toContain('PASS chunk 00 (classify)');
     expect(r.status).toBe(0);
-    const scope = JSON.parse(fs.readFileSync(path.join(dir, 'verify-scope-00.json'), 'utf8')).scope;
-    expect(scope).toEqual([B]);
+    expect(r.stdout).not.toMatch(/verify/);
+    expect(fs.existsSync(path.join(dir, 'verify-scope-00.json'))).toBe(false);
   });
 
   it('names every defect: missing hash, unnamed model verdict, string "null", foreign hash, reserved prefix, digest', () => {
@@ -200,46 +181,29 @@ describe('checker and harvest over an evidence directory', () => {
     expect(run('checkClassifyVerdicts.mjs', '00').stdout).toMatch(/reuses catalogue id tool-result-minted-here/);
   });
 
-  it('verify stage requires exactly the scope and applies the corrections', () => {
+  it('rejects --stage verify with a usage error', () => {
     write('verdicts-00.json', env('00', [ui(A), model(B, 'tool-result-own-body')]));
-    run('checkClassifyVerdicts.mjs', '00');
-    write('verify-00.json', env('00', [ui(A)]));
-    const bad = run('checkClassifyVerdicts.mjs', '00', '--stage', 'verify');
-    expect(bad.stdout).toMatch(/not in this chunk's verify scope/);
-    write('verify-00.json', env('00', [{ ...ui(B), evidence: 'Ink children at 77; the route proof does not hold' }]));
-    expect(run('checkClassifyVerdicts.mjs', '00', '--stage', 'verify').stdout).toContain('PASS chunk 00 (verify)');
+    const r = run('checkClassifyVerdicts.mjs', '00', '--stage', 'verify');
+    expect(r.status).toBe(2);
+    expect(r.stderr).toMatch(/usage/);
   });
 
-  it('harvest reports classify and verify completion separately and writes only when complete', () => {
+  it('harvest reports classify completion and writes only when complete', () => {
     write('verdicts-00.json', env('00', [ui(A), model(B, 'tool-result-own-body')]));
     const h1 = run('harvestClassify.mjs');
     expect(h1.status).toBe(1);
-    expect(h1.stdout).toMatch(/classified: 1\/2 {3}verified: 0\/2/);
+    expect(h1.stdout).toMatch(/classified: 1\/2\s*$/m);
+    expect(h1.stdout).not.toMatch(/verif/i);
     expect(h1.stdout).toMatch(/rerun classify for chunks: 01/);
-    expect(h1.stdout).toMatch(/rerun verify for chunks: 00/);
+    expect(h1.stdout).toMatch(/INCOMPLETE — 1 candidate\(s\)/);
     expect(fs.existsSync(path.join(dir, 'verdicts-merged.json'))).toBe(false);
 
-    write('verify-00.json', env('00', [{ ...model(B, 'tool-result-own-body'), name: 'Corrected name' }]));
-    write('verdicts-01.json', env('01', [ui(C)]));
-    // C carries reusedFrom, so it is in scope even as ui.
-    write('verify-01.json', env('01', [{ ...ui(C), roleChange: 'the old id named a model message; this is a CLI line' }]));
-    const h2 = run('harvestClassify.mjs');
-    expect(h2.stdout, h2.stdout).toContain('COMPLETE');
+    write('verdicts-01.json', env('01', [{ ...ui(C), roleChange: 'the old id named a model message; this is a CLI line' }]));
+    const h2 = run('harvestClassify.mjs', '--allow-unverified');
+    expect(h2.stdout, h2.stdout).toMatch(/^COMPLETE: 3 verdict\(s\)/m);
     expect(h2.status, h2.stdout + h2.stderr).toBe(0);
     const merged = JSON.parse(fs.readFileSync(path.join(dir, 'verdicts-merged.json'), 'utf8'));
     expect(merged.map(v => v.hash)).toEqual([A, B, C]);
-    expect(merged.find(v => v.hash === B).name).toBe('Corrected name');
-  });
-
-  it('a chunk with an empty verify scope is verified without a verify file', () => {
-    write('verdicts-00.json', env('00', [ui(A), model(B, 'tool-result-own-body')]));
-    write('verify-00.json', env('00', [model(B, 'tool-result-own-body')]));
-    write('chunk-01.json', { bundle: man.bundle, corpus: man.corpus, candidates: [cand(C)] });
-    write('verdicts-01.json', env('01', [ui(C)]));
-    expect(run('checkClassifyVerdicts.mjs', '01').stdout).toMatch(/verify scope 0/);
-    const h = run('harvestClassify.mjs');
-    expect(h.stdout).toMatch(/verified: 2\/2/);
-    expect(h.status).toBe(0);
   });
 
   it('every hash in the packets is sha1-shaped (the extractor key)', () => {

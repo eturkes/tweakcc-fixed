@@ -1,19 +1,16 @@
 #!/usr/bin/env node
 // Checks one chunk's verdict file against its evidence packet. Every classify
-// and verify agent runs this on its own output and fixes what it reports
-// until it prints PASS; the workflow script cannot read files, so this is
-// where completeness and collisions are enforced.
+// agent runs this on its own output and fixes what it reports until it prints
+// PASS; the workflow script cannot read files, so this is where completeness
+// and collisions are enforced.
 //
-//   node tools/checkClassifyVerdicts.mjs <evidenceDir> <NN> [--stage classify|verify]
+//   node tools/checkClassifyVerdicts.mjs <evidenceDir> <NN> [--stage classify]
 //
-// classify: verdicts-NN.json covers exactly the chunk's hashes, every field is
-//   well-formed, no catalogue id is reused without licence, no id is shared by
-//   two bodies (in this chunk or across chunks), and bundle/corpus digests
-//   match the build the packets came from. On PASS it writes
-//   verify-scope-NN.json (the hashes the verifier must re-rule) and
-//   verify-NN.md (the verifier's packet: those candidates with their drafts).
-// verify: verify-NN.json covers exactly that scope, with the same checks run
-//   over the draft as corrected by the verifier.
+// verdicts-NN.json covers exactly the chunk's hashes, every field is
+// well-formed, no catalogue id is reused without licence, no id is shared by
+// two bodies (in this chunk or across chunks), and bundle/corpus digests match
+// the build the packets came from. --stage is accepted for old callers;
+// --stage verify is rejected.
 // Exit 0 on PASS, 1 on problems, 2 on usage errors.
 import path from 'node:path';
 import {
@@ -28,8 +25,8 @@ const stageIdx = args.indexOf('--stage');
 const stage = stageIdx >= 0 ? args[stageIdx + 1] : 'classify';
 const pos = args.filter((a, i) => !a.startsWith('--') && !(stageIdx >= 0 && i === stageIdx + 1));
 const [dirArg, chunkArg] = pos;
-if (!dirArg || chunkArg == null || !['classify', 'verify'].includes(stage)) {
-  console.error('usage: checkClassifyVerdicts.mjs <evidenceDir> <NN> [--stage classify|verify]');
+if (!dirArg || chunkArg == null || stage !== 'classify') {
+  console.error('usage: checkClassifyVerdicts.mjs <evidenceDir> <NN> [--stage classify]');
   process.exit(2);
 }
 const dir = path.resolve(dirArg);
@@ -43,5 +40,4 @@ try {
   process.exit(2);
 }
 
-const r = evaluateChunk(dir, m, nn, { stage });
-process.exit(await report(dir, m, nn, stage, r));
+process.exit(report(dir, m, nn, evaluateChunk(dir, m, nn)));

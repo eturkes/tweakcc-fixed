@@ -4431,5 +4431,141 @@
     "facing": "ui",
     "hash": "0ec01ad510eeb9901ee23c7da377d421fcb37db9",
     "why": "Ruled ui on 2.1.296: the model-facing `Stop hook feedback:` + newline framing this pin was written for is gone; the surviving `Stop hook feedback: ${…}` is built only by the transcript row renderer, and the pin's loose match had been catalogueing that UI text."
+  },
+  "data-meta-lost-session-timers-header": {
+    "verdict": "archived",
+    "version": "2.1.299",
+    "why": "Removed in CC 2.1.299: no run of the container-restart lost-timers header survives in the bundle. The override matched superseded pristine. Archived to ~/.tweakcc/orphans-removed-for-2.1.299/."
+  },
+  "slash-command-plugin-validate-hooks-module-dollar-not-followed-across-import": {
+    "verdict": "archived",
+    "version": "2.1.299",
+    "why": "Removed in CC 2.1.299: the imported-binding refusal is gone; the nearest survivor is the function-expression variant, already catalogued as slash-command-plugin-validate-hooks-module-dollar-callee-function-expression-across-import. The override matched superseded pristine. Archived to ~/.tweakcc/orphans-removed-for-2.1.299/."
+  },
+  "tool-description-bash-sandbox-local-binding-exclude-or-bang-clause": {
+    "verdict": "archived",
+    "version": "2.1.299",
+    "why": "Removed in CC 2.1.299: the combined exclude-or-`!` clause became two array options joined in code; the exclude option keeps tool-description-bash-sandbox-local-binding-exclude-clause and the `!` option is minted as tool-description-bash-sandbox-local-binding-bang-option. The override matched superseded pristine. Archived to ~/.tweakcc/orphans-removed-for-2.1.299/."
+  },
+  "tool-result-git-bundle-linked-worktree-no-private-admin": {
+    "verdict": "archived",
+    "version": "2.1.299",
+    "why": "Removed in CC 2.1.299: no run of the linked-worktree private-admin-dir error survives in the bundle. The override matched superseded pristine. Archived to ~/.tweakcc/orphans-removed-for-2.1.299/."
+  },
+  "tool-result-mcp-task-input-unservable-left-running": {
+    "verdict": "archived",
+    "version": "2.1.299",
+    "why": "Removed in CC 2.1.299: the left-running arm is gone; an unservable input now cancels the task (tool-result-mcp-task-input-unservable) or reports tool-result-mcp-task-input-request-client-cannot-serve. The override matched superseded pristine. Archived to ~/.tweakcc/orphans-removed-for-2.1.299/."
+  },
+  "tool-result-mcp-task-input-unservable-no-way-to-show": {
+    "verdict": "archived",
+    "version": "2.1.299",
+    "why": "Removed in CC 2.1.299: the no-way-to-show arm is gone; an unservable input now cancels the task (tool-result-mcp-task-input-unservable) or reports tool-result-mcp-task-input-request-client-cannot-serve. The override matched superseded pristine. Archived to ~/.tweakcc/orphans-removed-for-2.1.299/."
+  },
+  "tool-result-project-read-binary-upload-notice": {
+    "verdict": "archived",
+    "version": "2.1.299",
+    "why": "Removed in CC 2.1.299: the shared opening with the original-bytes clause is gone; the surviving binary-upload notice is tool-result-project-read-binary-upload-not-downloaded-no-files-kept. The override matched superseded pristine. Archived to ~/.tweakcc/orphans-removed-for-2.1.299/."
+  },
+  "tool-result-write-file-content-holds-replacement-chars": {
+    "verdict": "archived",
+    "version": "2.1.299",
+    "why": "Removed in CC 2.1.299: the U+FFFD-in-content Write refusal is gone; non-UTF-8 files are now refused up front by tool-result-edit-file-not-valid-utf8. The override matched superseded pristine. Archived to ~/.tweakcc/orphans-removed-for-2.1.299/."
+  },
+  "tool-result-served-bash-truncated-output-no-saved-rest": {
+    "verdict": "archived",
+    "version": "2.1.299",
+    "why": "Purpose changed in CC 2.1.299: the note no longer says the saved copy holds nothing more; it now points at the persisted output file, catalogued as tool-result-served-bash-truncated-output-saved-file, and its printed-size clause is minted as tool-result-served-bash-truncated-output-printed-size. The override matched superseded pristine. Archived to ~/.tweakcc/orphans-removed-for-2.1.299/."
+  },
+  "system-reminder-pdf-reference-readable-whole": {
+    "verdict": "archived",
+    "facing": "ui",
+    "hash": "dbfa88297d3d8d3c5cc793faa76f4638dbd763ee",
+    "version": "2.1.299",
+    "why": "Removed in CC 2.1.299: the pdf_reference meta message lost its readable-whole arm (only still-arriving, unknown-page-count and too-large arms remain). The only surviving run, \"page count unknown\", is the transcript row renderer, ruled ui. The override matched superseded pristine. Archived to ~/.tweakcc/orphans-removed-for-2.1.299/."
+  },
+  "slash-command-plugin-marketplace-not-updated-managed-policy": {
+    "verdict": "archived",
+    "version": "2.1.300",
+    "why": "Text moved into the plugin marketplace manager UI with new wording and was ruled UI-facing there. Override matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.300/.",
+    "facing": "ui",
+    "hash": "0601a12fdad207673298d1d5d56beb966268da74"
+  },
+  "tool-result-mcp-connect-not-connected": {
+    "verdict": "archived",
+    "version": "2.1.300",
+    "why": "Renamed: successor is tool-result-mcp-skill-server-not-connected. Override matched superseded pristine (or was a wipe of now-removed text), so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.300/."
+  },
+  "tool-result-agent-proxy-connect-rejected": {
+    "verdict": "archived",
+    "version": "2.1.300",
+    "why": "Absent from the 2.1.300 bundle. Override matched superseded pristine (or was a wipe of now-removed text), so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.300/."
+  },
+  "tool-result-artifact-publish-files-still-on-disk-edit-there": {
+    "verdict": "archived",
+    "version": "2.1.300",
+    "why": "Absent from the 2.1.300 bundle. Override matched superseded pristine (or was a wipe of now-removed text), so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.300/."
+  },
+  "tool-result-artifact-quickstart-fix-what-is-wrong": {
+    "verdict": "archived",
+    "version": "2.1.300",
+    "why": "Absent from the 2.1.300 bundle. Override matched superseded pristine (or was a wipe of now-removed text), so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.300/."
+  },
+  "tool-result-remote-tool-partial-removal-rest-changed": {
+    "verdict": "archived",
+    "version": "2.1.300",
+    "why": "Absent from the 2.1.300 bundle. Override matched superseded pristine (or was a wipe of now-removed text), so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.300/."
+  },
+  "tool-result-remote-tool-recheck-before-remove-nothing-removed": {
+    "verdict": "archived",
+    "version": "2.1.300",
+    "why": "Absent from the 2.1.300 bundle. Override matched superseded pristine (or was a wipe of now-removed text), so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.300/."
+  },
+  "tool-result-served-mcp-enable-bad-input": {
+    "verdict": "archived",
+    "version": "2.1.300",
+    "why": "Absent from the 2.1.300 bundle. Override matched superseded pristine (or was a wipe of now-removed text), so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.300/."
+  },
+  "tool-result-workflow-adopted-resume-missing-content-pin": {
+    "verdict": "archived",
+    "version": "2.1.300",
+    "why": "Absent from the 2.1.300 bundle. Override matched superseded pristine (or was a wipe of now-removed text), so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.300/."
+  },
+  "tool-result-workflow-adopted-resume-script-changed": {
+    "verdict": "archived",
+    "version": "2.1.300",
+    "why": "Absent from the 2.1.300 bundle. Override matched superseded pristine (or was a wipe of now-removed text), so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.300/."
+  },
+  "system-reminder-coordinator-message-waiting-end-turn": {
+    "verdict": "archived",
+    "version": "2.1.301",
+    "why": "Absent from the 2.1.301 bundle. Override matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.301/."
+  },
+  "tool-result-hooks-catch-reentry-refused-op": {
+    "verdict": "archived",
+    "version": "2.1.301",
+    "why": "Absent from the 2.1.301 bundle. Override matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.301/."
+  },
+  "tool-result-artifact-identical-resubmission-merge-source": {
+    "verdict": "archived",
+    "version": "2.1.302",
+    "why": "2.1.302 rebuilt the refusal from shared parts; its sentences now live in other catalogued ids. Override matched pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.302/."
+  },
+  "tool-result-artifact-stale-guard-autoread-footer": {
+    "verdict": "archived",
+    "version": "2.1.302",
+    "why": "Replaced by tool-result-artifact-end-of-live-content-merge-reminder, which adds a branch to the same footer. Override matched pristine. Archived to ~/.tweakcc/orphans-removed-for-2.1.302/."
+  },
+  "tool-result-mcp-server-needs-reauth-connector-settings": {
+    "verdict": "archived",
+    "version": "2.1.302",
+    "why": "2.1.302 split the sentence: the base is tool-result-mcp-server-needs-reauth and the connector-settings hint is a separate constant. Override matched pristine. Archived to ~/.tweakcc/orphans-removed-for-2.1.302/."
+  },
+  "tool-result-worktree-create-pr-fetch-failed": {
+    "verdict": "archived",
+    "version": "2.1.302",
+    "facing": "ui",
+    "hash": "8135058490e5641dfc4f19fe7e05661f26d2c973",
+    "why": "ruled ui in the 2026-10-18 rulings: R9e only builds it when a PR number is passed, and only the CLI paths pass one (Noi @11424026 returns it to startup, Mt @38030827 writes it to stderr and exits). EnterWorktree and agent worktrees never pass prNumber. Override matched pristine."
   }
 }

@@ -206,6 +206,24 @@ describe('auditMisbinds', () => {
     expect(r.stderr).toContain('limit of 10');
     const under = run(ours.slice(0, 10), upstream.slice(0, 10), bodies);
     expect(under.status).toBe(0);
+    // Prompts reshaped after the upstream reference are upstream lag.
+    const newer = ours.map(p => ({ ...p, version: '2.1.297' }));
+    const lag = run(newer, upstream, bodies);
+    expect(lag.status).toBe(0);
+    expect(lag.stdout).toContain('11 newer than upstream');
+    // Same version as upstream is not lag.
+    const same = ours.map(p => ({ ...p, version: '2.1.296' }));
+    expect(run(same, upstream, bodies).status).toBe(1);
+    // Lag has a ceiling of its own.
+    const many = prompts(26).map(p => ({ ...p, version: '2.1.297' }));
+    const manyUp = many.map(p => ({
+      ...p,
+      pieces: [`Prompt upstream ${p.id} \${`, '} mid ${', '} end'],
+      identifiers: [0, 1],
+      identifierMap: { 0: 'TABLE', 1: 'TAIL' },
+    }));
+    const manyBodies = Object.fromEntries(many.map(p => [p.id, '${TABLE}']));
+    expect(run(many, manyUp, manyBodies).status).toBe(1);
   });
 
   it('does not mistake an escaped placeholder for a live binding', () => {

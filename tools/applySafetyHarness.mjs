@@ -412,7 +412,9 @@ try {
   } catch (e) {
     log = (e.stdout || '') + (e.stderr || '');
     if (!log && e.message) log = e.message;
-    applyExit = e.status ?? 1;
+    // A kill by signal (the OOM killer's SIGKILL) has no status; name it,
+    // or the failure reads as an ordinary exit 1.
+    applyExit = e.status ?? (e.signal ? `signal ${e.signal}` : 1);
   }
   // Positive marker + exit code: absence of error lines is not evidence the
   // apply ran. See the note on harnessVerdict.

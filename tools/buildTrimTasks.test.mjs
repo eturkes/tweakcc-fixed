@@ -66,7 +66,6 @@ beforeAll(() => {
 const final = (vs, extra = {}) => ({
   version: '9.9.9',
   complete: true,
-  cutHunt: { complete: true },
   verdicts: vs,
   ...extra,
 });
@@ -156,10 +155,9 @@ describe('buildTrimTasks carriers and gates', () => {
     expect(r.problems.join('\n')).toMatch(/tool-result-fixture-unknown is not in the catalogue/);
   });
 
-  it('refuses an incomplete, pre-hunt or partial stage-1 result', () => {
+  it('refuses an incomplete stage-1 result, and needs no cut-hunt marker', () => {
     expect(build(final(verdicts, { complete: false })).problems.join('\n')).toMatch(/not complete/);
-    expect(build(final(verdicts, { cutHunt: undefined })).problems.join('\n')).toMatch(/post-cut-hunt/);
-    expect(build(final(verdicts, { cutHunt: { complete: false } })).problems.join('\n')).toMatch(/post-cut-hunt/);
+    expect(build(final(verdicts, { cutHunt: undefined })).problems).toEqual([]);
   });
 
   it('refuses disagreeing versions', () => {

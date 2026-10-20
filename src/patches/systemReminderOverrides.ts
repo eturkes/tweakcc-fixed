@@ -91,14 +91,15 @@ const simpleEntryPattern = (key: string): RegExp =>
 // wrapper calls around it. 2.1.233 emitted `${e.filename}`; 2.1.234 emits
 // `${Oie(e.filename)}`. Returning the whole inner expression keeps the override
 // bound to whatever CC actually interpolates, so a future wrapper needs no
-// further change here.
+// further change here. A trailing `??""` (added to an optional slot by this
+// patch) is part of the expression, so a re-apply reads back its own slot.
 const slotExpr = (
   template: string,
   param: string,
   prop: string
 ): string | null => {
   const m = template.match(
-    new RegExp(`\\$\\{((?:[$\\w]+\\()*${param}\\.${prop}\\)*)\\}`)
+    new RegExp(`\\$\\{((?:[$\\w]+\\()*${param}\\.${prop}\\)*(?:\\?\\?"")?)\\}`)
   );
   return m ? m[1] : null;
 };
@@ -285,6 +286,31 @@ const matchComposedEntry = (
   };
 };
 
+// The entry as this patch emits it when the body may render empty:
+// `key:(e)=>((c)=>c.trim()===""?[]:W([M({content:c,isMeta:!0})]))(EXPR)`.
+// Re-applying over a patched build must find it, or the second apply fails.
+const matchEmittedEntry = (
+  content: string,
+  key: string
+): MatchedEntry | null => {
+  const head = new RegExp(
+    `${key}:\\(([$\\w]+)\\)=>\\(\\(c\\)=>c\\.trim\\(\\)===""\\?\\[\\]:([$\\w]+)\\(\\[([$\\w]+)\\(\\{content:c,isMeta:!0\\}\\)\\]\\)\\)\\(`
+  );
+  const m = content.match(head);
+  if (!m || m.index === undefined) return null;
+  const argOpen = m.index + m[0].length - 1;
+  const argClose = matchingBrace(content, argOpen);
+  if (argClose < 0) return null;
+  return {
+    index: m.index,
+    length: argClose + 1 - m.index,
+    hParam: m[1],
+    wrapFn: m[2],
+    metaFn: m[3],
+    template: content.slice(argOpen + 1, argClose),
+  };
+};
+
 // The same entry once Anthropic gave the handler a block body. CC 2.1.291
 // split `pdf_reference` into an early `return` for a PDF the model can read
 // whole (`readableWhole`) and a final `return` for the too-large note this
@@ -360,6 +386,7 @@ const applySimpleEntry = (
   const found =
     matchSimpleEntry(content, key) ??
     matchComposedEntry(content, key) ??
+    matchEmittedEntry(content, key) ??
     matchBlockEntry(content, key);
   if (!found) {
     if (new RegExp(`${key}:\\([$\\w]+\\)=>\\[\\]`).test(content))
@@ -2028,19 +2055,46 @@ const PLAN_FILE_REF_INJECTION: ReminderInjection = {
   defaultBody:
     'A plan file exists from plan mode at: {{plan_file_path}}\n\nPlan contents:\n\n{{plan_content}}\n\nIf this plan is relevant to the current work and not already complete, continue working on it.',
   apply(content, body, isSuppressed) {
-    return findAndReplace(
+    // Method 2 (<=2.1.300): one flat template, always with a path.
+    const flat =
+      /plan_file_reference:\(([$\w]+)\)=>([$\w]+)\(\[([$\w]+)\(\{content:`A plan file exists from plan mode at: \$\{\1\.planFilePath\}\n\nPlan contents:\n\n\$\{\1\.planContent\}\n\nIf this plan is relevant to the current work and not already complete, continue working on it\.`,isMeta:!0\}\)\]\)/;
+    if (flat.test(content)) {
+      return findAndReplace(
+        content,
+        flat,
+        m => {
+          const [, hParam, o5Name, j6Name] = m;
+          if (isSuppressed) return `plan_file_reference:(${hParam})=>[]`;
+          const bodyForBuild = body
+            .replace(/\$\{H\.planFilePath\}/g, `\${${hParam}.planFilePath}`)
+            .replace(/\$\{H\.planContent\}/g, `\${${hParam}.planContent}`);
+          return `plan_file_reference:(${hParam})=>${o5Name}([${j6Name}({content:\`${bodyForBuild}\`,isMeta:!0})])`;
+        },
+        'plan-file-reference'
+      );
+    }
+    // Method 1 (2.1.301+, and any build this patch already rewrote): the path
+    // is optional, so pristine picks between a "plan file exists at …" and a
+    // "plan exists" sentence. The path slot renders empty rather than
+    // "undefined", so a body line that holds only it drops when there is no
+    // path.
+    return applySimpleEntry(
       content,
-      /plan_file_reference:\(([$\w]+)\)=>([$\w]+)\(\[([$\w]+)\(\{content:`A plan file exists from plan mode at: \$\{\1\.planFilePath\}\n\nPlan contents:\n\n\$\{\1\.planContent\}\n\nIf this plan is relevant to the current work and not already complete, continue working on it\.`,isMeta:!0\}\)\]\)/,
-      m => {
-        const [, hParam, o5Name, j6Name] = m;
-        if (isSuppressed) return `plan_file_reference:(${hParam})=>[]`;
-        const bodyForBuild = body
-          .replace(/\$\{H\.planFilePath\}/g, `\${${hParam}.planFilePath}`)
-          .replace(/\$\{H\.planContent\}/g, `\${${hParam}.planContent}`);
-        return `plan_file_reference:(${hParam})=>${o5Name}([${j6Name}({content:\`${bodyForBuild}\`,isMeta:!0})])`;
-      },
-      'plan-file-reference',
-      c => /plan_file_reference:\([$\w]+\)=>\[\]/.test(c)
+      'plan_file_reference',
+      [
+        {
+          placeholder: '${H.planFilePath}',
+          optional: true,
+          resolve: (template, param) => {
+            const expr = slotExpr(template, param, 'planFilePath');
+            if (!expr) return null;
+            return expr.endsWith('??""') ? expr : `${expr}??""`;
+          },
+        },
+        propSlot('${H.planContent}', 'planContent'),
+      ],
+      body,
+      isSuppressed
     );
   },
 };

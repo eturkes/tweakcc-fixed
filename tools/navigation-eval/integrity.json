@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "revision": "85ae46fe322de92aa909dadc28847556a6d53a63",
+  "manifestSha256": "058a4424180cbc36b293fa6714dc3070b53cd58bc26f706e83070670fd97b719",
+  "sourceSha256": {
+    "src/commands.ts": "b518d43a660c125f7742d23f9d1a1406e0178a6d9a8fead8fe50481c9b225c24",
+    "src/config.ts": "335f89ed53554054b09e397460fa8fb66ea44275fcfe703df0ed15eb7ca2bfd8",
+    "src/index.tsx": "51c797fa0fb1981a808d30def50b1def2d5e703b3f82d53af8c3e904a3b950db",
+    "src/installationBackup.ts": "6cbfe767870689dea2f16e2b001f7d5cdc1bc3134b125f11fc5f80bae50a6885",
+    "src/lib/content.ts": "32884923a92e509854a94f888fe70fdcfe5cf013aa5adba3ca9feb2188e756ab",
+    "src/nativeInstallationLoader.ts": "3115d784c7bcd2762196f71042838cd5f5d20a8ed0d803b810b217ac5af35f91",
+    "src/packageMeta.ts": "983fc6b261be462cf551720775a45960f39e39be7f374d4b09cde5ead7c1df8e",
+    "src/patchFilter.test.ts": "1089eaae1d903b40b809f84767b63341bfde67e585849475b59fa93142512887",
+    "src/patchFilter.ts": "f671d3e796d1d4f622a258e9425c6e7fbd2b403cb92aa87e97cedeb22883b3f9",
+    "src/patchMarkers.ts": "66346930f3c8d6d4f5135d6b0c48c465575d8dd2d0b875a9864e6caf821ef1b5",
+    "src/patches/index.ts": "1a426f0f4c4d97475cd49d5738378d72dfcc04bef23514c9c6d443705d253804",
+    "src/patches/systemPrompts.ts": "782b5dd59bfa1636d92cd502e5e610ca21dde8451d9d2b58d32bc2551aeda138",
+    "src/patches/themes.test.ts": "5635c84494f7f4f7ff6b1c8fe19e2a30fc013188439908e8fe354ddda4d07ac6",
+    "src/patches/themes.ts": "a146061d02ee739a8816e3bec97bc1d0bb279a20c695bdd0494b2bfb9108bfee",
+    "src/systemPromptDownload.test.ts": "7129684033d3502a1d285d487cbfc6bf382d83b717701f35233416d7576ca970",
+    "src/systemPromptDownload.ts": "a0926c4379c0edfaea54cba285bffde317e28a78f1d1e8f76ec9dcd0d161fe7f",
+    "src/systemPromptPreflight.ts": "899486ca0c95883fadf3825fd71dabf482c722021a9a426937b97f4ad22f3df3",
+    "src/tests/deepMergeWithDefaults.test.ts": "66d3a72509d1362e73347c934b31c684bd97f0687f6f3e89d5ff8c23401312a5",
+    "src/tests/tweakccConfigDir.test.ts": "f00f5cb2198b15f5800f468ae9adc0b3fd8889638000aebf043f29742e40d488",
+    "src/tests/xdgConfigHome.test.ts": "05d6fc11febe2e67358204878b2c4f6207325c70bd4b2cc166b3b722483b40db",
+    "src/utils.test.ts": "594c1b5a025588a0d06d5059fbab883191dcd2efb2b0bb49e0ef78360d7094f9",
+    "src/utils.ts": "5580949ef8941a80f28cceb92241328fdb073ab895ee3833d4aa3f7f57a9ece3",
+    "src/virtualBundle.test.ts": "04033caa0a9f2096f1ffe57682bf462f607bb036708dd0f2643c97b1a2978749",
+    "src/virtualBundle.ts": "a2d8ab3fa6ed50a81fe154676e3fb9b10673aef95fc6ccce74c79615fbe74810"
+  },
+  "syntheticSha256": "9cad888867769fe3da203d8a6f74de4e857368471814138bb814723f2b75fc77"
+}

@@ -396,21 +396,3 @@ export function renderChunkHeaderMd(h) {
     'How to read: `## F…` blocks describe one emitting function (callers with the branch each call sits behind, option set-sites, cached sibling facings); `### k…` blocks are the candidates of the family above them. ⟦…⟧ marks the literal inside its site code; "(code shown above)" points to a snippet already printed.',
   ].join('\n');
 }
-
-export function renderVerifyMd({ header, families, items }) {
-  const L = [header, ''];
-  let lastFam = null;
-  for (const it of items) {
-    if (it.family !== lastFam) {
-      const f = families.get(it.family);
-      if (f) L.push(f, '');
-      lastFam = it.family;
-    }
-    L.push(it.md);
-    L.push(
-      `**Draft (in scope: ${it.why.join('; ')}):** facing ${it.draft.facing}${it.draft.id ? `, id ${it.draft.id}, name ${code(it.draft.name || '')}, desc ${code(it.draft.desc || '')}` : ''}; evidence: ${code(it.draft.evidence || '')}`
-    );
-    L.push('');
-  }
-  return L.join('\n');
-}

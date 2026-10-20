@@ -14,6 +14,7 @@
 import { createRequire } from 'node:module';
 import fs from 'node:fs';
 import path from 'node:path';
+import { cmpVersion } from './lib/auditPacketMd.mjs';
 import {
   bakedPositions,
   loadMatcherCore,
@@ -244,11 +245,22 @@ for (const f of fs.readdirSync(overridesDir)) {
 // 4952 against 2.1.292. The floor covers the handful of prompts the two
 // extractors cut differently; 2% leaves headroom over the worst real ratio
 // while any broken matcher or wrong reference skips far more.
+// A prompt whose own version is newer than the upstream catalogue changed
+// after the reference was published, so its skip is upstream lag, not a
+// matcher fault; it is still printed but does not count toward the limit
+// (CC 2.1.302 against upstream's 2.1.301: 11 of 13 skips were reshaped in
+// 2.1.302 itself).
+const newerThanUpstream = id =>
+  O[id]?.version && PIEB.version && cmpVersion(O[id].version, PIEB.version) > 0;
+const unexplained = skipped.filter(id => !newerThanUpstream(id));
+// The exemption still has a ceiling: the extractor stamps a fresh version on
+// every prompt it re-cuts, so a broken matcher would otherwise exempt itself.
 const skipLimit = Math.max(10, Math.ceil(compared * 0.02));
-const coverage = `${compared} compared (${byIdentifiers} by identifiers), ${skipped.length} not comparable (limit ${skipLimit})`;
-if (skipped.length > skipLimit) {
+const lagLimit = Math.max(25, Math.ceil(compared * 0.05));
+const coverage = `${compared} compared (${byIdentifiers} by identifiers), ${skipped.length} not comparable, ${skipped.length - unexplained.length} newer than upstream (limit ${skipLimit}, ${lagLimit} with upstream lag)`;
+if (unexplained.length > skipLimit || skipped.length > lagLimit) {
   console.error(
-    `mis-bind audit: ${skipped.length} prompts not comparable to the upstream slot layout, over the limit of ${skipLimit} (${coverage}). Check the upstream reference version and the matcher before trusting this gate.`
+    `mis-bind audit: ${unexplained.length} prompts not comparable to the upstream slot layout, over the limit of ${skipLimit} (${coverage}). Check the upstream reference version and the matcher before trusting this gate.`
   );
   process.exit(1);
 }

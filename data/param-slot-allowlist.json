@@ -594,5 +594,37 @@
     "text": "file changed between lstat and open",
     "verdict": "off-route",
     "why": "g(path, reason) in jMn. Every caller of lKe logs or drops the throw (GPn, GetTask, statusOf) and the Bash tool's Kor/IYt wrap it in try/catch, so the task-output-swap-refused text built from this reason never reaches the model."
+  },
+  "fab4f9af204a139c": {
+    "promptId": "tool-result-plugin-hook-cross-environment-input-blocked",
+    "builder": "gBt",
+    "param": "n",
+    "text": "one of their plugins",
+    "verdict": "glue",
+    "why": "gOo=gBt(\"A plugin hook\",\"one of their plugins\") @10142692 is read only in SOo @10144472 (s=r?hOo:gOo), which returns s as the PreToolUse permissionDecisionReason (deny) or PermissionRequest {behavior:\"deny\",message:s}, so the route is model-facing. The literal is only the locative noun phrase in 'a hook in ${n} changes this tool's input'; the instruction lives in the template."
+  },
+  "5cbc56c35468dda0": {
+    "promptId": "tool-result-plugin-hook-cross-environment-input-blocked",
+    "builder": "gBt",
+    "param": "n",
+    "text": "their organization's or their repo's settings",
+    "verdict": "glue",
+    "why": "hOo=gBt(\"A settings hook\",\"their organization's or their repo's settings\") @10142740 is read in SOo @10144468 when ofSettings and returned as the deny reason/message, so it is model-facing. It is a locative noun phrase whose meaning comes from the template sentence."
+  },
+  "7ac47e3ad85077b9": {
+    "promptId": "tool-result-permission-denied-consent-disclosure-undisplayable",
+    "builder": "upe",
+    "param": "n",
+    "text": "the plain permission prompt raised for this call",
+    "verdict": "glue",
+    "why": "yEr @11878697 returns {decision:upe(n.name,\"the plain permission prompt raised for this call\",{hostWorded:!0})}. upe @11871478 builds {behavior:\"deny\",message:`Permission for ${e} requires ... and ${n} cannot display it. ${s}`}, which is model-facing. The literal is just the subject noun phrase; the other call sites pass 'a cloud session' @26857227, \"a teammate's permission request\" @35523080, and so on. The remedy s carries the instruction."
+  },
+  "1056e542a6e1be0c": {
+    "promptId": "tool-result-scan-secrets-could-not-run-reason",
+    "builder": "n",
+    "param": "t",
+    "text": "this build carries no scan.",
+    "verdict": "off-route",
+    "why": "Off-route: yn @37851394 binds n=(t)=>({text:`Result: the scan could not run: ${t}`}) and passes this literal from its scan stub, but yn is only the module's `register` export with no callers; the live hooks module is Bn(T) @37868800, which calls T.registerHooks with its own refuse/scan. The catalogued host is `Result: the scan could not run in ${t}: ${Dn(n.error)}` in Ge @37858726 (t=le(e,200), the folder). \"this build carries no scan.\" @37851720 is passed to yn's local n=(t)=>({text:`Result: the scan could not run: ${t}`,isError:!0}) @37851406 (scan:async()=>n(...)), a different template without 'in ${folder}', so it never reaches the host's t. yn is only the module's default `register` export (T @37843124) with 0 resolved callers; the live hooks module uses Bn(T) @37868800 → registerHooks=Le directly with its own refuse/scan. So this literal is also probably dead in this build."
   }
 }

@@ -1,3 +1,11 @@
+import {
+  FFF_BASH_READ_DESCRIPTION,
+  FFF_BASH_READ_TITLE,
+  FFF_FEATURE_DESCRIPTION,
+  FFF_FEATURE_TITLE,
+} from '../fffDescription';
+import { ensureFffViewerLinks } from '../fffBashSetup';
+import { writeFffBashReads } from './fffBashReads';
 import chalk from 'chalk';
 import * as fs from 'node:fs/promises';
 import * as fsSync from 'node:fs';
@@ -111,6 +119,7 @@ import { writeClearScreen } from './clearScreen';
 import { writeSessionColor } from './sessionColor';
 import { writeReadDefaultLines } from './readDefaultLines';
 import { writeSwapRipgrepForFff } from './swapRipgrepForFff';
+import { writeFffInstructionHygiene } from './fffInstructions';
 import { ensureRgFffWrapper } from '../ripgrepFff';
 import {
   writeSuppressDeferredTools,
@@ -227,6 +236,13 @@ const PATCH_DEFINITIONS = [
     group: PatchGroup.ALWAYS_APPLIED,
     description:
       'When a prompt override replaces one of Claude Code\'s identity lines, turn off the "global" cache scope that the first-party API rejects after a non-stock identity, so the prompt caches at organization scope instead. Does nothing while the identity lines are stock.',
+  },
+  {
+    id: 'fff-instruction-hygiene',
+    name: 'Remove stale fff tool guidance',
+    group: PatchGroup.ALWAYS_APPLIED,
+    description:
+      'Remove previously appended fff guidance from active saved tool descriptions without modifying session records',
   },
   {
     id: 'fix-summarize-from-here',
@@ -578,10 +594,16 @@ const PATCH_DEFINITIONS = [
   },
   {
     id: 'swap-ripgrep-for-fff',
-    name: '[EXPERIMENTAL] fff for Bash search (grep/find/rg → fff)',
+    name: FFF_FEATURE_TITLE,
     group: PatchGroup.FEATURES,
-    description:
-      "[EXPERIMENTAL] Route Claude Code's Bash search through fff (fast file finder). CC 2.1.186 shadows the shell `grep`→embedded ugrep and `find`→embedded bfs (and offers `rg`); the agent uses grep ~136x more than rg. This repoints all three at a per-platform fff wrapper that serves, relevance-ranked from a warm-index daemon: literal, regex (RE2 — the dialect the model writes), case-insensitive (-i), multi-word phrases, context (-A/-B/-C), extension globs (-g/--include '*.ts'), and multi-path (app lib scripts) searches. Anything fff can't serve faithfully — PCRE, multiline/newline- or empty-matching regex, only-matching (-o), single-file, non-recursive grep, --no-ignore, find, non-ASCII, lines over 512 bytes, piped stdin → re-exec the real embedded ugrep/bfs/ripgrep. Every engine still ships; any uncertainty falls back, so results never diverge from the model's intent. Transparent (no prompt-compliance reliance) and CC-scoped (the user's own terminal grep/find/rg are untouched). Installs the wrapper into ~/.tweakcc/fff.",
+    description: FFF_FEATURE_DESCRIPTION,
+    modelFacing: true,
+  },
+  {
+    id: 'fff-bash-reads',
+    name: FFF_BASH_READ_TITLE,
+    group: PatchGroup.FEATURES,
+    description: FFF_BASH_READ_DESCRIPTION,
   },
   {
     id: 'dream-mode',
@@ -744,7 +766,8 @@ export const applyPatchImplementations = (
     if (
       patchFilter &&
       !patchFilter.includes(def.id) &&
-      def.id !== 'no-global-cache-scope'
+      def.id !== 'no-global-cache-scope' &&
+      def.id !== 'fff-instruction-hygiene'
     ) {
       results.push({
         id: def.id,
@@ -1089,6 +1112,19 @@ export const applyCustomization = async (
     }
   }
 
+  let fffViewerDirectory: string | null = null;
+  if (
+    rgFffWrapperPath &&
+    (config.settings.misc?.fffLearnFromBashReads ?? true)
+  ) {
+    fffViewerDirectory = await ensureFffViewerLinks(rgFffWrapperPath);
+    if (!fffViewerDirectory) {
+      console.log(
+        'patch: fffBashReads: viewer setup unavailable — keeping original file viewers'
+      );
+    }
+  }
+
   const patchImplementations: Record<PatchId, PatchImplementation> = {
     // Always Applied
     'verbose-property': {
@@ -1119,6 +1155,9 @@ export const applyCustomization = async (
     'no-global-cache-scope': {
       fn: c =>
         writeNoGlobalCacheScope(c, pristineContent, identityOverrideApplied),
+    },
+    'fff-instruction-hygiene': {
+      fn: c => writeFffInstructionHygiene(c),
     },
     'fix-summarize-from-here': {
       fn: c => writeFixSummarizeFromHere(c),
@@ -1395,6 +1434,10 @@ export const applyCustomization = async (
       // which would also silently accept null).
       fn: c => writeSwapRipgrepForFff(c, rgFffWrapperPath!),
       condition: swapRipgrepEnabled && !!rgFffWrapperPath,
+    },
+    'fff-bash-reads': {
+      fn: c => writeFffBashReads(c, fffViewerDirectory!, rgFffWrapperPath!),
+      condition: swapRipgrepEnabled && !!fffViewerDirectory,
     },
     'dream-mode': {
       fn: c => writeDreamMode(c),

@@ -745,6 +745,7 @@ export const DEFAULT_SETTINGS: Settings = {
     enableWorktreeMode: true,
     unlockResponsiveMode: false,
     swapRipgrepForFff: false,
+    fffLearnFromBashReads: true,
     allowCustomAgentModels: false,
     enableContextLimitOverride: false,
     enableModelCustomizations: true,

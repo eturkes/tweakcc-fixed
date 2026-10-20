@@ -158,6 +158,7 @@ export interface MiscConfig {
   enableWorktreeMode: boolean;
   unlockResponsiveMode: boolean;
   swapRipgrepForFff: boolean;
+  fffLearnFromBashReads: boolean;
   allowCustomAgentModels: boolean;
   enableContextLimitOverride: boolean;
   enableModelCustomizations: boolean;
