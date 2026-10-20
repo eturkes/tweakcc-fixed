@@ -128197,5 +128197,1887 @@
     "id": "tool-result-plugin-publish-follow-on-claude-ai",
     "name": "Tool Result: Plugin publish follow-on-claude.ai link",
     "desc": "Line appended to a plugin-publish result giving the claude.ai URL where the published plugin can be followed."
+  },
+  "c02489c4a429285cf2ded6a10b497948bf7366ed": {
+    "facing": "model",
+    "id": "data-settings-sandbox-allow-nested-user-namespaces-description-part-4",
+    "name": "Settings: sandbox allowNestedUserNamespaces description (part 4)",
+    "desc": "Notes that a true value from project settings is ignored while false still applies."
+  },
+  "0d4624d5ad11917a3823146e4138cdaf25e7feb5": { "facing": "internal" },
+  "ff2f59670b63e6ffb3ffedc5cc3f4393a14eb5a3": {
+    "facing": "model",
+    "id": "tool-result-agent-request-interrupted-session-ended",
+    "name": "Agent request interrupted: session ended",
+    "desc": "Marker text replacing an agent message whose run was cut off when the session ended, noting nobody asked it to stop."
+  },
+  "51b48bbbeb501a4fe2cdd0939a29a7f6ec83b453": { "facing": "internal" },
+  "8fcb1fb7f3d8d1a92e66df04dcfd2899a6e0c7bf": { "facing": "internal" },
+  "0107b40bb7dc041950f5d1380e3cd32b3991c517": { "facing": "internal" },
+  "926ba75a1ff76730de89e4011fbad06d223214d9": { "facing": "internal" },
+  "4337b1e4a2240b2062c087a3374f57b22649e1d1": { "facing": "internal" },
+  "3e42192e0e5de06a5acac502bd86659dc1e3e885": { "facing": "internal" },
+  "7d120284c17a288fd55b0a4b989229af1239b1d2": { "facing": "internal" },
+  "c1e3affb32f35596a0ea8c3750f3619571635f33": { "facing": "internal" },
+  "c186e2f9b1030d03cda9fe8753dda3bb9464e85b": { "facing": "internal" },
+  "9481efc838512e5ad7ad0383f0787c688addbdda": { "facing": "internal" },
+  "46f83131fd33580f1b0cb224f8d6292d3cf96b58": { "facing": "ui" },
+  "6463ba896d54f94faa0d157b3a0db0390e4c6b70": { "facing": "ui" },
+  "533c2dddb2b3258ecea975b078a372234c9aed09": { "facing": "ui" },
+  "f99bf9d9476eea982b7238ba6edd9570914e52bb": {
+    "facing": "model",
+    "id": "tool-result-hooks-next-refused-floors-host-rule",
+    "name": "Hooks next refused: floors not left by plugins",
+    "desc": "Hook-chain error when the floors handed back are not ones a next.to of the plugins leaves."
+  },
+  "dfb1ae69787853648c5aaf4b3ae6601a7219886c": { "facing": "internal" },
+  "456d7a21637016268f4df2018227a3f83f7fd3e2": { "facing": "internal" },
+  "cd7deafe5a1be42cd4b7d80f8b704eb2fbe9359a": { "facing": "internal" },
+  "0b41cbdf38426f2177908fced3e280f4adc0d772": {
+    "facing": "model",
+    "id": "system-prompt-claude-in-chrome-browser-automation-2",
+    "name": "Claude in Chrome browser automation guidelines",
+    "desc": "Guidance for Chrome browser automation: GIF recording, console logs, dialogs, avoiding loops, and tab context."
+  },
+  "f0ce6de0652722029c1bf0fe457e00d5e4015468": {
+    "facing": "model",
+    "id": "system-prompt-claude-in-chrome-load-task-specific-tools",
+    "name": "Claude in Chrome: load task-specific tools",
+    "desc": "Tells the model to load task-specific Chrome tools in the same ToolSearch call when the task needs them."
+  },
+  "a60297e78c7e29bc6f46e830217b31b9ea432e9a": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-srt-win-kept-grants-in-use",
+    "name": "srt-win: kept grants in use",
+    "desc": "srt-win removed nothing because sandbox sessions or commands are running."
+  },
+  "eafc2cd19a28d743f312ed405b5f39e5a2ae1e41": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-profile-operation-in-progress",
+    "name": "Sandbox: profile grant operation in progress",
+    "desc": "Nothing in the sandbox can start while the profile read grant is being written or removed."
+  },
+  "39ccff56265105748b976447985ab4d401042f0d": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-profile-grant-blocked-by-session",
+    "name": "Sandbox: profile grant blocked by running session",
+    "desc": "The profile read grant was not changed because sandbox sessions are running."
+  },
+  "ae4345804b6cd01ced3e2c2ec3746e1d763a6ac5": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-srt-win-outdated",
+    "name": "srt-win older than library",
+    "desc": "The srt-win binary lacks a needed capability; update it. Nothing was granted."
+  },
+  "40f0437cbf85983882564561aed610b7dd444512": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-seclogon-disabled",
+    "name": "Sandbox: Secondary Logon disabled",
+    "desc": "The Windows Secondary Logon service is disabled; an administrator must set it to Manual."
+  },
+  "9bd211419adce85a433fbe26c8b6b5d762b81bf5": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-seclogon-missing",
+    "name": "Sandbox: Secondary Logon missing",
+    "desc": "The Windows Secondary Logon service is not present, so the sandbox cannot start."
+  },
+  "70f24a6dc5b2b669684555fbeb8358f4a1346d87": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-srt-win-too-old-allow-loopback",
+    "name": "srt-win too old for allowLocalBinding",
+    "desc": "srt-win does not know --allow-loopback; update it or unset network.allowLocalBinding."
+  },
+  "a696c0c805fd7ef9adf378231f2de85a4151345f": { "facing": "internal" },
+  "b6c6009e848a440eb939b7bc6767a91685a1a6d1": { "facing": "internal" },
+  "5caa8eaf77a1d891e9715e71afe7dbd9dd6d4b24": { "facing": "internal" },
+  "a7bdc9ef9400aa72ca17ddb23c2c1640e7abd648": { "facing": "internal" },
+  "3dbdb4d675aad30ea1847e8c27f0bb75ae89f754": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-wfp-verify-plain-attempt-not-blocked",
+    "name": "WFP verify: plain attempt not blocked",
+    "desc": "srt-win wfp verify exited 0 but reported the plain egress attempt as not blocked."
+  },
+  "842f64bdee68126bba52cfbfca4dc1596a58dcdd": { "facing": "ui" },
+  "77043a86fd753065b1e422ea2b8cdc96f7f0ca86": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-wfp-fence-direct-outbound-unanswered",
+    "name": "WFP fence: direct outbound unanswered",
+    "desc": "Detail that a direct outbound attempt got no answer where the filter must refuse at once."
+  },
+  "a39b25100a9d49a6b3d488066f12a5fd9e345689": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-wfp-fence-not-blocked-detail",
+    "name": "WFP fence: outbound not blocked detail",
+    "desc": "States which direct outbound connect was not blocked and asks to re-run the install."
+  },
+  "54d084e4c5d245215c72aff91c3b8f4b6032fb25": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-wfp-verify-inconclusive-detail",
+    "name": "WFP verify inconclusive detail",
+    "desc": "Probe result detail: egress probe state and exit status; the fence may be absent."
+  },
+  "668b84fa5d7ae3f43b7a7e0c8b5feae2de067612": { "facing": "internal" },
+  "ea58629d93146ceb1aeaad794d9ee314afde7c4e": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-wfp-verify-lead",
+    "name": "WFP verify could not be verified lead",
+    "desc": "Lead of the wfp_verify_inconclusive error naming srt-win wfp verify."
+  },
+  "e0a2563fc32499c66e628c2620b04d7fa6743136": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-wfp-fence-inactive",
+    "name": "WFP fence not active lead",
+    "desc": "Lead of the error saying the WFP egress fence is not active."
+  },
+  "5694d577d357989464ee2dd1f359608e94d17ee9": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-wfp-fence-inactive-uac-tail",
+    "name": "WFP fence inactive: UAC tail",
+    "desc": "Tail of the fence-inactive error noting one UAC prompt and stderr."
+  },
+  "997d832626231bb3c1121bc3956eade3aafb1b86": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-wfp-loopback-mismatch-lead",
+    "name": "WFP loopback mismatch lead",
+    "desc": "Lead saying the WFP fence does not match network.allowLocalBinding."
+  },
+  "35e1b76a0ae8c0d88851eea664fb32b45830bc38": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-wfp-loopback-mismatch-default-hint",
+    "name": "WFP loopback mismatch default hint",
+    "desc": "Default reason: the installed filter set has a different loopback mode."
+  },
+  "634798395fdf0ea66db435bffd105a05434dfa49": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-wfp-loopback-mismatch-package-command",
+    "name": "WFP loopback mismatch package command",
+    "desc": "Joins the mismatch error to the package command that fixes it."
+  },
+  "b7cd9b6f731523e8a1273de54b1c10efa819c132": { "facing": "internal" },
+  "6328fc88ef53992caddee722515b04c6133ca31e": {
+    "facing": "model",
+    "id": "data-sandbox-profile-grant-skip-reason-run-install",
+    "name": "Profile grant skip reason: how to grant",
+    "desc": "Remedy clause: run the install or grantWindowsProfileRead as the user whose sessions read the profile."
+  },
+  "89b9ca75df13bdb5a7b4923fdfca14342c568496": {
+    "facing": "model",
+    "id": "data-sandbox-profile-grant-skip-reason-service-account",
+    "name": "Profile grant skip reason: service account",
+    "desc": "The install ran as a service account that runs no sessions."
+  },
+  "2302acd504ea020397bfc9bd70107fc7d01d3522": {
+    "facing": "model",
+    "id": "data-sandbox-profile-grant-skip-reason-session-owner-unknown",
+    "name": "Profile grant skip reason: session owner unknown",
+    "desc": "The owner of the install session is unknown, so whose profile it is is unknown."
+  },
+  "47f5413cf1d03dc675d6d3f065d1eed36117b2cb": {
+    "facing": "model",
+    "id": "data-sandbox-profile-grant-skip-reason-session-owner-mismatch",
+    "name": "Profile grant skip reason: session owner mismatch",
+    "desc": "The install ran as a different account than the session owner, so granting would open the wrong profile."
+  },
+  "2f6b1c8744f9657093726c697d1a7d053fc0fad2": { "facing": "ui" },
+  "3407d9e80ef4407d03dd61eee9d65e32db31ad88": {
+    "facing": "model",
+    "id": "data-sandbox-install-profile-grant-failed-detail",
+    "name": "Install: profile grant failed detail",
+    "desc": "The sandbox is installed but the profile read grant failed; run the install again or forget it."
+  },
+  "7255556ddc5a79f5d70d67d4e5254dee05a5eee9": { "facing": "internal" },
+  "d08a499592c02b0b14bff197a78cdd478ed20d1b": { "facing": "internal" },
+  "2c5d3fbeeeab6d4053de3219b9a25818217fc74b": { "facing": "internal" },
+  "baa118ecdc8de8c050a82636a210b63dac946a5e": { "facing": "internal" },
+  "3a6d28bdedfc71e070d305ca4c52d25bedc82ca1": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-srt-win-acl-stamp-exited-lead",
+    "name": "srt-win acl grant exited lead",
+    "desc": "Lead of the acl_grant_failed error with the exit status, joined to partial/failed tail."
+  },
+  "9a73516a0f7df8fb9440484207dc078dbbf124f0": {
+    "facing": "model",
+    "id": "data-sandbox-profile-grant-timeout-mid",
+    "name": "Profile grant timeout: recorded incomplete",
+    "desc": "Middle of the profile-grant timeout error: grant is recorded as incomplete; run again or remove."
+  },
+  "a067a6de53a11499f61acb2e114639c2ef8e5abb": {
+    "facing": "model",
+    "id": "data-sandbox-profile-grant-timeout-lead",
+    "name": "Profile grant timeout lead",
+    "desc": "Lead of the profile-grant timeout error with the timeout in ms."
+  },
+  "c7d9788c2d29889cf8783ea92765672dc46bdd92": {
+    "facing": "model",
+    "id": "data-sandbox-profile-grant-timeout-tail",
+    "name": "Profile grant timeout tail",
+    "desc": "Tail naming forgetWindowsProfileRead() to remove the incomplete grant."
+  },
+  "076d7aa1216b6907da0f00137ad49e0e7172cabe": {
+    "facing": "model",
+    "id": "data-sandbox-profile-grant-spawn-failed",
+    "name": "Profile grant spawn failed",
+    "desc": "srt-win profile grant could not be spawned."
+  },
+  "9dd94ce48abd1469b52d70b2cc571a3d157bf84f": {
+    "facing": "model",
+    "id": "data-sandbox-profile-grant-exited",
+    "name": "Profile grant exited nonzero",
+    "desc": "srt-win profile grant exited with a status and its output."
+  },
+  "35030bac479ad04683d3508de78715dfe5e09ee3": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-path-unresolved-reason",
+    "name": "Sandbox: path could not be resolved",
+    "desc": "Reason that a granted path could not be resolved, with the error code."
+  },
+  "3b27efd2e5636ab789367c8729beb7d8f34c9f2c": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-windows-argv-too-long",
+    "name": "Windows sandbox argv too long",
+    "desc": "The sandbox command line exceeds the CreateProcessW limit; lists what it carries."
+  },
+  "4a34d27a0c9fe0a57e0e6bcad0200f25f4c10eaf": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-windows-setup-newer-release",
+    "name": "Windows sandbox set up by newer release",
+    "desc": "The sandbox was set up by a newer release; use it or reinstall with --force."
+  },
+  "7c713292bb1fc7c76adb7750b85f59f71fa0e1f3": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-windows-setup-different-release",
+    "name": "Windows sandbox set up by different release",
+    "desc": "The sandbox was set up by a different release; re-run the install to upgrade."
+  },
+  "d937972f35450af2c4608a4ddc80d556f4c528d8": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-windows-install-no-logout-needed",
+    "name": "Windows sandbox install: no logout needed",
+    "desc": "Notes no logout is needed because the WFP filter keys on the sandbox user's SID."
+  },
+  "c08aa1d6e98d1a693491f1fdcf5591f093904f58": { "facing": "internal" },
+  "4c70c15727b768bb5a07a159b959b38449807485": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-wfp-loopback-mode-unrecorded",
+    "name": "WFP filters loopback mode not recorded",
+    "desc": "WFP filters cannot be used: loopback mode differs from what the install recorded."
+  },
+  "caabc791609c44e36737a80dfae787ea819c0671": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-wfp-allow-local-binding-mismatch",
+    "name": "WFP filters do not match allowLocalBinding",
+    "desc": "Installed loopback mode differs from configured network.allowLocalBinding; re-run the install."
+  },
+  "abe1e5f5006d92b28237a977067b3c8b20b52858": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-srt-win-outdated-profile-grant-capability",
+    "name": "srt-win outdated: profile grant capability clause",
+    "desc": "Clause naming what the missing srt-win capability is for (profile read grant)."
+  },
+  "cd4a8394cf3dce5408ad6556cb5da24e30080267": { "facing": "internal" },
+  "63b7b2ee6f5a165af53cf3e219cfa988969f27a5": { "facing": "internal" },
+  "50fd2e8b0d64f472300160539da5c04b8b7b8edb": { "facing": "internal" },
+  "98a6757e44223b50c77ce36d25d909ae288d47cf": { "facing": "internal" },
+  "1dc6b62d4ed1ffd5b8e8fff3f34774fbac849957": { "facing": "internal" },
+  "55eb92fd8051e92df3f8c14cfac9641c3ede49da": { "facing": "internal" },
+  "2521d2dcf4c829fabf39bec8e043862d0dbe797f": { "facing": "internal" },
+  "6f35a037cc066845dc2707e2bd56c335dec874f2": { "facing": "internal" },
+  "af1b1ba3d78867fd110094bd3a76ba5dd4047f96": { "facing": "internal" },
+  "a1d607234304b6dbb90948f7697d5c4ab086d9d8": { "facing": "internal" },
+  "1667f352d803dc2cbea22b791df39b4861d9e33a": { "facing": "internal" },
+  "5fba3b74e9c4a1db2b7f1ef6727590e5544517bf": { "facing": "internal" },
+  "2853a9cb98a4a23737e1363370805b9b9be1c969": { "facing": "internal" },
+  "278584ebfa9593dfd0a94186cb540cc9d9473586": { "facing": "internal" },
+  "d39145d6797866f8de233624fb3e2ffbdc3fd978": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-profile-exclusion-read-grant-tail",
+    "name": "Profile exclusion read grant: tail",
+    "desc": "Tail: nothing was granted; remove the entry or name a narrower path."
+  },
+  "7c3d759b6bae6ec50b9746f0e4fdbec54fff206f": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-profile-grant-outdated",
+    "name": "Profile read grant outdated",
+    "desc": "The recorded profile read grant cannot be used; grant or forget it again."
+  },
+  "324ec4a87036de686f87842dc27a4fcbc7d5f0b5": { "facing": "internal" },
+  "6f0f3707ef0aea1002f5c9cec6572541c82b0b8e": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-profile-exclusion-read-grant-lead",
+    "name": "Profile exclusion read grant: lead",
+    "desc": "Lead: the session would grant a path that reaches an excluded profile path."
+  },
+  "55af45a7bd3beff467f7f95f337125973e0a138f": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-profile-exclusion-ungranted-clause",
+    "name": "Profile exclusion: not granted as whole clause",
+    "desc": "Clause: the path is or contains an exclusion that is not granted as a whole."
+  },
+  "f04462066288b54405686e9227f17aa0184d3102": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-profile-exclusion-may-contain-clause",
+    "name": "Profile exclusion: may contain excluded clause",
+    "desc": "Clause: the path may contain the excluded one and is granted only once examined."
+  },
+  "6f569f69838158c1a37f2ae9df9f2621c3ee0757": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-profile-exclusion-write-grant-kept-clause",
+    "name": "Profile exclusion: write grant kept clause",
+    "desc": "Clause: a kept inherited write grant would make the excluded path readable if recreated."
+  },
+  "e1a0ae8ca5ff94cf368565ef42fe2258934552d2": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-allow-local-binding-loopback-fixed",
+    "name": "allowLocalBinding fixed at initialize",
+    "desc": "allowLocalBinding differs from the verified loopback mode; on Windows it is fixed by install and initialize."
+  },
+  "2072a3119f7c5ecd4e7a105cb22f6a0d1a72d1b8": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-windows-profile-forget-remedy",
+    "name": "Windows sandbox: profile forget remedy",
+    "desc": "How to take back the profile grant by running profile forget with every session closed."
+  },
+  "1f76fe826a0653f1d32be4d504e5ba6297a20282": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-allow-local-binding-setup-mismatch",
+    "name": "allowLocalBinding differs from set-up",
+    "desc": "allowLocalBinding asks for local connections differently than the machine set-up; set up again."
+  },
+  "3cf2255809338a26977bea8d44a6af7b366bfbda": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-allow-local-binding-changed-restart",
+    "name": "allowLocalBinding changed since session start",
+    "desc": "allowLocalBinding changed but is fixed at set-up on Windows; run /sandbox install and restart."
+  },
+  "7919c23bb81866940885ee816a44106532659c46": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-setup-again-ask-admin",
+    "name": "Sandbox set up again: ask administrator",
+    "desc": "Remedy: ask an administrator to run the sandbox set-up again."
+  },
+  "6d139301eac531a1218945b21cc541038daab3a8": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-setup-again-run-install-terminal",
+    "name": "Sandbox set up again: run install in terminal",
+    "desc": "Remedy: run claude sandbox install in a terminal, then start again."
+  },
+  "41523dc4d995b79cb4fb9ec9db53221444874efc": { "facing": "ui" },
+  "2dd75e8c6819b84babee70b5136c5059e5623f46": { "facing": "ui" },
+  "d2a7dd61170ce3d7984236a02c790084f6e53eaf": { "facing": "ui" },
+  "1fd2ff1d572043a9c8e1c1a6a42bd358ea04c7ba": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-allow-local-binding-changed-after-start",
+    "name": "Sandbox off: allowLocalBinding changed after start",
+    "desc": "Sandbox is enabled but allowLocalBinding changed after start and the sandbox was set up again."
+  },
+  "74e4a18a6ef1c2dac67f724f80d400b771e58376": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-setup-again-required",
+    "name": "Sandbox has to be set up again",
+    "desc": "Sandbox is enabled but has to be set up again: why and how."
+  },
+  "d28d0cbb99c46f4e495d91bfe781c37e6076649f": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-required-lost-refused",
+    "name": "Required sandbox lost: command refused",
+    "desc": "Required sandbox stopped being available; the command and an unsandboxed retry are refused."
+  },
+  "302dd337f5fe21477de829f94b4e9ed1645d2ef9": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-windows-loopback-mode-changed",
+    "name": "Windows sandbox loopback mode changed",
+    "desc": "The command did not run because the sandbox was set up again with the other local-connections setting; tell the user to restart."
+  },
+  "9f6344ef2b2400af5e02015345106854373a2c18": { "facing": "internal" },
+  "958a74b04c72d55fc07400b53dbe7ed505109169": { "facing": "internal" },
+  "8329531ec85b2e4d95142702ebee021c1fd5edb2": { "facing": "internal" },
+  "922d623aa3c910a44f45c8b3264ec14a06ad0512": { "facing": "internal" },
+  "547dd9ff30f224edd7a27cac1bfd1863519ee332": { "facing": "internal" },
+  "b58cb97df3a04950b3cd7f3dcd657859c64ecff1": { "facing": "internal" },
+  "969f7336d4b4bba84b13366da2b2a8e2c29c0a49": { "facing": "internal" },
+  "221aefc6f6c5634c3163d8647eb2bc8d0750df43": { "facing": "internal" },
+  "0a77a4482cb31b215ba9b15a5a10f5f0868978d6": { "facing": "ui" },
+  "738ab5e756261064f7a9bcec40bd77c718a24283": { "facing": "internal" },
+  "b176c5fa0b1caa8e4149136ced64d911f7fa8cc0": { "facing": "internal" },
+  "7e08c9e459a5c3b89b0595a37f217f06eed87824": { "facing": "internal" },
+  "c6724e437376c4e6362193ab9bfa27a385d04955": { "facing": "internal" },
+  "dc2b52db3025b2e94c857c08499f38764746a691": {
+    "facing": "model",
+    "id": "tool-description-mcp-file-reference-upload",
+    "name": "MCP upload tool: file references note",
+    "desc": "Tells the model to upload a readable file by setting base64Content to a sha256 file reference instead of typing base64."
+  },
+  "30c9d54ef28f4a7d99ef807d9738d693c3a201f6": {
+    "facing": "model",
+    "id": "system-reminder-proactivity-level-high",
+    "name": "Proactivity level: high",
+    "desc": "High-initiative instructions: do not ask about reversible steps, commit and push, do the next obvious work, own delayed outcomes."
+  },
+  "417b958a709f112a914b791c496c08c0e652dacd": { "facing": "ui" },
+  "01700afee1c67187f50863b27bc6d328acf1d824": {
+    "facing": "model",
+    "id": "system-prompt-guide-agent-no-answer-report-issue",
+    "name": "Guide agent: report issue when no answer",
+    "desc": "When no answer exists, direct the user to report the issue (non-first-party builds)."
+  },
+  "a397d3f1abfeb6fe121e21fbdf395c363d299ae5": { "facing": "internal" },
+  "3bf957c982dc5b499b7384d681486f29cd260286": { "facing": "internal" },
+  "5bb1f44ec9e0803fbe25baa514ca054d4b2fb2c0": { "facing": "internal" },
+  "fb99c6438117e82f924296b486c074cc510c6627": { "facing": "internal" },
+  "e9e2dd2a2ac6c3e97f96382fa073c2d01393e877": { "facing": "internal" },
+  "82386ae9d18c9dce0a4e8d669ad3609b2f35d45d": { "facing": "internal" },
+  "e3de31a9580e64c7c0b2483e8e4d1803dd4eec7e": { "facing": "internal" },
+  "f893dfecc8c4eaeecd990b9d669a370f2c7d8e04": { "facing": "internal" },
+  "6e3893d7b15acabe657b1776ee3df9f93ec9c4b0": {
+    "facing": "model",
+    "id": "system-prompt-permission-classifier-email-sender-turn",
+    "name": "Auto-mode classifier: email sender turn",
+    "desc": "Explains how a mailed user turn is framed and which text in it establishes user intent; outbound mails are outbound submissions."
+  },
+  "fe197fe0b0788aa0890a610fe3d7cf5e133d86ac": {
+    "facing": "model",
+    "id": "system-prompt-permission-classifier-email-group-reply-exception",
+    "name": "Auto-mode classifier: email group reply exception",
+    "desc": "The mail system's group reply covers recipients the sender put on the thread when the ask is to reply all."
+  },
+  "959d63e1e6d217e675911d86125c8195d13c92f7": {
+    "facing": "model",
+    "id": "system-prompt-permission-classifier-email-ask-covers-who-what",
+    "name": "Auto-mode classifier: ask covers who and what",
+    "desc": "A send clears only when the sender's ask covers both the recipients and the content."
+  },
+  "06fde29a0db4b06ac2af08990274ca89c2060b7e": {
+    "facing": "model",
+    "id": "system-prompt-permission-classifier-email-sender-reads-answered-mail",
+    "name": "Auto-mode classifier: sender reads only answered mail",
+    "desc": "Path B and Rule 6 reach a mail only through the one mail the sender is answering."
+  },
+  "40fa2b00eec5f27daf052baff6cfa9b085484732": {
+    "facing": "model",
+    "id": "system-prompt-permission-classifier-email-bare-yes-approves-nothing",
+    "name": "Auto-mode classifier: bare yes approves nothing",
+    "desc": "Path B and Rule 6 do not apply to mail; a bare yes in a mail approves nothing."
+  },
+  "3ceb0038a23cb8ae12e033ba8d2f5458a98f864e": {
+    "facing": "model",
+    "id": "system-prompt-permission-classifier-email-own-words-ask",
+    "name": "Auto-mode classifier: sender's own words must ask",
+    "desc": "A send clears only when the sender's own new words ask for it and name each address."
+  },
+  "ee9009869d6f9b9d6f50d2a029062db73d5364e0": {
+    "facing": "model",
+    "id": "system-prompt-permission-classifier-email-content-what",
+    "name": "Auto-mode classifier: email content must match",
+    "desc": "The content must be what the ask describes, or the answered mail's content with nothing added."
+  },
+  "d7293da5e463d658c5e183ea2fdb3a78d18d1c2b": {
+    "facing": "model",
+    "id": "system-prompt-permission-classifier-email-example-single-recipient",
+    "name": "Auto-mode classifier: single-recipient example",
+    "desc": "Example: 'send the summary to dana@' covers only that address and that summary."
+  },
+  "ab3ebc24e613dd9b552b301fbf9c7e1fb2baef20": {
+    "facing": "model",
+    "id": "system-prompt-permission-classifier-email-example-group-reply",
+    "name": "Auto-mode classifier: group-reply example",
+    "desc": "Example: 'reply to everyone with the summary' covers a group reply carrying that summary only."
+  },
+  "f29ebb2745675a53b7b21f93c8423d17a9bbe208": {
+    "facing": "model",
+    "id": "tool-result-bash-bun-options-not-set",
+    "name": "Bash: BUN_OPTIONS could not be set",
+    "desc": "Shell prefix that refuses to run the command when BUN_OPTIONS cannot be exported, explaining why on stderr."
+  },
+  "79d5cf04a243f92c5d30d7955b6390ff2a38472f": {
+    "facing": "model",
+    "id": "tool-result-bash-disk-full-output-file",
+    "name": "Bash: disk full, command not started",
+    "desc": "The command was not started because the disk is full and the output file could not be created."
+  },
+  "9e5ab66e448075775edb42395574b5620cad4609": {
+    "facing": "model",
+    "id": "system-prompt-windows-sandbox-profile-tool-retry-guidance",
+    "name": "Windows sandbox: profile tool guidance (retry)",
+    "desc": "How the profile is readable except credential stores, and how to handle tools under the profile failing in the sandbox, with retry."
+  },
+  "2bf64e72ff09cf1735598b768ac7602544205099": {
+    "facing": "model",
+    "id": "system-prompt-windows-sandbox-profile-tool-user-guidance",
+    "name": "Windows sandbox: profile tool guidance (user)",
+    "desc": "Same profile guidance for the no-retry arm: tell the user which folder to allow."
+  },
+  "28a1928c6d7c22985823c665c30992556913375f": {
+    "facing": "model",
+    "id": "system-prompt-windows-sandbox-localhost-allowed",
+    "name": "Windows sandbox: localhost allowed",
+    "desc": "With allowLocalBinding on, sandboxed commands can reach localhost on any port except one; off-machine traffic goes through the proxy."
+  },
+  "5b79c028c35967187c78278d405da28c59617675": {
+    "facing": "model",
+    "id": "system-prompt-windows-sandbox-localhost-blocked",
+    "name": "Windows sandbox: localhost blocked",
+    "desc": "Sandboxed commands cannot connect to localhost; symptoms and what not to retry."
+  },
+  "148299d64adae1f74c1e0b9006945f2020a92ab1": {
+    "facing": "model",
+    "id": "system-prompt-windows-sandbox-localhost-what-still-works",
+    "name": "Windows sandbox: localhost alternatives",
+    "desc": "What still works without localhost: servers reachable from outside, proxy-honouring clients with allowed host:port, and allowLocalBinding."
+  },
+  "8d9eb7091e92c2f020f70156a04c0dcb99d01611": {
+    "facing": "model",
+    "id": "system-prompt-windows-sandbox-install-terminal-remedy",
+    "name": "Windows sandbox: run install in terminal remedy",
+    "desc": "Remedy clause: the user can run claude sandbox install in a terminal."
+  },
+  "53803f7a53a68969f6b4608bd98f4a0fb1314f9c": {
+    "facing": "model",
+    "id": "system-prompt-windows-sandbox-localhost-server-reachable",
+    "name": "Windows sandbox: server reachable from outside",
+    "desc": "With localhost open, a server started in the sandbox is also reachable from outside."
+  },
+  "f3fcff6b4ef8e8f43718b63eeb7ea92b5d01c746": {
+    "facing": "model",
+    "id": "system-prompt-windows-sandbox-localhost-retry-outside",
+    "name": "Windows sandbox: localhost, retry outside",
+    "desc": "Full localhost-blocked guidance (retry arm): retry outside the sandbox and tell the user."
+  },
+  "219a1dc5c67a2e0f532eb3f26ca0f4609fc5d875": {
+    "facing": "model",
+    "id": "system-prompt-windows-sandbox-localhost-user-alternatives",
+    "name": "Windows sandbox: localhost, user alternatives",
+    "desc": "Full localhost-blocked guidance (no-retry arm): tell the user how they can leave the sandbox."
+  },
+  "991f28976ca3c1db6c1493afa0cf4d71f10fb8e3": {
+    "facing": "model",
+    "id": "system-prompt-windows-sandbox-allow-read-tool-folder-remedy",
+    "name": "Windows sandbox: allowRead tool folder remedy",
+    "desc": "Remedy: run set-up to make the profile readable, or add the tool's folder to sandbox.filesystem.allowRead."
+  },
+  "3d3c8ed3355cbd24f5086c0e1459a124a1e1a8af": {
+    "facing": "model",
+    "id": "tool-result-worktree-base-rev-parse-output-hidden",
+    "name": "Worktree base: git output hidden",
+    "desc": "git failed and its output is not shown."
+  },
+  "c0cf054016641ae426c0e151d20c48558b42ad73": {
+    "facing": "model",
+    "id": "tool-result-worktree-base-rev-parse-failed-git-said",
+    "name": "Worktree base: git failed, git said",
+    "desc": "git failed, quoting what git said."
+  },
+  "4a33500a0f50d75a968fe77c19c9532b34119a22": {
+    "facing": "model",
+    "id": "tool-result-worktree-base-origin-no-commit",
+    "name": "Worktree base: origin ref missing after fetch",
+    "desc": "The fetch from origin succeeded but git found no such ref afterwards."
+  },
+  "047cdc95d26ab267f9264c8da2711dbb7ae67ff5": { "facing": "internal" },
+  "95035f94642ee800b9c61d0ed1aa486908d0c587": { "facing": "internal" },
+  "8645f8fa2fcbd41601c9391b23246a145709e21d": { "facing": "internal" },
+  "721babd4acd40e8247c4e720a80b764e657d421d": {
+    "facing": "model",
+    "id": "slash-command-plugin-directory-read-failed-recently",
+    "name": "Plugin directory: read failed recently",
+    "desc": "The Directory could not be read a short while ago and unattended work waits before asking again."
+  },
+  "a752f3b3b7fc6a42612a916f531787dfe47b3c68": {
+    "facing": "model",
+    "id": "slash-command-plugin-directory-asked-to-wait",
+    "name": "Plugin directory: asked to wait",
+    "desc": "The Directory asked Claude Code to wait and can be asked again at a time."
+  },
+  "bcb7f9076f3e2a74b0b33b9d788397335e6a1a5f": { "facing": "internal" },
+  "0d4df7fcb49fd8b13406876115971fdfced793f0": {
+    "facing": "model",
+    "id": "slash-command-plugin-manifest-not-read",
+    "name": "Plugin: manifest not read",
+    "desc": "A plugin's manifest was not read because it is not confirmed inside the plugin."
+  },
+  "e2bdeba45dba2aa1983459f824e171d6295f56d2": {
+    "facing": "model",
+    "id": "system-reminder-mcp-servers-reserved-address",
+    "name": "MCP servers refused: reserved address",
+    "desc": "Configured MCP servers refused by Claude Code because it reserves their address; tools unavailable, retry won't help."
+  },
+  "63ef158ec585025e72899dab49d0d1ade71c2f97": { "facing": "internal" },
+  "433c95f55c992df9c05bdd327b351e0e52c45bbe": { "facing": "internal" },
+  "1649fbe204de7dc9260fb76be6d7403da70a3f5a": { "facing": "internal" },
+  "f92521b399a4a3dad3883ee7b705bacf5dcf6fe9": { "facing": "internal" },
+  "fa8f823753266ad401646e8111e8a66f235262d3": { "facing": "ui" },
+  "3a8b506d65a2f6c7133844aa591a0a37ecdb5de8": { "facing": "ui" },
+  "a3943409ddea3eae563927a8476d98f9f8c570cc": { "facing": "ui" },
+  "b17b9a002775c18543f9dc1a4781b0a55f56665e": { "facing": "ui" },
+  "774b659eed7657f6dc644c77cb68fe551a3d197d": { "facing": "ui" },
+  "9cb74973200e396c7be0b5fd06307fd4fd0b7eaf": { "facing": "ui" },
+  "63af3f8fd1231b2f3f5892e9ddcab76d7d4a27ac": { "facing": "ui" },
+  "1d2d671e6851fa455d5c5a0f3a7ee01246def794": { "facing": "internal" },
+  "7d96187a0eeb2a0c8265224e4409d550f9873120": { "facing": "internal" },
+  "a800ddbe9c3aec97eef3295f97a13eb43db4ba59": { "facing": "internal" },
+  "a9f2fd000d7a4425d33cfb8006488969e8abb857": { "facing": "internal" },
+  "898f6999b1bfb1244e25330509fdac9259d1129a": { "facing": "internal" },
+  "e7ee1182c59d8f968e7bb7a3224ace0212a53a69": {
+    "facing": "model",
+    "id": "tool-result-exitplanmode-teammate-task-not-found",
+    "name": "ExitPlanMode: teammate task not found",
+    "desc": "The teammate's task could not be found, so plan mode was not exited; ask the lead to approve."
+  },
+  "20a5fa258eed2c4ac5e1cb80a71678b54b0f733d": {
+    "facing": "model",
+    "id": "tool-result-subagent-fallback-model-switched",
+    "name": "Subagent switched to fallback model",
+    "desc": "Warns that the agent switched to a fallback model because its earlier model could not be used."
+  },
+  "cbf76720c68a04b3d420574f0b29262cd70ade6a": {
+    "facing": "model",
+    "id": "system-prompt-extract-memories-first-look-exchanges",
+    "name": "Extract memories first look: exchanges message",
+    "desc": "User message wrapping recent exchanges for the first-look write-likely check."
+  },
+  "fec23199827ec4b02344eaf0518ca912d2190741": {
+    "facing": "model",
+    "id": "system-prompt-extract-memories-first-look-json-answer",
+    "name": "Extract memories first look: JSON answer instruction",
+    "desc": "Instructs the side model to answer only {\"write_likely\": true|false}."
+  },
+  "3b9038d847a6750fccfbdd664de37ed52b93d207": { "facing": "internal" },
+  "34f7427a568e71ff6c0c85917416b4264d356987": { "facing": "internal" },
+  "fb097f3ec348fd785b8e435d3d2b3afd9e208c02": { "facing": "internal" },
+  "9e0ab940b77f65b3aa55c6ac1a402a4c91511d4e": { "facing": "internal" },
+  "788e2be91f6eed911ee4dd5fe113eec23c9e750d": { "facing": "internal" },
+  "43831ae918e5096dc8a016a53fc2343cd24b3904": { "facing": "internal" },
+  "528f76a62eee1f521cfe1d78f208213bf05b7ae8": { "facing": "internal" },
+  "563514ab5c3bf51beb477f54cb1ae151ae579a7e": { "facing": "internal" },
+  "2aadb9774fd079ebd68983f2a220f21c7a40743f": { "facing": "internal" },
+  "0ef323d88ce5ba6269d06bb8049b5f16e7ec81db": {
+    "facing": "model",
+    "id": "data-usage-fix-prompt-lead",
+    "name": "Usage fix prompt lead",
+    "desc": "Lead of the combined /usage fix prompt: fix what was flagged, show each change first, backtick text is data."
+  },
+  "8b7dc402a9d663e21b0509220dcc38199d88ee67": {
+    "facing": "model",
+    "id": "data-usage-fix-prompt-subagents-cheaper-model",
+    "name": "Usage fix: cheaper subagent model",
+    "desc": "Prompt asking to give search/lookup agents a cheaper model."
+  },
+  "4671b093c1a594f903fa7654b001fcee73af7df5": {
+    "facing": "model",
+    "id": "data-usage-fix-prompt-unused-skills",
+    "name": "Usage fix: turn off unused skills",
+    "desc": "Prompt asking to turn off skills unused in the last month."
+  },
+  "8d5598c09e0b859a77549b5204177e513e117287": {
+    "facing": "model",
+    "id": "data-usage-fix-prompt-unused-mcp-servers",
+    "name": "Usage fix: turn off unused MCP servers",
+    "desc": "Prompt asking to turn off MCP servers unused in the last month."
+  },
+  "b46ee4791a89fc46ca6df2d5b385a41c203f72c2": {
+    "facing": "model",
+    "id": "data-usage-fix-prompt-unused-agents",
+    "name": "Usage fix: remove unused agents",
+    "desc": "Prompt asking to offer to remove agent definitions unused in the last month."
+  },
+  "8f33eee31924a964d7710606122b89a178aedc4b": {
+    "facing": "model",
+    "id": "data-usage-fix-prompt-trim-claude-md-files",
+    "name": "Usage fix: shorten CLAUDE.md files",
+    "desc": "Prompt asking to shorten the CLAUDE.md files that load in a project."
+  },
+  "77c0f646b02e96d96aafa6e7e62cb9da40c3ae89": {
+    "facing": "model",
+    "id": "data-usage-fix-prompt-shorten-claude-md",
+    "name": "Usage fix: shorten one CLAUDE.md",
+    "desc": "Prompt asking to shorten the largest CLAUDE.md and move the rest out."
+  },
+  "892814376c548d6d1909e741aa69b84836ba4153": {
+    "facing": "model",
+    "id": "data-usage-fix-prompt-read-file-in-parts-rule",
+    "name": "Usage fix: read file in parts rule",
+    "desc": "Prompt asking to add a rule never to read a large file whole."
+  },
+  "e73f116adb619cc30859d0a7b243bb72863ef842": {
+    "facing": "model",
+    "id": "data-usage-fix-prompt-bash-output-to-file-rule",
+    "name": "Usage fix: bash output to file rule",
+    "desc": "Prompt asking to add a rule to send a noisy command's output to a file."
+  },
+  "088637fac09da9fffa3cc9afd401f53df98547b2": {
+    "facing": "model",
+    "id": "data-usage-fix-prompt-mcp-smaller-results-rule",
+    "name": "Usage fix: smaller MCP results rule",
+    "desc": "Prompt asking to add a rule to request fewer rows from an MCP tool."
+  },
+  "a9b45cfdb84179100e23dd05ebc0a807fd2b4a0d": {
+    "facing": "model",
+    "id": "data-usage-fix-prompt-agent-cheaper-model",
+    "name": "Usage fix: cheaper model for named agent",
+    "desc": "Prompt asking to give a heavy agent's subagents a cheaper model."
+  },
+  "8735ed5c2b98a924e58c57a17e55e71c2c9a9542": {
+    "facing": "model",
+    "id": "data-usage-fix-prompt-skill-cheaper",
+    "name": "Usage fix: cheaper skill",
+    "desc": "Prompt asking to make a heavy skill's SKILL.md cheaper."
+  },
+  "659cb799babe973d25b46ac22e91141231de4904": {
+    "facing": "model",
+    "id": "data-usage-fix-prompt-plugin-review",
+    "name": "Usage fix: review plugin",
+    "desc": "Prompt asking to list a heavy plugin's loads and turn it off where unused."
+  },
+  "05938e2b1db115e0a65fa5b805d7f85377f4d523": {
+    "facing": "model",
+    "id": "data-usage-fix-prompt-mcp-server-review",
+    "name": "Usage fix: review MCP server",
+    "desc": "Prompt asking which projects still need a heavy MCP server."
+  },
+  "1ed1500c6ca0050bf7d3c3fef0b8c1eee7fb33b5": {
+    "facing": "model",
+    "id": "skill-doctor-check-usage-flagged",
+    "name": "Doctor check 10: what /usage flagged",
+    "desc": "Doctor step reporting /usage rows as data, applying fix rows as reviewed edits and leaving advice to the user."
+  },
+  "81f97d928c874d3dbf27723b34c6dcf6ace14eed": { "facing": "ui" },
+  "a9dfe985337fa05acd59265177baacc8990021f9": { "facing": "ui" },
+  "1483e5348d1145fa5789579120689d9a1ba974fd": { "facing": "internal" },
+  "090864c93e5e12e60dd10c79ff14868dadbc4224": {
+    "facing": "model",
+    "id": "slash-command-restart-refused-version-on-hold",
+    "name": "/restart refused: version on hold",
+    "desc": "Can't restart on the installed version because it is on hold; the session stays on the current version."
+  },
+  "9e037942dece3e9662148eb6eab24b2e54ac8aa0": { "facing": "ui" },
+  "999fef32fe5e5012663f8acd209ceb55efa8d226": { "facing": "ui" },
+  "948f0e17073edefe6c1c06e637ac12292638af56": { "facing": "internal" },
+  "1b59a83a48876c76cc6648969e4071b5b0e7ae02": { "facing": "internal" },
+  "d58cac81d4b7f2c73c422bc90048bbb0170aa548": {
+    "facing": "model",
+    "id": "slash-command-plugin-directory-no-fresh-list-internal-error",
+    "name": "Plugin directory: no fresh list asked",
+    "desc": "Internal-error reason that no fresh list was asked for though the purpose needs one."
+  },
+  "a90dd6b9bb48c415ce1f395afc205cd46e5701fd": {
+    "facing": "model",
+    "id": "slash-command-plugin-directory-only-saved-list-answered",
+    "name": "Plugin directory: only saved list answered",
+    "desc": "Reason that only the locally saved list answered, not the Directory."
+  },
+  "5446b477fe2f86b1957c658bf89cf6ba082da918": { "facing": "internal" },
+  "0edb3363ec54d2c7cbd82434fd64747983e3b015": { "facing": "internal" },
+  "6fad3469f7f7d6abd5fc114fda112c99d079259a": { "facing": "internal" },
+  "506ef84c9173152537dc859daaf4fade92370646": { "facing": "internal" },
+  "200a3ee39c598404a5e0362d0b33661d54ca4795": {
+    "facing": "model",
+    "id": "tool-result-mcp-file-reference-sha256-command-windows",
+    "name": "File reference: SHA-256 command (Windows)",
+    "desc": "Windows command to compute a file's SHA-256 for a file reference."
+  },
+  "2c1e823bcc58f019c969d3f63ed129816dd4fce5": {
+    "facing": "model",
+    "id": "tool-result-mcp-file-reference-changed-after-check",
+    "name": "File reference: changed after check",
+    "desc": "The file changed after it was checked; recompute the SHA-256 and retry."
+  },
+  "7ac5874a489cea8551bd5c8f50d6ad5df54846cd": {
+    "facing": "model",
+    "id": "tool-result-mcp-file-reference-read-failed",
+    "name": "File reference: read failed",
+    "desc": "The file couldn't be read; retry once, then tell the user."
+  },
+  "bd4e4765744fe32b9566b874045195735cf260cd": {
+    "facing": "model",
+    "id": "tool-result-mcp-file-reference-checksum-mismatch",
+    "name": "File reference: checksum mismatch",
+    "desc": "The file doesn't match the SHA-256 in the reference; recompute, never guess."
+  },
+  "b73578d7617e5636b8c9282330d9976c67de5b7d": {
+    "facing": "model",
+    "id": "tool-result-mcp-file-reference-malformed",
+    "name": "File reference: malformed",
+    "desc": "The file reference is invalid; the required format and path rules."
+  },
+  "677b2024ffcc0f845b25afd74eb5a0221d1d2485": {
+    "facing": "model",
+    "id": "tool-result-mcp-file-reference-fields-missing",
+    "name": "File reference: argument problem",
+    "desc": "The call has an argument problem; fix it and call again."
+  },
+  "9373819a79435ead3991595c758103cb23a331db": {
+    "facing": "model",
+    "id": "tool-result-mcp-file-reference-duplicate-spelling",
+    "name": "File reference: argument under two spellings",
+    "desc": "One argument is given under two spellings; keep only one."
+  },
+  "4a69f86c1d6eee21cd7723efafaf3d85accf2653": {
+    "facing": "model",
+    "id": "tool-result-mcp-file-reference-not-available",
+    "name": "File reference: not available here",
+    "desc": "File references can't be used here; put base64 content instead."
+  },
+  "085620c5226af325f45e8cecf49886b02d6a26c0": {
+    "facing": "model",
+    "id": "tool-result-mcp-file-reference-wrong-field",
+    "name": "File reference: wrong field",
+    "desc": "The reference is in the wrong field; move it to the right argument."
+  },
+  "f5c87261c36e6b3c6aad572d3845a33966d17669": {
+    "facing": "model",
+    "id": "tool-result-mcp-file-reference-cannot-upload",
+    "name": "File reference: cannot upload",
+    "desc": "The path doesn't exist or can't be sent by reference; base64 still works."
+  },
+  "abe0a954cc2e94bfa3b3d2b4618db3315e74df41": {
+    "facing": "model",
+    "id": "tool-result-mcp-file-reference-empty-file",
+    "name": "File reference: empty file",
+    "desc": "The file is empty; save and retry, or tell the user."
+  },
+  "155ba6eeaac96559c409e8fcff88acd6173488f8": {
+    "facing": "model",
+    "id": "tool-result-mcp-file-reference-too-large",
+    "name": "File reference: file too large",
+    "desc": "The file exceeds the upload limit; don't try another way, tell the user."
+  },
+  "9c4f559484456de29f528b3200fa3a48c00f8462": { "facing": "ui" },
+  "2957683860745f2dd25598c6908d30ce0afba5b1": {
+    "facing": "model",
+    "id": "system-reminder-remote-bash-not-run-different-folder",
+    "name": "Remote '!' command not run: different folder",
+    "desc": "The '!' command was sent for a different folder than the session's; ask Claude to run it."
+  },
+  "4c734dca9abaa07a90a52692f2cc2f3485e4ae2c": {
+    "facing": "model",
+    "id": "system-reminder-tool-hosts-unknown-sync-description",
+    "name": "Tool hosts: personal machine description",
+    "desc": "Describes that the user's downloads and toolchains are on that machine, which decides what may run."
+  },
+  "ad7b5e31d1a21657f669ffbd9bc5ceeba2180412": { "facing": "internal" },
+  "330a8359d5f8c0280a540e3500269b7dd9526e9f": { "facing": "internal" },
+  "de9207610b64306fb4b276b2cd3f9a9f21f2b3ef": {
+    "facing": "model",
+    "id": "system-reminder-remote-bash-not-run-control-characters",
+    "name": "Remote '!' not run: control characters",
+    "desc": "The command has hidden control characters; type it instead of pasting."
+  },
+  "9f85ff4364c8b81d7175b6d74fc5f357df38f60a": {
+    "facing": "model",
+    "id": "system-reminder-remote-bash-not-run-too-long",
+    "name": "Remote '!' not run: too long",
+    "desc": "The command is longer than the limit; ask Claude to run it."
+  },
+  "0652a110b2ec42c2c0026dc307cdaf1709e5efca": {
+    "facing": "model",
+    "id": "system-reminder-remote-bash-not-run-remote-control",
+    "name": "Remote '!' not run: Remote Control session",
+    "desc": "'!' commands aren't available in Remote Control sessions."
+  },
+  "016bebf4e7bebad08589716bae0194db505cb7b2": {
+    "facing": "model",
+    "id": "system-reminder-remote-bash-not-run-app-outdated",
+    "name": "Remote '!' not run: app missing information",
+    "desc": "The sending app lacks information to run '!' commands safely; update it."
+  },
+  "6eff531839423105419e4a11ceb30dda2ccafb88": {
+    "facing": "model",
+    "id": "system-reminder-remote-bash-not-run-machine-restarted",
+    "name": "Remote '!' not run: machine restarted",
+    "desc": "The machine restarted before it could run the command."
+  },
+  "ec7be843eb7c3f6ab06278f4c18212b0d0646287": {
+    "facing": "model",
+    "id": "system-reminder-remote-bash-not-run-late",
+    "name": "Remote '!' not run: arrived late",
+    "desc": "The command arrived more than 90 seconds after it was sent."
+  },
+  "5791de86326c6aab4f83b40ec41ebc3baa68b8f3": {
+    "facing": "model",
+    "id": "system-reminder-remote-bash-not-run-clock-unknown",
+    "name": "Remote '!' not run: clock unknown",
+    "desc": "The machine doesn't know the service clock yet to judge the command's age."
+  },
+  "f208093189143b6110046402e408c028cd044d3c": {
+    "facing": "model",
+    "id": "system-reminder-remote-bash-not-run-sent-before-start",
+    "name": "Remote '!' not run: sent before start",
+    "desc": "The machine started after the command was sent."
+  },
+  "4adbcae77cb3602f92bdd031ec23d2b716c501a9": {
+    "facing": "model",
+    "id": "system-reminder-remote-bash-not-run-session-kind",
+    "name": "Remote '!' not run: session kind",
+    "desc": "'!' commands aren't available for this kind of session."
+  },
+  "9b0b30191cc12d98f2d82a65108d70db3937fdc4": {
+    "facing": "model",
+    "id": "system-reminder-remote-bash-not-run-background-session",
+    "name": "Remote '!' not run: background session",
+    "desc": "'!' commands don't run in a background session."
+  },
+  "b6765aa17e892eaf4f27dbdf169e40af600321c2": {
+    "facing": "model",
+    "id": "system-reminder-remote-bash-not-run-join-time-unknown",
+    "name": "Remote '!' not run: start time unknown",
+    "desc": "The machine can't tell whether it started before the command was sent."
+  },
+  "7b2752171ff02dc3ec9decd545434cefe92a4b39": {
+    "facing": "model",
+    "id": "system-reminder-remote-bash-not-run-another-running",
+    "name": "Remote '!' not run: another running",
+    "desc": "Another '!' command is still running."
+  },
+  "7357b5c3f80ee71169739fd41b4c084386b5f042": {
+    "facing": "model",
+    "id": "system-reminder-remote-bash-not-run-shutting-down",
+    "name": "Remote '!' not run: shutting down",
+    "desc": "The session is shutting down."
+  },
+  "4ab10b6b11621807175dcebda73707e1a543cb59": {
+    "facing": "model",
+    "id": "system-reminder-remote-bash-not-run-ack-unconfirmed",
+    "name": "Remote '!' not run: receipt unconfirmed",
+    "desc": "The server didn't confirm it received the command."
+  },
+  "15a490734d0b6e75ff4634336ddfd2c81db629e9": {
+    "facing": "model",
+    "id": "system-reminder-remote-bash-not-run-session-ended",
+    "name": "Remote '!' not run: session ended",
+    "desc": "The session ended before the command started."
+  },
+  "4e1a74762a20b00d025b48c2e04a1c2f641af59f": {
+    "facing": "model",
+    "id": "system-reminder-remote-bash-not-run-stopped",
+    "name": "Remote '!' not run: stopped",
+    "desc": "The command was stopped before it started."
+  },
+  "7953610c466e605776fa1bdcbc2be6857d75b4b8": { "facing": "internal" },
+  "2d344f87465e61315a4a88309e0592793097ec6c": { "facing": "internal" },
+  "74a20c69a7900519fa1f04634f8be071587e0293": { "facing": "internal" },
+  "136d6e3012b42a81535c65607e5fe118b5e9c183": { "facing": "internal" },
+  "ea7acff975b62d71f03f0feacfe7badb8def3398": { "facing": "internal" },
+  "fe00680fe63e847ea76e15c727988f4a38c5f0f1": { "facing": "internal" },
+  "67a15f0245ec3ea4d3a175ec7f6e40a46d790eb7": { "facing": "internal" },
+  "8fcd5c628ca1bd23b06ec7d75bb406a287dd0681": { "facing": "internal" },
+  "961444e07392ad8435e3f82dbb105c3a76d88fe6": { "facing": "internal" },
+  "592de0914aa4f091d2efea3fcd0bfe283d8cd950": { "facing": "internal" },
+  "a9fc47b0d25b8b950e79d13436e47d3c2f87f7de": { "facing": "ui" },
+  "47163efb3fb89c2f4543446269df83f3ca37b7a1": {
+    "facing": "model",
+    "id": "tool-result-device-tool-serve-refused-sandbox-weakened",
+    "name": "Device tool refused: sandbox weakened",
+    "desc": "Device tools are refused because a sandbox setting weakens isolation; tell the user, don't retry."
+  },
+  "41c285c8c891386e790dbf6dd54dc2d9a51e06f6": { "facing": "ui" },
+  "6fbc7bb20afaac2c180ba8c77cb65766acb5ee7a": { "facing": "ui" },
+  "b73275ec2bd67a1aa2d8a05e4b94253dc2594ed4": { "facing": "ui" },
+  "a75e2dcacba77cad86f4177ffc0ee6d150048dea": { "facing": "ui" },
+  "5adae02311174df8a991beb74720e48be8686909": { "facing": "internal" },
+  "6621690c726c099e834b2bf23f2eb0bf9724c9fe": { "facing": "ui" },
+  "9e2c9cb9457bd611372ebfac9b86e61608a48467": {
+    "facing": "model",
+    "id": "data-sandbox-install-config-conflict",
+    "name": "Sandbox install: config conflict",
+    "desc": "A filter set with a different configuration is installed; how to remove it and reinstall."
+  },
+  "bd47aa2e343245096e3b4c99c08f793f0ab1b031": {
+    "facing": "model",
+    "id": "data-sandbox-install-profile-operation-in-progress",
+    "name": "Sandbox install: profile step in progress",
+    "desc": "Installed, but another profile set-up step is running; wait and run install again."
+  },
+  "5ffd208fa19bf5e6e0ab0af08d898d61da366d8d": {
+    "facing": "model",
+    "id": "data-sandbox-install-profile-grant-blocked",
+    "name": "Sandbox install: profile grant blocked",
+    "desc": "Installed, but the profile grant waits until no sandboxed session runs."
+  },
+  "34510d93ce8d15630bd03c99d9da1d893830a0e8": {
+    "facing": "model",
+    "id": "data-sandbox-install-profile-grant-failed",
+    "name": "Sandbox install: profile grant failed",
+    "desc": "Installed, but the profile could not be made readable; run install again."
+  },
+  "d2df89b570e7318aa93dc6c48babf7c0cb944a9d": {
+    "facing": "model",
+    "id": "data-sandbox-install-credential-stores-unprotected",
+    "name": "Sandbox install: credential stores readable",
+    "desc": "Warning that some credential stores could not be closed and are readable."
+  },
+  "00c4eaabc8e5b7a3612647f0cb8c70fa50087077": { "facing": "ui" },
+  "0785f6bdd27e480f1976e38334cf35ec8ab57cb9": { "facing": "ui" },
+  "31eed549716b51e3108fbf6ea0685ed57ee0ee85": {
+    "facing": "model",
+    "id": "data-sandbox-install-check-status",
+    "name": "Sandbox install: check status",
+    "desc": "Install done; run /sandbox to check the status."
+  },
+  "3234e77eda93193d5adcfae81fefb3530ab57661": {
+    "facing": "model",
+    "id": "data-sandbox-install-choose-mode",
+    "name": "Sandbox install: choose a mode",
+    "desc": "Install done; run /sandbox to choose a mode and turn it on."
+  },
+  "c7a2ec0ff6feddf60aa3957aa420d6c765beb1f1": { "facing": "ui" },
+  "640de9b06d53e4c10ad951785e181a80578c5366": {
+    "facing": "model",
+    "id": "data-sandbox-install-shared-account-note",
+    "name": "Sandbox install: shared sandbox account",
+    "desc": "Note that the sandbox account is one per machine, so other users' sandboxed commands can read the profile too."
+  },
+  "ec2f32bef0209d4d854355b52fecf1c0504ea39c": {
+    "facing": "model",
+    "id": "data-sandbox-install-profile-readable-summary",
+    "name": "Sandbox install: profile readable summary",
+    "desc": "Summary of what the profile grant made readable and excluded."
+  },
+  "a32faa3cc817d83cf0b2e88af1c43aa4faa25b5f": {
+    "facing": "model",
+    "id": "data-sandbox-install-profile-not-readable",
+    "name": "Sandbox install: profile not readable",
+    "desc": "The profile was not made readable, with the reason and how to apply it."
+  },
+  "0caf563bc71889e162a2896cfe3151dcf52004e1": {
+    "facing": "model",
+    "id": "data-sandbox-install-notes-and-restart-suffix",
+    "name": "Sandbox install: notes and session suffix",
+    "desc": "Suffix joining notes and the session's kept local-connections state."
+  },
+  "556dd227dd37b1ff7dae0c68d0dc5ac1a3ae2d4e": {
+    "facing": "model",
+    "id": "data-sandbox-install-session-loopback-kept",
+    "name": "Sandbox install: session keeps loopback mode",
+    "desc": "This session keeps its local-connections mode until it ends, so its sandbox is off or refused."
+  },
+  "662a9acc9107bafe474db01e6c99e39ec36160c7": { "facing": "ui" },
+  "0283248fd06d32e166fe2866dbdc3c8a748982d8": { "facing": "ui" },
+  "4fba3d13aeff669c3c88472f61da2194df3777fd": { "facing": "ui" },
+  "d6abdfe938c246b00363bf1e0f1365593fa70c89": { "facing": "ui" },
+  "29e971168cfc30b40e433dd62ef56373daf3e0dc": { "facing": "ui" },
+  "c8a040759af0bef410e64c357e54796f74b3776b": { "facing": "ui" },
+  "f5bb6f069116f99b898db68d5c9338e3effafffd": { "facing": "ui" },
+  "a8a7a7faef5e47a6c790fea756b610e3dc700123": { "facing": "ui" },
+  "8fe52f623b0d0efa2a5763eca36235ef5096f9b6": {
+    "facing": "model",
+    "id": "tool-result-plugin-publish-refused-installs-for-members",
+    "name": "Plugin publish refused: installs for members",
+    "desc": "The plugin name may auto-install for members, so publish only from claude.ai."
+  },
+  "b7abf00d17db48413694eeaf85b2809b2185798d": {
+    "facing": "model",
+    "id": "tool-result-plugin-publish-refused-cloud-session-files-unreachable",
+    "name": "Plugin publish refused: cloud session files unreachable",
+    "desc": "Publishing from a cloud session isn't offered and the plugin's files there are unreachable from the user's computer; nothing was sent."
+  },
+  "9dce8ff23918a8d55371041e23140e44766fc60f": {
+    "facing": "model",
+    "id": "tool-result-plugin-publish-refused-already-pending",
+    "name": "Plugin publish refused: already pending",
+    "desc": "An earlier submission is awaiting review; withdraw it to send this version."
+  },
+  "b1d67456ad32e3488654c1a4307e8a207ee941dc": {
+    "facing": "model",
+    "id": "skill-mod-package-offer-chat",
+    "name": "Mod skill: package offer (chat)",
+    "desc": "SHARING IT paragraph for chat: offer once to package the mod as a plugin file after it works."
+  },
+  "36b5e2062ebb56a8e91e58f50c1a1d16bffd60b5": {
+    "facing": "model",
+    "id": "system-reminder-teammate-plan-mode-exited-by-person",
+    "name": "Teammate: moved out of plan mode",
+    "desc": "Tells a teammate the person moved it out of plan mode and to continue."
+  },
+  "1ca5fb2a9f13388fd31d6d3c0472d970e7aeb277": { "facing": "internal" },
+  "ca89fa20a601e97784d1458ba49ac87abd093656": { "facing": "internal" },
+  "b52f7a1ad93d30d0fb84384c177d1e17ef6e3a9e": { "facing": "ui" },
+  "cde5c0c16389a14ee4481854df8899bd91767983": { "facing": "internal" },
+  "d388f54960d394a12f847547e01e3be67ea3e549": { "facing": "internal" },
+  "e9c32401454740980fad65ed7f1d3845debbde3d": { "facing": "internal" },
+  "cf77d1c59691185f62be6c6c072e89e813e0282b": {
+    "facing": "model",
+    "id": "system-prompt-claude-test-helper-no-node",
+    "name": "Claude Test helper: no Node.js",
+    "desc": "The browser helper didn't start: no working Node.js; install it or set a default, then restart."
+  },
+  "3c278cdb1e91b881a6f9a57112e07f07f232ee08": { "facing": "ui" },
+  "f6dd1840d36d9ba03e0e391ffbc0bd4e48cf3db6": { "facing": "ui" },
+  "5892844ca234f9d64e2e700d0a5106b9bcfd1eca": {
+    "facing": "model",
+    "id": "skill-mod-package-any-plan",
+    "name": "Mod skill: share after saving (any plan)",
+    "desc": "How the person shares the saved mod plugin: Share on the card or send the file."
+  },
+  "e364f35969663f70a92e79550047804ee1ce247b": {
+    "facing": "model",
+    "id": "skill-mod-package-organization-plan",
+    "name": "Mod skill: share after saving (organization)",
+    "desc": "How an organization member shares the saved plugin: Share to teammates or Publish to org."
+  },
+  "54f65c097659e91a884dcbeb4f6ea711e7a3d9e9": {
+    "facing": "model",
+    "id": "skill-mod-package-personal-plan",
+    "name": "Mod skill: share after saving (personal)",
+    "desc": "How a personal-plan user shares the saved plugin by sending the file."
+  },
+  "16c89c5876c4ac5467c4df014f94e0b268a66169": { "facing": "ui" },
+  "79b482bfde72a3ba9bb16403fd3ff87f0e7fb1c9": {
+    "facing": "model",
+    "id": "skill-claude-code-help-recent-releases",
+    "name": "Claude Code help: recent releases",
+    "desc": "Lists recent release notes with the running version."
+  },
+  "d6bad7b776f02b6003fbdb13b84d0235f3ad5540": {
+    "facing": "model",
+    "id": "tool-result-managed-agents-secure-local-id-form-refused",
+    "name": "managed-agents-secure: local ID form refused",
+    "desc": "Command not run: a local Managed Agents ID is in a form or place not accepted; the accepted form and what to do."
+  },
+  "188791a99057e5fcbfec6a526107eb3b801483b1": {
+    "facing": "model",
+    "id": "tool-result-managed-agents-secure-ant-id-prefix-refused",
+    "name": "managed-agents-secure: ID prefix refused",
+    "desc": "Command not run: the ID prefix may not be used by ant; tell the developer."
+  },
+  "01aca450f76d93f0b07d22245d4aee68baa6d2a8": {
+    "facing": "model",
+    "id": "tool-result-managed-agents-secure-local-server-unsupported",
+    "name": "managed-agents-secure: local server unsupported",
+    "desc": "Command not run: managed-agents-secure does not support local Managed Agents servers."
+  },
+  "40bb0d12e7bc99f06479289c3ddfab728c7ba063": { "facing": "internal" },
+  "bb153a728754c03892fb5c50c78b0db575eda92f": { "facing": "internal" },
+  "2a7c5e6d799eac172aa9f9d3600abcf86dd29008": { "facing": "internal" },
+  "0ad1a509de25bb91451f9928cac0942ed7a8fae9": { "facing": "internal" },
+  "e633fdad7bbb68ecdf7fbbb094d765acb7ce2712": { "facing": "internal" },
+  "606c3644d7ea2d5f3316a43a07480490b51b87af": { "facing": "ui" },
+  "887a45251ea3f8d47d9ec55061f161e22a319e25": { "facing": "ui" },
+  "919206f158fabe03b21f5a9b06b5691737680034": { "facing": "ui" },
+  "ccfc12e9b25936cada61a7603b822ff7804199d1": { "facing": "ui" },
+  "f45e1531c5843dd6f1b70f695cdecf0768f122bc": { "facing": "internal" },
+  "82f4a55c83fdd226b00f58f1c5e1da83d725e874": { "facing": "ui" },
+  "242cf53bf1564c20743f714c2e2f1210b8cdb95a": { "facing": "ui" },
+  "100779db47d670062a621b9e6c9d9f2b78bbaa18": { "facing": "ui" },
+  "f2d566dfdc91052b214e90a48ec24fefebabfe2f": { "facing": "ui" },
+  "fcb863dd99f715aaa8da35196cb3eb2c11bf6b23": { "facing": "ui" },
+  "c93ec3325e4d9234fa9ea3a50bce3a314011f97d": { "facing": "ui" },
+  "af723a642c87a2a98b8eb0de33c2b31e51618b86": { "facing": "ui" },
+  "d072b2f440b0fe0d22207e2e88558df6e91c5b1f": { "facing": "ui" },
+  "a0e00e67b715be75f50ef6cab69647e488e07d1e": { "facing": "ui" },
+  "4b81fe03a378ccc75384308d0e7f8dbe3c1f4ea7": { "facing": "ui" },
+  "090bd7ec90aa27f22cf4e21cd796f7bb95b505dd": { "facing": "ui" },
+  "600ccc48721ed9d35b518f7385130580a5c13428": { "facing": "ui" },
+  "a0847bedd3c7cedcc046ba5b8c1cf79aa13a512c": { "facing": "ui" },
+  "92019df64c23472b85cbd2695276d4637f10e71e": { "facing": "ui" },
+  "d6721619b4937d6b4e842c616cc577d7f2113440": { "facing": "ui" },
+  "2643a19aadf1e5aaca8da903c7a2fd6af1e5a16b": { "facing": "ui" },
+  "d172a918b1b56a126ea4ea5a93a15d5b3add7d85": { "facing": "ui" },
+  "5a9a996071ca8a64040b739dcff777d1c42dbed3": { "facing": "ui" },
+  "5c7c4ce12f026fcf536f50cfc8f2f640930ab121": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-files-capped-note",
+    "name": "Plugin validate: MCP/hooks files capped",
+    "desc": "Note that only a limited number of MCP/hooks files are read and the rest are undecided."
+  },
+  "4dcfdea565a78ed23bcf045462b929d2463d08ee": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-skills-tree-no-manifest",
+    "name": "Plugin validate: skills tree without manifest",
+    "desc": "Finding: no plugin.json, but a skills tree loads as a plugin."
+  },
+  "55c0212569726b53f0bf4b92ec2d3c33d908f753": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-listed-as-folder-name",
+    "name": "Plugin validate: listed under folder name",
+    "desc": "Clause: the plugin is listed under its folder/repository name."
+  },
+  "7be547c32f949615dbf21f41ee25912fa1fff088": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-readme-symlink",
+    "name": "Plugin validate: README is a symlink",
+    "desc": "Note that a symlinked README does not count; replace with a file."
+  },
+  "12fa694461d8fd727e7ddb01c91a9b7202e7ce99": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-readme-missing",
+    "name": "Plugin validate: README missing",
+    "desc": "Finding: the plugin has no README.md."
+  },
+  "9d847cbc9e8bdf79c7562d930e678d55501ea16c": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-repo-root-readme-label",
+    "name": "Plugin validate: repo-root README label",
+    "desc": "Label for the repository-root README used for the plugin."
+  },
+  "0c7252a377bf31cd834a93eaaad48f5efc2678e4": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-readme-too-large",
+    "name": "Plugin validate: README too large",
+    "desc": "Finding: the README exceeds the size limit and was not read."
+  },
+  "7025aa2fab94d6bf16b1063092a51afb140d0689": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-readme-too-large-fix",
+    "name": "Plugin validate: README too large fix",
+    "desc": "Fix: cut the README under the limit."
+  },
+  "fc6661bfc33fc484ecea853126a46633a32f4e0b": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-readme-unreadable",
+    "name": "Plugin validate: README unreadable",
+    "desc": "Finding: the README could not be opened or read."
+  },
+  "3ea4383b365d19ea4d7707d1a45f199bd4873b27": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-readme-unreadable-fix",
+    "name": "Plugin validate: README unreadable fix",
+    "desc": "Fix: make the README an ordinary readable file."
+  },
+  "6d7f3d326af051c60b055de869e6bfd0a933ec52": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-readme-too-short",
+    "name": "Plugin validate: README too short",
+    "desc": "Finding: the README has too few words."
+  },
+  "ea19f5932a410bee915a33f5633172f9f7cdbcdf": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-readme-too-short-fix",
+    "name": "Plugin validate: README too short fix",
+    "desc": "Fix: add sentences on what it does and setup."
+  },
+  "2c35d74378b2832820887462b509b05f8d3438f1": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-readme-not-rendered",
+    "name": "Plugin validate: README not rendered",
+    "desc": "Finding: the README was not rendered for the preview."
+  },
+  "bf83a96472056e7a7c0b8a9391b2edbd4c185c2c": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-license-missing",
+    "name": "Plugin validate: license missing",
+    "desc": "Finding: no LICENSE file or license field."
+  },
+  "93cd314096f495384d0606b4fe13a8768507f84f": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-more-traversal-paths",
+    "name": "Plugin validate: more traversal paths",
+    "desc": "Note: more listed paths contain '..' and are not shown."
+  },
+  "73c006a21d90329dc412735e0d8fde130ac484f0": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-unusable-file-refused",
+    "name": "Plugin validate: unusable MCP/hooks file",
+    "desc": "Note: a listed file is unusable and the directory refuses the plugin."
+  },
+  "b6826ef0c96a87cee480dffbd8e174aaf07d8054": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-privacy-undecided",
+    "name": "Plugin validate: privacy warning undecided",
+    "desc": "Note: the privacy warning can't be ruled out until files are read."
+  },
+  "b60a3a36f746f0919f21143efd59f87007b0a7e7": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-hooks-modules-plural",
+    "name": "Plugin validate: files name hooks modules",
+    "desc": "Clause listing files that each name a hooks module."
+  },
+  "219272fb3658b898cd5c63a08ec0e71f6d0687ed": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-hooks-module-unchecked",
+    "name": "Plugin validate: hooks module rules unchecked",
+    "desc": "Note: hooks module code rules are not applied here."
+  },
+  "62adba53ba3d27041675b9ba79f3af4515c42723": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-privacy-url-missing",
+    "name": "Plugin validate: privacy URL missing",
+    "desc": "Finding: remote connections without a privacy policy URL."
+  },
+  "9e6e37b9a18bca22c23f97704ee7a1ebc8c1591b": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-privacy-url-from-readme",
+    "name": "Plugin validate: privacy URL from README",
+    "desc": "Info: privacy URL taken from README; set it explicitly."
+  },
+  "4c54ff7379d5cda201805b1ed7ea401c4fbff6a4": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-marketplace-folder-note",
+    "name": "Plugin validate: folder also a marketplace",
+    "desc": "Note: only the plugin in this folder is checked."
+  },
+  "782e53964531361eaa0ff7faeb884fcaf2d158a8": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-readme-missing-fix",
+    "name": "Plugin validate: README missing fix",
+    "desc": "Fix: add a README of at least 40 words."
+  },
+  "cc981f871dd41fd34782108d4be84f2e65e07ccf": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-license-missing-fix",
+    "name": "Plugin validate: license missing fix",
+    "desc": "Fix: add a LICENSE or license field."
+  },
+  "d3770239f3a937526396e89c6f7f8698a9ba041a": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-icon-missing-fix",
+    "name": "Plugin validate: icon missing fix",
+    "desc": "Fix: add a square PNG icon; requirements and one-time use."
+  },
+  "805bdc05df2d87b5c22fc1a6057aaef4244e94c9": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-path-traversal-fix",
+    "name": "Plugin validate: path traversal fix",
+    "desc": "Fix: reference files by a plain plugin-relative path."
+  },
+  "a938390b5616ce2a7a201607d18612dda12fa5d6": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-manifest-not-found-fix",
+    "name": "Plugin validate: manifest not found fix",
+    "desc": "Fix: add plugin.json to choose name, description and version."
+  },
+  "53b427dee3b4582cee76c4faeba05d8fa261f204": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-name-format-fix",
+    "name": "Plugin validate: name format fix",
+    "desc": "Fix: add plugin.json with a valid name or rename the folder."
+  },
+  "308b3f1d8c8ae0505d9201982a8626ed153ea0aa": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-name-not-kebab-fix",
+    "name": "Plugin validate: name not kebab fix",
+    "desc": "Fix: add plugin.json with a kebab-case name or rename the folder."
+  },
+  "00484d271ac1c7791878f3da54d6e99e1b85bc8b": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-checks-header",
+    "name": "Plugin validate: directory checks header",
+    "desc": "Header naming the plugin and that the checks are a subset of the directory's."
+  },
+  "5c06183642f5a4c6dd39852e9f5d2de6b4f96fca": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-checks-failed",
+    "name": "Plugin validate: directory checks did not run",
+    "desc": "The directory checks failed because of a problem in the command."
+  },
+  "5ed7f5861450b0d37f39633f0c32d5d23a2a223e": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-problems-found",
+    "name": "Plugin validate: problems found",
+    "desc": "Header for problems the directory refuses a submission for."
+  },
+  "5318d952a7987f32fb19e6931b9bd9e6f7b129a1": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-nothing-found-incomplete",
+    "name": "Plugin validate: nothing found (incomplete)",
+    "desc": "Nothing to report, but notes say what was not checked."
+  },
+  "48970ad053102b846d9f36850102b1b9e88bfbc3": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-result-unchanged",
+    "name": "Plugin validate: result unchanged",
+    "desc": "These checks do not change the validation result."
+  },
+  "7ed88a96bd1f23b00cf59fba743fc89258c403f8": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-strict-command-hint",
+    "name": "Plugin validate: how to fail on problems",
+    "desc": "Hint naming the command that fails on directory problems."
+  },
+  "ba78a372ed47c45784d87010f47735589f110e09": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-safety-scan-note",
+    "name": "Plugin validate: safety scan note",
+    "desc": "The directory also runs a safety scan and policy review."
+  },
+  "f818b9be6d1144b366973dca8845ba5cd3bcb13a": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-name-non-ascii",
+    "name": "Plugin validate: name non-ASCII",
+    "desc": "Finding: plugin name has non-ASCII characters."
+  },
+  "da14874a99ba7522279c306858109cd4d3953e19": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-derived-name-not-kebab",
+    "name": "Plugin validate: derived name not kebab",
+    "desc": "Finding: the folder-derived name is not kebab-case."
+  },
+  "c09651aadd8b8e68f3368d32b6dc80da02b1137a": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-derived-name-invalid",
+    "name": "Plugin validate: derived name invalid",
+    "desc": "Finding: the folder-derived name is not valid."
+  },
+  "a6964746dd950c7bbe5370bac8aa087055ab8814": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-repo-root-unresolved",
+    "name": "Plugin validate: repo root unresolved",
+    "desc": "Note: stopped looking for a repo root where the real path is unknown."
+  },
+  "369e6267ee3a68db262fd15ec53e98b6e7474083": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-repo-root-unused-clause",
+    "name": "Plugin validate: repo-root files unused clause",
+    "desc": "Clause: no repository-root README or license was used."
+  },
+  "9ea269d1bbd274b51f07fb399c36f859b9f83de5": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-listing-name-unknown-clause",
+    "name": "Plugin validate: listing name unknown clause",
+    "desc": "Clause: the listing name is unknown and its rules unchecked."
+  },
+  "e9800c491def53eb083c748522aeacfa36b1f12e": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-repo-root-link-out",
+    "name": "Plugin validate: repo root via link",
+    "desc": "Note: a symbolic link leads out of the repository."
+  },
+  "044b07db8e2d77f2c51baf04e4016de68a725bec": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-listed-under-path-part",
+    "name": "Plugin validate: listed under path part",
+    "desc": "Note: listed under the last part of the path below the repo root."
+  },
+  "34b8bc9e13782f26de53ddff1854fc55c9f11bc7": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-taken-from-repo-root",
+    "name": "Plugin validate: files taken from repo root",
+    "desc": "Note: README/license were taken from the repository root."
+  },
+  "66d6700f88d4c5e74a0bb040a3f95c0521ff7351": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-not-found-at-repo-root",
+    "name": "Plugin validate: not found at repo root",
+    "desc": "Note: no accepted README/license found at the root either."
+  },
+  "e95d380bcdaf3766317e320bfa5258534d06a484": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-repo-root-taken",
+    "name": "Plugin validate: repo root taken to be",
+    "desc": "Note: which folder was taken as repository root and what to check."
+  },
+  "5d797469813e5a7eb63f5c1b4e43b140e23d113e": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-name-rules-unchecked",
+    "name": "Plugin validate: name rules unchecked",
+    "desc": "Clause: the directory's name rules were not checked."
+  },
+  "5087b7b20e72b95f04c50efdb74b115ab70953e7": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-own-repo-root",
+    "name": "Plugin validate: own repository root",
+    "desc": "Note: listed under the repository's name, which is unknown here."
+  },
+  "40654f6fcdc811fb64da1374d7838adf45b610ed": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-no-repo-root",
+    "name": "Plugin validate: no repository root",
+    "desc": "Note: no repository root found; what a sub-folder submission would draw."
+  },
+  "c754d0622f5659dcc96c772fd0e9acc91d8f742e": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-would-draw",
+    "name": "Plugin validate: findings it would draw",
+    "desc": "Clause listing name findings and how to fix them."
+  },
+  "f01ee90e498f38619445dec0a923368eb8d5f036": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-readme-large-fix",
+    "name": "Plugin validate: shorten README fix",
+    "desc": "Fix: shorten the README under the KiB limit."
+  },
+  "804bdf744e7f27cfd877fc5a54a4a441700bc494": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-readme-markup-fix",
+    "name": "Plugin validate: README markup fix",
+    "desc": "Fix: use less of the markup the message names."
+  },
+  "83e991393dc8265f291764f4b378ee7c5d53a677": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-listing-url-scheme",
+    "name": "Plugin validate: listing URL scheme",
+    "desc": "Finding: a listing URL is not https and was dropped."
+  },
+  "4dec97811919a7527bf8bd87fa9b0c056c46e6d9": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-screenshot-url-scheme",
+    "name": "Plugin validate: screenshot URL scheme",
+    "desc": "Finding: a screenshot URL is not https."
+  },
+  "1f68d8450a3775903d686b94445818d7eb56a577": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-more-screenshot-urls",
+    "name": "Plugin validate: more screenshot URLs",
+    "desc": "Note: more screenshot URLs are not https and not listed."
+  },
+  "ae67f41eb34de52b389920fdd5023540492b13ab": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-icon-invalid",
+    "name": "Plugin validate: icon invalid",
+    "desc": "Finding: the icon is not a usable SVG/PNG."
+  },
+  "b8a67a186631eb7155058fe889b68e79c7cc5b48": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-icon-path-traversal",
+    "name": "Plugin validate: icon path traversal",
+    "desc": "Finding: the icon path contains '..'."
+  },
+  "7f513de8c2d1bc4f52326796f0668d677dda59c3": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-icon-path-characters",
+    "name": "Plugin validate: icon path characters",
+    "desc": "Finding: the icon path has disallowed characters."
+  },
+  "a334548e699f581406976531ed1d1227b630d410": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-icon-path-fix",
+    "name": "Plugin validate: icon path fix",
+    "desc": "Fix: use a plain relative path inside the plugin."
+  },
+  "f66d3fde1a21cf6ddc56f3b0bbeff74e44a47bea": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-icon-url-scheme",
+    "name": "Plugin validate: icon URL scheme",
+    "desc": "Finding: the icon URL is not https."
+  },
+  "e1eb5cdb4af629f13c948ca28333e99490cf18fb": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-icon-url-fix",
+    "name": "Plugin validate: icon URL fix",
+    "desc": "Fix: use an https URL or a file in the plugin."
+  },
+  "60de226492b91950b797aef8596a5685830a3e84": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-icon-missing",
+    "name": "Plugin validate: icon missing",
+    "desc": "Finding: no icon found and where it looked."
+  },
+  "db0b881ac839c41362b0c49e3ff60780e2bcbdaa": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-icon-not-a-file",
+    "name": "Plugin validate: icon not a file",
+    "desc": "Finding: the icon path is not a file in the plugin."
+  },
+  "fe74340e129e963b704898cfeefa18e690cb7505": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-hooks-not-object-todo",
+    "name": "Plugin validate: hooks file not an object",
+    "desc": "Todo: write the hooks file as {\"hooks\": {}}."
+  },
+  "0f2a60dd3353e6ee33fee5a4ec340c1bf3593d01": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-hooks-modules-todo",
+    "name": "Plugin validate: hooks modules todo",
+    "desc": "Todo: make modules a list of one hooks module path."
+  },
+  "f7ae42821689774f88a85ae94b93809b8d4e94e3": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-hooks-description-todo",
+    "name": "Plugin validate: hooks description todo",
+    "desc": "Todo: make description a string or remove it."
+  },
+  "59a890a09b1d1de80b74fa54c57cbced662a7a24": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-hooks-wrapper-todo",
+    "name": "Plugin validate: hooks wrapper todo",
+    "desc": "Todo: put hook events under a hooks key."
+  },
+  "b51f9807652b61db7118731d5480b18aef6eda90": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-hooks-object-todo",
+    "name": "Plugin validate: hooks object todo",
+    "desc": "Todo: make hooks an object of event lists."
+  },
+  "34576a3fe913552234b9ce82804fa3e97075d863": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-hooks-event-not-list",
+    "name": "Plugin validate: hook event not a list",
+    "desc": "Reason: a hook event's value is not a list."
+  },
+  "5d4150df378c8ca4d4a27ebdde7afeb0009f3872": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-mcp-json-invalid",
+    "name": "Plugin validate: MCP JSON invalid",
+    "desc": "Finding: invalid JSON; the loader skips the file."
+  },
+  "0bda554cfed4f7b6c301132e060bb3f63a0f3592": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-mcp-json-invalid-fix",
+    "name": "Plugin validate: MCP JSON fix tail",
+    "desc": "Fix tail: every server in the file is ignored until fixed."
+  },
+  "43a2a4d761134e0c491b29f8c67491ea685f624b": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-hooks-json-invalid",
+    "name": "Plugin validate: hooks JSON invalid",
+    "desc": "Finding: invalid JSON breaks the plugin load."
+  },
+  "d2dad673e31a799d5995b9a6f6b544059b53226e": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-hooks-json-invalid-fix",
+    "name": "Plugin validate: hooks JSON fix tail",
+    "desc": "Fix tail: a broken hooks.json fails the whole plugin."
+  },
+  "4e64e107ec1d7ae1d5214da8415f757cb3ca4847": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-json-bom-error",
+    "name": "Plugin validate: JSON BOM error",
+    "desc": "Parse error text for a UTF-8 BOM."
+  },
+  "6affa0f4655e358807d19a08c3d5a0d046f05136": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-json-bom-fix",
+    "name": "Plugin validate: JSON BOM fix",
+    "desc": "Fix: re-save without a BOM."
+  },
+  "ffb116a4fa4b07ad923e099d56b9a9d32e917712": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-json-not-utf8",
+    "name": "Plugin validate: JSON not UTF-8",
+    "desc": "Parse error text for invalid UTF-8."
+  },
+  "a127be658a0a367c676e0986f38b0f7f44e0b77f": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-json-too-deep",
+    "name": "Plugin validate: JSON too deep",
+    "desc": "Parse error text for nesting deeper than 64."
+  },
+  "05bfc6ba69e6f3c410b5756fb22d9ebd484b4188": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-json-too-deep-fix",
+    "name": "Plugin validate: JSON too deep fix",
+    "desc": "Fix: flatten the JSON."
+  },
+  "05013119e0311bf4e0794a55d7ce25cb4e9621bd": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-mcp-config-not-object",
+    "name": "Plugin validate: MCP config not object",
+    "desc": "Finding: MCP config must be a JSON object."
+  },
+  "d727e639c19a6d8b45f569f36fe5c85ec7e414ed": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-mcp-servers-not-object",
+    "name": "Plugin validate: mcpServers not object",
+    "desc": "Finding: mcpServers must map names to configs."
+  },
+  "1ea5b58f46c13bf74ece20c5ed953008f60c50e2": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-mcp-config-too-large",
+    "name": "Plugin validate: MCP config too large",
+    "desc": "Finding: MCP config over the size cap, not checked."
+  },
+  "59c59489ce28f7b9e719e5c994b467f112e54c7e": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-mcp-config-symlink",
+    "name": "Plugin validate: MCP config symlink",
+    "desc": "Finding: MCP config is a symlink or not a regular file."
+  },
+  "c6cb9cbd76575a83770e5e6c6f9b5705bbfa1925": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-mcp-config-regular-file-fix",
+    "name": "Plugin validate: MCP config regular file fix",
+    "desc": "Fix: ship the config as a regular file."
+  },
+  "07687b5b0730f211c1079c8338b8fb34ea4ec54b": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-hooks-file-unread",
+    "name": "Plugin validate: hooks file unread",
+    "desc": "Finding: hooks file not read; the directory refuses it."
+  },
+  "d0aaaea6ec73553e6bea7f777f6ebe7b74f68dad": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-hooks-file-fix",
+    "name": "Plugin validate: hooks file fix",
+    "desc": "Fix: ship the hooks file as a regular file under the cap."
+  },
+  "e732a78057e1472b94d1123ec9a478e0815f2875": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-hooks-json-unread",
+    "name": "Plugin validate: hooks.json unread",
+    "desc": "Finding: hooks.json not read; the directory refuses it."
+  },
+  "ceda836fd1b7d548189e789a7bdc272a7dfce438": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-hooks-json-fix",
+    "name": "Plugin validate: hooks.json fix",
+    "desc": "Fix: ship hooks/hooks.json as a regular file under the cap."
+  },
+  "fd1f9d0050494def58ce9480ab8d68796e6f2882": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-could-not-list",
+    "name": "Plugin validate: could not list folders",
+    "desc": "Note: some folders could not be listed for system files."
+  },
+  "53c4c7256c195be82f133c127ce2e2fabd195ddd": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-system-files-git-note",
+    "name": "Plugin validate: system files git note",
+    "desc": "Note on checking committed system files with git ls-files."
+  },
+  "be9246e4d5057c77754fa3935ea019be2d59359f": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-system-file",
+    "name": "Plugin validate: system file found",
+    "desc": "Finding: a macOS/Windows system file is in the plugin."
+  },
+  "fc9fd3359a7e401cba795c416f97d76334fe2566": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-system-files-search-capped",
+    "name": "Plugin validate: system file search capped",
+    "desc": "Note: system-file search covered limited entries and depth."
+  },
+  "935de8ae12258e286381209946d92d04991387cf": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-more-system-files",
+    "name": "Plugin validate: more system files",
+    "desc": "Finding: more system files are inside the plugin."
+  },
+  "aa19cc0fa04a966abf9771c553715479bc6f0bf5": {
+    "facing": "model",
+    "id": "data-claude-code-d-ts",
+    "name": "Data: claude-code.d.ts",
+    "desc": "Claude Code plugin API declarations written as the plugin-authoring skill file types/claude-code.d.ts, which SKILL.md points the model to as the API reference (also used for type-checking)."
+  },
+  "87bf9712aa1a3648155e5641d7f9a0b0ef07f08d": {
+    "facing": "model",
+    "id": "data-reference",
+    "name": "Data: function hooks reference (long form)",
+    "desc": "Long-form reference.md of the plugin-authoring skill: function-hook plugins, types, developing, sharing a mod, packaging in a chat, ui.render, session.append, long-running work and tools/agents the model can call."
+  },
+  "58bfef6a6b495727e3c81245510b6d79618a9799": { "facing": "internal" },
+  "1379ff92eed8faaa07b20435d66049cfe20cfb0b": {
+    "facing": "model",
+    "id": "data-onboarding",
+    "name": "Data: onboarding",
+    "desc": "Claude Test onboarding.md: the machine report and the first-run flow (guesses, outline, author draft, briefing) and the rules for choosing starter specs."
+  },
+  "5f32b14088c3d62272af4a2974ab7759102ccc95": {
+    "facing": "model",
+    "id": "data-ct-mjs",
+    "name": "Data: ct.mjs",
+    "desc": "claude-test helper script (skills/run/scripts/ct.mjs) that the run skill has the model execute; its JSON output (status notes, needsInput questions, forClaude remedies, write-spec/file/finish errors) is read by the model."
+  },
+  "5f0307acddfb91ff4a0da4bff54f02df11654596": {
+    "facing": "model",
+    "id": "data-config-mjs",
+    "name": "Data: config.mjs",
+    "desc": "claude-test shared library (skills/run/scripts/lib/config.mjs) whose config warnings, consent and sign-in notes surface in ct.mjs status JSON and the browser server's tool results."
+  },
+  "9096c75e4c08c8b42022cd6f97f1a1cd55c256da": {
+    "facing": "model",
+    "id": "data-discover-mjs",
+    "name": "Data: discover.mjs",
+    "desc": "Claude Test discover.mjs: finds the dev server start command and ports from package.json, Makefiles, launch.json and config files, with the conflict and 'unknown — ask' notes status prints."
+  },
+  "72298cdfe69cefaef10d014844c827a79db88b1f": {
+    "facing": "model",
+    "id": "data-run-tools-mjs",
+    "name": "Data: run-tools.mjs",
+    "desc": "claude-test browser-server module (skills/run/scripts/lib/run-tools.mjs) defining the background runner's claude_test_save / status / elapsed / progress / write_log / finish / read MCP tool descriptions, schemas and refusal texts."
+  },
+  "a3c7516a2a58d2d05887b0f9ac4d6780240b37f1": {
+    "facing": "model",
+    "id": "data-skill-claude-test-the-spec-author-background",
+    "name": "Data: SKILL (Claude Test — the spec author (background; nobody is watching you))",
+    "desc": "Hidden claude-test:draft skill: the background author's brief, the draft format and rules, and the report it returns."
+  },
+  "c2471974ec61146bbdcde2afe961554654ceb466": {
+    "facing": "model",
+    "id": "data-skill-claude-test-runner-drive-the-app",
+    "name": "Data: SKILL (Claude Test runner — drive the app in a browser, judge each spec, report)",
+    "desc": "Hidden claude-test:execute skill: the background runner's save, orient, preflight, per-spec run, bounds and report formats."
+  },
+  "e8ef7f93839f72adca7d0546c6a66413d1a27a41": {
+    "facing": "model",
+    "id": "data-skill-claude-test-the-conversation-side",
+    "name": "Data: SKILL (Claude Test — the conversation side)",
+    "desc": "claude-test run skill for the person's conversation: rules, data line, machine check, later-run proposals, briefing and runner start, saving, results and the --ci path."
+  },
+  "6b84f35d24b8c7fb3f24979cbb1fc73894393bcd": {
+    "facing": "model",
+    "id": "skill-cowork-plugin-authoring",
+    "name": "Skill: Cowork Plugin Authoring",
+    "desc": "Prompt body of the cowork-plugin-authoring skill, injected at skill invocation."
+  },
+  "f69b092c6f06530a9da81b816147a7e21da397b1": {
+    "facing": "model",
+    "id": "data-managed-agents-secure",
+    "name": "Data: managed-agents-secure (Secure a Managed Agents deployment)",
+    "desc": "claude-api skill file shared/managed-agents-secure.md: the read-only procedure behind /claude-api managed-agents-secure that fetches the published security guide, reads the account with ant, searches for keys and reports."
+  },
+  "2d10dab2c4ed705287213d091aed438607b7ea8d": { "facing": "internal" },
+  "832341c1383c18ddc1a91e832a399d572c021ee4": {
+    "facing": "model",
+    "id": "tool-result-sandbox-profile-exclusion-write-grant-inherited",
+    "name": "Tool Result: Sandbox Profile-Exclusion Write Grant Inherited",
+    "desc": "Clause appended to a sandbox profile-exclusion grant item (allowWrite <path> contains the excluded ...) warning that a write grant above an excluded path is kept and inherited, so the path would be writable and readable if recreated; advises a narrower working directory. Reaches the model inside the sandbox-init-failed Bash error."
+  },
+  "5976d8cb7102a6aff6d2d1acaf577d2f27c1dba6": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-profile-exclusion-write-grant-kept-clause-tail",
+    "name": "Profile exclusion: write grant kept clause (tail)",
+    "desc": "Tail of the kept-write-grant clause: advises a narrower working directory."
+  },
+  "9720a0b8679344a7a854217f9e97d9909aa9638b": { "facing": "ui" },
+  "229eb795ddfa116f856a32c85530ba24b892ae33": { "facing": "internal" },
+  "5604c20d6399ec644d769573e39076cda6c9ee71": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-windows-install-needed-lead",
+    "name": "Windows sandbox install needed (lead)",
+    "desc": "Lead line: the Windows sandbox needs a one-time install with one UAC prompt."
+  },
+  "904c8f7b51caa1321fde061a16fed22495627190": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-windows-setup-nothing-granted-until-then",
+    "name": "Windows sandbox setup: nothing granted until then",
+    "desc": "Closing line of the newer-release setup error: nothing is granted or run until it is fixed."
+  },
+  "d656919062c078345669ce6a00201c76e4f945f7": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-enabled-but-unavailable-in-session",
+    "name": "Sandbox enabled but unavailable in session",
+    "desc": "Reason: sandbox is enabled but unavailable in this session."
+  },
+  "e48b7e1738b09e7fd39b18fc36653ca3bce17581": {
+    "facing": "model",
+    "id": "data-sandbox-profile-grant-skip-reason-skip-flag-set",
+    "name": "Sandbox profile grant skip reason: flag set",
+    "desc": "Skip reason when skipProfileGrant was set."
+  },
+  "eac9ae7b3668a12d8b6739ff45f71a7688063a9b": { "facing": "internal" },
+  "2e024536f24dcd246e0c8266b661a230b5c36a09": { "facing": "internal" },
+  "bc749712a42328072751c0a531a017348deb5de9": { "facing": "internal" },
+  "cf102e228654ab01d0722c26a7a226644b5d8b9c": { "facing": "internal" },
+  "89427c58e29f07671919de1eebc30e9f6c14ae60": { "facing": "internal" },
+  "8d9f13f67bbf7e14f4c69bbe782539172b9413bd": { "facing": "internal" },
+  "55fe4947fa517647ad96619016765cb32577950e": { "facing": "internal" },
+  "8b23b7aab662fbe27a46f42f19c1c4b6f96da667": { "facing": "internal" },
+  "d918e76b28751c32904ce5ba184dcbeca5187f09": {
+    "facing": "model",
+    "id": "tool-result-mcp-file-reference-sha256-command-unix",
+    "name": "MCP file reference: sha256 command (non-Windows)",
+    "desc": "Non-Windows arm naming the sha256 command to use."
+  },
+  "6f85de6dfcd9f399f093ab349c47e6f2c59d4bf0": {
+    "facing": "model",
+    "id": "system-reminder-remote-bash-not-run-no-command",
+    "name": "Remote bash: not run, no command given",
+    "desc": "Refusal when a remote bash_command message carries no command."
+  },
+  "71382b428ea5fb266cc910e23953cd46c2e5e929": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-manifest-invalid-json",
+    "name": "Plugin validate: manifest invalid JSON",
+    "desc": "Finding: the plugin manifest has invalid JSON syntax."
+  },
+  "ef8b52b8d83d76cb54c07c2f690d834158e47b8a": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-notes-found",
+    "name": "Plugin validate: directory notes found",
+    "desc": "Header line counting plugin directory notes."
+  },
+  "ac64daca15191ae9bb9c1c7748873066d105db49": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-warnings-found",
+    "name": "Plugin validate: directory warnings found",
+    "desc": "Header line counting plugin directory warnings."
   }
 }

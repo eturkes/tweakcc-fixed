@@ -616,6 +616,38 @@ describe('checkRemovedIdCoverage: coverage counts only named catalogue sites', (
       /STILL IN BUNDLE —[\s\S]*tool-description-fixture-artifact-anon/
     );
   });
+
+  // CC 2.1.305: a slot-heavy error was reworded and its only surviving 25-char
+  // window sat inside a sibling id that was already catalogued.
+  it('does not flag a slot-heavy body whose only live window a named id holds', () => {
+    const old = {
+      id: 'tool-result-fixture-fence-detail',
+      version: '2.1.304',
+      pieces: [
+        'sandbox user to ${',
+        '.target} succeeded. Re-run \\`fixture install\\` (one prompt). (${',
+        '.stderr})',
+      ],
+      identifiers: [0, 1],
+      identifierMap: { 0: 'VAR_0', 1: 'VAR_1' },
+    };
+    const sibling = {
+      id: 'tool-result-fixture-verify-detail',
+      version: '2.1.305',
+      pieces: ['The fence may be absent. Re-run \\`fixture install\\`. (${', '.stderr})'],
+      identifiers: [0],
+      identifierMap: { 0: 'VAR_0' },
+    };
+    const out = run(
+      write(
+        'cli-fence.js',
+        'x=`The fence may be absent. Re-run \\`fixture install\\`. (${e.stderr})`'
+      ),
+      write('prev-fence.json', { prompts: [old] }),
+      write('cur-fence.json', { prompts: [sibling] })
+    );
+    expect(out).toMatch(/0 STILL IN BUNDLE/);
+  });
 });
 
 describe('checkRemovedIdCoverage: every live run, each site once', () => {

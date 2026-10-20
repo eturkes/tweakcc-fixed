@@ -12,6 +12,20 @@ export const writeContextLimit = (oldFile: string): string | null => {
   // Because the window is `min(o-from-fkt, KQ)`, RAISING the limit requires
   // overriding BOTH (overriding only one leaves the window capped by the other).
   // Env-unset → both stay 200000 → identical to stock CC.
+  // Method -1 — CC >= 2.1.305: the 1e6 cap rejoined the group in slot 3:
+  // `var MCe=200000,c6=200000,n0=1e6,sE=32000,r0=128000;`. Leading pair keeps
+  // its roles; the trailing three are preserved verbatim.
+  const patternMid =
+    /var ([$\w]+)=200000,([$\w]+)=200000,([$\w]+)=(1e6|1000000),([$\w]+)=(32000),([$\w]+)=(128000|64000);/;
+  const matchMid = oldFile.match(patternMid);
+  if (matchMid) {
+    return oldFile.replace(
+      patternMid,
+      () =>
+        `var ${matchMid[1]}=${OVERRIDE},${matchMid[2]}=${OVERRIDE},${matchMid[3]}=${matchMid[4]},${matchMid[5]}=${matchMid[6]},${matchMid[7]}=${matchMid[8]};`
+    );
+  }
+
   // Method 0 — CC >= 2.1.251: the trailing 1e6 left the group too, so the
   // declaration is back to four constants and reads
   // `var q8e=200000,g$=200000,Q3=32000,Z3=128000;`. The leading pair keeps its

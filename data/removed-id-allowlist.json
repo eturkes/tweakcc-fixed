@@ -4772,5 +4772,35 @@
     "verdict": "archived",
     "version": "2.1.304",
     "why": "Absent from prompts-2.1.304.json; its text is gone from the 2.1.304 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.304/."
+  },
+  "tool-result-bash-sandbox-wfp-fence-inactive-detail": {
+    "verdict": "archived",
+    "version": "2.1.305",
+    "why": "Absent from prompts-2.1.305.json; the fence-inactive error was rewritten and its pieces now carry new ids, the old wording is gone from the bundle. Override matched superseded pristine. Archived to ~/.tweakcc/orphans-removed-for-2.1.305/."
+  },
+  "tool-result-bash-command-missing-sdk": {
+    "verdict": "archived",
+    "version": "2.1.305",
+    "why": "Absent from prompts-2.1.305.json; its text is gone from the 2.1.305 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.305/."
+  },
+  "tool-result-bash-sandbox-srt-win-acl-grant-exited": {
+    "verdict": "archived",
+    "version": "2.1.305",
+    "why": "Absent from prompts-2.1.305.json; its text is gone from the 2.1.305 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.305/."
+  },
+  "tool-result-bash-sandbox-srt-win-acl-stamp-exited": {
+    "verdict": "archived",
+    "version": "2.1.305",
+    "why": "Absent from prompts-2.1.305.json; its text is gone from the 2.1.305 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.305/."
+  },
+  "tool-result-bash-sandbox-tls-terminate-ca-not-installed": {
+    "verdict": "archived",
+    "version": "2.1.305",
+    "why": "Absent from prompts-2.1.305.json; its text is gone from the 2.1.305 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.305/."
+  },
+  "tool-result-bash-sandbox-tls-terminate-ca-thumbprint-mismatch": {
+    "verdict": "archived",
+    "version": "2.1.305",
+    "why": "Absent from prompts-2.1.305.json; its text is gone from the 2.1.305 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.305/."
   }
 }
