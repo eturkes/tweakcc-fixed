@@ -2184,11 +2184,13 @@ const NESTED_MEMORY_INJECTION: ReminderInjection = {
   },
   defaultBody: 'Contents of {{memory_path}}:\n\n{{memory_content}}',
   apply(content, body, isSuppressed) {
+    // 2.1.304+ spreads a replacement content for unverified memories after
+    // isMeta (optional group); it is re-emitted so that arm stays pristine.
     return findAndReplace(
       content,
-      /nested_memory:\(([$\w]+)\)=>([$\w]+)\(\[([$\w]+)\(\{content:`Contents of \$\{\1\.content\.path\}:\n\n\$\{\1\.content\.content\}`,isMeta:!0\}\)\]\)/,
+      /nested_memory:\(([$\w]+)\)=>([$\w]+)\(\[([$\w]+)\(\{content:`(?:[^`\\]|\\.)*`,isMeta:!0(,\.\.\.\1\.content\.unverified&&\{content:[$\w]+\(\[\1\.content\]\)\})?\}\)\]\)/,
       m => {
-        const [, hParam, o5Name, j6Name] = m;
+        const [, hParam, o5Name, j6Name, unverifiedSpread = ''] = m;
         if (isSuppressed) return `nested_memory:(${hParam})=>[]`;
         const bodyForBuild = body
           .replace(/\$\{H\.content\.path\}/g, `\${${hParam}.content.path}`)
@@ -2196,7 +2198,7 @@ const NESTED_MEMORY_INJECTION: ReminderInjection = {
             /\$\{H\.content\.content\}/g,
             `\${${hParam}.content.content}`
           );
-        return `nested_memory:(${hParam})=>${o5Name}([${j6Name}({content:\`${bodyForBuild}\`,isMeta:!0})])`;
+        return `nested_memory:(${hParam})=>${o5Name}([${j6Name}({content:\`${bodyForBuild}\`,isMeta:!0${unverifiedSpread}})])`;
       },
       'nested-memory',
       c => /nested_memory:\([$\w]+\)=>\[\]/.test(c)

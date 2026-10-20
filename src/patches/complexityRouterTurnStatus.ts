@@ -57,9 +57,10 @@ export const writeComplexityRouterTurnStatus = (
     Math.max(0, renderer.index! - 7000),
     renderer.index
   );
+  // 2.1.304+: the props destructure gains trailing keys (`snapshot:h`).
   const message = [
     ...renderPrefix.matchAll(
-      /\{message:([$\w]+),addMargin:[$\w]+,verb:[$\w]+\}/g
+      /\{message:([$\w]+),addMargin:[$\w]+,verb:[$\w]+(?:,[$\w]+:[$\w]+)*\}/g
     ),
   ].at(-1)?.[1];
   const escapeId = (id: string) => id.replace(/\$/g, '\\$');
