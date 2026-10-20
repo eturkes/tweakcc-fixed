@@ -604,7 +604,10 @@ const classify = id => {
       for (let off = 0; off + WINDOW <= run.length; off += STRIDE) {
         const w = run.slice(off, off + WINDOW);
         if (!isAscii(w)) continue;
-        if (cli.includes(w)) return { bucket: 'IN-BUNDLE', near };
+        // A window a named id already holds at every bundle site is that id's
+        // text, not this one surviving (2.1.305: a reworded fence error shared
+        // one window with the catalogued verify-inconclusive message).
+        if (countOf(cli, w) > namedSites(w)) return { bucket: 'IN-BUNDLE', near };
       }
     }
   }
