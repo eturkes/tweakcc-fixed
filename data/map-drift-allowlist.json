@@ -31,5 +31,10 @@
   },
   "2.1.303->2.1.304": {
     "system-reminder-attached-machine-could-not-be-reached-oversized-call": "2.1.304 inserted a sentence naming the machine after the notice slot. Slot 0 is still the could-not-be-reached notice and slot 1 is the new machine name, so the binding is correct; only the surrounding text changed."
+  },
+  "2.1.305->2.1.306": {
+    "system-prompt-chrome-browser-mcp-tools": "Upstream named these previously generic slots in 2.1.306; the identifiers are unchanged, so each name stays on the same variable. Overrides renamed to match.",
+    "system-prompt-claude-in-chrome-deferred-tool-loading": "Upstream named these previously generic slots in 2.1.306; the identifiers are unchanged, so each name stays on the same variable. Overrides renamed to match.",
+    "system-prompt-windows-sandbox-localhost-user-alternatives": "Upstream named these previously generic slots in 2.1.306; the identifiers are unchanged, so each name stays on the same variable. Overrides renamed to match."
   }
 }
