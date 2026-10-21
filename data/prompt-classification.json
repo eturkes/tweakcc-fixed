@@ -130079,5 +130079,29 @@
     "id": "slash-command-plugin-validate-directory-warnings-found",
     "name": "Plugin validate: directory warnings found",
     "desc": "Header line counting plugin directory warnings."
+  },
+  "407b9713a4d487520bd78b5e046c0b3b7c68c7b9": {
+    "facing": "model",
+    "id": "system-prompt-guide-agent-no-answer-issues-explainer",
+    "name": "System Prompt: Guide agent no-answer issues explainer",
+    "desc": "Claude-code-guide agent instruction, used on third-party providers or when /feedback is unavailable, to point the user to the issue tracker when no answer or feature exists"
+  },
+  "9bc8969fd56b402b79cfdf3d2991cc212d1f0a9f": {
+    "facing": "model",
+    "id": "system-reminder-mcp-servers-reserved-address",
+    "name": "System Reminder: MCP servers refused for reserved address",
+    "desc": "Lists configured MCP servers that Claude Code refuses because it reserves their address, says retrying will not help, and says how the user can fix or report it"
+  },
+  "fc2d81428708c5595cd822033f7e5ee40267809a": {
+    "facing": "model",
+    "id": "slash-command-restart-refused-version-on-hold",
+    "name": "Slash Command: /restart refused, version on hold",
+    "desc": "/restart refusal returned when the installed version is above the allowed max (on hold), so the session stays on the current version"
+  },
+  "4a008e1477ecf84e09e00b29486a2ec9dbecd954": {
+    "facing": "model",
+    "id": "skill-claude-code-help-recent-releases",
+    "name": "Skill: Claude Code help recent releases",
+    "desc": "Current Build section of the claude-code help skill that lists recent release notes and names the running version"
   }
 }
