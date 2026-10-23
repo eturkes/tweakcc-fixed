@@ -2134,7 +2134,29 @@ const AUTO_MODE_EXIT_INJECTION: ReminderInjection = {
   defaultBody:
     '## Exited Auto Mode\n\nYou have exited auto mode. The user may now want to interact more directly. You should ask clarifying questions when the approach is ambiguous rather than making assumptions.',
   apply(content, body, isSuppressed) {
-    // Method 1 (2.1.221+): the handler became `(e)=>{…}` with two arms selected
+    // Method 1 (2.1.308+): any number of conditional suffix vars precede the
+    // steerOnly selector, and the full arm ends with all of them. The let-list
+    // and the suffix run are re-emitted verbatim around the overridden body.
+    const multiSuffixShape =
+      /auto_mode_exit:\(([$\w]+)\)=>\{let ((?:[$\w]+=\1\.[$\w]+\?"[^"]*":"",)+)([$\w]+)=\1\.steerOnly\?(`[^`]*`):`## Exited Auto Mode\n\nYou have exited auto mode\. The user may now want to interact more directly\. You should ask clarifying questions when the approach is ambiguous rather than making assumptions\.((?:\$\{[$\w]+\})+)`;return ([$\w]+)\(\[([$\w]+)\(\{content:\3,isMeta:!0\}\)\]\)\}/;
+    if (multiSuffixShape.test(content)) {
+      return findAndReplace(
+        content,
+        multiSuffixShape,
+        m => {
+          const [, eParam, lets, sVar, steerArm, suffixes, o5Name, j6Name] = m;
+          if (isSuppressed) return `auto_mode_exit:(${eParam})=>[]`;
+          return (
+            `auto_mode_exit:(${eParam})=>{let ${lets}` +
+            `${sVar}=${eParam}.steerOnly?${steerArm}:\`${body}${suffixes}\`;` +
+            `return ${o5Name}([${j6Name}({content:${sVar},isMeta:!0})])}`
+          );
+        },
+        'auto-mode-exit',
+        c => /auto_mode_exit:\([$\w]+\)=>\[\]/.test(c)
+      );
+    }
+    // Method 2 (2.1.221–2.1.306): the handler became `(e)=>{…}` with two arms selected
     // by `e.steerOnly` (a terse variant and the full text), and both arms gained
     // a `${t}` bashFirst suffix. Only the full arm carries the overridable text;
     // the steerOnly arm is left pristine, and the suffix var is re-emitted so the
@@ -2158,7 +2180,7 @@ const AUTO_MODE_EXIT_INJECTION: ReminderInjection = {
         c => /auto_mode_exit:\([$\w]+\)=>\[\]/.test(c)
       );
     }
-    // Method 2 (<=2.1.220): flat `()=>` handler with a single inline literal.
+    // Method 3 (<=2.1.220): flat `()=>` handler with a single inline literal.
     return findAndReplace(
       content,
       /auto_mode_exit:\(\)=>([$\w]+)\(\[([$\w]+)\(\{content:`## Exited Auto Mode\n\nYou have exited auto mode\. The user may now want to interact more directly\. You should ask clarifying questions when the approach is ambiguous rather than making assumptions\.`,isMeta:!0\}\)\]\)/,
@@ -2184,11 +2206,15 @@ const NESTED_MEMORY_INJECTION: ReminderInjection = {
   },
   defaultBody: 'Contents of {{memory_path}}:\n\n{{memory_content}}',
   apply(content, body, isSuppressed) {
+    // 2.1.304+ spreads a replacement content for unverified memories after
+    // isMeta (optional group); it is re-emitted so that arm stays pristine.
+    // 2.1.308+ wraps the literal in a one-arg helper call (optional group),
+    // kept around the overridden body.
     return findAndReplace(
       content,
-      /nested_memory:\(([$\w]+)\)=>([$\w]+)\(\[([$\w]+)\(\{content:`Contents of \$\{\1\.content\.path\}:\n\n\$\{\1\.content\.content\}`,isMeta:!0\}\)\]\)/,
+      /nested_memory:\(([$\w]+)\)=>([$\w]+)\(\[([$\w]+)\(\{content:(?:([$\w]+)\(`(?:[^`\\]|\\.)*`\)|`(?:[^`\\]|\\.)*`),isMeta:!0(,\.\.\.\1\.content\.unverified&&\{content:[$\w]+\(\[\1\.content\]\)\})?\}\)\]\)/,
       m => {
-        const [, hParam, o5Name, j6Name] = m;
+        const [, hParam, o5Name, j6Name, wrapper, unverifiedSpread = ''] = m;
         if (isSuppressed) return `nested_memory:(${hParam})=>[]`;
         const bodyForBuild = body
           .replace(/\$\{H\.content\.path\}/g, `\${${hParam}.content.path}`)
@@ -2196,7 +2222,9 @@ const NESTED_MEMORY_INJECTION: ReminderInjection = {
             /\$\{H\.content\.content\}/g,
             `\${${hParam}.content.content}`
           );
-        return `nested_memory:(${hParam})=>${o5Name}([${j6Name}({content:\`${bodyForBuild}\`,isMeta:!0})])`;
+        const literal = `\`${bodyForBuild}\``;
+        const contentExpr = wrapper ? `${wrapper}(${literal})` : literal;
+        return `nested_memory:(${hParam})=>${o5Name}([${j6Name}({content:${contentExpr},isMeta:!0${unverifiedSpread}})])`;
       },
       'nested-memory',
       c => /nested_memory:\([$\w]+\)=>\[\]/.test(c)

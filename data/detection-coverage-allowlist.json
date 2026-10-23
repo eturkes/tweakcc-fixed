@@ -1081,5 +1081,11 @@
     "note": "SDK control-protocol zod schema description for the MCP tool-call result",
     "shape": "concat",
     "excerpt": "MCP tool result — the content array, structuredContent, and _meta from CallToolResult. Unless the request set result_not_for_model, content "
+  },
+  "5556679a10dbd132": {
+    "verdict": "internal",
+    "shape": "concat",
+    "excerpt": "Whether sandboxed commands may use local ports directly (default: false). macOS: allows binding and accepting on any local port and connecti",
+    "why": "zod .describe() on settings.json sandbox.network.allowLocalBinding — config schema"
   }
 }

@@ -4567,5 +4567,260 @@
     "facing": "ui",
     "hash": "8135058490e5641dfc4f19fe7e05661f26d2c973",
     "why": "ruled ui in the 2026-10-18 rulings: R9e only builds it when a PR number is passed, and only the CLI paths pass one (Noi @11424026 returns it to startup, Mt @38030827 writes it to stderr and exits). EnterWorktree and agent worktrees never pass prNumber. Override matched pristine."
+  },
+  "agent-prompt-plan-mode-phase-4-2": {
+    "verdict": "archived",
+    "version": "2.1.304",
+    "why": "Renamed in 2.1.304: content now lives at agent-prompt-plan-mode-phase-4-3. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.304/."
+  },
+  "data-mcp-skill-reason-unexpected-contents": {
+    "verdict": "archived",
+    "version": "2.1.304",
+    "why": "Renamed in 2.1.304: content now lives at tool-result-mcp-skill-file-unexpected-contents. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.304/."
+  },
+  "data-permission-prompt-answered-away-surface-label": {
+    "verdict": "archived",
+    "version": "2.1.304",
+    "why": "Absent from prompts-2.1.304.json; its text is gone from the 2.1.304 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.304/."
+  },
+  "data-task-notification-monitor-expired-with-events": {
+    "verdict": "archived",
+    "version": "2.1.304",
+    "why": "Renamed in 2.1.304: content now lives at data-task-notification-monitor-expired-with-events (re-catalogued; reused id). The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.304/."
+  },
+  "skill-artifact-whiteboard-when-to-use-guidance": {
+    "verdict": "archived",
+    "version": "2.1.304",
+    "why": "Absent from prompts-2.1.304.json; its text is gone from the 2.1.304 bundle. The override carried a trim of superseded pristine; the new id starts from pristine. Archived to ~/.tweakcc/orphans-removed-for-2.1.304/."
+  },
+  "skill-multiplayer-whiteboard-description": {
+    "verdict": "archived",
+    "version": "2.1.304",
+    "why": "Absent from prompts-2.1.304.json; its text is gone from the 2.1.304 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.304/."
+  },
+  "skill-whiteboard-2": {
+    "verdict": "archived",
+    "version": "2.1.304",
+    "why": "Absent from prompts-2.1.304.json; its text is gone from the 2.1.304 bundle. The override carried a trim of superseded pristine; the new id starts from pristine. Archived to ~/.tweakcc/orphans-removed-for-2.1.304/."
+  },
+  "skill-whiteboard-description": {
+    "verdict": "archived",
+    "version": "2.1.304",
+    "why": "Absent from prompts-2.1.304.json; its text is gone from the 2.1.304 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.304/."
+  },
+  "skill-whiteboard": {
+    "verdict": "archived",
+    "version": "2.1.304",
+    "why": "Absent from prompts-2.1.304.json; its text is gone from the 2.1.304 bundle. The override carried a trim of superseded pristine; the new id starts from pristine. Archived to ~/.tweakcc/orphans-removed-for-2.1.304/."
+  },
+  "slash-command-plugin-validate-hooks-managed-only-events": {
+    "verdict": "archived",
+    "version": "2.1.304",
+    "why": "Absent from prompts-2.1.304.json; its text is gone from the 2.1.304 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.304/."
+  },
+  "slash-command-plugin-validate-hooks-session-append-door-unspelled": {
+    "verdict": "archived",
+    "version": "2.1.304",
+    "why": "Absent from prompts-2.1.304.json; its text is gone from the 2.1.304 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.304/."
+  },
+  "slash-command-reload-skills-next-message-suffix": {
+    "verdict": "archived",
+    "version": "2.1.304",
+    "why": "Absent from prompts-2.1.304.json; its text is gone from the 2.1.304 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.304/."
+  },
+  "system-reminder-attached-machine-could-not-be-reached-return-not-noted": {
+    "verdict": "archived",
+    "version": "2.1.304",
+    "why": "Absent from prompts-2.1.304.json; its text is gone from the 2.1.304 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.304/."
+  },
+  "system-reminder-attached-machine-could-not-be-reached-return-noted": {
+    "verdict": "archived",
+    "version": "2.1.304",
+    "why": "Renamed in 2.1.304: content now lives at system-reminder-attached-machine-could-not-be-reached-cause-unknown. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.304/."
+  },
+  "system-reminder-tool-hosts-host-offline": {
+    "verdict": "archived",
+    "version": "2.1.304",
+    "why": "Absent from prompts-2.1.304.json; its text is gone from the 2.1.304 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.304/."
+  },
+  "system-reminder-tool-hosts-session-liveness-missed": {
+    "verdict": "archived",
+    "version": "2.1.304",
+    "why": "Renamed in 2.1.304: content now lives at tool-result-remote-host-liveness-unanswered-clause. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.304/."
+  },
+  "system-reminder-tool-hosts-session-went-to-sleep": {
+    "verdict": "archived",
+    "version": "2.1.304",
+    "why": "Absent from prompts-2.1.304.json; its text is gone from the 2.1.304 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.304/."
+  },
+  "task-notification-ultraplan-not-from-local-project": {
+    "verdict": "archived",
+    "version": "2.1.304",
+    "why": "Absent from prompts-2.1.304.json; its text is gone from the 2.1.304 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.304/."
+  },
+  "tool-description-artifact-quickstart-dashboard-type-suggestion": {
+    "verdict": "archived",
+    "version": "2.1.304",
+    "why": "Renamed in 2.1.304: content now lives at tool-result-artifact-quickstart-start-from-named-type. The override carried a trim of superseded pristine; the new id starts from pristine. Archived to ~/.tweakcc/orphans-removed-for-2.1.304/."
+  },
+  "tool-description-artifact-when-to-use": {
+    "verdict": "archived",
+    "version": "2.1.304",
+    "why": "Absent from prompts-2.1.304.json; its text is gone from the 2.1.304 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.304/."
+  },
+  "tool-description-schedulewakeup-when-to-use": {
+    "verdict": "archived",
+    "version": "2.1.304",
+    "why": "Absent from prompts-2.1.304.json; its text is gone from the 2.1.304 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.304/."
+  },
+  "tool-result-device-bridge-host-unreachable-2": {
+    "verdict": "archived",
+    "version": "2.1.304",
+    "why": "Absent from prompts-2.1.304.json; its text is gone from the 2.1.304 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.304/."
+  },
+  "tool-result-device-bridge-host-unreachable": {
+    "verdict": "archived",
+    "version": "2.1.304",
+    "why": "Absent from prompts-2.1.304.json; its text is gone from the 2.1.304 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.304/."
+  },
+  "tool-result-gettask-cancelled-output-so-far": {
+    "verdict": "archived",
+    "version": "2.1.304",
+    "why": "Absent from prompts-2.1.304.json; its text is gone from the 2.1.304 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.304/."
+  },
+  "tool-result-mcp-skill-changed-into-unloadable": {
+    "verdict": "archived",
+    "version": "2.1.304",
+    "why": "Absent from prompts-2.1.304.json; its text is gone from the 2.1.304 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.304/."
+  },
+  "tool-result-mcp-skill-changed-refreshed": {
+    "verdict": "archived",
+    "version": "2.1.304",
+    "why": "Absent from prompts-2.1.304.json; its text is gone from the 2.1.304 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.304/."
+  },
+  "tool-result-mcp-skill-entry-refresh-failed": {
+    "verdict": "archived",
+    "version": "2.1.304",
+    "why": "Absent from prompts-2.1.304.json; its text is gone from the 2.1.304 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.304/."
+  },
+  "tool-result-mcp-skill-entry-unusable": {
+    "verdict": "archived",
+    "version": "2.1.304",
+    "why": "Absent from prompts-2.1.304.json; its text is gone from the 2.1.304 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.304/."
+  },
+  "tool-result-mcp-skill-new-task-refresh-hint": {
+    "verdict": "archived",
+    "version": "2.1.304",
+    "why": "Absent from prompts-2.1.304.json; its text is gone from the 2.1.304 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.304/."
+  },
+  "tool-result-mcp-skill-no-longer-served-by-server": {
+    "verdict": "archived",
+    "version": "2.1.304",
+    "why": "Absent from prompts-2.1.304.json; its text is gone from the 2.1.304 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.304/."
+  },
+  "tool-result-mcp-skill-no-longer-served": {
+    "verdict": "archived",
+    "version": "2.1.304",
+    "why": "Absent from prompts-2.1.304.json; its text is gone from the 2.1.304 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.304/."
+  },
+  "tool-result-mcp-skill-read-failed": {
+    "verdict": "archived",
+    "version": "2.1.304",
+    "why": "Absent from prompts-2.1.304.json; its text is gone from the 2.1.304 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.304/."
+  },
+  "tool-result-mcp-skill-reconnect-refresh-hint": {
+    "verdict": "archived",
+    "version": "2.1.304",
+    "why": "Absent from prompts-2.1.304.json; its text is gone from the 2.1.304 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.304/."
+  },
+  "tool-result-mcp-skill-retry-hint": {
+    "verdict": "archived",
+    "version": "2.1.304",
+    "why": "Absent from prompts-2.1.304.json; its text is gone from the 2.1.304 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.304/."
+  },
+  "tool-result-mcp-skill-retry-or-reconnect-hint": {
+    "verdict": "archived",
+    "version": "2.1.304",
+    "why": "Absent from prompts-2.1.304.json; its text is gone from the 2.1.304 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.304/."
+  },
+  "tool-result-mcp-skill-server-not-connected-new-task": {
+    "verdict": "archived",
+    "version": "2.1.304",
+    "why": "Absent from prompts-2.1.304.json; its text is gone from the 2.1.304 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.304/."
+  },
+  "tool-result-mcp-skill-server-not-connected": {
+    "verdict": "archived",
+    "version": "2.1.304",
+    "why": "Absent from prompts-2.1.304.json; its text is gone from the 2.1.304 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.304/."
+  },
+  "tool-result-mcp-skill-server-problem": {
+    "verdict": "archived",
+    "version": "2.1.304",
+    "why": "Absent from prompts-2.1.304.json; its text is gone from the 2.1.304 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.304/."
+  },
+  "tool-result-remote-host-session-unreachable": {
+    "verdict": "archived",
+    "version": "2.1.304",
+    "why": "Absent from prompts-2.1.304.json; its text is gone from the 2.1.304 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.304/."
+  },
+  "tool-result-remote-host-unknown-respell": {
+    "verdict": "archived",
+    "version": "2.1.304",
+    "why": "Absent from prompts-2.1.304.json; its text is gone from the 2.1.304 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.304/."
+  },
+  "tool-result-start-task-input-refused": {
+    "verdict": "archived",
+    "version": "2.1.304",
+    "why": "Absent from prompts-2.1.304.json; its text is gone from the 2.1.304 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.304/."
+  },
+  "tool-result-bash-sandbox-wfp-fence-inactive-detail": {
+    "verdict": "archived",
+    "version": "2.1.305",
+    "why": "Absent from prompts-2.1.305.json; the fence-inactive error was rewritten and its pieces now carry new ids, the old wording is gone from the bundle. Override matched superseded pristine. Archived to ~/.tweakcc/orphans-removed-for-2.1.305/."
+  },
+  "tool-result-bash-command-missing-sdk": {
+    "verdict": "archived",
+    "version": "2.1.305",
+    "why": "Absent from prompts-2.1.305.json; its text is gone from the 2.1.305 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.305/."
+  },
+  "tool-result-bash-sandbox-srt-win-acl-grant-exited": {
+    "verdict": "archived",
+    "version": "2.1.305",
+    "why": "Absent from prompts-2.1.305.json; its text is gone from the 2.1.305 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.305/."
+  },
+  "tool-result-bash-sandbox-srt-win-acl-stamp-exited": {
+    "verdict": "archived",
+    "version": "2.1.305",
+    "why": "Absent from prompts-2.1.305.json; its text is gone from the 2.1.305 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.305/."
+  },
+  "tool-result-bash-sandbox-tls-terminate-ca-not-installed": {
+    "verdict": "archived",
+    "version": "2.1.305",
+    "why": "Absent from prompts-2.1.305.json; its text is gone from the 2.1.305 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.305/."
+  },
+  "tool-result-bash-sandbox-tls-terminate-ca-thumbprint-mismatch": {
+    "verdict": "archived",
+    "version": "2.1.305",
+    "why": "Absent from prompts-2.1.305.json; its text is gone from the 2.1.305 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.305/."
+  },
+  "system-reminder-task-stopped-by-user-with-note": {
+    "verdict": "archived",
+    "version": "2.1.308",
+    "why": "Renamed in 2.1.308; the successor id carries the same text. The override matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.308/."
+  },
+  "tool-description-agent-single-fact-lookup-search-directly": {
+    "verdict": "archived",
+    "version": "2.1.308",
+    "why": "Absent from prompts-2.1.308.json; the agent when-to-use paragraph that held it was removed, and the same sentence survives in the delegation-conclusion prompt. The override was an empty wipe. Archived to ~/.tweakcc/orphans-removed-for-2.1.308/."
+  },
+  "tool-description-agent-when-to-use-guidance": {
+    "verdict": "archived",
+    "version": "2.1.308",
+    "why": "Absent from prompts-2.1.308.json; its text is gone from the 2.1.308 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.308/."
+  },
+  "tool-result-project-read-file-too-large": {
+    "verdict": "archived",
+    "version": "2.1.308",
+    "why": "Absent from prompts-2.1.308.json; its text is gone from the 2.1.308 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.308/."
   }
 }
