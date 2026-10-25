@@ -142,7 +142,11 @@ if (deriveIds) {
   console.log(
     `changed: ${idList.length} overridden id(s) whose pristine changed`
   );
-  if (!idList.length) process.exit(0);
+  if (!idList.length) {
+    // A tasks.json left by an earlier run must not survive to be launched.
+    fs.rmSync(path.join(outDir, 'tasks.json'), { force: true });
+    process.exit(0);
+  }
 }
 
 const sweep = contentSwapSweep(promptsOf.get(prevPath), promptsOf.get(curPath));
