@@ -314,27 +314,12 @@
     "version": "2.1.292",
     "why": "@internal .describe() in the SDK control-protocol schema: documentation for SDK hosts, never sent to the model."
   },
-  "data-sdk-safeguard-results-field": {
-    "verdict": "not-model-facing",
-    "version": "2.1.292",
-    "why": "@internal .describe() in the SDK control-protocol schema: documentation for SDK hosts, never sent to the model."
-  },
   "data-sdk-message-stop-abandoned-blocks-field": {
     "verdict": "not-model-facing",
     "version": "2.1.292",
     "why": "@internal .describe() in the SDK control-protocol schema: documentation for SDK hosts, never sent to the model."
   },
   "data-interrupt-worker-epoch-parameter": {
-    "verdict": "not-model-facing",
-    "version": "2.1.292",
-    "why": "@internal .describe() in the SDK control-protocol schema: documentation for SDK hosts, never sent to the model."
-  },
-  "data-sdk-safeguard-tool-use-field": {
-    "verdict": "not-model-facing",
-    "version": "2.1.292",
-    "why": "@internal .describe() in the SDK control-protocol schema: documentation for SDK hosts, never sent to the model."
-  },
-  "data-sdk-read-file-anchor-field": {
     "verdict": "not-model-facing",
     "version": "2.1.292",
     "why": "@internal .describe() in the SDK control-protocol schema: documentation for SDK hosts, never sent to the model."
