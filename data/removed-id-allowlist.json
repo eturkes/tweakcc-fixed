@@ -4822,5 +4822,117 @@
     "verdict": "archived",
     "version": "2.1.308",
     "why": "Absent from prompts-2.1.308.json; its text is gone from the 2.1.308 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.308/."
+  },
+  "tool-result-worktree-pr-ref-absent": {
+    "verdict": "archived",
+    "facing": "ui",
+    "hash": "961ca992d02e5db8070771e5e7328b08b513f0a7",
+    "version": "2.1.308",
+    "why": "Reached only from the CLI --worktree PR path (stderr then exit); EnterWorktree and agent worktrees never pass a PR number. Ruled ui 2026-10-25. Overrides archived to ~/.tweakcc/orphans-ruled-ui-2026-10-25/."
+  },
+  "tool-result-worktree-pr-fetch-no-from-line": {
+    "verdict": "archived",
+    "facing": "ui",
+    "hash": "7e7617eb330e6677a75fafe5b1162a0322a72e38",
+    "version": "2.1.308",
+    "why": "Reached only from the CLI --worktree PR path (stderr then exit); EnterWorktree and agent worktrees never pass a PR number. Ruled ui 2026-10-25. Overrides archived to ~/.tweakcc/orphans-ruled-ui-2026-10-25/."
+  },
+  "tool-result-worktree-pr-fetch-head-overwritten": {
+    "verdict": "archived",
+    "facing": "ui",
+    "hash": "d3efae54199bca92d3f89086315a17a5b9912351",
+    "version": "2.1.308",
+    "why": "Reached only from the CLI --worktree PR path (stderr then exit); EnterWorktree and agent worktrees never pass a PR number. Ruled ui 2026-10-25. Overrides archived to ~/.tweakcc/orphans-ruled-ui-2026-10-25/."
+  },
+  "tool-result-worktree-pr-ref-ambiguous": {
+    "verdict": "archived",
+    "facing": "ui",
+    "hash": "ca9d2e2eb05939423a0ee491d5d5acb12a809c30",
+    "version": "2.1.308",
+    "why": "Reached only from the CLI --worktree PR path (stderr then exit); EnterWorktree and agent worktrees never pass a PR number. Ruled ui 2026-10-25. Overrides archived to ~/.tweakcc/orphans-ruled-ui-2026-10-25/."
+  },
+  "tool-result-worktree-pr-other-ref-unchecked": {
+    "verdict": "archived",
+    "facing": "ui",
+    "hash": "5adaf6b1c45ebf544863ca8163f5a306cea61c79",
+    "version": "2.1.308",
+    "why": "Reached only from the CLI --worktree PR path (stderr then exit); EnterWorktree and agent worktrees never pass a PR number. Ruled ui 2026-10-25. Overrides archived to ~/.tweakcc/orphans-ruled-ui-2026-10-25/."
+  },
+  "tool-result-worktree-base-fetch-head-no-commit": {
+    "verdict": "archived",
+    "facing": "ui",
+    "hash": "a840a260addffdef67a1abb35eb3a0894ce90ab5",
+    "version": "2.1.308",
+    "why": "Reached only from the CLI --worktree PR path (stderr then exit); EnterWorktree and agent worktrees never pass a PR number. Ruled ui 2026-10-25. Overrides archived to ~/.tweakcc/orphans-ruled-ui-2026-10-25/."
+  },
+  "tool-result-worktree-base-pr-fetch-head-no-commit": {
+    "verdict": "archived",
+    "facing": "ui",
+    "hash": "5c04008b7dc8e67344a3c560945ce1fc041b27cf",
+    "version": "2.1.308",
+    "why": "Reached only from the CLI --worktree PR path (stderr then exit); EnterWorktree and agent worktrees never pass a PR number. Ruled ui 2026-10-25. Overrides archived to ~/.tweakcc/orphans-ruled-ui-2026-10-25/."
+  },
+  "data-cloud-session-bundle-notice-starts-empty": {
+    "verdict": "archived",
+    "facing": "ui",
+    "hash": "a0c0fb45acec834f4701c04a9aee44c6717128ba",
+    "version": "2.1.308",
+    "why": "Built only on the cloud-session launch path without an environment (--cloud, headless client, pool); no model-invoked caller receives it. Ruled ui 2026-10-25. Overrides archived to ~/.tweakcc/orphans-ruled-ui-2026-10-25/."
+  },
+  "tool-result-cloud-session-changes-stay-on-machine": {
+    "verdict": "archived",
+    "facing": "ui",
+    "hash": "2fee85640c0d67d03b1615b22c17b7c40a2c079e",
+    "version": "2.1.308",
+    "why": "Built only on the cloud-session launch path without an environment (--cloud, headless client, pool); no model-invoked caller receives it. Ruled ui 2026-10-25. Overrides archived to ~/.tweakcc/orphans-ruled-ui-2026-10-25/."
+  },
+  "tool-result-cloud-session-branch-not-on-github-default-branch": {
+    "verdict": "archived",
+    "facing": "ui",
+    "hash": "aec73b88493de5886c67db5292089d705c1632b3",
+    "version": "2.1.308",
+    "why": "Built only on the cloud-session launch path without an environment (--cloud, headless client, pool); no model-invoked caller receives it. Ruled ui 2026-10-25. Overrides archived to ~/.tweakcc/orphans-ruled-ui-2026-10-25/."
+  },
+  "tool-result-cloud-session-branch-ahead-of-remote": {
+    "verdict": "archived",
+    "facing": "ui",
+    "hash": "711ecec600802400df6cff95813eaefd8278c36a",
+    "version": "2.1.308",
+    "why": "Built only on the cloud-session launch path without an environment (--cloud, headless client, pool); no model-invoked caller receives it. Ruled ui 2026-10-25. Overrides archived to ~/.tweakcc/orphans-ruled-ui-2026-10-25/."
+  },
+  "tool-result-cloud-session-start-pushed-commit-beneath": {
+    "verdict": "archived",
+    "facing": "ui",
+    "hash": "48b9eb58548db10240e6778e4f06477f88c1b05a",
+    "version": "2.1.308",
+    "why": "Built only on the cloud-session launch path without an environment (--cloud, headless client, pool); no model-invoked caller receives it. Ruled ui 2026-10-25. Overrides archived to ~/.tweakcc/orphans-ruled-ui-2026-10-25/."
+  },
+  "tool-result-cloud-session-start-newest-commit-remote-has": {
+    "verdict": "archived",
+    "facing": "ui",
+    "hash": "6ea2d5929797fcb4bc625668924f93dd787d893e",
+    "version": "2.1.308",
+    "why": "Built only on the cloud-session launch path without an environment (--cloud, headless client, pool); no model-invoked caller receives it. Ruled ui 2026-10-25. Overrides archived to ~/.tweakcc/orphans-ruled-ui-2026-10-25/."
+  },
+  "tool-result-cloud-session-start-newest-pushed-commit-beneath": {
+    "verdict": "archived",
+    "facing": "ui",
+    "hash": "2add3f8fb3e29d5ce4a152790b5b10897b9e2c3b",
+    "version": "2.1.308",
+    "why": "Built only on the cloud-session launch path without an environment (--cloud, headless client, pool); no model-invoked caller receives it. Ruled ui 2026-10-25. Overrides archived to ~/.tweakcc/orphans-ruled-ui-2026-10-25/."
+  },
+  "tool-result-cloud-session-remote-unreadable-start-hint": {
+    "verdict": "archived",
+    "facing": "ui",
+    "hash": "d8f502214cd690e57a6430d5ef9b7d31e3f1b293",
+    "version": "2.1.308",
+    "why": "Built only on the cloud-session launch path without an environment (--cloud, headless client, pool); no model-invoked caller receives it. Ruled ui 2026-10-25. Overrides archived to ~/.tweakcc/orphans-ruled-ui-2026-10-25/."
+  },
+  "tool-result-bash-sandbox-windows-argv-too-long": {
+    "verdict": "archived",
+    "facing": "internal",
+    "hash": "3b27efd2e5636ab789367c8729beb7d8f34c9f2c",
+    "version": "2.1.308",
+    "why": "Every route replaces this error with the fixed command-too-long text before the model sees it. Ruled internal 2026-10-25. Overrides archived to ~/.tweakcc/orphans-ruled-ui-2026-10-25/."
   }
 }
