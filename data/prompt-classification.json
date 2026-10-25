@@ -131118,5 +131118,2688 @@
     "id": "system-reminder-auto-mode-steer-only-header",
     "name": "System Reminder: auto mode steer-only header",
     "desc": "Header of the steer-only auto-mode reminder, followed by the finish-exposed-work and bash-first guidance."
-  }
+  },
+  "195647b6313ef9f04c85d2a4baa9b60ce4f76f71": {
+    "facing": "model",
+    "id": "tool-result-bash-builtin-gh-proxy-not-set",
+    "name": "gh stand-in proxy not set",
+    "desc": "Error the built-in gh stand-in prints when this session's HTTPS_PROXY names no 127.0.0.1 proxy, telling Claude to run gh from the session's own shell"
+  },
+  "4bd2052f373f92f7d3c38283381183eb5ed2a842": { "facing": "internal" },
+  "116e991fa5309434b6fca1f2c5b3733153804694": {
+    "facing": "model",
+    "id": "tool-result-temp-dir-disk-quota-used-up",
+    "name": "Temp dir disk quota used up clause",
+    "desc": "Clause naming an exhausted disk quota on the volume holding Claude Code's temporary directory"
+  },
+  "9f5ca031e8f99f2c892bfc65772e710897171a8f": {
+    "facing": "model",
+    "id": "tool-result-temp-dir-create-failed-volume-full",
+    "name": "Temp dir could not be created",
+    "desc": "Error that Claude Code's temporary directory could not be created because its volume is full, suggesting freeing space or CLAUDE_CODE_TMPDIR"
+  },
+  "33a2c23b17d5f9da1b578098da116df302bb2254": {
+    "facing": "model",
+    "id": "tool-result-mcp-permission-prompt-tool-connector-name-lookalike",
+    "name": "MCP server name looks like a claude.ai connector",
+    "desc": "Deny reason when an MCP server whose name starts like a claude.ai connector cannot have its tools approved by --permission-prompt-tool"
+  },
+  "d65e92b895f236b79e6919645a99c587c2eb4288": {
+    "facing": "model",
+    "id": "tool-result-git-not-installed-mac-xcode-select",
+    "name": "git not installed on Mac",
+    "desc": "Error that git is not installed on this Mac, suggesting xcode-select --install"
+  },
+  "ed49d7712b8c673e24ebdde93513fec8afdcec49": {
+    "facing": "model",
+    "id": "tool-result-browser-file-upload-needs-approval-nothing-uploaded",
+    "name": "Browser file_upload needs approval",
+    "desc": "Deny message that a browser file upload needs a person's approval that cannot be given here, so Claude should ask the user to choose the file themselves"
+  },
+  "b145821d0c5408e9c87fb37a3d40c876edb0d87e": { "facing": "ui" },
+  "7333934c691a1357ce5ccbdc2bc1ccab330334a7": { "facing": "internal" },
+  "919a9b2fb6358c845cc7b5db9985cef61d8609b2": { "facing": "internal" },
+  "ca4741ade3ecd47936fa633fef07e8da118b7473": { "facing": "internal" },
+  "f587e65cdddfa64a3baba44921af5d0a1641707f": { "facing": "internal" },
+  "85a54ddd93352fa7c4f0ad5838f049f3b5df1a92": { "facing": "internal" },
+  "9b598bdce021b51fff27d5c12b5ff07679987075": { "facing": "internal" },
+  "573362694d807a415a98364387ac61833d89b4cd": {
+    "facing": "model",
+    "id": "tool-result-ca-certs-system-store-empty",
+    "name": "CA certs system store empty clause",
+    "desc": "Clause explaining the system CA store is empty and to check readability of SSL_CERT_FILE, SSL_CERT_DIR or default paths"
+  },
+  "552fa94766847cb00d8418fcdaee97e2dc95ccda": {
+    "facing": "model",
+    "id": "tool-result-ca-certs-no-authority-to-trust",
+    "name": "No certificate authority to trust",
+    "desc": "Error that CLAUDE_CODE_CERT_STORE=system or --use-system-ca leaves no trusted roots and NODE_EXTRA_CA_CERTS alone does not count"
+  },
+  "47fb59307ef364ade76dbd09946238b516a4ad4f": { "facing": "internal" },
+  "20516500f06fd5a162ad10acb1e1c42c91493993": { "facing": "internal" },
+  "f299c4ceb11827165a23fc4594a8b9f592a678dd": { "facing": "internal" },
+  "89abcbf053816e5a44dc421ee263d2c9904c5fc5": { "facing": "internal" },
+  "e6b1c5b8d5b48db98f866fb0bd681d5763d0539f": { "facing": "internal" },
+  "f6a371651c74525cd86bbe84ece497a9419e1dff": { "facing": "internal" },
+  "12715b7083989ab421ed7d7042dd7e648cc0fe2d": { "facing": "internal" },
+  "457e19905375cce716cafc001afad11d817e8519": { "facing": "internal" },
+  "47830b59f70773bd962c806abda0ce1b3d2d09be": { "facing": "internal" },
+  "432b47bf4e4b193b73181d83c86207433efc3a0e": { "facing": "internal" },
+  "3ca4fb9c296c2d344ee483d910f4d1e1694357f7": { "facing": "internal" },
+  "bd31651025e02efd4dfb65702764f382e3b3e696": { "facing": "internal" },
+  "24bcffd430ec9d39915f413ecc966cb1caed5cf6": { "facing": "internal" },
+  "cef729f9423632b226d3620934ba2b623a17c2f6": { "facing": "internal" },
+  "4d42d02744621508fbe2a9582e100446f73e9729": { "facing": "ui" },
+  "ad2d6f7c30b83e99ca988f7356752df12ff8774c": { "facing": "ui" },
+  "23f47a46615c9012f017efe3b65e518bb7a630c4": { "facing": "ui" },
+  "6bc9d26a24c219e9dacff92be300d15db27f3076": { "facing": "ui" },
+  "16652134a0ef7fe39dd8f1c414c0b526d4a4d682": { "facing": "internal" },
+  "148c68531062ea876fcf0eb5396a3e9befc3bd4e": { "facing": "internal" },
+  "1b2df6712d636253d1445c299b37086f38acf3c0": { "facing": "internal" },
+  "56098c01224bea2eb46b84711bf35d884445f70c": { "facing": "internal" },
+  "c58dceeb1e9ab7b550bbad1304ecfcee1cad76c3": { "facing": "internal" },
+  "eb41605cd37be9bb93c677d277fbb9b5acd0f495": { "facing": "internal" },
+  "a54500d23d3cc2c62a284bea8db05908b04dff01": { "facing": "internal" },
+  "990ba4396d23933e348244159ff8aa71692bf1a6": { "facing": "internal" },
+  "bb558c0784d54c0280ea3883704c4a8d48da7837": { "facing": "internal" },
+  "0ee635d5e9292f8f7f98d5555b693d66e7ff0797": { "facing": "internal" },
+  "a932a45ea59cef832c4d400ec9aea431a9252247": { "facing": "ui" },
+  "acb125184474c743769bdc5f66bc4c66c79d55cb": {
+    "facing": "model",
+    "id": "tool-result-plugin-value-holds-proxy-or-vm-context",
+    "name": "Plugin value holds a Proxy or vm context",
+    "desc": "Validation reason that a plugin-supplied value holds a Proxy or a vm context"
+  },
+  "9619a1075425fbff7290f1c4ac31eeeaee317170": { "facing": "ui" },
+  "7eb21f4501242b0ab17bde2c6bcff773e6ec18f6": { "facing": "internal" },
+  "2e10438c670417570bb0f36ff7744be7820d76f5": { "facing": "ui" },
+  "fe974469ab332d708379f95e7f8fd3e08ffcbdf5": {
+    "facing": "model",
+    "id": "tool-result-artifact-org-requires-approval-notice-default",
+    "name": "Artifact org approval notice default",
+    "desc": "Default text of the organization's artifact_create_notice, that each new artifact needs a person's approval"
+  },
+  "c9d78345f92358266d1a5531dd92a4dcbeb7100a": { "facing": "ui" },
+  "db0c46bbc9a659b62a82facfac0bef54b00cb3c8": { "facing": "ui" },
+  "9e7839bae49b9681b2cf0cc4f50707ebf0d18589": { "facing": "ui" },
+  "20b0ce40d0192c446907be60d3ebc74fe2edc64d": { "facing": "ui" },
+  "c50efad40df006a8263481e74bbcacad3fcbe34c": { "facing": "ui" },
+  "645ddaa3e6c01cb8fc923b785fad3ddc58b9897f": { "facing": "ui" },
+  "ec4ae8519753a849fd302503b9af460775a0cdc6": { "facing": "ui" },
+  "505e3638fca10bc417912170581de19ade5d6f85": { "facing": "ui" },
+  "91178efa1fc69e08adb67f50d32bcc357fbb4d14": { "facing": "internal" },
+  "cf2416f4647cd24cccc77a1e3163995a0d596af6": { "facing": "internal" },
+  "02a9fd818ab9fbbe1fdb0363e80af0542fa93ef1": { "facing": "internal" },
+  "36b7b7c363f9823cdf711d2a064ae990fe4f4e84": {
+    "facing": "model",
+    "id": "slash-command-feedback-disabled-issues-public",
+    "name": "Feedback disabled issues public",
+    "desc": "Adds the GitHub issues link and a reminder that issues are public to the feedback-disabled message"
+  },
+  "67e5ee7229e25a4aa353b6de35d98c15c5063cf6": {
+    "facing": "model",
+    "id": "slash-command-feedback-disabled-by-org-policy",
+    "name": "Feedback disabled by org policy",
+    "desc": "Message that a feature is disabled by the organization's policy"
+  },
+  "8aa0af316abb6f80d39df04bebd7a3cdb48061a2": { "facing": "internal" },
+  "a43e6aa1edb11aeb6d77583ba24a31bfeccbbc82": {
+    "facing": "model",
+    "id": "tool-result-gettask-not-callable-suffix",
+    "name": "GetTask not callable suffix",
+    "desc": "Suffix explaining GetTask is not a callable tool and background results arrive on their own"
+  },
+  "d41a8c9a80ab38473252bb7f2159403110e34e4e": { "facing": "internal" },
+  "ef1bdb9a830280c275aef349036a80227445b25e": {
+    "facing": "model",
+    "id": "tool-description-webfetch-artifact-refused-use-fallback",
+    "name": "WebFetch artifact refused fallback clause",
+    "desc": "Clause telling Claude which tool to use where the Artifacts MCP read tool refuses a link"
+  },
+  "629551fdf48513c185e4fe11d23e2d3c2d3546ef": {
+    "facing": "model",
+    "id": "tool-description-webfetch-artifact-links-artifacts-mcp-lean",
+    "name": "WebFetch artifact links via Artifacts MCP (lean)",
+    "desc": "Lean WebFetch prompt clause that claude.ai artifact links should be read with the Artifacts MCP read tool"
+  },
+  "ac93bad79fed342ab1b2abdace6f998c8387a39f": {
+    "facing": "model",
+    "id": "tool-description-webfetch-artifact-links-artifacts-mcp",
+    "name": "WebFetch artifact links via Artifacts MCP",
+    "desc": "WebFetch prompt bullet that claude.ai artifact links should be read with the Artifacts MCP read tool, not curl or a headless browser"
+  },
+  "923acbdee8d30f1ed89829e92dc2075ca6522e7d": {
+    "facing": "model",
+    "id": "tool-result-bash-declaration-expansion-unverifiable-assign",
+    "name": "Bash declaration expansion can fail",
+    "desc": "Ask reason that a variable assigned by a declaration with a failing expansion cannot be statically verified"
+  },
+  "a85eab7a225794263020167dbf79aabbf13264cc": {
+    "facing": "model",
+    "id": "tool-result-mcp-server-question-unanswered",
+    "name": "MCP server question unanswered",
+    "desc": "Error that an MCP server's question to the user got no answer in time, telling Claude not to call the tool again this turn"
+  },
+  "4abbd90f17a3b5377619fb8fa05e0686f0c550ac": { "facing": "internal" },
+  "adf5dbc4b917aa89cd48ccafac02c72c373e3e72": { "facing": "internal" },
+  "5b3a732c88d11111fc81d3d86022b7262a894d2b": { "facing": "internal" },
+  "7245ef9627c6dd559ca5a375932d7a3ae72479c7": { "facing": "internal" },
+  "9c80cf98386590ebb9056ee00e081c11906a95d3": { "facing": "internal" },
+  "6285cb623f48c16903324532db8585451aa31c41": { "facing": "ui" },
+  "6ddb4073e6db327780feae9be551a77f3eb83de4": { "facing": "internal" },
+  "51e0f5c4c472b88d3cba6258124b51da3e554a37": { "facing": "internal" },
+  "2875760835e1d50204cfcd0e99b61e8147dbaff8": { "facing": "internal" },
+  "3c3fb47d5dddab9cb9f340b51c789297578d337c": { "facing": "internal" },
+  "ea6dc1b4a686da4d44c4c48da3fe7564611d24dd": { "facing": "ui" },
+  "8aa108ce95ab87a3d4784ae92474a2ef2e608519": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-required-init-failed",
+    "name": "Bash sandbox required init failed",
+    "desc": "Error that a required sandbox failed to initialize and running outside it is not allowed either"
+  },
+  "3346c242aa50106d9c971aa91f0f945dc2907e01": { "facing": "ui" },
+  "d4f30d5265800f772b46facc58d47d138a245202": {
+    "facing": "model",
+    "id": "tool-result-browser-file-upload-one-file-per-call-pane",
+    "name": "Browser file_upload one file per call",
+    "desc": "Error that file_upload takes one file per call in this browser pane"
+  },
+  "e2847a0921e024c86f61bca8d5d1697435d55ec8": {
+    "facing": "model",
+    "id": "tool-result-browser-file-upload-paths-array-one-absolute",
+    "name": "Browser file_upload paths needs one absolute path",
+    "desc": "Error that file_upload paths must be an array holding one absolute file path"
+  },
+  "d883619e303a78e1cfd784579cd5f1ac90e58e60": { "facing": "internal" },
+  "b2f405920468710ce670d065569f4638916b0186": { "facing": "internal" },
+  "f7444529eebc7a399cd5e52fa482e8f0d80e90b9": { "facing": "internal" },
+  "29002fe717396c883cc63973ab90cb67ea0c0b47": { "facing": "internal" },
+  "cda7eed985b1bf0f3f5d1a70959e5454845be601": { "facing": "internal" },
+  "820b1f1156e50f8b402c738e4b9f9e2fe11fe0de": { "facing": "internal" },
+  "c1bfbfb4a893d3c49485aedbbeebd600ca6191bc": { "facing": "internal" },
+  "86be0ec23c37662832868d0f17f850e99686e9bf": {
+    "facing": "model",
+    "id": "tool-result-mcp-remote-browser-model-only-call",
+    "name": "Remote browser MCP tool model only",
+    "desc": "Refusal that cloud browser MCP tools can only be called by the model with a safety check or approval"
+  },
+  "25a77c4510ed10c90e45461d2d897b0a6c03a4bd": { "facing": "internal" },
+  "d84933301ce77d584bc95305ab52f0b8566b4209": { "facing": "internal" },
+  "2367df6aec69383488433dfb69c4358c1d344fad": { "facing": "ui" },
+  "bec1276a4c91fc02aa05fae82a309d33fbe42430": {
+    "facing": "model",
+    "id": "tool-result-remote-tool-auto-off-reason-sandbox-off",
+    "name": "Remote tool auto off reason sandbox off",
+    "desc": "Reason that unattended commands need this computer's sandbox mode set"
+  },
+  "7c11017e2689a97cbc2bfa8fbee68b341673c8dc": {
+    "facing": "model",
+    "id": "tool-result-remote-tool-auto-off-reason-consent-unset",
+    "name": "Remote tool auto off reason consent unset",
+    "desc": "Reason that unattended commands from cloud sessions are not yet allowed on this computer"
+  },
+  "4b4ed84f391d49eb5a56a1e3e6446e59cdfa2f58": {
+    "facing": "model",
+    "id": "tool-result-remote-tool-auto-off-reason-consent-declined",
+    "name": "Remote tool auto off reason consent declined",
+    "desc": "Reason that unattended commands from cloud sessions are turned off on this computer"
+  },
+  "563dfb9c0eb087cf86f71983ab177febdc8fac97": { "facing": "internal" },
+  "47e826b89a0b24f95ddf51c9cd54d7b68100e4da": { "facing": "internal" },
+  "185d4eba1930e027cbc07f5dc6199316fe5aa2ff": { "facing": "ui" },
+  "2518f0fae584f39fb7babe3dbd5a835e34148fe7": { "facing": "ui" },
+  "4979716d8a4d327f6470a46a4335ab230345f1e9": { "facing": "ui" },
+  "f8d2971a556e5a8d7c4c3430af7b6bdece7b66ee": { "facing": "ui" },
+  "59c6b100a6f109f0d21667123b099122caa89263": { "facing": "ui" },
+  "0aa86f313425e31ea21d200dea59775f00c6fd21": { "facing": "ui" },
+  "962e90a292fc3b1cc04739bd604969bb3e7a0284": { "facing": "ui" },
+  "c83c6753dc3f7b53e3dd40bbdacd49190d4d786a": { "facing": "ui" },
+  "e0af8d3c874056666e235617725d10f02af07ae2": { "facing": "ui" },
+  "ab719f535796203b4d53dee10260fa167dcd12e1": { "facing": "ui" },
+  "a8c565ca9f5db570db4876ecea70bdc40d0f1e13": { "facing": "ui" },
+  "0987d6ad26b053f85047c34e7cb6894f513d7daf": { "facing": "internal" },
+  "e95ebbb16eeb0ed0b56422eb58d7a8047326c771": {
+    "facing": "model",
+    "id": "tool-result-mcp-tool-result-arrived-without-text",
+    "name": "MCP tool result arrived without text",
+    "desc": "Error that an MCP tool result arrived without its text, likely too large, telling Claude to check whether it ran and ask for less"
+  },
+  "372adcc36a6ea151ce6a733073e84a39309ecd49": {
+    "facing": "model",
+    "id": "tool-description-resolve-connectors-needs-reconnect-not-installed",
+    "name": "Resolve connectors needs reconnect guidance",
+    "desc": "Tool prompt clause on needs_reconnect results and suggesting connecting uninstalled connectors via claude.ai"
+  },
+  "dea5630f16cd5e0d0722ef34f7a559c504b61ab8": {
+    "facing": "model",
+    "id": "tool-description-connector-directory-connect-via-claude-ai",
+    "name": "Connector directory connect via claude.ai",
+    "desc": "Tool prompt clause that relevant uninstalled connectors can be connected via claude.ai, as the tool connects nothing"
+  },
+  "db5ca7b4cdd765796a4aa2c29dda62653758ab4f": {
+    "facing": "model",
+    "id": "tool-description-list-connectors-needs-reconnect-call-tool",
+    "name": "List connectors needs reconnect call",
+    "desc": "Tool prompt clause that enabledInChat false with needs_reconnect means the user must sign in again, calling a tool so the app can offer it"
+  },
+  "3e19f8eaaeba112403a1da9b3c7c78d13d698ab1": {
+    "facing": "model",
+    "id": "system-reminder-resume-container-disk-missing-tool-calls",
+    "name": "Resume container disk missing tool calls",
+    "desc": "Opening of the reminder that the container disk lacked recent tool calls when the session resumed"
+  },
+  "3ee527027a34e177fb7fc645618973cc916f76db": {
+    "facing": "model",
+    "id": "system-reminder-resume-container-disk-behind-again",
+    "name": "Resume container disk behind again",
+    "desc": "Clause that the disk has been behind before and changes may be lost again"
+  },
+  "4c5c851c618050d580ffc014c65b9bbedccb1393": {
+    "facing": "model",
+    "id": "system-reminder-resume-container-disk-missing-tool-calls-body",
+    "name": "Resume container disk missing tool calls body",
+    "desc": "Body of the resume reminder: how many tool calls the disk lacked, that files may be stale, and to check them and tell the user"
+  },
+  "f974e8faadb0ee91592df0624630eb14dd4b3b79": {
+    "facing": "model",
+    "id": "system-reminder-resume-container-disk-oldest-missing-time",
+    "name": "Resume container disk oldest missing time",
+    "desc": "Clause giving when the oldest missing call was made relative to the resume"
+  },
+  "dbd93d763e4ddba476e3cc4249122f5833f173d1": {
+    "facing": "model",
+    "id": "tool-result-bash-output-temp-dir-quota-exceeded",
+    "name": "Bash output temp dir quota exceeded",
+    "desc": "Note appended to a failed Bash command that a test write in Claude Code's temp dir failed with EDQUOT"
+  },
+  "0bb233f9b97c0204dbdd770cbb2e67a2a24dc870": {
+    "facing": "model",
+    "id": "tool-description-bash-output-lost-temp-quota-restart-remedy",
+    "name": "Bash output temp space remedy",
+    "desc": "Remedy to free space or restart Claude Code with CLAUDE_CODE_TMPDIR elsewhere, telling the user before deleting"
+  },
+  "cef79691d1853d299162130fe65b7b54312db9df": {
+    "facing": "model",
+    "id": "tool-result-bash-output-no-space-clause",
+    "name": "Bash output no space clause",
+    "desc": "Clause that the command output and its own writes may have failed with No space left on device"
+  },
+  "06d1e9ef39a90f9f7ba5629346d79f413d0c1b27": {
+    "facing": "model",
+    "id": "tool-result-bash-output-temp-dir-low-inodes",
+    "name": "Bash output temp dir low inodes",
+    "desc": "Note that the temp directory's volume is nearly out of inodes"
+  },
+  "53ce92191fa95814d3df1053610532492ecbb4ab": {
+    "facing": "model",
+    "id": "tool-result-bash-output-temp-dir-disk-full-test-write",
+    "name": "Bash output temp dir disk full test write",
+    "desc": "Note that a test write beside the output file failed with ENOSPC"
+  },
+  "066c963d141704a815d19f0ec29d3fb9821a2114": {
+    "facing": "model",
+    "id": "tool-result-bash-output-temp-dir-disk-full-low-mb",
+    "name": "Bash output temp dir disk full low MB",
+    "desc": "Note that the temp directory's volume has only a few MB free"
+  },
+  "308351a41286887368108f64959a6809cc239ef6": { "facing": "internal" },
+  "45123579c1f51593e18de0fae8bfbd4917f65574": { "facing": "ui" },
+  "c986128a6857c3fc265ec28c2c8d7aa0cb1da098": {
+    "facing": "model",
+    "id": "tool-result-hook-git-bash-not-found-args-or-powershell",
+    "name": "Hook Git Bash not found args remedy",
+    "desc": "Remedy to put the program in command and args, or set shell to powershell"
+  },
+  "6cdd5621953e446865a9c5185d3e97eafa211efa": {
+    "facing": "model",
+    "id": "system-reminder-hook-blocking-reason-git-bash-not-found-exit-code-127",
+    "name": "Hook blocking reason (Git Bash not found, exit code 127)",
+    "desc": "Explains that a hook is blocking because Git Bash was not found and it exited with code 127, how the user should fix the hook's command, args and onFailure settings, and that Claude must not change the hook"
+  },
+  "531d430b2a7e939d621483e41340d4a6d47af230": {
+    "facing": "model",
+    "id": "tool-result-hook-blocking-git-bash-not-found",
+    "name": "Hook blocking Git Bash not found",
+    "desc": "Blocking reason that Git Bash was not found so only exit 0 or 2 counts, with a remedy, and that Claude should not change the hook"
+  },
+  "5dff9c11945a3ef1b56048c07e09baf80f53ee2f": {
+    "facing": "model",
+    "id": "tool-result-hook-blocking-git-bash-powershell-exit-remedy",
+    "name": "Hook blocking PowerShell exit remedy",
+    "desc": "Remedy for a PowerShell hook to exit 0 or 2 or set onFailure to continue"
+  },
+  "747cbe4601935083b8a2c0245ada7e3fec3f302c": {
+    "facing": "model",
+    "id": "tool-result-hook-blocking-git-bash-install-or-args-remedy",
+    "name": "Hook blocking install or args remedy",
+    "desc": "Remedy to install Git for Windows or use command/args with onFailure block"
+  },
+  "44ab0b8d787f163a10bbebd7f65fb0b6ff805bde": {
+    "facing": "model",
+    "id": "tool-result-bash-rm-check-shell-parse-mismatch",
+    "name": "Bash rm check parse mismatch",
+    "desc": "Ask message that the command could not be checked for dangerous rm operations because the shell may read it differently"
+  },
+  "d303aefd193b64e3b8e7a1dbbcd6857b08d5363a": {
+    "facing": "model",
+    "id": "tool-result-bash-dangerous-op-parse-mismatch-decision-reason",
+    "name": "Bash dangerous op parse mismatch reason",
+    "desc": "Decision reason that a dangerous removal is not ruled out because the shell may parse the command differently"
+  },
+  "9c6f71ac1c5b303c38ee70fb2ac2d3d67a467c61": {
+    "facing": "model",
+    "id": "tool-result-sandbox-strict-mode-command-not-run",
+    "name": "Strict sandbox command not run",
+    "desc": "Validation message that strict sandbox mode blocked a command outside the sandbox and changing that is the user's decision"
+  },
+  "5fea836d37135be28ec8a172c87214b0682f56e1": {
+    "facing": "model",
+    "id": "tool-result-sandbox-strict-exclusion-needs-prompt-clause",
+    "name": "Strict sandbox exclusion needs prompt",
+    "desc": "Clause that a sandbox exclusion exempts a command only where a permission prompt can approve it"
+  },
+  "79bd155d37963b9877415e8930033fd005104feb": {
+    "facing": "model",
+    "id": "tool-result-sandbox-strict-only-inside-sandbox",
+    "name": "Strict sandbox only inside",
+    "desc": "Sentence that the command can run only inside the sandbox"
+  },
+  "cdf438585fa43afd9530994dc30cf9feb5af6a35": {
+    "facing": "model",
+    "id": "tool-result-sandbox-strict-no-excluded-commands-entry",
+    "name": "Strict sandbox no exclusion entry",
+    "desc": "Clause that no sandbox.excludedCommands entry in user, managed or --settings exempts the command"
+  },
+  "9f1e9a82fb9bab59a03310d45da33b6f61efc3d5": {
+    "facing": "model",
+    "id": "tool-result-sandbox-strict-only-three-sources",
+    "name": "Strict sandbox only three sources count",
+    "desc": "Sentence that only an entry in those three sources counts"
+  },
+  "e068ce3d50af30f6edc77e9232a7bf9ad76acb08": {
+    "facing": "model",
+    "id": "tool-result-sandbox-strict-switched-off-stays-refused",
+    "name": "Strict sandbox switched off",
+    "desc": "Sentence that commands stay refused until the sandbox is switched back on"
+  },
+  "4ab284ef7d60936d60f4bdc7e72a34ce93e86528": {
+    "facing": "model",
+    "id": "tool-result-sandbox-strict-no-sandbox-manager-only",
+    "name": "Strict sandbox no sandbox available",
+    "desc": "Sentence that only whoever manages the sandbox settings can change strict mode"
+  },
+  "84e113a2ba40da4d4d7a00882411422c677d8646": {
+    "facing": "model",
+    "id": "tool-result-sandbox-strict-not-ready-restart",
+    "name": "Strict sandbox not ready",
+    "desc": "Sentence that the user can restart Claude Code or ask an administrator"
+  },
+  "385f275e6f1215465a53074d2b6c6f6906dcb769": {
+    "facing": "model",
+    "id": "tool-result-sandbox-strict-program-cannot-start-reinstall",
+    "name": "Strict sandbox program cannot start",
+    "desc": "Sentence that reinstalling Claude Code may fix the sandbox program"
+  },
+  "cdd30bf35d46258c0dedc0a40a59eafbc7b8aaa1": {
+    "facing": "model",
+    "id": "tool-result-sandbox-strict-admin-run-setup",
+    "name": "Strict sandbox admin setup",
+    "desc": "Sentence that the administrator has to run the sandbox set-up"
+  },
+  "a6b14dd0e6fcb0dc7fd05e1d4a8ab80bfa2308a9": {
+    "facing": "model",
+    "id": "tool-result-sandbox-strict-user-install-setup",
+    "name": "Strict sandbox user install",
+    "desc": "Sentence that the user can run /sandbox install or claude sandbox install"
+  },
+  "10b94a4b820671fa7fe3402b47d2ab2ee07789cb": {
+    "facing": "model",
+    "id": "tool-result-sandbox-strict-failed-start-restart",
+    "name": "Strict sandbox failed start",
+    "desc": "Sentence that the user can restart Claude Code to try starting the sandbox again"
+  },
+  "5cc63391cd0586493bf7aa2fbd3a5dcfe6b0118b": {
+    "facing": "model",
+    "id": "tool-result-sandbox-strict-exclusion-bash-reads-differently",
+    "name": "Strict sandbox exclusion parse mismatch",
+    "desc": "Clause that the command matches an exclusion but Bash reads part of it differently"
+  },
+  "c0be12c94dc094cfc8de257b366bd2601a68e248": { "facing": "internal" },
+  "c078a372bd67c645af749da272cbba914f566368": { "facing": "internal" },
+  "b45d6cec0b6d9a275715a3c069f8d21476756367": {
+    "facing": "model",
+    "id": "tool-description-bash-github-at-mention-notifies",
+    "name": "Bash GitHub @mention notifies",
+    "desc": "Bash prompt guidance that a bare @name in PR or issue text notifies that user, so roles and code go in backticks"
+  },
+  "2d74beec488bad2d6c32c86fab5128534d2eea4e": { "facing": "internal" },
+  "6045f99a32d78e34a7a87d28730f8f783ae0379b": {
+    "facing": "model",
+    "id": "slash-command-terminal-setup-description-native-shift-enter",
+    "name": "Terminal setup description native Shift+Enter",
+    "desc": "Command description that Shift+Enter is natively supported in the current terminal"
+  },
+  "4622262bb52be851a15e6da1ed5bbe33f7f43e7f": {
+    "facing": "model",
+    "id": "tool-result-remote-session-device-not-trusted-login",
+    "name": "Remote session device not trusted",
+    "desc": "Create-session failure that this computer is not a trusted device yet and to sign in again with /login"
+  },
+  "fece04fb67bd6dce549bb7afa526eeb4e4b7b496": { "facing": "internal" },
+  "b1d8807c5af0ced6a8577737de8e0c4ee3a57626": {
+    "facing": "model",
+    "id": "system-prompt-guide-agent-no-answer-report-issue",
+    "name": "Guide agent no answer report issue",
+    "desc": "Guide agent instruction to direct the user to report the issue when no answer is found"
+  },
+  "b7b924d029ef11dda16195027e661bae466a8b4d": { "facing": "internal" },
+  "9fd6fedae53c8848772dd4d8c0da243c431fc4aa": { "facing": "internal" },
+  "963e54b8cca41b3451eafed3d01833ff4fd7facd": { "facing": "internal" },
+  "6dcfde284c3838525b6e9636e75bbc8a0e2a6170": { "facing": "internal" },
+  "571c74f1a0f819eb3eccad93b59469da80fccc82": {
+    "facing": "model",
+    "id": "tool-result-bash-worktree-guard-shell-filled-variable",
+    "name": "Worktree guard shell-filled variable",
+    "desc": "Guard reason that a variable is one the shell fills with its own text"
+  },
+  "dcb062477ce939c2a00a3b3f46f82163a9fdfe5f": {
+    "facing": "model",
+    "id": "tool-result-bash-worktree-guard-assigned-word-shell-filled",
+    "name": "Worktree guard assigned word shell-filled",
+    "desc": "Guard reason that an assigned word contains a shell-filled variable"
+  },
+  "3fb20a5dd1c66e04f07aac8ebb923240cdb30ca0": {
+    "facing": "model",
+    "id": "tool-result-bash-worktree-guard-expansion-inside-pattern",
+    "name": "Worktree guard expansion inside pattern",
+    "desc": "Guard reason and fix for an expansion inside a pattern"
+  },
+  "bfa89261c18117babcc9ca2a81e69e828bbeaeb3": {
+    "facing": "model",
+    "id": "tool-result-bash-worktree-guard-process-substitution-in-pattern",
+    "name": "Worktree guard process substitution in pattern",
+    "desc": "Guard reason and fix for a <(, >( or =( inside a pattern"
+  },
+  "a7f24be4e6dde40681a203a0d2f227797740d20e": {
+    "facing": "model",
+    "id": "tool-result-bash-worktree-guard-reason-pattern",
+    "name": "Worktree guard reason pattern",
+    "desc": "Guard reason naming a pattern"
+  },
+  "eb4c2cc7c8fa8927c7b17be120240591b67f51d3": {
+    "facing": "model",
+    "id": "tool-result-bash-worktree-guard-reason-pattern-joined",
+    "name": "Worktree guard reason joined pattern",
+    "desc": "Guard reason naming a pattern joined with the next word"
+  },
+  "bf8b04fb69dffb02d9b096f594a9c38f9cfa24e0": {
+    "facing": "model",
+    "id": "tool-result-bash-worktree-guard-heredoc-body-zsh",
+    "name": "Worktree guard heredoc body zsh",
+    "desc": "Guard reason for a here-document body zsh expands differently"
+  },
+  "a4e6a17398a52128c72d29fed8a650ea4795a380": {
+    "facing": "model",
+    "id": "tool-result-bash-worktree-guard-locale-tables-path",
+    "name": "Worktree guard locale tables path",
+    "desc": "Guard reason for locale tables from a chosen path"
+  },
+  "f811a66661fd54aa2b521735dcc8dbd3c3b473b7": {
+    "facing": "model",
+    "id": "tool-result-bash-worktree-guard-locale-unverifiable",
+    "name": "Worktree guard locale unverifiable",
+    "desc": "Guard reason that a locale's character set cannot be verified"
+  },
+  "0b892ed96d80d0eae714322b2a48ee04689ceb4b": {
+    "facing": "model",
+    "id": "tool-result-bash-worktree-git-names-rsync-connect-prog",
+    "name": "Worktree git RSYNC_CONNECT_PROG",
+    "desc": "Refusal that the command names RSYNC_CONNECT_PROG"
+  },
+  "7c769b000c1bffcab2877e3ef1b093dd11140054": {
+    "facing": "model",
+    "id": "tool-result-bash-worktree-git-rewrite-without-rsync-connect-prog",
+    "name": "Worktree git rewrite without RSYNC_CONNECT_PROG",
+    "desc": "Fix to rewrite the command without RSYNC_CONNECT_PROG"
+  },
+  "5ad70fc953f7df881bdbaba207464adc2a0e4f42": {
+    "facing": "model",
+    "id": "tool-result-bash-worktree-git-argv0-changes-name",
+    "name": "Worktree git ARGV0",
+    "desc": "Refusal that setting ARGV0 changes the name git starts under"
+  },
+  "895299fab00b87fcd4bd9921632b2a40407c610c": {
+    "facing": "model",
+    "id": "tool-result-bash-worktree-git-find-exec-braces",
+    "name": "Worktree git find -exec braces",
+    "desc": "Refusal that {} after git is filled by find -exec"
+  },
+  "6a14c43dea481c596d5e51eae0af1087d153ecee": {
+    "facing": "model",
+    "id": "tool-result-bash-worktree-git-find-exec-search-without",
+    "name": "Worktree git search without find -exec",
+    "desc": "Fix to search without find -exec or spell git options literally"
+  },
+  "f366f128d4e06223380b7cc0df4b21ace6763360": {
+    "facing": "model",
+    "id": "tool-result-bash-worktree-git-init-runtime-word",
+    "name": "Worktree git init runtime word",
+    "desc": "Refusal that a word after git init is filled at runtime"
+  },
+  "999d89005c28344e22ae4dc48553175d5eb5441a": {
+    "facing": "model",
+    "id": "tool-result-bash-worktree-git-init-spell-words-literally",
+    "name": "Worktree git init spell words",
+    "desc": "Fix to spell the words after git init literally"
+  },
+  "88094ac5f6a49f14efc25eae4b8d4f882bc248f5": {
+    "facing": "model",
+    "id": "tool-result-bash-worktree-git-init-option-shared-repo",
+    "name": "Worktree git init option shared repo",
+    "desc": "Refusal that a git init option acts on the shared repository"
+  },
+  "da7ad7764c5b7e3c0c94b426f0ffee19b68cda23": {
+    "facing": "model",
+    "id": "tool-result-bash-worktree-git-init-program-ahead",
+    "name": "Worktree git init program ahead",
+    "desc": "Refusal that a program ahead of git may start git-init reading a word as an option"
+  },
+  "1a1f2bd5561a9a97cac715d5a079d609618f57dc": {
+    "facing": "model",
+    "id": "tool-result-bash-worktree-git-init-drop-or-put-git-first",
+    "name": "Worktree git init drop word",
+    "desc": "Fix to drop the word or put git first"
+  },
+  "87a4a1c912903f0c9ec71f843039598d44ae2888": {
+    "facing": "model",
+    "id": "tool-result-bash-worktree-git-set-var-readable",
+    "name": "Worktree git set variable readable",
+    "desc": "Fix to set a git-redirecting variable where the guard can read it"
+  },
+  "41cdc9fe7d75f6ba54b5e0f5fc5f5f4eb1f1e2ee": {
+    "facing": "model",
+    "id": "tool-result-bash-worktree-git-run-init-without-option",
+    "name": "Worktree git run init without option",
+    "desc": "Fix to run git init without the option"
+  },
+  "d0ea65319ad48f0e499fe74618b9880f516e54ae": {
+    "facing": "model",
+    "id": "tool-result-bash-worktree-git-run-without-opaque",
+    "name": "Worktree git run without variable",
+    "desc": "Fix to run without the opaque variable"
+  },
+  "d64c32b7d09dd883b685f706f427c1a078325272": { "facing": "internal" },
+  "7a7c27081461c3b16364af32cf470bf6f49c5fec": {
+    "facing": "model",
+    "id": "tool-result-bash-cwd-gone-not-run-reissue",
+    "name": "Bash cwd gone not run",
+    "desc": "Error that the working directory is gone so the command was not run"
+  },
+  "656ccc882a8aeae2a45aefd1bee92b9908291fc9": {
+    "facing": "model",
+    "id": "tool-result-bash-cwd-missing-not-run-recovered",
+    "name": "Bash cwd missing recovered",
+    "desc": "Error that the working directory no longer exists, the command was not run and cwd was recovered"
+  },
+  "77f6f1cd8cc7f96f19b2c170e945d11a166b53ea": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-wrap-unconfined",
+    "name": "Bash sandbox wrap unconfined",
+    "desc": "Error that the sandbox produced no confinement so the command was not run"
+  },
+  "5d7555b5ff6500f0edd7d45f8faf95857ce96de3": {
+    "facing": "model",
+    "id": "tool-result-bash-disk-quota-used-up-clause",
+    "name": "Bash disk quota clause",
+    "desc": "Clause that the user's disk quota is used up"
+  },
+  "51771945a859d59f508fc1d20320af9bb9fba94a": {
+    "facing": "model",
+    "id": "tool-result-bash-disk-full-output-file",
+    "name": "Bash disk full output file",
+    "desc": "Error that the command was not started because the temp volume is full so the output file could not be created"
+  },
+  "f4d3dcb1426001749b722d295fadd55623a5de75": {
+    "facing": "model",
+    "id": "tool-result-read-device-or-process-file",
+    "name": "Read device or process file",
+    "desc": "Error that Read does not read device or process files"
+  },
+  "87c0cc1b51d657a8c928868ef5df876584a63037": {
+    "facing": "model",
+    "id": "tool-result-read-unresolved-device-or-process-file",
+    "name": "Read unresolved device or process file",
+    "desc": "Error that a path cannot be told apart from a device or process file"
+  },
+  "59a8f09598ee886534dd375b2f008e89d2d1dc1c": {
+    "facing": "model",
+    "id": "system-prompt-windows-sandbox-git-repository-creation",
+    "name": "Windows sandbox git repository creation",
+    "desc": "Windows sandbox guidance not to create repositories in the sandbox, how the user should create them and how to handle dubious-ownership errors"
+  },
+  "1422faa8dd90a0e25415a39b738ee95d84156b06": {
+    "facing": "model",
+    "id": "system-prompt-windows-sandbox-git-credentials-unavailable",
+    "name": "Windows sandbox git credentials unavailable",
+    "desc": "States that sandboxed git cannot use the user's saved HTTPS or SSH sign-in, forbids workarounds, and directs the user to run the fetch, pull or push in their own terminal"
+  },
+  "08314887c574c0ebdae1a2e8e73396e051e1bddd": {
+    "facing": "model",
+    "id": "system-prompt-windows-sandbox-git-folder-above-working-directory",
+    "name": "Windows sandbox git folder above working directory",
+    "desc": "Explains that sandboxed git cannot write the .git folder above a subfolder start directory, how to look for it, and to tell the user to start Claude Code at the repository root rather than running git init or widening write access"
+  },
+  "031c611d604663322ab4d2f6201345827ac4745f": {
+    "facing": "model",
+    "id": "system-prompt-windows-sandbox-git-worktree-add",
+    "name": "Windows sandbox git worktree add",
+    "desc": "Windows sandbox guidance never to run git worktree add in the sandbox and to give the user the command"
+  },
+  "2c14f5a68503d89ad10fa50b40eca8aea06cfbe9": {
+    "facing": "model",
+    "id": "tool-result-mcp-artifacts-server-resources-withheld",
+    "name": "Artifacts MCP resources withheld",
+    "desc": "Error that Claude Code does not read the Artifacts MCP server's resources and to use its tools"
+  },
+  "85e315795d8a11c413aec5bf269bb349c058f12e": {
+    "facing": "model",
+    "id": "system-reminder-nested-memory-file-truncated",
+    "name": "Nested memory file truncated",
+    "desc": "Note appended to a truncated nested memory file telling Claude to read the rest with offset and limit"
+  },
+  "abcdc9aa1034331b98636f532cee678044362d40": {
+    "facing": "model",
+    "id": "tool-result-hook-mcp-tool-artifacts-server-refused",
+    "name": "Hook mcp_tool Artifacts server refused",
+    "desc": "Hook error that hooks cannot call Artifacts MCP server tools"
+  },
+  "81adfb87d44c566d7e6478b9f8811b422985c252": {
+    "facing": "model",
+    "id": "tool-result-hook-mcp-tool-cloud-browser-refused",
+    "name": "Hook mcp_tool cloud browser refused",
+    "desc": "Hook error that hooks cannot call cloud browser MCP tools"
+  },
+  "1dc64b937efd1660afa71c5d22dd41990683bfa7": { "facing": "internal" },
+  "2f7f364e112c062f0b15267383d4bb401d77ef1f": { "facing": "internal" },
+  "825b72d38e80ed2f9886ce8242ae239b4bb5cda1": { "facing": "internal" },
+  "9986c96b629f1c0a62e5dd00e4bb6b44a4d5bcdf": { "facing": "internal" },
+  "d6c088735967d410b06364335ba42ad214acf364": {
+    "facing": "model",
+    "id": "tool-result-hook-git-bash-not-found",
+    "name": "Hook Git Bash not found",
+    "desc": "Hook error that the hook requires bash but Git Bash was not found, with remedies"
+  },
+  "e961da91e288271d87c139ea87593f8f9adc6bf3": { "facing": "internal" },
+  "3657886f53eb1914338dfb8c8b44ca4a630cdeaf": { "facing": "internal" },
+  "83d5a50d8a717f8af3c4528392cfd940b10825c9": { "facing": "internal" },
+  "dd40660aafb7ffd522bb50aef2bdb9b6ecb74b69": {
+    "facing": "model",
+    "id": "data-worktree-creation-on-demand-fetch-disabled-error",
+    "name": "Worktree creation on-demand fetch disabled error",
+    "desc": "Error text appended when worktree creation needs a missing git object with on-demand fetching off, suggesting git archive or git fsck"
+  },
+  "70f4f9fa86976432a63a150abb03eceef1341975": {
+    "facing": "model",
+    "id": "data-worktree-creation-submodule-on-demand-fetch-disabled-error",
+    "name": "Worktree creation submodule on-demand fetch disabled error",
+    "desc": "Error text appended when worktree creation hits a missing git object with on-demand fetching off in a submodule whose git folder is sandbox-writable, telling the user to inspect that folder for tampering and fetch the commit's objects themselves"
+  },
+  "7fa493133c1a0b75317583c155c78409000c91ae": {
+    "facing": "model",
+    "id": "data-worktree-creation-promisor-fetch-failed-error",
+    "name": "Worktree creation promisor fetch failed",
+    "desc": "Error that objects for a commit could not be fetched from the promisor remote of a partial clone"
+  },
+  "c1eb8e0e8ff4f950f88c115944a78d09299273f9": {
+    "facing": "model",
+    "id": "data-worktree-creation-partial-clone-too-many-objects-error",
+    "name": "Worktree creation too many missing objects",
+    "desc": "Error that a partial-clone commit needs too many missing objects to fetch"
+  },
+  "2dd81906fc2ad8a63efd9ce18b96dddbd2c06556": {
+    "facing": "model",
+    "id": "data-worktree-creation-partial-clone-list-failed-error",
+    "name": "Worktree creation missing objects not listed",
+    "desc": "Error that git could not list a partial clone's missing objects"
+  },
+  "1863c44f9e4fcb57d5df73c351064ef51389f024": {
+    "facing": "model",
+    "id": "data-worktree-creation-promisor-fetch-exhausted-error",
+    "name": "Worktree creation promisor fetches exhausted",
+    "desc": "Error that promisor remotes still had not delivered every object after the fetches"
+  },
+  "1ea99c21d7c51ff7e906a8c08bce043416146a6e": {
+    "facing": "model",
+    "id": "data-worktree-creation-promisor-remote-no-url-error",
+    "name": "Worktree creation promisor remote no URL",
+    "desc": "Error that the promisor remote has no URL, with the git config command to set it"
+  },
+  "a37277e7e0718c9f68dcdffaf4fb097e05b8b79c": {
+    "facing": "model",
+    "id": "data-worktree-creation-unsafe-promisor-remote-error",
+    "name": "Worktree creation unsafe promisor remote error",
+    "desc": "Error text explaining that missing objects of a partial clone could not be pre-fetched because the promisor remote has an option-like name or no URL, and directing a check of the remote sections and extensions.partialclone setting"
+  },
+  "48fc1c2fc86ec78754419a11120cd4b28acc6d7d": { "facing": "internal" },
+  "027b0e388cd44cbbb26c86ef61a7e59026075c7d": {
+    "facing": "model",
+    "id": "data-worktree-creation-fetch-budget-exhausted-clause",
+    "name": "Worktree creation fetch budget exhausted",
+    "desc": "Clause that the fetches ran out of their shared time budget"
+  },
+  "7c496b14b3a314db8e80273cd17156e17df424a9": {
+    "facing": "model",
+    "id": "data-worktree-creation-promisor-name-not-shown",
+    "name": "Worktree creation promisor name not shown",
+    "desc": "Placeholder used instead of a promisor remote name with unsafe characters"
+  },
+  "eab1fdcbb3c881310443b3986d88a2542bded0f5": { "facing": "internal" },
+  "02ca242e8bd963d982343fe7050ac2f4e40aa278": { "facing": "internal" },
+  "3276598101d1a69572304beb8d06e499a18ba426": { "facing": "internal" },
+  "d1021e39f78d86cf4db17ec681aa2faa206f126b": { "facing": "internal" },
+  "ad0204bb3a80e83191bc70f8c951debbf00faa46": { "facing": "internal" },
+  "0d021fcf28a9d6c4b2e763a0a0449e83cda35809": { "facing": "internal" },
+  "3522d513520ad6e90c4c734958a315c781ef998d": { "facing": "internal" },
+  "ce53e7d7d083d4487244b4b5ff4d2d7dc02943ca": {
+    "facing": "model",
+    "id": "tool-result-worktree-create-sparse-checkout-unreadable",
+    "name": "Worktree sparse checkout unreadable files",
+    "desc": "Error that a sparse worktree checkout left out unreadable files so it was removed"
+  },
+  "d9ba7f011c6e9c463362595592431319ef38469a": {
+    "facing": "model",
+    "id": "tool-result-worktree-create-failed",
+    "name": "Worktree create failed",
+    "desc": "Error that worktree creation failed, with git's error"
+  },
+  "8696cad3f3c24165ea10470be34706e5b8a83f4f": { "facing": "internal" },
+  "c36c02bddd2231b49bb49dc5019d888533e173b5": {
+    "facing": "model",
+    "id": "tool-result-tool-unavailable-artifact-replaced-by-mcp-listed",
+    "name": "Artifact tools replaced by MCP (listed)",
+    "desc": "Unknown-tool reason that built-in Artifact tools were replaced by the MCP server's tools in the tool list"
+  },
+  "ccc6f2a9e9c1a1f6344ae9286ada1e5b5a037441": {
+    "facing": "model",
+    "id": "tool-result-tool-unavailable-artifacts-mcp-disconnected",
+    "name": "Artifacts MCP disconnected",
+    "desc": "Unknown-tool reason that the replacing Artifacts MCP server is not connected"
+  },
+  "8ed8ed623ef1503ca2dbed803c397cfa020b4e7f": {
+    "facing": "model",
+    "id": "tool-result-tool-unavailable-artifact-replaced-by-mcp-find",
+    "name": "Artifact tools replaced by MCP (find)",
+    "desc": "Unknown-tool reason that built-in Artifact tools were replaced by MCP tools to find via tool search"
+  },
+  "a0ff62ece73c57ef21d0c15bb36b35cadab2ae73": {
+    "facing": "model",
+    "id": "tool-result-tool-unavailable-artifact-read-own-or-org",
+    "name": "Artifact read own or org clause",
+    "desc": "Clause that the MCP read tool reads the user's or their org's artifacts, with a fallback"
+  },
+  "5115457b54338326d722de1f2498b803edfd8712": {
+    "facing": "model",
+    "id": "tool-result-tool-unavailable-artifacts-mcp-gone-builtins-back",
+    "name": "Artifacts MCP gone builtins back",
+    "desc": "Unknown-tool reason that the Artifacts MCP server is no longer served and built-ins are back"
+  },
+  "e1292ce164485cc678024eef779ec72a419b5613": {
+    "facing": "model",
+    "id": "tool-result-tool-unavailable-claude-ai-artifact-read-with-mcp",
+    "name": "claude.ai artifact read with MCP",
+    "desc": "Unknown-tool reason that a URL is a claude.ai artifact to read with the Artifacts MCP read tool"
+  },
+  "f7b902f0a638b831626d487c1ff736421f9ef18e": {
+    "facing": "model",
+    "id": "tool-result-tool-unavailable-artifact-tool-local-sessions",
+    "name": "Artifact tool unavailable locally",
+    "desc": "Unknown-tool reason that the Artifact tool isn't available in local Claude Code sessions"
+  },
+  "3ba6f9eaf1e4aadd5ccf4319fbf44005fbc46c3d": { "facing": "internal" },
+  "0547f91166770ed8656d86086404c6dc3f570fac": {
+    "facing": "model",
+    "id": "system-reminder-plugin-mod-failed-when-ran",
+    "name": "Plugin mod failed when ran",
+    "desc": "Notice that a plugin dev mod failed when it ran, with the error"
+  },
+  "8b0811b5a16ead8168ccc8df1df3b9462ce7f294": {
+    "facing": "model",
+    "id": "system-reminder-plugin-mod-edit-reloads",
+    "name": "Plugin mod edit reloads",
+    "desc": "Sentence that editing the mod mends it and it reloads when the turn ends"
+  },
+  "d5af23e8ec685a76a0254f3c09ad2c9cb50dc718": {
+    "facing": "model",
+    "id": "system-reminder-plugin-mod-was-drawing",
+    "name": "Plugin mod was drawing",
+    "desc": "Sentence naming what the failing mod was drawing"
+  },
+  "290e1d77c1ea04fb39c6f45e6f1b533aa05ccd00": { "facing": "internal" },
+  "e7806773751859fe20c144cc26b1f617c96d1a40": {
+    "facing": "model",
+    "id": "tool-result-auto-mode-server-context-stale-changed",
+    "name": "Auto mode server context stale changed",
+    "desc": "Classifier stale-context note that the artifact's sharing state changed so the review no longer applies"
+  },
+  "e4a0f62c242f69d6a7098e2cee01ce8628a1f1d4": {
+    "facing": "model",
+    "id": "tool-result-auto-mode-server-context-stale-first-touch",
+    "name": "Auto mode server context stale first touch",
+    "desc": "Note that the call will be reviewed afresh since the review lacked the artifact facts"
+  },
+  "d8bdd654e6f2407259d61340a745e83d9640a621": {
+    "facing": "model",
+    "id": "tool-result-auto-mode-server-context-stale-first-touch-with-facts",
+    "name": "Auto mode server context stale first touch with facts",
+    "desc": "Note that the repeated call is reviewed with the artifact facts now looked up"
+  },
+  "a96dff7538fbc22d2c1be9e85483dfc5a6270a09": {
+    "facing": "model",
+    "id": "tool-result-permission-denied-dangerous-removal-safety-check",
+    "name": "Permission denied dangerous removal safety check",
+    "desc": "Deny message that a built-in safety check stopped a far-reaching removal and only a person may approve it"
+  },
+  "0c0f04c75c548745286a777b8fe098cd367755e6": {
+    "facing": "model",
+    "id": "system-reminder-project-docs-preread-notice",
+    "name": "Project docs pre-read notice",
+    "desc": "Meta notice that project docs were read before the first reply and the project_read calls that follow are those reads"
+  },
+  "3c2781ed9121cce9d38a58374693523d4505da44": { "facing": "internal" },
+  "a303237d7b737ef117e0df0cd7c9833be6901c78": { "facing": "internal" },
+  "dae829cfed8e0eb14bafa2a1b00d84004a7ee850": {
+    "facing": "model",
+    "id": "system-reminder-tool-replaced-by-mcp-server-reason",
+    "name": "Tool replaced by MCP server reason",
+    "desc": "Reason that a tool was replaced by the tools of an MCP server"
+  },
+  "4fa8ef2e6a25d70147281ffa0dd9a919ae85d9ca": {
+    "facing": "model",
+    "id": "system-reminder-mcp-servers-refused-reserved-address",
+    "name": "MCP servers refused reserved address",
+    "desc": "Reminder that configured MCP servers are refused because Claude Code reserves their address, and what to tell the user"
+  },
+  "f8550b37ce2dbbd627cd8eff102c6413077dbe4e": { "facing": "ui" },
+  "032db8ad2bfad33456702956df9bd1f75938ada7": { "facing": "ui" },
+  "fe664ba8381d4d71468db401fa02a030e0a9ab91": { "facing": "ui" },
+  "1851044489ded0632fbf1555896bff07133cd2a7": { "facing": "ui" },
+  "3d7c1e84f08e07d10e4a2fa5df7b2c3c7958050d": { "facing": "ui" },
+  "ba73ce1456314bf142f4b446961a4cca01846fde": { "facing": "ui" },
+  "e9cb8bf7af162e5410678e6fa08981cfc78cfa19": { "facing": "ui" },
+  "85488b05f1ad8dcfb6458ce3f7c2c78cf84f1c9b": { "facing": "ui" },
+  "5f04c0518a207f05679b10ccefc2b1b479142f03": { "facing": "ui" },
+  "62c9457299c0f5b4b6faf7beec60ece6b6670dff": { "facing": "ui" },
+  "a8b972489cc5a73c77e61efd43b5f2c7644cf5dc": { "facing": "ui" },
+  "af40f9fe050a909b441d65a4c6ab44272c978c0d": { "facing": "ui" },
+  "90a075e7bcc57e7f75d8a5028ca278d8102d670e": { "facing": "ui" },
+  "99689e1113d6a8b8a9f35b2cedc99f837c84c115": { "facing": "ui" },
+  "ed2d83e334533ec76f687ec609978eb11503d03f": { "facing": "internal" },
+  "7b3fe3de787175d27576f85af263f6eed8fa3526": { "facing": "ui" },
+  "4221f43e6a01172e5743d11f1b0bc749fb07e8fb": { "facing": "ui" },
+  "a045cf5b810d4c4d6ceb7875ef4ccb54336a6460": { "facing": "ui" },
+  "0422ab84e35590ef32d586e4d0ca9813ad91e379": { "facing": "ui" },
+  "a43256308dad080f2aad8de18de1f56d40c5b3e1": { "facing": "ui" },
+  "8888edf97dadddd04f4b86f00bcbbaaf11b49194": { "facing": "ui" },
+  "a0ae6a4ec603b13d9e1bb45f4e2fb7ac7ed3b474": { "facing": "ui" },
+  "b53dc2b47e51afb4e35699ed378bfac9c4b04075": { "facing": "internal" },
+  "85fb6612278779fa42203dc5ef90dde265dd2a91": { "facing": "internal" },
+  "96af4828a4e0268d08536a88bf82aa2a8a4c5814": { "facing": "internal" },
+  "352f199309590182312b74ecc61960962bf0007c": {
+    "facing": "model",
+    "id": "tool-result-artifact-unresolved-connector-guidance",
+    "name": "Artifact unresolved connector guidance",
+    "desc": "Guidance to set server to the segment between mcp__ and __ of a tool name, or the connector's display name"
+  },
+  "f1ccd81580ca119e2f5ce2a05bd51da551bdd068": {
+    "facing": "model",
+    "id": "data-task-notification-artifact-auto-reply-summary-catch-up-mcp-clause",
+    "name": "Artifact auto-reply summary catch-up (MCP)",
+    "desc": "Summary clause that comments sent meanwhile reach this session when the watch resumes"
+  },
+  "6a069f8271023b24c805b5f4f1790f5f6d1f3940": {
+    "facing": "model",
+    "id": "data-task-notification-artifact-auto-reply-body-catch-up-mcp-clause",
+    "name": "Artifact auto-reply body catch-up (MCP)",
+    "desc": "Body clause that comments the user sent meanwhile reach Claude then"
+  },
+  "ffe9d8053f2a40955f3667fc358121a682eb66d7": {
+    "facing": "model",
+    "id": "data-task-notification-artifact-auto-reply-catch-up-turn-end-clause",
+    "name": "Artifact auto-reply catch-up at turn end",
+    "desc": "Clause that comments sent meanwhile reach Claude when that turn ends"
+  },
+  "057521992be04cd9b32113c4c279f4717746ff52": {
+    "facing": "model",
+    "id": "data-task-notification-artifact-auto-reply-name-chord-receipt",
+    "name": "Artifact auto-reply name chord receipt",
+    "desc": "Receipt clause explaining how the paused watch resumes with a later turn"
+  },
+  "70690e221bd9a4eaff83bb4855281b857a7fb3f2": {
+    "facing": "model",
+    "id": "data-task-notification-artifact-auto-reply-stop-body",
+    "name": "Artifact auto-reply stop body",
+    "desc": "Body of the auto-reply stop notification listing notices and the interrupt pause sentence"
+  },
+  "a83545f299a14ec7469579f4183630b53221adce": {
+    "facing": "model",
+    "id": "data-task-notification-artifact-auto-reply-interrupt-paused-sentence",
+    "name": "Artifact auto-reply interrupt paused",
+    "desc": "Sentence that the user's interrupt paused the watches and not to republish just to resume"
+  },
+  "8cbdf7cfc2efa3ac3b6a32496d8f7e342f180d4c": {
+    "facing": "model",
+    "id": "data-task-notification-artifact-auto-reply-paused-summary",
+    "name": "Artifact auto-reply paused summary",
+    "desc": "Summary that artifact watches or subscriptions were paused"
+  },
+  "bb5e3969738c67c6db4f0c27f91ec2c709cf9036": {
+    "facing": "model",
+    "id": "data-task-notification-artifact-auto-reply-hourly-cap-unprompted",
+    "name": "Artifact auto-reply hourly limit (MCP)",
+    "desc": "Notice that the session reached its hourly limit on unprompted comments"
+  },
+  "258ad07f723b7808f0d9393733a151e0152a6a34": {
+    "facing": "model",
+    "id": "data-task-notification-artifact-auto-reply-hourly-cap",
+    "name": "Artifact auto-reply hourly cap",
+    "desc": "Notice that auto-reply was held back by the hourly cap"
+  },
+  "f884c163cc46c38b4a67e3e999f27c48658c0617": {
+    "facing": "model",
+    "id": "data-task-notification-artifact-auto-reply-plan-mode-wait",
+    "name": "Artifact auto-reply plan mode wait",
+    "desc": "Notice that comments wait while the session is in plan mode"
+  },
+  "a2789016fdeecea81426ec101f36ca7d9a6d253f": {
+    "facing": "model",
+    "id": "data-task-notification-artifact-auto-reply-plan-mode",
+    "name": "Artifact auto-reply plan mode",
+    "desc": "Notice that auto-reply is paused in plan mode"
+  },
+  "57f5d88d7c1abe9fb549ef89eb4ec2ce401d415f": {
+    "facing": "model",
+    "id": "data-task-notification-artifact-auto-reply-notify-only",
+    "name": "Artifact auto-reply notify only",
+    "desc": "Notice that auto-reply is notify-only in this permission mode"
+  },
+  "6229a5a66c73c4b104aa67e71a0e50cbbbb5f99f": {
+    "facing": "model",
+    "id": "data-task-notification-artifact-auto-reply-auto-mode-declined",
+    "name": "Artifact auto-reply auto mode declined",
+    "desc": "Notice that auto mode did not approve an unattended auto-reply"
+  },
+  "01b4793c81bef4d176d998651fed8a89b14ff565": {
+    "facing": "model",
+    "id": "data-task-notification-artifact-comment-tools-private-only",
+    "name": "Artifact comment tools private only",
+    "desc": "Clause that the comment tools work only on artifacts nobody else can open, and what to tell the user otherwise"
+  },
+  "eeac09ac3263873e16051af9f824927213b7dd60": {
+    "facing": "model",
+    "id": "data-task-notification-artifact-comment-reply-and-resolve",
+    "name": "Artifact comment reply and resolve",
+    "desc": "Instruction to post a brief reply and resolve the thread when done"
+  },
+  "2404c417bbb3c7887bea660a9c8dfdd27eb436fc": {
+    "facing": "model",
+    "id": "data-task-notification-artifact-comment-read-thread",
+    "name": "Artifact comment read thread",
+    "desc": "Notification detail telling Claude to read a comment thread and make an appropriate change in the artifact source and publish again"
+  },
+  "4f5dbde290b0f362b0d19021a7f472f78fa27206": { "facing": "internal" },
+  "fadeb044b4c5a980b94b5add51a90879a3d0d92c": {
+    "facing": "model",
+    "id": "data-task-notification-artifact-comment-then-reply-resolve",
+    "name": "Artifact comment then reply and resolve",
+    "desc": "Clause to reply on the thread and resolve it unless the conversation continues"
+  },
+  "7b51ef06a69fd7a65bb79506ba1ec12ec26994ce": {
+    "facing": "model",
+    "id": "system-prompt-agent-progress-label-predominant-language",
+    "name": "Agent progress label language",
+    "desc": "Instruction to write the progress label in the notes' predominant language"
+  },
+  "f3c6cf3f68b313c810a6c34225dfcda227a640dd": { "facing": "internal" },
+  "8893ec46b207385fe780074d60ed08ab04ebf313": { "facing": "internal" },
+  "2f094039fc8a0cb5b15fcab514e8866bb173ad9f": { "facing": "internal" },
+  "e50ba8a53544757f3afc677a9fda588d87e3a252": { "facing": "internal" },
+  "4f8b636d0dc236950402f2f733bef530669c02fd": { "facing": "internal" },
+  "f0c8992693e49f15b173e3b07aed9b0f547872d5": {
+    "facing": "model",
+    "id": "data-extract-memories-first-look-exchanges-message",
+    "name": "Extract memories first look exchanges",
+    "desc": "User message template wrapping exchanges for the memory first-look side query"
+  },
+  "b4d914de478f74ab64166b10a824c142b42d8cdc": { "facing": "internal" },
+  "54e2220890bc0d84b9e6d09c7f62e4557ed6c90b": { "facing": "ui" },
+  "6cf84a55f2154cf54999fd7a210d8c5d97038d80": { "facing": "ui" },
+  "8844aad17934a5745a5f28b11d4dfe6295f8abbc": { "facing": "ui" },
+  "ee3e4838cb53b0d19315ffae31dedf867ee72316": { "facing": "ui" },
+  "bb46e6a334782cbec5fac6fdf9fb7106843c13a8": { "facing": "ui" },
+  "94e54901e3076f751e3b243e7fac57b160494210": {
+    "facing": "model",
+    "id": "skill-claude-api-managed-agents-onboarding-from-url-unavailable",
+    "name": "Claude API Managed Agents onboarding from URL unavailable",
+    "desc": "Section appended to the Claude API skill when its reference files could not be written to disk, telling Claude to say that onboarding an agent from a URL is unavailable, that running /claude-api again retries saving the files, and to stop without fetching the page or writing files"
+  },
+  "0dd29af26468d2cdddead9e395ca384ebb0e60a8": {
+    "facing": "model",
+    "id": "skill-claude-api-detected-language-heading",
+    "name": "Claude API detected language heading",
+    "desc": "Detected language heading pushed into the Claude API skill prompt"
+  },
+  "b3862676c68fd92d952c9009c8a4156b751a3f26": {
+    "facing": "model",
+    "id": "data-artifact-mcp-connector-none-connected",
+    "name": "Artifact MCP connector none connected",
+    "desc": "Note that no connectors are connected right now and how their tools appear"
+  },
+  "8c1f91c6fdf91737dca46bff68583b058517d6e6": {
+    "facing": "model",
+    "id": "data-artifact-mcp-connector-tools-appear-when-connected",
+    "name": "Artifact MCP connector tools appear",
+    "desc": "Clause that a connector's tools appear as mcp__<connector>__<tool> when it connects"
+  },
+  "6cdd46336c6dbf897449b47a90672868f7552baf": {
+    "facing": "model",
+    "id": "data-artifact-mcp-connector-look-for-claude-ai-prefix",
+    "name": "Artifact MCP connector claude_ai prefix",
+    "desc": "Clause to look for mcp__claude_ai_* tools in the tool list"
+  },
+  "c8371d5af321d3651f974435b8baf3501019ebf3": { "facing": "internal" },
+  "029e09b1688dacc1c2aaf2b8b0a7f47a5c07161c": { "facing": "internal" },
+  "f6aae5a88dbf521b56feb3aee4e69394eec87df9": { "facing": "ui" },
+  "fdcc3f9a56f4d80cfb58634217da59644529b0ff": { "facing": "internal" },
+  "2a68fed763632dabecb2b38e4cf8179b09e16e63": {
+    "facing": "model",
+    "id": "slash-command-terminal-setup-terminal-native-shift-enter",
+    "name": "Terminal setup native Shift+Enter",
+    "desc": "/terminal-setup result that Shift+Enter is natively supported"
+  },
+  "9cf994dfd617fea3f9a42a70f6f2120c37793e1c": {
+    "facing": "model",
+    "id": "slash-command-restart-refused-version-on-hold",
+    "name": "Restart refused version on hold",
+    "desc": "/restart result that the installed version is on hold so the session stays on this version"
+  },
+  "35abe2c8d9e787485603671260a25cf22c99f1ff": {
+    "facing": "model",
+    "id": "system-reminder-browser-extension-not-connected-mobile-app",
+    "name": "Browser extension not connected (mobile app)",
+    "desc": "Tells Claude the browser extension is unreachable and cannot be set up from the Claude mobile app, so it should briefly say so, carry on another way, and not call Claude in Chrome tools again this reply"
+  },
+  "f157667907ada621f8c876ebe94805b72cefe187": {
+    "facing": "model",
+    "id": "tool-result-gh-stand-in-retry-fails-read-status",
+    "name": "gh stand-in retry fails read status",
+    "desc": "Clause telling Claude to stop and read the proxy status URL if it fails again"
+  },
+  "fc74810c8e4981897eefe3dda91c3c3f8363d626": {
+    "facing": "model",
+    "id": "tool-result-gh-stand-in-retry-fails-stop",
+    "name": "gh stand-in retry fails stop",
+    "desc": "Clause telling Claude to stop if it fails again"
+  },
+  "71e3f8876f570377427a5af6df1298a18603ae2b": {
+    "facing": "model",
+    "id": "tool-description-list-connectors-needs-reconnect-card",
+    "name": "List connectors needs reconnect card",
+    "desc": "Tool prompt clause that needs_reconnect means signing in again from the connector card or settings"
+  },
+  "38195bd7ce429dfaab5593220eded15dbbd77708": {
+    "facing": "model",
+    "id": "tool-description-list-connectors-recommend-via-registry",
+    "name": "List connectors recommend via registry",
+    "desc": "Tool prompt clause to use SearchMcpRegistry and SuggestConnectors for connectors the user lacks"
+  },
+  "53ee3b23651056919198d6602a4255c8a066b2a5": {
+    "facing": "model",
+    "id": "tool-description-suggest-plugins-card-may-not-render",
+    "name": "Suggest plugins card may not render",
+    "desc": "Tool prompt note that the app may not draw the card, so name the suggestion in one sentence"
+  },
+  "958d0fe5e5a6b6a6be149025a9afeabe6bb01bc8": {
+    "facing": "model",
+    "id": "tool-result-plugin-card-skill-ids-redirect",
+    "name": "Plugin card skill ids redirect",
+    "desc": "Note that suggested ids are skills and how to surface them"
+  },
+  "14068705300abaff0b126bf73591db2bceb01010": {
+    "facing": "model",
+    "id": "tool-result-artifacts-mcp-request-not-sent-login",
+    "name": "Artifacts MCP request not sent",
+    "desc": "Error that an Artifacts request was not sent because this session can no longer use Artifacts with the login"
+  },
+  "98ccafefee59161116da03e3d02b6e110f2af391": {
+    "facing": "model",
+    "id": "tool-result-artifact-mcp-watch-wake-notice",
+    "name": "Artifact MCP watch wake notice",
+    "desc": "Text block appended to a publish result explaining when comments wake this session"
+  },
+  "7fb8712ea485377f881f4a410f2359e309472a05": { "facing": "internal" },
+  "290c44803607b56c8d4d3aaa4d1a4fab544c664c": { "facing": "ui" },
+  "44b2566b4cf8873e903e746e0d8d3c019762c08e": { "facing": "ui" },
+  "24a67d3b6101f91fa8bc8410d99bb2cc41035cd9": { "facing": "ui" },
+  "c8ba38ef872a3808c825b058894dac37b3c09d2f": { "facing": "ui" },
+  "a4a357cc9b2f6354ac3dcb827f3457e09359e29a": { "facing": "ui" },
+  "6418217e07d9e6eb1544c3baf96a34a964ab480c": { "facing": "ui" },
+  "6d0d88f8765ab687d9e311d1ca35475bba286c5d": { "facing": "ui" },
+  "08f22bf416c020d2510995f13006fe6a8ea099b7": {
+    "facing": "model",
+    "id": "tool-result-remote-tool-classifier-no-longer-approves",
+    "name": "Remote tool classifier no longer approves",
+    "desc": "Result that the target no longer lets a classifier approve the call so it did not run"
+  },
+  "84ac9e099932d26e9c61c1cb643d354fdfad32c0": { "facing": "ui" },
+  "f4e9d2003302d6ba39abb96a153506a20b26bca0": {
+    "facing": "model",
+    "id": "system-prompt-environment-github-proxy-setup-failed",
+    "name": "Environment GitHub proxy setup failed",
+    "desc": "Environment note that Anthropic-managed GitHub access through the session proxy could not be set up and TLS must not be disabled"
+  },
+  "929fa20651414b4a22dfbb40cbff021447d75bcc": { "facing": "internal" },
+  "29997d33e41ec4ca1d03e383f47c5ea60a43999b": { "facing": "internal" },
+  "edb4bfb3ce72975ea9e7202a938e8fff27ec9de2": { "facing": "internal" },
+  "825b850c822ace509d6a7668b2f65a84d0db2b95": { "facing": "internal" },
+  "e2950061acf4349a431f9e3bd8d31d8602d19ac8": { "facing": "internal" },
+  "32ba6251c6c501bc779e1a1c1b98bacb84a5b9c7": { "facing": "internal" },
+  "36578ae77414c20bc93594a8725a988344c1bcd4": { "facing": "internal" },
+  "9263e8d5289a5a13ea3e66cbbc78b6fa3d4566fa": {
+    "facing": "model",
+    "id": "system-prompt-environment-github-proxy-other-traffic-same-proxy",
+    "name": "Environment GitHub proxy other traffic",
+    "desc": "Clause that other traffic uses the same proxy and only git and gh trust its CA bundle"
+  },
+  "6609e166f3e7dd3f8570cd70b851a92c2ac60336": {
+    "facing": "model",
+    "id": "system-prompt-environment-github-session-proxy",
+    "name": "Environment GitHub session proxy",
+    "desc": "Environment note that git and gh go through a session proxy, with failure guidance"
+  },
+  "97ccf6dc0d20dc11828eec864da62a3b9ff1e564": { "facing": "ui" },
+  "df5cc04def922d5de4eba1bda5c38fd818905633": { "facing": "internal" },
+  "a288c4fabcb95f6b7dd22e8750dfe76b136f6d4b": {
+    "facing": "model",
+    "id": "slash-command-unavailable-relay-participant",
+    "name": "Command unavailable to relay participant",
+    "desc": "Message that a slash command isn't available to a relay participant"
+  },
+  "6373d94ceba1bcebe720121bd04e8c6d0c6c76d0": {
+    "facing": "model",
+    "id": "tool-result-artifact-org-approval-nobody-to-ask",
+    "name": "Artifact org approval nobody to ask",
+    "desc": "Deny that the org requires approval of new artifacts and nobody can be asked here"
+  },
+  "ad1ada120597967bd74b8e3fe604be2ca3c009ed": {
+    "facing": "model",
+    "id": "tool-result-artifact-write-db-routine-linked-file-refused",
+    "name": "Artifact write_db routine linked file refused",
+    "desc": "Deny that a routine run cannot write from a linked, hard-linked or oddly spelled file"
+  },
+  "71eb697d950b0d70a4b055c34c51c05733bf83ea": { "facing": "internal" },
+  "860d65a8c050179a3da470c4104c86355009311e": {
+    "facing": "model",
+    "id": "tool-parameter-artifact-root-2",
+    "name": "Artifact root parameter",
+    "desc": "Describes root as the base directory for relative files sources"
+  },
+  "034bcf5c8a4e9ac9ce36f02f4a2d5c9a0ab60be8": {
+    "facing": "model",
+    "id": "tool-parameter-artifact-root-requires-files-except-from-type",
+    "name": "Artifact root requires files",
+    "desc": "Describes when root requires files and how type-made Artifacts serve data"
+  },
+  "6938904f357876554c35f9bcb2dc858787d1fc35": {
+    "facing": "model",
+    "id": "tool-result-artifact-type-root-no-folder-can-hold",
+    "name": "Artifact type no root folder",
+    "desc": "Error that no folder holding the file can be a root and how to fix it"
+  },
+  "a27f43af0a2344e63965c1df7a124731142843ce": {
+    "facing": "model",
+    "id": "tool-result-artifact-type-root-send-again-with-root",
+    "name": "Artifact type send again with root",
+    "desc": "Fix to resend with root set to the folder holding the files"
+  },
+  "ac73d44a6c41560adebfc9daef918bc07800dff4": {
+    "facing": "model",
+    "id": "tool-result-artifact-type-root-files-map-hint",
+    "name": "Artifact type root files map hint",
+    "desc": "Hint for files given as a map"
+  },
+  "a5c89d6a8a003dffe87bf0aae6ff651d0c91168f": {
+    "facing": "model",
+    "id": "tool-result-artifact-type-root-files-list-hint",
+    "name": "Artifact type root files list hint",
+    "desc": "Hint for files given as a list"
+  },
+  "968cd00e6631b80c579d4cc3dc53f130983b063c": {
+    "facing": "model",
+    "id": "tool-result-artifact-type-root-would-serve-index-html",
+    "name": "Artifact type would serve index.html",
+    "desc": "Error that the folder would serve the file as index.html"
+  },
+  "ce68b854a7ab5df86d268b3f083138550971c1d3": {
+    "facing": "model",
+    "id": "tool-result-artifact-type-file-path-scratchpad-root-outside",
+    "name": "Artifact type scratchpad file outside root",
+    "desc": "Error that a scratchpad file's root is outside the scratchpad"
+  },
+  "9c605a0472a696f405baebeed1dc9b8d61d39031": {
+    "facing": "model",
+    "id": "tool-result-artifact-type-root-outside-scratchpad-clause",
+    "name": "Artifact type root outside scratchpad",
+    "desc": "Clause that root is outside the scratchpad"
+  },
+  "53f3c4c41c21ac4fde412d86fc1c5f84dc53902d": {
+    "facing": "model",
+    "id": "tool-result-artifact-type-no-root-outside-scratchpad-clause",
+    "name": "Artifact type no root outside scratchpad",
+    "desc": "Clause that with no root the working directory is outside the scratchpad"
+  },
+  "b639cb79df8ab778491d970abde5adef38f9bcc4": {
+    "facing": "model",
+    "id": "tool-result-artifact-type-file-path-is-root-itself",
+    "name": "Artifact type file_path is root",
+    "desc": "Error that file_path is the root folder itself"
+  },
+  "1c909501fd3cfcf02169b9ab823ed7ae62fef192": {
+    "facing": "model",
+    "id": "tool-result-artifact-type-file-path-outside-root",
+    "name": "Artifact type file_path outside root",
+    "desc": "Error that a data file must be inside root or the working directory"
+  },
+  "65fb5b39fb5f28a951a45a02ea9a3864ff2eebe1": {
+    "facing": "model",
+    "id": "tool-result-artifact-type-relative-root-resolves-clause",
+    "name": "Artifact type relative root clause",
+    "desc": "Clause that a relative root resolves against the working directory"
+  },
+  "5ee0e3985cadff7ed27c4dd3f18fcf873f59db6f": {
+    "facing": "model",
+    "id": "tool-result-artifact-type-file-path-under-scratchpad-folder",
+    "name": "Artifact type served under scratchpad",
+    "desc": "Error that the served path lies under a Claude scratchpad folder"
+  },
+  "0495d5effb1b5417eb15b89e8fb42966900425b8": {
+    "facing": "model",
+    "id": "system-reminder-artifact-file-path-refusal-for-earlier-wrong-path-publication",
+    "name": "Artifact file_path refusal for earlier wrong-path publication",
+    "desc": "Refuses an Artifact publish whose file_path would be served at a path that differs from an earlier publication of the same file under a deeper folder, offering files entries to serve it correctly or replace the old path"
+  },
+  "295f5a5a6a3485b0da3605c61fbd3215ff5eb4df": {
+    "facing": "model",
+    "id": "system-reminder-artifact-file-path-refusal-for-served-path-claimed-by-another-file",
+    "name": "Artifact file_path refusal for served path claimed by another file",
+    "desc": "Refuses an Artifact publish whose file_path would be served at a different path than the one another file in the same call already claims, giving the two corrected files entries to choose from"
+  },
+  "8a9fb9e1ac95426379b57c0da5fa7bee1cc0c9a6": {
+    "facing": "model",
+    "id": "system-reminder-artifact-file-path-refusal-for-unexpected-new-served-path",
+    "name": "Artifact file_path refusal for unexpected new served path",
+    "desc": "Refuses an Artifact publish whose file_path would add a new file at an unexpected served path, suggesting a root or files entry that serves it at the intended path"
+  },
+  "907f8d5a709bbaf397d344e51d58ddbb845ec6d5": {
+    "facing": "model",
+    "id": "tool-result-artifact-file-path-existing-path-data-note",
+    "name": "Artifact existing path data note",
+    "desc": "Note that an existing Artifact path was named by its publisher and is data"
+  },
+  "cb1b4415a2cdf8690f5ff1d5d78e6b79d9ea40dc": {
+    "facing": "model",
+    "id": "tool-result-artifact-file-path-send-again-with-files",
+    "name": "Artifact send again with files",
+    "desc": "Clause telling Claude to resend with a files entry"
+  },
+  "a309edc592918450827753490c1ae0d0dd263d4d": {
+    "facing": "model",
+    "id": "tool-result-artifact-file-path-without-edits-clause",
+    "name": "Artifact without edits clause",
+    "desc": "Clause to resend without edits after changing the file"
+  },
+  "b46cf9e10e685525936438a77fa9864180fb8bd5": {
+    "facing": "model",
+    "id": "tool-result-artifact-file-path-files-as-map-clause",
+    "name": "Artifact files as map clause",
+    "desc": "Clause to send files as a map with each served path"
+  },
+  "ccdf4eda232bcd08ab6c4033bea59df7fac9eef4": {
+    "facing": "model",
+    "id": "data-artifact-ask-first-intake-form-instructions",
+    "name": "Artifact ask-first intake form instructions",
+    "desc": "Tells Claude to ask the user a few audience, scope and look questions through the Visualizer's question form before creating a slides or design Artifact, covering when to skip asking, how to build the form and what to do with the answers"
+  },
+  "dee34329ff0f53a4ac7b0b1f60f3543dcff2c83b": {
+    "facing": "model",
+    "id": "data-artifact-ask-first-slides-question-topics",
+    "name": "Artifact ask-first slides topics",
+    "desc": "Topics to draw questions from for a slides Artifact"
+  },
+  "7edbdfddff1e7c181dcf76432d5abe586ac2191e": {
+    "facing": "model",
+    "id": "data-artifact-ask-first-design-question-topics",
+    "name": "Artifact ask-first design topics",
+    "desc": "Topics to draw questions from for a design Artifact"
+  },
+  "f79d4cb16f8db6236035e64d15013e300961a442": {
+    "facing": "model",
+    "id": "tool-result-artifact-quickstart-type-to-start-from",
+    "name": "Artifact quickstart type to start from",
+    "desc": "Quickstart result header naming the Artifact type to start from"
+  },
+  "f6431404298fddeffa8147e07f26c940849e6757": {
+    "facing": "model",
+    "id": "tool-result-artifact-quickstart",
+    "name": "Artifact quickstart",
+    "desc": "Quickstart result template"
+  },
+  "c1564d440c08376877d987d29049b3c408e2dc62": {
+    "facing": "model",
+    "id": "tool-result-artifact-upload-asset-routine-linked-file-refused",
+    "name": "Artifact upload asset routine linked file refused",
+    "desc": "Deny that a routine run cannot upload a linked, hard-linked or oddly spelled file"
+  },
+  "61f3ee8daa6f669c017ea23534fd4eb85beeb74a": { "facing": "internal" },
+  "5a29a1a4f56cdf6c21c2e11a2fce1de1a9799e8b": {
+    "facing": "model",
+    "id": "tool-result-artifact-create-from-type-ask",
+    "name": "Artifact create from type ask",
+    "desc": "Permission ask to create a private artifact from an artifact type"
+  },
+  "fe24f95676090d39dfabe78e0795fd89b18f29a4": {
+    "facing": "model",
+    "id": "tool-result-artifact-publish-upload-consent-ask",
+    "name": "Artifact publish upload consent ask",
+    "desc": "Permission ask to publish and upload a page to claude.ai"
+  },
+  "64f7ede0b6be80c108afc13ca59e849b18f57c4a": {
+    "facing": "model",
+    "id": "tool-result-artifact-updated-unchanged-files-note",
+    "name": "Artifact updated unchanged files",
+    "desc": "Note listing files already in the Artifact with the same content"
+  },
+  "eb3dcdf6d9028179c2e07c41f01683dadfae5a74": {
+    "facing": "model",
+    "id": "tool-result-artifact-updated-from-type",
+    "name": "Artifact updated from type",
+    "desc": "Result after updating a type-made Artifact with its data file"
+  },
+  "04bb59b5c822847fefc72da6f3a76c9863679835": {
+    "facing": "model",
+    "id": "tool-result-artifact-created-from-type-published-data-clause",
+    "name": "Artifact created from type data clause",
+    "desc": "Clause that a data file was published to the new Artifact"
+  },
+  "e5bd9bc474c27cd5997b821be11abe2db4c8c038": {
+    "facing": "model",
+    "id": "tool-result-artifact-served-at-files-listed-clause",
+    "name": "Artifact served at clause",
+    "desc": "Clause naming where a file is served and any files listed"
+  },
+  "42ba33b83c62e9a06b9859960bc1d8a939327cf6": {
+    "facing": "model",
+    "id": "tool-result-artifact-created-from-type-update-instructions",
+    "name": "Artifact created from type update instructions",
+    "desc": "How to update a type-made Artifact without type_url"
+  },
+  "cce4b78c9db428da6f20006b6ffd4176cd7740ab": {
+    "facing": "model",
+    "id": "tool-result-artifact-created-from-type-update-root-clause",
+    "name": "Artifact created update root clause",
+    "desc": "Clause to keep root the same when updating"
+  },
+  "7ba11a0b192bf68ee8d321ab99eec108c99af3d9": {
+    "facing": "model",
+    "id": "tool-result-artifact-updated-update-root-clause",
+    "name": "Artifact updated root clause",
+    "desc": "Clause naming the root the served path is relative to"
+  },
+  "ef36f4c71081d6b6a64f0d94b80839e479bb6da5": {
+    "facing": "model",
+    "id": "tool-result-artifact-publish-capabilities-unconfirmed",
+    "name": "Artifact publish capabilities unconfirmed",
+    "desc": "Error that the passed capabilities could not be confirmed as approved"
+  },
+  "f269fcd68244d4496d7c0d17cc3354669391ebc8": {
+    "facing": "model",
+    "id": "tool-result-artifact-type-url-stray-fields",
+    "name": "Artifact type_url stray fields",
+    "desc": "Error that a type_url publish creates a new Artifact so other fields must be removed"
+  },
+  "c7d6e9b70afe91ce63d6936b1846ee2f4c5104ca": {
+    "facing": "model",
+    "id": "tool-result-project-write-localpath-session-over-cap",
+    "name": "Project write local_path over cap",
+    "desc": "Error that the local_path file is over 1 MiB and cannot be saved from here"
+  },
+  "014dc71ffb2ad9b8faf64821775e0ba682b52dbe": {
+    "facing": "model",
+    "id": "tool-result-project-write-localpath-session-repo-rules-unread",
+    "name": "Project write repo rules unread",
+    "desc": "Error that the repo permission rules could not be read so nothing was written"
+  },
+  "d57398e96a39dfe1a8f62cbffbb0e4fec8d2d264": {
+    "facing": "model",
+    "id": "system-reminder-project-document-too-large-to-rewrite-refusal",
+    "name": "Project document too large to rewrite refusal",
+    "desc": "Refuses a project doc write when the existing doc exceeds the inline read size, warning against retyping from a partial view or deleting it, and pointing to a complete local_path file or a new path"
+  },
+  "c44ee5ba41634ba9d9991ed4b4b085a1d266cfe9": {
+    "facing": "model",
+    "id": "system-reminder-project-document-rewrite-without-current-text-refusal",
+    "name": "Project document rewrite without current text refusal",
+    "desc": "Refuses a project doc write because the existing doc's current text is not in context, requiring a project_read first, forbidding delete-and-rewrite, and saying what to do if the read cannot return the whole text inline"
+  },
+  "3e76272062cb69cf7e44ec9fbcf97628f25733fe": {
+    "facing": "model",
+    "id": "tool-result-project-write-read-before-replace-failed",
+    "name": "Project write read before replace failed",
+    "desc": "Error that reading the doc before replacing it failed, to retry once and not delete"
+  },
+  "3d15ccb48a432679787088a82bbb3e284ccd9cc8": { "facing": "ui" },
+  "b84e2123bffa02033448c547d5bf5a307802a0be": {
+    "facing": "model",
+    "id": "tool-result-teammate-spawn-cli-deny-rule-unreplayable",
+    "name": "Teammate spawn deny rule unreplayable",
+    "desc": "Error that a command-line deny rule cannot be handed to a teammate so spawn aborted"
+  },
+  "595b61232f2919c3d194213105ea2020e48aa5cd": {
+    "facing": "model",
+    "id": "tool-result-mcp-authenticate-cloud-provided-connector",
+    "name": "MCP authenticate cloud-provided connector",
+    "desc": "Message that a connector is provided by the cloud service and cannot be signed in from here"
+  },
+  "892531b2b56adb380d177e989a29719b2a79be82": {
+    "facing": "model",
+    "id": "tool-description-mcp-connector-sign-in-recheck",
+    "name": "MCP connector sign-in recheck",
+    "desc": "Describes the stub tool that retries an installed MCP connector whose sign-in stopped working, how to react to success or failure, and not to ask the user for codes, tokens or URLs"
+  },
+  "635309a8fbf93a8138da5e32a0a7cc3c8c59c56a": {
+    "facing": "model",
+    "id": "tool-result-mcp-connector-sign-in-reconnected",
+    "name": "MCP connector reconnected",
+    "desc": "Result that the connector is connected again and its tools are being added"
+  },
+  "066b5b0062f150b97367bee16b8596aadcde250c": {
+    "facing": "model",
+    "id": "tool-result-mcp-connector-sign-in-already-tried",
+    "name": "MCP connector already tried",
+    "desc": "Error that the connector was already tried this turn"
+  },
+  "db3b70b1c99f6ef53481432b1e83dba378a12f98": {
+    "facing": "model",
+    "id": "tool-result-mcp-connector-sign-in-tools-not-listed",
+    "name": "MCP connector tools not listed",
+    "desc": "Error that the connector connected but its tools could not be listed"
+  },
+  "c28438b813f3a42af9f03c0e1b65892bfe7313b4": { "facing": "ui" },
+  "3bb5a8c1453bab1484b50d6da3e1af54423f7151": {
+    "facing": "model",
+    "id": "data-task-notification-artifact-auto-reply-kill-all-disclosure",
+    "name": "Artifact auto-reply kill-all disclosure",
+    "desc": "Task notification body that the user stopped artifact watches or auto-replies and wakes stay off"
+  },
+  "722419bee2a6aa92880084b0807405f0925c1b96": {
+    "facing": "model",
+    "id": "data-task-notification-artifact-auto-reply-stopped-by-user-summary",
+    "name": "Artifact auto-reply stopped by user summary",
+    "desc": "Summary that artifact watches or subscriptions were stopped by the user"
+  },
+  "c0b45cd7225c62ef83cc4ece4768775d975513d3": {
+    "facing": "model",
+    "id": "data-task-notification-artifact-comment-wakes-stopped-summary",
+    "name": "Artifact comment wakes stopped summary",
+    "desc": "Summary that artifact comments no longer wake this session"
+  },
+  "67fb116110d7dbea2a912296353e8a0e3ac2e4e4": { "facing": "ui" },
+  "da4997e0a28cc2a08000d77ab7325c9361d5a5cd": {
+    "facing": "model",
+    "id": "system-reminder-tool-hosts-correction-ended-with-error",
+    "name": "System Reminder: Tool host correction — call ended with an error there",
+    "desc": "Late correction telling Claude that an attached machine now reports a given-up call ended there with an error that was recorded there and not delivered to this session"
+  },
+  "695a7f9c2d48f6ef1618cffee19e666fbd2c50a3": {
+    "facing": "model",
+    "id": "system-reminder-tool-hosts-correction-did-run-output-not-delivered",
+    "name": "System Reminder: Tool host correction — did run, output not delivered",
+    "desc": "Late correction telling Claude an attached machine reports a given-up call did run and completed, with its output recorded there and not delivered here"
+  },
+  "5fb53d6005577e6c7b000d05b5185da116acb7d6": {
+    "facing": "model",
+    "id": "system-reminder-tool-hosts-unknown-sync-description",
+    "name": "System Reminder: Tool hosts unknown sync description",
+    "desc": "Says the user's downloads, toolchains and files outside the repository are on the named machine, whose own Claude Code decides what may run there"
+  },
+  "ac61966e7c9435c532aa0cc9fd62bb8184dd1237": {
+    "facing": "model",
+    "id": "system-reminder-tool-hosts-machine-files-live-there",
+    "name": "System Reminder: Tool hosts machine files live there",
+    "desc": "Says the user's current files, applications, disk and processes are all on the named machine and its Claude Code decides what may run there"
+  },
+  "8823ed4e1e2cfb3715221471a1bc980855a1c54f": {
+    "facing": "model",
+    "id": "system-reminder-tool-hosts-machine-file-tools-this-session",
+    "name": "System Reminder: Tool hosts machine file tools act on this session",
+    "desc": "Says file tools work on this session's filesystem, not the machine, and to use the shell tool there for the project's current files"
+  },
+  "ec2631b7944f137a40b895870670b652819f480b": {
+    "facing": "model",
+    "id": "system-reminder-tool-hosts-machine-file-path-on-host",
+    "name": "System Reminder: Tool hosts machine file paths on host",
+    "desc": "Explains how file tools with the machine argument act on the user's current files there and must use absolute paths on that machine"
+  },
+  "2cee612e09b9504e848b9dbd203180ba21200682": {
+    "facing": "model",
+    "id": "system-reminder-tool-hosts-machine-separate-copy-lives-there",
+    "name": "System Reminder: Tool hosts separate copy lives there",
+    "desc": "Explains that the user's separate copy of the project is on the named machine, may differ from this checkout, and is not synced"
+  },
+  "21b6b4e5dffda95a2da4f4d8fc1e6d89c347f1ab": {
+    "facing": "model",
+    "id": "system-reminder-tool-hosts-separate-copy-file-tools-this-checkout",
+    "name": "System Reminder: Tool hosts separate copy file tools act on this checkout",
+    "desc": "Says file tools work on this session's checkout and to use the shell tool on the machine to look at the user's copy"
+  },
+  "b60891cb0f3fdf718e8732e7cab6bb3ee5e682ad": {
+    "facing": "model",
+    "id": "system-reminder-tool-hosts-separate-copy-machine-arg-file-tools",
+    "name": "System Reminder: Tool hosts separate copy machine-arg file tools",
+    "desc": "Explains that file tools with the machine argument act on the user's copy there, take absolute paths, and that the two copies may differ"
+  },
+  "b7f108508c911efe22dedb54791cbc2a4463c5b7": {
+    "facing": "model",
+    "id": "system-reminder-tool-hosts-remote-background-command-never-notifies",
+    "name": "System Reminder: Tool hosts remote background command never notifies",
+    "desc": "Warns that a background shell command started on an attached machine never notifies this session, and says how to read its output and stop it"
+  },
+  "600ec9daec42b876cb52b8583e08ee6093da57b6": {
+    "facing": "model",
+    "id": "system-reminder-tool-hosts-remote-background-read-output-file-clause",
+    "name": "System Reminder: Tool hosts remote background — read output file clause",
+    "desc": "Clause telling Claude to read the background command's output file with the Read tool and the machine argument"
+  },
+  "937f3c0e483471918d024ff164cfa8d93c53facb": {
+    "facing": "model",
+    "id": "system-reminder-tool-hosts-remote-background-print-output-file-clause",
+    "name": "System Reminder: Tool hosts remote background — print output file clause",
+    "desc": "Clause telling Claude to print the background command's output file with a shell command on that machine (cat, tail)"
+  },
+  "2b3569f12693b79ceaed655ffb19afca54dae728": {
+    "facing": "model",
+    "id": "system-reminder-tool-hosts-host-shell-commands-run-in",
+    "name": "System Reminder: Tool hosts host shell line",
+    "desc": "Host inventory fragment naming the shell that commands run in on an attached machine, noting when it is not bash"
+  },
+  "4cdaaae8c35e17caa70085284d3ac78438795f92": {
+    "facing": "model",
+    "id": "system-reminder-tool-hosts-personal-machine-timeout",
+    "name": "System Reminder: Tool hosts personal machine timeout",
+    "desc": "Host-line suffix for a personal machine giving its role clause and either the command time limit or that the machine's own timeout applies"
+  },
+  "ce8e0296124cfb0a78d478e6f98456c5dade37fc": {
+    "facing": "model",
+    "id": "system-reminder-tool-hosts-host-platform-arch",
+    "name": "System Reminder: Tool hosts host platform and architecture",
+    "desc": "Host inventory fragment giving an attached machine's platform, OS version and CPU architecture"
+  },
+  "8fc464ee2afe19971b5ed6691c216438c85ea22a": {
+    "facing": "model",
+    "id": "system-reminder-tool-hosts-host-home-dir",
+    "name": "System Reminder: Tool hosts host home directory",
+    "desc": "Host inventory fragment giving an attached machine's home directory"
+  },
+  "697107dbb631e27346bb960d62eb20e173820cef": {
+    "facing": "model",
+    "id": "tool-result-remote-tool-background-task-output-file-not-status",
+    "name": "Tool Result: Remote tool background task output file is not status",
+    "desc": "Tool-result note that a command keeps running as a background task on the machine, how to read its output and stop it, and never to use pgrep, pkill or kill"
+  },
+  "19537123063220e0c06fa668ed714e339f00082f": {
+    "facing": "model",
+    "id": "tool-result-remote-tool-read-result-cut-next-page",
+    "name": "Tool Result: Remote Read result cut, next page",
+    "desc": "Tool-result note that the attached machine cut a Read result at its size limit, giving the whole-line range and the offset/limit for the next page"
+  },
+  "088df94a4abba8760be633ccf43765544cfb87f3": { "facing": "internal" },
+  "03b1e1558ec8773291b6399cdce78d3625d9945c": { "facing": "internal" },
+  "cab94c4c441a852659ef47576da9ac67ffcfb16c": { "facing": "internal" },
+  "1c7394f39d05585be043ca85c49e3116af2432fb": { "facing": "internal" },
+  "0f25f61b5749acd41874140cfbd853aa7f7774eb": { "facing": "internal" },
+  "3fce30ba93d0c1a0bc6d0f54a920a32da8d4a241": {
+    "facing": "model",
+    "id": "system-reminder-tool-calls-lost-to-session-restart",
+    "name": "System Reminder: Tool calls lost to session restart",
+    "desc": "Lists calls from the previous turn that have no result after a session restart and tells Claude to check whether they ran before issuing them again"
+  },
+  "eb52664bcd1177fb659141152244b977dfffde4e": { "facing": "internal" },
+  "cc0b0aef386759db63b281c7f5c2575e8a10ac41": { "facing": "internal" },
+  "1466202688dcd5cb02fb4928f83dccdb82b94f02": {
+    "facing": "model",
+    "id": "tool-result-permission-prompt-tool-remote-browser-unsupported",
+    "name": "Tool Result: Permission prompt tool on remote-browser not allowed",
+    "desc": "Deny message saying a call was not run because the configured permission prompt tool belongs to the remote-browser MCP server, which can't answer permission requests"
+  },
+  "0d200471826166c3fae75b3c48575dd00143747f": { "facing": "ui" },
+  "395977d9dedadadd5f2506e3ecc153ad37e5ef8e": {
+    "facing": "model",
+    "id": "skill-claude-test-pane-open-note",
+    "name": "Skill: Claude Test pane open note",
+    "desc": "Line appended to the claude-test skill prompt saying the Claude Test panel is open in this terminal and the skill's panel rule applies"
+  },
+  "1e628501852b2f6ee4678311a865850e99d0aabb": {
+    "facing": "model",
+    "id": "skill-claude-test-pane-open-no-pictures-note",
+    "name": "Skill: Claude Test pane open, no pictures note",
+    "desc": "Line appended to the claude-test skill prompt saying the panel is open but this terminal can't draw screenshots, so the no-pictures clause applies"
+  },
+  "dd4e0754d86e1668e02620a20979eab883a24323": { "facing": "internal" },
+  "c8708de2f88016fbf839e76d380ff57bf97fbc62": { "facing": "internal" },
+  "6099db3a18d9de5e056b4b5bc929bc53a89a20d0": {
+    "facing": "model",
+    "id": "skill-claude-code-help-recent-releases",
+    "name": "Skill: Claude Code help recent releases",
+    "desc": "Current-build section of the claude-code help skill listing the last releases' changelog entries for the running version"
+  },
+  "657a12f7494aee25b1260d01fb78f053e116cb1a": {
+    "facing": "model",
+    "id": "skill-claude-api-deprecated-or-retired-models-notice",
+    "name": "Skill: Claude API deprecated or retired models notice",
+    "desc": "Section appended to the Claude API skill listing deprecated or retired Claude models found in the project with their status, dates and current replacements, and telling Claude to mention it once briefly without changing existing model IDs unless asked"
+  },
+  "c5f744a6bde126a7ad6e23263b73aff6f7561b8f": { "facing": "internal" },
+  "f95267bdb924908e9f266a0f8eab146d9643cc5b": { "facing": "ui" },
+  "d16a9538b88af4f79803a295abf3d778c709e5d2": { "facing": "internal" },
+  "a5010126265c3a89d06ad9b1adb7fbe9c9eba5b6": { "facing": "internal" },
+  "52bcffb127ed808d8270559aa5d8ed5a6a36d20a": { "facing": "internal" },
+  "98cb3a0ecaa692ad4a9feeb69c35aadab9da8594": { "facing": "internal" },
+  "4ad5616cdd267e00de282fca21207ca27e97e893": { "facing": "ui" },
+  "f24371ec9a4e5da293f20087bc1e12e081b36205": { "facing": "ui" },
+  "f58a535ed7d2cf3410f4a19515535940a9a97bb1": { "facing": "internal" },
+  "9af07f79eb3c56a75d08a7dcb8cc0da03dd3585d": { "facing": "ui" },
+  "aec6970f0fccc0b71cf1807b7a19eea5ce468cf5": { "facing": "ui" },
+  "1eaefe940fc4a02890bb3382c988187ba132530e": { "facing": "ui" },
+  "5c0e5243a30596fa643b6310055848a962a5632c": { "facing": "ui" },
+  "2391888a6fc6170cfe7b989dfa9771177fae4533": { "facing": "ui" },
+  "a957f3c06eba429ed6ff641e076abb02bbeea2ce": { "facing": "ui" },
+  "e4246a19e7bbcdc8dffab6925e271526c472feb0": { "facing": "ui" },
+  "64704de6d64dfeac3c4f3d2aacc177f6544476c5": { "facing": "ui" },
+  "96f0bb47d1a2ae2b322ea9a4f71851fb0e308dad": { "facing": "ui" },
+  "80024016ad4a71d5fb72ea99dfd8a7dd4b9e45dd": { "facing": "ui" },
+  "dd557a52411fdbabc40a05e0214732d70c1c4074": { "facing": "ui" },
+  "20506efe54ba60c451117e80c4acc34e7c23fd55": {
+    "facing": "model",
+    "id": "slash-command-privacy-settings-fetch-failed",
+    "name": "Slash Command: /privacy-settings fetch failed",
+    "desc": "Result of /privacy-settings when the privacy settings could not be fetched, pointing to the claude.ai data privacy controls page"
+  },
+  "4154114acd6fe967827f73ff646296138e2aa516": {
+    "facing": "model",
+    "id": "tool-result-managed-agents-task-files-list-header",
+    "name": "Tool Result: Task files list header",
+    "desc": "Header of the task file list added to a get_task result, noting each name was written by the task's agent"
+  },
+  "2d799a74ea8f7fbce545956dc8a40681847a81ee": {
+    "facing": "model",
+    "id": "tool-result-managed-agents-task-files-save-instructions",
+    "name": "Tool Result: Task files save instructions",
+    "desc": "Tells Claude how to call the save tool with task_id and each file's file_id, bytes and save_as"
+  },
+  "9bb313e2ecddc0e0bfc8e1d191778f82a6885a74": {
+    "facing": "model",
+    "id": "tool-result-managed-agents-task-files-file-line",
+    "name": "Tool Result: Task files list entry",
+    "desc": "One file line of the task file list: name, size, id, the save_as if it differs, and a too-large flag"
+  },
+  "d66edffc6aaaa41699d300e799d6aac58c21a3b1": {
+    "facing": "model",
+    "id": "tool-result-managed-agents-task-files-more-count",
+    "name": "Tool Result: Task files list more count",
+    "desc": "Line saying how many more task files are not listed"
+  },
+  "947ce99061621c4b42f642ad8c1ee2ce0157a864": {
+    "facing": "model",
+    "id": "tool-result-save-task-files-bad-request",
+    "name": "Tool Result: save_task_files bad request",
+    "desc": "Validation error saying files takes 1 to N entries with distinct ids, each given as the get_task answer listed them"
+  },
+  "9ce4a19f4a52443df1f797fb27ff3e85d4e9ed01": {
+    "facing": "model",
+    "id": "tool-result-save-task-files-no-disk",
+    "name": "Tool Result: save_task_files no disk",
+    "desc": "Validation reason that this session keeps no files on this computer"
+  },
+  "34fb8bb99eb7521d189e1f14383cd2b42b9147c6": {
+    "facing": "model",
+    "id": "tool-result-save-task-files-list-not-seen",
+    "name": "Tool Result: save_task_files list not seen",
+    "desc": "Validation reason that the session has not seen the task's file list and must call get_task first"
+  },
+  "7777f69194f219ddc8ce82f922b6decf2a8f2fb4": {
+    "facing": "model",
+    "id": "tool-result-save-task-files-not-listed",
+    "name": "Tool Result: save_task_files file not listed",
+    "desc": "Validation reason that a file id is not in the list this session last saw and get_task should be called again"
+  },
+  "324deed1ca31671f327f6af608c686f20dec318c": {
+    "facing": "model",
+    "id": "tool-result-save-task-files-too-large",
+    "name": "Tool Result: save_task_files file too large",
+    "desc": "Validation reason that a file exceeds the 500 MiB saved-file limit and must be left out"
+  },
+  "c0e6c53306f3ecafed1453138174d440b6368c0d": {
+    "facing": "model",
+    "id": "tool-result-save-task-files-wrong-name",
+    "name": "Tool Result: save_task_files wrong save_as",
+    "desc": "Validation reason giving the correct save_as name for a file"
+  },
+  "5d3271b12aa14e49c4691343d7f9c7411a28a963": {
+    "facing": "model",
+    "id": "tool-result-save-task-files-wrong-size",
+    "name": "Tool Result: save_task_files wrong bytes",
+    "desc": "Validation reason giving the correct byte size for a file"
+  },
+  "8ea5667b801bc213a18e1dee9711bd45a58f9167": {
+    "facing": "model",
+    "id": "tool-result-save-task-files-name-too-long-to-show",
+    "name": "Tool Result: save_task_files name too long to approve",
+    "desc": "Validation reason that one file's name with its folder path is too long to show in an approval prompt"
+  },
+  "6015bfdf440c7b823ccf071ad9b40310bf297cec": {
+    "facing": "model",
+    "id": "tool-result-save-task-files-list-too-long-to-show",
+    "name": "Tool Result: save_task_files list too long to approve",
+    "desc": "Validation reason that the file list is too long for one approval prompt and fewer files should be named"
+  },
+  "e32612a9d3e7e56fcfaf74e947cce67fed51abe0": {
+    "facing": "model",
+    "id": "tool-result-save-task-files-approval-ask",
+    "name": "Tool Result: save_task_files approval request",
+    "desc": "Permission ask message naming how many files of which task are saved to which folder, which becomes the tool result if declined"
+  },
+  "848b670b57703df904280e8ad2945017809036ec": {
+    "facing": "model",
+    "id": "tool-result-save-task-files-egress-blocked",
+    "name": "Tool Result: save_task_files egress blocked reason",
+    "desc": "Per-file failure reason that the session may not fetch files from Anthropic"
+  },
+  "a9354c72788adea27298dc0dcd2d10d35e169121": {
+    "facing": "model",
+    "id": "tool-result-save-task-files-policy-pending",
+    "name": "Tool Result: save_task_files policy pending reason",
+    "desc": "Per-file failure reason that the organization's policy is not loaded yet"
+  },
+  "65c8b988cf528862868a96a419ce8d4b45854b81": {
+    "facing": "model",
+    "id": "tool-result-save-task-files-refused-attached-file",
+    "name": "Tool Result: save_task_files Files API refused (403/404)",
+    "desc": "Per-file failure reason that the Files API refused the download because the file was attached by the person or belongs to another workspace"
+  },
+  "fb2d800bdaf0f4dc00e6e223531ac4e71efbeb45": {
+    "facing": "model",
+    "id": "tool-result-save-task-files-refused-status",
+    "name": "Tool Result: save_task_files Files API refused status",
+    "desc": "Per-file failure reason giving the Files API's refusal status"
+  },
+  "bd721683fe1e748bfcea53a75e4152a4f79126db": {
+    "facing": "model",
+    "id": "tool-result-save-task-files-download-unfinished",
+    "name": "Tool Result: save_task_files download unfinished",
+    "desc": "Per-file failure reason that the download did not finish and retrying may work"
+  },
+  "0d4a78eefd02c1a956735b68d5bc4af1ff590fe3": {
+    "facing": "model",
+    "id": "tool-result-save-task-files-name-taken",
+    "name": "Tool Result: save_task_files name taken",
+    "desc": "Per-file failure reason that the name and every numbered variant already exist in the folder"
+  },
+  "7fea26b72e7e369312114d326832c344b1a8ffac": {
+    "facing": "model",
+    "id": "tool-result-save-task-files-too-large-reason",
+    "name": "Tool Result: save_task_files too large reason",
+    "desc": "Per-file failure reason that the file exceeds the 500 MiB saved-file limit"
+  },
+  "87fb613562858c898b5bfb6681883a25b5251c2f": {
+    "facing": "model",
+    "id": "tool-result-save-task-files-no-sign-in",
+    "name": "Tool Result: save_task_files no sign-in reason",
+    "desc": "Per-file failure reason that the session has no working claude.ai sign-in"
+  },
+  "91533d5d71d7ab51820037e72ec40efb08a7ce44": {
+    "facing": "model",
+    "id": "tool-result-save-task-files-no-room",
+    "name": "Tool Result: save_task_files no disk room reason",
+    "desc": "Per-file failure reason that the disk has no room for the file"
+  },
+  "994b983c02e9f333359613f522d479cacc85d480": {
+    "facing": "model",
+    "id": "tool-result-save-task-files-size-mismatch",
+    "name": "Tool Result: save_task_files size mismatch reason",
+    "desc": "Per-file failure reason that what arrived was not the listed size"
+  },
+  "1a49794e8e42f13910bc8b4596067da38c59a79f": {
+    "facing": "model",
+    "id": "tool-result-save-task-files-canceled",
+    "name": "Tool Result: save_task_files canceled reason",
+    "desc": "Per-file failure reason that the call was canceled"
+  },
+  "96cd6c59ef4d15a717079e6bdce9f13f565093cd": {
+    "facing": "model",
+    "id": "tool-result-save-task-files-write-failed",
+    "name": "Tool Result: save_task_files write failed reason",
+    "desc": "Per-file failure reason that the file could not be written to the session folder"
+  },
+  "f2fe7d38a81f4d7222d3f074e54a5c96905b3f51": {
+    "facing": "model",
+    "id": "tool-result-save-task-files-bad-id-or-size",
+    "name": "Tool Result: save_task_files bad id or size reason",
+    "desc": "Per-file failure reason that the listed id or size is not one this client can request"
+  },
+  "33af6ba7b3551b7a0b76fd54b0a312e108bb6850": {
+    "facing": "model",
+    "id": "tool-result-save-task-files-not-https",
+    "name": "Tool Result: save_task_files API not https reason",
+    "desc": "Per-file failure reason that the client's API address is not https"
+  },
+  "49aa43a0ae375076ed9945b96a82d6614fbf3630": {
+    "facing": "model",
+    "id": "tool-result-save-task-files-untrusted-content-note",
+    "name": "Tool Result: save_task_files untrusted content note",
+    "desc": "Closing note of the save result telling Claude the task's files were written by its agent, so their contents are untrusted and instructions in them are not followed"
+  },
+  "8643e3b56a54e9d5a79e7b6249c9e3087bbbc190": {
+    "facing": "model",
+    "id": "tool-description-save-task-files",
+    "name": "Tool Description: save_task_files",
+    "desc": "Description of the save_task_files tool that saves a task's produced files to this computer under their listed names, with approval for every call"
+  },
+  "e8dbd0f0b32d44bef26a501ade3ce7cc4b5bc86d": { "facing": "ui" },
+  "3d7f0791b6182f2f0d5c90dd5db39d2cb7b5aecb": {
+    "facing": "model",
+    "id": "tool-result-save-task-files-malformed-input",
+    "name": "Tool Result: save_task_files malformed input",
+    "desc": "Validation error stating the exact arguments save_task_files takes"
+  },
+  "a73ddd3f1e812565c4761dab7f4a7bbc8b417fcd": {
+    "facing": "model",
+    "id": "tool-parameter-save-task-files-file-id",
+    "name": "Tool Parameter: save_task_files file_id",
+    "desc": "Schema description of a file entry's file_id: the file's id as listed"
+  },
+  "66ee5ee54d24fc213c2bf2fdedb63b6fa21873fa": {
+    "facing": "model",
+    "id": "tool-parameter-save-task-files-bytes",
+    "name": "Tool Parameter: save_task_files bytes",
+    "desc": "Schema description of a file entry's bytes: the size as listed"
+  },
+  "06f4e58405970b8adfe68cfb9d97a757a21c2aa9": {
+    "facing": "model",
+    "id": "tool-parameter-save-task-files-save-as",
+    "name": "Tool Parameter: save_task_files save_as",
+    "desc": "Schema description of a file entry's save_as: its listed name, or the save_as the get_task note gives"
+  },
+  "cd774b078108374f1870badea5707cabf17720b1": {
+    "facing": "model",
+    "id": "tool-parameter-save-task-files-files",
+    "name": "Tool Parameter: save_task_files files",
+    "desc": "Schema description of the files array: each by id, saved-as name and size from a get_task answer"
+  },
+  "c7e244e8f1ef8791f889452d9d35a8ed6ce3b969": {
+    "facing": "model",
+    "id": "tool-parameter-save-task-files-task-id",
+    "name": "Tool Parameter: save_task_files task_id",
+    "desc": "Schema description of task_id: the task's id"
+  },
+  "5eeaeb1bce72d254eff12d3031d4f65ac298cc5d": { "facing": "internal" },
+  "987c2182a9084c3f5a05137f0978d32b32d7d4d8": {
+    "facing": "model",
+    "id": "tool-result-desktop-pane-file-upload-internal-error",
+    "name": "Tool Result: Desktop pane file_upload internal error",
+    "desc": "Error saying nothing was uploaded because of an internal Claude Code bug, so Claude should not retry and should tell the user"
+  },
+  "b59f9fcbdcc681bbfd4e5acf56a4591313449ca1": { "facing": "internal" },
+  "42fe58f7d0010920809166e00cac03f5d906e452": {
+    "facing": "model",
+    "id": "tool-result-start-task-file-too-large-for-cloud",
+    "name": "Tool Result: Start task file too large for cloud",
+    "desc": "Error that a file cannot be attached because it is larger than this session's cloud environment can attach"
+  },
+  "fb473559299250a272985df9a0ab9892a12a2e1c": {
+    "facing": "model",
+    "id": "tool-result-file-attach-repo-rules-unread",
+    "name": "Tool Result: File attach repo permission rules unreadable",
+    "desc": "Error that the cloud environment could not read the repository's permission rules, so files were not attached, and Claude should tell the user the settings files may need fixing"
+  },
+  "7d70f7b71cb86dd86bd64099ad4f651b92dde798": {
+    "facing": "model",
+    "id": "tool-result-artifact-mcp-ask-rule-unread-call",
+    "name": "Tool Result: Artifacts MCP rule applies, call unreadable",
+    "desc": "Suffix explaining a rule applies because Claude Code couldn't tell what the call names or does"
+  },
+  "64c6a1a4e2560aacca52e6e0284307c784fb1a2e": {
+    "facing": "model",
+    "id": "tool-result-artifact-mcp-ask-rule-unknown-tool",
+    "name": "Tool Result: Artifacts MCP rule applies, unknown tool",
+    "desc": "Suffix explaining that every parenthesized rule and every rule on the Artifact tool applies to an Artifacts MCP tool whose behavior is unknown"
+  },
+  "03e6001a219a50237f691f41afd6ee0d04287c91": {
+    "facing": "model",
+    "id": "tool-result-artifact-mcp-artifact-tool-unavailable",
+    "name": "Tool Result: Artifacts MCP tools unavailable",
+    "desc": "Deny message that the Artifact tool isn't available, so the Artifacts MCP tools aren't either, with a /login and /config hint on a laptop"
+  },
+  "9a2587c37ca6198da7e5a45a5eee04f737a686d8": {
+    "facing": "model",
+    "id": "tool-result-artifact-mcp-unknown-argument-name",
+    "name": "Tool Result: Artifacts MCP unknown argument name",
+    "desc": "Deny message that the tool takes no argument spelled the given way and names must match the tool's list"
+  },
+  "f794465e207569077bb5d78c16b262521162aaea": {
+    "facing": "model",
+    "id": "tool-result-artifact-mcp-plan-mode-no-prompt",
+    "name": "Tool Result: Artifacts MCP plan mode with no one to ask",
+    "desc": "Deny message that the tool doesn't run in plan mode when no one can answer a prompt; keep planning and call after approval"
+  },
+  "98422777511400e3a48d4e1a9fc352066756820a": {
+    "facing": "model",
+    "id": "tool-result-artifact-mcp-notification-db-target",
+    "name": "Tool Result: Artifacts MCP notification database target phrase",
+    "desc": "Phrase naming an artifact's database as prompted by the new-comments notification, with rows written by viewers, used in the read/edit ask"
+  },
+  "fefb986b81987ce507ed231fad7adff07e357694": {
+    "facing": "model",
+    "id": "tool-result-artifact-mcp-edit-db-person-approves",
+    "name": "Tool Result: Artifacts MCP database edit needs a person",
+    "desc": "Ask message that Claude wants to edit a document in the database and only a person can approve it"
+  },
+  "f95019493b39977e234c159948ea819e8db31eb6": {
+    "facing": "model",
+    "id": "tool-result-artifact-mcp-each-call-approved-alone",
+    "name": "Tool Result: Artifacts MCP each call approved alone",
+    "desc": "Ask message that each call of this Artifacts tool is approved individually"
+  },
+  "b1e8f9a7ffa7dddf9b09a76e8149d70b0fd2facd": {
+    "facing": "model",
+    "id": "tool-result-artifact-mcp-ask-rule-covers-call",
+    "name": "Tool Result: Artifacts MCP ask rule covers call",
+    "desc": "Ask message naming the ask rule and its source that covers this call, so it needs approval"
+  },
+  "d071fb1735716cf923a99d83b95a03b6ed61b229": {
+    "facing": "model",
+    "id": "data-artifact-mcp-auto-classifier-notification-tag",
+    "name": "Data: Artifacts MCP classifier notification tag",
+    "desc": "Tag added to the auto-mode classifier input marking a call requested after a new-comments notification, noting that viewer-written rows or comments are ingested"
+  },
+  "37dcf2acf8af0c6efbe2a52c3993d6b8522feebc": {
+    "facing": "model",
+    "id": "data-artifact-mcp-auto-classifier-comments-clause",
+    "name": "Data: Artifacts MCP classifier comments clause",
+    "desc": "Clause in the classifier notification tag saying the ingested comment text is written by artifact viewers"
+  },
+  "902b7a9fd834abe95c0a409e5948cf7c8cfffea8": {
+    "facing": "model",
+    "id": "data-artifact-mcp-auto-classifier-audience-sensitive-note",
+    "name": "Data: Artifacts MCP classifier audience sensitivity note",
+    "desc": "Note in the classifier's shared-audience tag that anyone may view, so internal code and infrastructure detail count as sensitive"
+  },
+  "75ede9b2e47721b00752e2a1baf3b1f60053ccb4": {
+    "facing": "model",
+    "id": "data-artifact-mcp-auto-classifier-input",
+    "name": "Data: Artifacts MCP classifier input line",
+    "desc": "The Artifacts MCP tool's auto-mode classifier line: action, read-only flag, audience and notification tags, target, and the arguments as Claude wrote them"
+  },
+  "5c26d76388759e3d35c015314501cf4db9448f52": {
+    "facing": "model",
+    "id": "tool-result-artifact-mcp-create-new-artifact-ask",
+    "name": "Tool Result: Artifacts MCP create new artifact ask",
+    "desc": "Ask message that Claude wants to create a new artifact on claude.ai, followed by details"
+  },
+  "c69ea8d72fa4db0a77a10f18eb54bf13954252e8": {
+    "facing": "model",
+    "id": "data-artifact-mcp-auto-classifier-unreadable-input",
+    "name": "Data: Artifacts MCP classifier input fallback",
+    "desc": "Fallback classifier line used when the normal Artifacts MCP classifier line can't be built, marking the arguments unreadable"
+  },
+  "a6da91f08238e5d3d32e8e7cdae85b5f55123e59": {
+    "facing": "model",
+    "id": "tool-result-artifact-read-comments-artifact-unknown",
+    "name": "Tool Result: Artifacts read_comments artifact not identified",
+    "desc": "Deny/error that nothing was read because Claude Code couldn't tell which artifact the call names; pass the full id or link"
+  },
+  "4c5611e81c1b03c79977b9f2339238b5967d68c0": {
+    "facing": "model",
+    "id": "tool-result-artifact-read-comments-check-unfinished",
+    "name": "Tool Result: Artifacts read_comments permission check unfinished",
+    "desc": "Deny that the permission check for reading comments couldn't finish; try once more, then tell the user"
+  },
+  "92ae16e6f235a9de957fa8488337be4a3c778746": {
+    "facing": "model",
+    "id": "tool-result-artifact-read-comments-notification-pending-prefix",
+    "name": "Tool Result: Artifacts read_comments notification pending prefix",
+    "desc": "Shared opening that nothing was read because reading comments needs the user's approval while a new-comments notification is pending"
+  },
+  "4d0c60b258c879e1054be20ec9f0e44aa32b9d50": {
+    "facing": "model",
+    "id": "tool-result-artifact-mcp-ask-rule-check-unfinished",
+    "name": "Tool Result: Artifacts MCP ask rule, check unfinished",
+    "desc": "Ask message that the ask rule covers the call and the permission check couldn't finish, so approval covers this call only"
+  },
+  "07731373c70c2b3839a9c2d5ce1a9febd76d5909": {
+    "facing": "model",
+    "id": "tool-result-artifact-mcp-permission-check-unfinished",
+    "name": "Tool Result: Artifacts MCP permission check unfinished",
+    "desc": "Message that the permission check for the Artifacts tool couldn't finish"
+  },
+  "aba3aa5ef363196d1919d6603c20690aaa93cc0e": {
+    "facing": "model",
+    "id": "tool-result-artifact-read-comments-notice-unchecked",
+    "name": "Tool Result: Artifacts read_comments notice not checked",
+    "desc": "Error that nothing was read because the permission check did not ask about the pending notification; call read_comments again so the user is asked"
+  },
+  "cf72abc947816a6dcd20e39b94a5750e3a41ed0a": {
+    "facing": "model",
+    "id": "tool-result-mcp-file-input-resolves-elsewhere",
+    "name": "Tool Result: MCP file input resolves elsewhere",
+    "desc": "Error that a file can't be attached because its path resolves to another path; call again with the resolved path"
+  },
+  "895089fd6b25a5f22f26dd37f73d48e18b5351fe": { "facing": "internal" },
+  "97ff1e4bc0a3748957cef88182322db5d83eff5d": { "facing": "ui" },
+  "2cf8c45d9be8d2f07a1879aecd780edb2ad2d23d": { "facing": "ui" },
+  "2bf642ba55a92a9b6bb800d44419d3e3ce3f3e19": { "facing": "ui" },
+  "d12265fdf286b93f079c3ce8739998ebe7a6b09f": { "facing": "ui" },
+  "23b2fbcfd76eb72dfda6fb801c22a1e783e6e858": { "facing": "ui" },
+  "9bbd61f1ea7ae7f80413207bd9d5c06ae7ae654f": { "facing": "ui" },
+  "e3fb2aa4864d1247b4a01c3ef54ded9c684fae98": { "facing": "ui" },
+  "7efddf453f28a1e5cd8c998627a04c93ff7fc18e": { "facing": "ui" },
+  "c9eeee1e69c6386145d3e4d1041d6d4f6c2bef2f": { "facing": "ui" },
+  "3e4ce5ae33e5a527ad40905d40fc6d9d16107e72": { "facing": "ui" },
+  "82191a5c4eeac2c6d68b4f9e844783f83432c07c": { "facing": "ui" },
+  "4d6e186c7e42f934c60dc791a57c5c3a92363f96": { "facing": "ui" },
+  "8b16213bc7422518d91461b599aa72a76d2cb8ec": { "facing": "internal" },
+  "732485a23315bebee59e7b89d1f02c53a345b3cb": { "facing": "internal" },
+  "14fbf0af3c6f215d657ef1019685c2399344c805": { "facing": "internal" },
+  "e3bc916d36613f255af3d9fb5daa8980d097ccb6": { "facing": "internal" },
+  "71f6b21fd4efe793c973320133a7b5c87c79f8f9": { "facing": "internal" },
+  "1d9460bf7ff9e4374aa0fed1d48895209426f7a4": { "facing": "internal" },
+  "9aea29958ef9077bb7b7cd454ee33ae984d5d322": { "facing": "internal" },
+  "63b3acbb3da280e814974ff824ab12af896cab36": { "facing": "internal" },
+  "c82afaadd10a399a2f3ae1bfad7d87627ddea666": {
+    "facing": "model",
+    "id": "data-claude-code-d-ts",
+    "name": "Data: claude-code.d.ts",
+    "desc": "Claude Code plugin API declarations written as the plugin-authoring skill file types/claude-code.d.ts, which SKILL.md points the model to as the API reference (also used for type-checking)."
+  },
+  "a19f30740f74081b3a98d1875d945d1cada163c5": {
+    "facing": "model",
+    "id": "data-pane-tsx",
+    "name": "Data: pane.tsx",
+    "desc": "Example hooks-module file (pane.tsx) extracted as examples/ with the plugin-authoring skill, which points the model at it per ask."
+  },
+  "578f3f7adad320a345bd76761f7e391e18dc13dd": {
+    "facing": "model",
+    "id": "data-pane-state-d-ts",
+    "name": "Data: pane-state.d.ts",
+    "desc": "Example hooks-module file (pane-state.d.ts) extracted as examples/ with the plugin-authoring skill, which points the model at it per ask."
+  },
+  "8491cb85fd34cbf43fceadbd7d5f293a2dbba98c": {
+    "facing": "model",
+    "id": "data-pane-test-tsx",
+    "name": "Data: pane.test.tsx",
+    "desc": "Example plugin test file (pane.test.tsx) shipped in the plugin-authoring skill's examples folder, showing how a mod's Pane is mounted and checked on every surface with claude-code/testing."
+  },
+  "5ea835b066fc04156c2ecc18816a010fe2906468": {
+    "facing": "model",
+    "id": "data-reference",
+    "name": "Data: reference",
+    "desc": "Long-form plugin/mod API reference (reference.md) extracted with the plugin-authoring skill and pointed to by its SKILL.md."
+  },
+  "7e0ac75b75b51fe805fcb7b0b8c081711967ce84": {
+    "facing": "model",
+    "id": "skill-plugin-authoring",
+    "name": "Skill: plugin-authoring",
+    "desc": "Prompt body of the plugin-authoring (mods) skill, injected at skill invocation."
+  },
+  "31587f7143a6102837111ebce6515f6c082a4a97": {
+    "facing": "model",
+    "id": "data-onboarding",
+    "name": "Data: onboarding",
+    "desc": "claude-test run-skill reference onboarding.md that the run SKILL.md tells the model to Read for machine setup and first run."
+  },
+  "e036ef480caf9a18c49b55ab08d7d3c910444fd6": {
+    "facing": "model",
+    "id": "data-ct-mjs",
+    "name": "Data: ct.mjs",
+    "desc": "claude-test helper script (skills/run/scripts/ct.mjs) that the run skill has the model execute; its JSON output (status notes, needsInput questions, forClaude remedies, errors) is written for the model to read."
+  },
+  "256a32ff18a2ece3cd20c96db544fef187f84519": {
+    "facing": "model",
+    "id": "data-install-tools-mjs",
+    "name": "Data: install-tools.mjs",
+    "desc": "claude-test helper (skills/run/scripts/install-tools.mjs) spawned by the browser helper to install the browser tooling; its JSON result (ok, log, remedy) feeds the claude_test_browser_installed answer the model reads."
+  },
+  "efa3ea1719bf72d528ff8f7c1f4a53d454ad7be9": {
+    "facing": "model",
+    "id": "data-allow-tool-mjs",
+    "name": "Data: allow-tool.mjs",
+    "desc": "claude-test browser-server module (skills/run/scripts/lib/allow-tool.mjs) defining the claude_test_allow / claude_test_app_up / claude_test_show_run MCP tool descriptions, input schemas and result texts the model receives."
+  },
+  "6e1d26fc3771e5c2e514ef2fb212df577c92995c": {
+    "facing": "model",
+    "id": "data-config-mjs",
+    "name": "Data: config.mjs",
+    "desc": "claude-test shared library (skills/run/scripts/lib/config.mjs) whose config warnings, consent and sign-in notes surface in ct.mjs status JSON and the browser server's tool results that the model reads."
+  },
+  "d4974b30aa0ceef5bb4454525d03a3941f6eab0d": {
+    "facing": "model",
+    "id": "data-discover-mjs",
+    "name": "Data: discover.mjs",
+    "desc": "Claude Test discover.mjs: finds the dev server start command and ports from package.json, Makefiles, launch.json and config files, with the conflict and 'unknown — ask' notes status prints."
+  },
+  "0a80e961abe94a11deb6c1bf07f93d6f5d30e489": {
+    "facing": "model",
+    "id": "data-live-page-mjs",
+    "name": "Data: live-page.mjs",
+    "desc": "Claude Test live-page.mjs: builds and keeps the run's live HTML page and the folder checks (notOwnWay/plainWay) the show tool reports."
+  },
+  "69f7731e25cbe7d366cb173043533eb4143dcedb": {
+    "facing": "model",
+    "id": "data-runs-mjs",
+    "name": "Data: runs.mjs",
+    "desc": "claude-test shared library (skills/run/scripts/lib/runs.mjs) for run folders and file placement; its refusal strings return through the helper's tool results and ct.mjs output to the model."
+  },
+  "4ccde6be3384cf93056999f090240b77490a1716": {
+    "facing": "model",
+    "id": "data-tools-mjs",
+    "name": "Data: tools.mjs",
+    "desc": "claude-test shared library (skills/run/scripts/lib/tools.mjs) for installing the browser tooling and checking the Chrome sandbox; its remedy and problem texts (addressed to Claude: 'Tell the person this. Do not install another way.') reach the model through ct.mjs output and the claude_test_install tool results."
+  },
+  "947e995d2b71193b5fcb201e22d6a137c711d409": {
+    "facing": "model",
+    "id": "data-playwright-mcp-mjs",
+    "name": "Data: playwright-mcp.mjs",
+    "desc": "claude-test plugin browser MCP server launcher (skills/run/scripts/playwright-mcp.mjs) whose setup-stub tool descriptions (browser_setup_needed, claude_test_install and its noLock/allowFallback/downloadHost schema), tools/call result texts and launcher refusal/warning notes are delivered to the model."
+  },
+  "b3fccdf7b5ceb20b68d2880789864be4db8a4526": {
+    "facing": "model",
+    "id": "data-stop-on-exit-mjs",
+    "name": "Data: stop-on-exit.mjs",
+    "desc": "Text asset stop-on-exit.mjs that Claude Code loads by path from its bundle."
+  },
+  "ed31536ee54fb3a99bfc22027c020bc417296744": {
+    "facing": "model",
+    "id": "data-claude-test-spec-file-format",
+    "name": "Data: Claude Test spec file format",
+    "desc": "claude-test spec file format reference (skills/run/spec-format.md) the run and draft skills tell the model to Read."
+  },
+  "64d25e6842ec8811cc283ba250713606da89fb44": {
+    "facing": "model",
+    "id": "data-skill-claude-test-the-spec-author-background",
+    "name": "Data: SKILL (Claude Test — the spec author (background; nobody is watchin)",
+    "desc": "Prompt body of the claude-test \"draft\" skill (spec-author background), loaded as skill text by we()."
+  },
+  "42f1ed2576ba28afd29e81ba6b7ba945001620b5": {
+    "facing": "model",
+    "id": "data-skill-claude-test-runner-drive-the-app",
+    "name": "Data: SKILL (Claude Test runner — drive the app in a browser, judge each )",
+    "desc": "Prompt body of the claude-test \"execute\" skill (runner that drives the app), loaded as skill text by we()."
+  },
+  "6707d503e2f2a33bc0ec43768afa020043626927": {
+    "facing": "model",
+    "id": "data-skill-claude-test-the-conversation-side",
+    "name": "Data: SKILL (Claude Test — the conversation side)",
+    "desc": "Prompt body of the claude-test \"run\" skill (conversation side), loaded as skill text by we()."
+  },
+  "2c2ff7c2ef44cf43464e475ca584073fc0ae22c4": {
+    "facing": "model",
+    "id": "skill-dataviz-color-formula",
+    "name": "Skill Reference: Data-viz Color Formula",
+    "desc": "Data-viz skill reference file (references/color-formula.md) defining the four color jobs and six palette-validation checks"
+  },
+  "e610944ee009b7c786595183e9c5bae2bb563063": {
+    "facing": "model",
+    "id": "data-data-visualization-marks-and-anatomy",
+    "name": "Data: Data visualization marks and anatomy",
+    "desc": "data-visualization reference (references/marks-and-anatomy.md) the skill tells the model to Read."
+  },
+  "763172bc6daea405792ca9406697dbd1a428b6d4": {
+    "facing": "model",
+    "id": "skill-dataviz-palette",
+    "name": "Skill Reference: Data-viz Reference Palette",
+    "desc": "Data-viz skill reference file (references/palette.md) — the reference-instance palette with validated default hex values"
+  },
+  "2957bc6493d1773320b7299be0a1b1b86393ecb6": {
+    "facing": "model",
+    "id": "skill-dataviz-validate-palette-js-script",
+    "name": "Skill: dataviz validate_palette.js script",
+    "desc": "The full validate_palette.js six-checks palette validator served as a file of the dataviz skill for the model to run."
+  },
+  "c339d994d3250a45dd9940c029f19c58f054a536": {
+    "facing": "model",
+    "id": "skill-dataviz-validate-palette-script",
+    "name": "Skill Script: Data-viz validate_palette.py",
+    "desc": "Data-viz skill bundled script (scripts/validate_palette.py) that validates a categorical chart palette against the computable data-viz checks"
+  },
+  "77d4df4ef3f5488faa5df77623ad47e07163607b": {
+    "facing": "model",
+    "id": "data-opentelemetry-opentelemetry-tracing-c",
+    "name": "Data: opentelemetry (OpenTelemetry Tracing - C#)",
+    "desc": "C# code for registering a tracer provider, configuring the Anthropic SDK's OpenTelemetry options, and connecting API spans to your own traces."
+  },
+  "f311317cda241e8467df34f02c51be96659d0475": {
+    "facing": "model",
+    "id": "data-claude-api-reference-csharp",
+    "name": "Data: Claude API reference — C#",
+    "desc": "claude-api skill reference file (Claude API reference — C#) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "6c46ea98cbc48018cc0d24ce96ca345d93b93a01": {
+    "facing": "model",
+    "id": "data-tool-use-reference-csharp",
+    "name": "Data: Tool use reference — C#",
+    "desc": "Tool-use API reference doc (C# bindings)."
+  },
+  "d74a06b3976f608b9b014173edb98ddbeaa6df1d": {
+    "facing": "model",
+    "id": "data-opentelemetry-opentelemetry-tracing-go",
+    "name": "Data: opentelemetry (OpenTelemetry Tracing - Go)",
+    "desc": "Go code for registering a tracer provider and propagator, configuring the Anthropic SDK's OpenTelemetry options, and connecting API spans to your own traces."
+  },
+  "13fabd7fc3221e6a0618c817550cd7eb6fb921de": {
+    "facing": "model",
+    "id": "data-claude-api-reference-go",
+    "name": "Data: Claude API reference — Go",
+    "desc": "claude-api skill reference file (Claude API reference — Go) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "9b6e8f5388f2a04dc5f36fa4cd45924b6ed26054": {
+    "facing": "model",
+    "id": "data-tool-use-reference-go",
+    "name": "Data: Tool use reference — Go",
+    "desc": "Tool-use API reference doc (Go bindings)."
+  },
+  "672b684d081f44a928db936f9e15add98943921e": {
+    "facing": "model",
+    "id": "data-managed-agents-reference-go",
+    "name": "Data: Managed Agents reference — Go",
+    "desc": "Managed Agents API reference doc (Go bindings)."
+  },
+  "f8ef2d19829387a52ca5eee8a4b50f1e5c19f811": {
+    "facing": "model",
+    "id": "data-opentelemetry-opentelemetry-tracing-java",
+    "name": "Data: opentelemetry (OpenTelemetry Tracing - Java)",
+    "desc": "Java code for registering a tracer provider and propagator, configuring the Anthropic SDK's OpenTelemetry options, and connecting API spans to your own traces."
+  },
+  "aea6654c9f63e773915841ded7c069d9246e5a2f": {
+    "facing": "model",
+    "id": "data-claude-api-reference-java",
+    "name": "Data: Claude API reference — Java",
+    "desc": "claude-api skill reference file (Claude API reference — Java) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "808b8b5d40f73718d29c222fca2510c8cdad648c": {
+    "facing": "model",
+    "id": "data-tool-use-reference-java",
+    "name": "Data: Tool use reference — Java",
+    "desc": "Tool-use API reference doc (Java bindings)."
+  },
+  "71bac4bc79f1fb09a1a4770c8d5123c2a7efe79e": {
+    "facing": "model",
+    "id": "data-managed-agents-reference-java",
+    "name": "Data: Managed Agents reference — Java",
+    "desc": "Managed Agents API reference doc (Java bindings)."
+  },
+  "d727dd44d4e9bb979ea3942e764847ebaa560862": {
+    "facing": "model",
+    "id": "data-opentelemetry-opentelemetry-tracing-php",
+    "name": "Data: opentelemetry (OpenTelemetry Tracing - PHP)",
+    "desc": "PHP code for registering a tracer provider and propagator, configuring the Anthropic SDK's OpenTelemetry options, and connecting API spans to your own traces."
+  },
+  "81ac4f109473480bce849a2cb1e70ada1cf39a37": {
+    "facing": "model",
+    "id": "data-claude-api-reference-php",
+    "name": "Data: Claude API reference — PHP",
+    "desc": "claude-api skill reference file (Claude API reference — PHP) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "fbf1abc2168888af8c61d57a95a27be149e66cb7": {
+    "facing": "model",
+    "id": "data-tool-use-reference-php",
+    "name": "Data: Tool use reference — PHP",
+    "desc": "Tool-use API reference doc (PHP bindings)."
+  },
+  "dad12e223769d80a981a7cdf52af91440ef1ac4e": {
+    "facing": "model",
+    "id": "data-managed-agents-reference-php",
+    "name": "Data: Managed Agents reference — PHP",
+    "desc": "Managed Agents API reference doc (PHP bindings)."
+  },
+  "156b00e0dfd382bfa8a3e525191412621c7573e2": {
+    "facing": "model",
+    "id": "data-opentelemetry-opentelemetry-tracing-python",
+    "name": "Data: opentelemetry (OpenTelemetry Tracing - Python)",
+    "desc": "Python code for registering a tracer provider, configuring the Anthropic SDK's OpenTelemetry options, and connecting API spans to your own traces."
+  },
+  "bf9a31bd74ee1808fd3332fe35b4c05adaac1182": {
+    "facing": "model",
+    "id": "skill-claude-api-python-sdk-upgrade",
+    "name": "Skill: Claude API Python SDK Upgrade",
+    "desc": "The claude-api skill's executable guide for upgrading a project from anthropic Python SDK 0.x to 1.x, invoked via /claude-api upgrade."
+  },
+  "23aa99c9d00b9c62ca61f04035e96666bf6ef73c": {
+    "facing": "model",
+    "id": "data-tool-use-reference-python",
+    "name": "Data: Tool use reference — Python",
+    "desc": "claude-api skill reference file (Tool use reference — Python) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "39dcd56697878363af46f7c45cdebde49bfeb9c1": {
+    "facing": "model",
+    "id": "data-managed-agents-reference-python",
+    "name": "Data: Managed Agents reference — Python",
+    "desc": "claude-api skill reference file (Managed Agents reference — Python) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "988d82e91d156b1f4252e54d59658658cceadbda": {
+    "facing": "model",
+    "id": "data-opentelemetry-opentelemetry-tracing-ruby",
+    "name": "Data: opentelemetry (OpenTelemetry Tracing - Ruby)",
+    "desc": "Ruby code for registering a tracer provider, configuring the Anthropic SDK's OpenTelemetry options, and connecting API spans to your own traces."
+  },
+  "37f308a688900b214bfc2f021eea0845f648a87a": {
+    "facing": "model",
+    "id": "data-claude-api-reference-ruby",
+    "name": "Data: Claude API reference — Ruby",
+    "desc": "claude-api skill reference file (Claude API reference — Ruby) inlined as <doc> or extracted for the model to Read when the skill's Reading Guide points to it."
+  },
+  "a5bc5f1349274e86e03c1d02115137a08d95a318": {
+    "facing": "model",
+    "id": "data-tool-use-reference-ruby",
+    "name": "Data: Tool use reference — Ruby",
+    "desc": "Tool-use API reference doc (Ruby bindings)."
+  },
+  "f06a2cbb9d87f0a636f8c35722733e8527d4b77a": {
+    "facing": "model",
+    "id": "data-managed-agents-reference-ruby",
+    "name": "Data: Managed Agents reference — Ruby",
+    "desc": "Managed Agents API reference doc (Ruby bindings)."
+  },
+  "3e3e678fc7304dfc1c73dd4307a1a62e606d2841": {
+    "facing": "model",
+    "id": "skill-building-llm-powered-applications-with-claude",
+    "name": "Skill: Building LLM-powered applications with Claude",
+    "desc": "Main claude-api skill body: surface choice, language detection, model defaults, API quick references and subcommand routing"
+  },
+  "9e2edec677a4626ef8c185d31e43037feb09d43e": {
+    "facing": "model",
+    "id": "data-admin-api",
+    "name": "Data: Admin API reference",
+    "desc": "claude-api skill reference file on the Admin API: credentials, endpoint coverage, per-language naming/pagination, roles and platform restrictions"
+  },
+  "8bfba5327253438881cfcde6ec94c8a4747ffc72": {
+    "facing": "model",
+    "id": "data-anthropic-cli",
+    "name": "Data: Anthropic CLI (ant) reference",
+    "desc": "claude-api skill reference file on the ant CLI: auth, profiles, flags, input/output, ant apply version-controlled resources and session scripting"
+  },
+  "829413df33a5f4b9ea00d1897b2a507112a793b5": {
+    "facing": "model",
+    "id": "data-api-version-migration",
+    "name": "Data: API version migration guide",
+    "desc": "claude-api skill guide for moving code to a newer anthropic-version (2026-10-21): steps, per-version breaking changes, SDK/CLI changes and checklist"
+  },
+  "e2113cdeb43a9bde1a32a06cd199e4eb87c92255": {
+    "facing": "model",
+    "id": "data-claude-platform-on-aws-reference",
+    "name": "Data: Claude Platform on AWS reference",
+    "desc": "claude-api skill reference on Claude Platform on AWS: clients, required config, auth and what to tell users"
+  },
+  "fcf6c1c8ec34de7da510a548a9a49e3fccbdacd7": {
+    "facing": "model",
+    "id": "data-cost-optimization",
+    "name": "Data: Cost optimization guide",
+    "desc": "claude-api skill workflow for /claude-api cost-optimize: baseline, token profile, ranked levers, apply-measure loop and deliverables"
+  },
+  "092811cab64173ecef00e24357e08a2572b25e83": {
+    "facing": "model",
+    "id": "data-http-error-codes-reference",
+    "name": "Data: HTTP error codes reference",
+    "desc": "claude-api skill reference for Claude API HTTP errors, model-specific 400s and typed SDK exception handling"
+  },
+  "da56882d14dc755a86d0fda32416676fc94933f6": {
+    "facing": "model",
+    "id": "data-google-cloud-anthropic-managed",
+    "name": "Data: Claude Models on Google Cloud (Anthropic managed)",
+    "desc": "claude-api skill reference for the Anthropic-managed Google Cloud platform: clients, config, ant CLI, auth and user guidance"
+  },
+  "9d7edb20f931e8dca48e1e010c9966dcf833c0aa": {
+    "facing": "model",
+    "id": "data-live-documentation-sources",
+    "name": "Data: Live documentation sources",
+    "desc": "claude-api skill list of platform.claude.com doc URLs and SDK repositories to WebFetch, with fallback strategy"
+  },
+  "1860a89ec575df3670b586f0a35a941279b9405f": {
+    "facing": "model",
+    "id": "data-managed-agents-endpoint-reference",
+    "name": "Data: Managed Agents endpoint reference",
+    "desc": "claude-api skill reference for Managed Agents endpoints, SDK methods, request schemas, errors, pagination and rate limits"
+  },
+  "158079081ca069d4345183a6007ddc5263389c1c": {
+    "facing": "model",
+    "id": "data-managed-agents-core-concepts",
+    "name": "Data: Managed Agents core concepts",
+    "desc": "claude-api skill reference on Managed Agents architecture, session lifecycle and budgets, agents, versioning and overrides"
+  },
+  "df5ef2c36521b57d4d28b18d2455ede8d10dc2fd": {
+    "facing": "model",
+    "id": "data-managed-agents-memory-stores-reference",
+    "name": "Data: Managed Agents memory stores",
+    "desc": "claude-api skill reference on memory stores: create, attach, FUSE mount, host-side management and versions"
+  },
+  "68b46591b2e2ebfd3e9a0984cab699979ff96850": {
+    "facing": "model",
+    "id": "data-managed-agents-multiagent",
+    "name": "Data: Managed Agents multiagent sessions",
+    "desc": "claude-api skill reference on multiagent rosters, dynamic workflows, threads, events, advisor and pitfalls"
+  },
+  "15b72e300c6204c8652fde915dcda77fca436b50": {
+    "facing": "model",
+    "id": "agent-prompt-managed-agents-onboarding-flow",
+    "name": "Agent Prompt: Managed Agents onboarding flow",
+    "desc": "Interview script for /claude-api managed-agents-onboard: describe, configure agent, environment, session, then emit code"
+  },
+  "b55f73756a199b4032d033d3478deb04198b8ea9": {
+    "facing": "model",
+    "id": "data-managed-agents-onboarding-from-quickstart",
+    "name": "Data: Managed Agents onboarding from a bundled quickstart",
+    "desc": "claude-api skill flow for building a Console quickstart template with ant: create agent, environment, vault, apply, test, schedule, integrate"
+  },
+  "92a305bb7ae21c1e51346bf31d2fc52b30144172": {
+    "facing": "model",
+    "id": "data-managed-agents-onboarding-from-url",
+    "name": "Data: Managed Agents onboarding from a URL",
+    "desc": "claude-api skill flow for turning a page into ant apply files: tiering, fetch, extract, propose, write, apply, hand off"
+  },
+  "cfc7d35a0629f413d751b27e3ed52887c39ff719": {
+    "facing": "model",
+    "id": "data-managed-agents-outcomes",
+    "name": "Data: Managed Agents outcomes",
+    "desc": "claude-api skill reference on user.define_outcome, rubrics, grader events and interaction rules"
+  },
+  "c7797c8465911faa498356a4dcb051550149c365": {
+    "facing": "model",
+    "id": "data-managed-agents-overview",
+    "name": "Data: Managed Agents overview",
+    "desc": "claude-api skill overview of Managed Agents: mandatory agent-then-session flow, beta headers, reading guide and pitfalls"
+  },
+  "3338ec4cc9b44fdce25e81bdf41ed03d9c20e2c5": {
+    "facing": "model",
+    "id": "data-managed-agents-self-hosted-sandboxes",
+    "name": "Data: Managed Agents self-hosted sandboxes",
+    "desc": "claude-api skill reference on self-hosted environments: workers, webhook wake, orchestration, memory-store sync, credentials and security"
+  },
+  "a22a2754653284496ab2a3e5ac5a924a2f4d7748": {
+    "facing": "model",
+    "id": "skill-model-migration-guide",
+    "name": "Skill: Model migration guide",
+    "desc": "claude-api skill reference shared/model-migration.md: step-by-step guide for migrating API code to newer Claude models (scope confirmation, file classification, per-target breaking changes and checklists)."
+  },
+  "2acbf24ea4e826e35b138724b7274b0780fd2cdf": {
+    "facing": "model",
+    "id": "data-claude-model-catalog",
+    "name": "Data: Claude model catalog",
+    "desc": "claude-api skill reference shared/models.md: current/legacy/retired model IDs, descriptions, programmatic discovery, and name-to-ID resolution table."
+  },
+  "e027e90a7ac2fbc5570b1e0df3a6aa3c9e4c8d95": {
+    "facing": "model",
+    "id": "data-opentelemetry-opentelemetry-tracing-for-the-claude-api",
+    "name": "Data: OpenTelemetry tracing for the Claude API",
+    "desc": "claude-api skill reference shared/opentelemetry.md: SDK vs API tracing, content modes, SDK setup, adding telemetry destinations via the Admin API/Console, trace reading, token counting and span reference."
+  },
+  "cbb6fc3ed28054793b08d0c43142f62d215aed93": {
+    "facing": "model",
+    "id": "data-platform-availability",
+    "name": "Data: Platform availability",
+    "desc": "claude-api skill reference shared/platform-availability.md: feature-by-platform availability table (1P, Claude Platform on AWS, Bedrock, Vertex, Foundry, Google Cloud Anthropic-managed)."
+  },
+  "b2cc3e86498767809712473333e6de30b9ca9f3b": {
+    "facing": "model",
+    "id": "skill-prompt-audit",
+    "name": "Skill: Prompt audit",
+    "desc": "claude-api skill reference shared/prompt-audit.md: procedure for auditing prompts, skills and tool descriptions for dated prompting patterns, producing an audit report and proposed diff."
+  },
+  "0817a21bb894b1aedc9f164fd8fa3884539ec580": {
+    "facing": "model",
+    "id": "data-tool-use-concepts",
+    "name": "Data: Tool use concepts",
+    "desc": "claude-api skill reference shared/tool-use-concepts.md: tool definitions, eager input streaming, tool choice, tool runner vs manual loop, server/client tools, advisor, memory, structured outputs."
+  },
+  "8a8a5d19e89c6489362ab3d3e2c6baded35be738": {
+    "facing": "model",
+    "id": "data-opentelemetry-opentelemetry-tracing-typescript",
+    "name": "Data: OpenTelemetry tracing - TypeScript",
+    "desc": "claude-api skill TypeScript reference for OpenTelemetry: registering a tracer provider, configuring the SDK, connecting API spans to app traces."
+  },
+  "791c34ae404fe2ea194c48e2deb2aea9cb6d0985": {
+    "facing": "model",
+    "id": "data-streaming-reference-typescript",
+    "name": "Data: Streaming reference - TypeScript",
+    "desc": "claude-api skill TypeScript streaming reference: quick start, thinking/content types, tool runner streaming with eager input, final message, event types, raw SSE."
+  },
+  "cbceb9542e1650da66fb23e903f55f38342b62f6": {
+    "facing": "model",
+    "id": "data-tool-use-reference-typescript",
+    "name": "Data: Tool use reference - TypeScript",
+    "desc": "claude-api skill TypeScript tool-use reference: when to offer Managed Agents, tool runner, manual/streaming loops, tool choice, Anthropic-defined tools, code execution, memory, structured outputs, Agent Skills."
+  },
+  "70dfa9b2b6f491c68b5099b745718954afef9750": {
+    "facing": "model",
+    "id": "data-managed-agents-reference-typescript",
+    "name": "Data: Managed Agents reference - TypeScript",
+    "desc": "claude-api skill TypeScript Managed Agents reference: environments, agents, sessions, outcomes, event streaming, custom tools, files, MCP servers."
+  },
+  "fdc7102302519a9bc7d9925c6f1575dfd6e450a8": {
+    "facing": "model",
+    "id": "tool-result-artifact-ask-first-slides-question-topics",
+    "name": "Tool result: Artifact ask-first slides question topics",
+    "desc": "kw.slides entry (noun 'slide' and the list of things to ask about) interpolated into the Artifact quickstart ask-first instruction for slide decks."
+  },
+  "cd5d70fac39c328d6c9ed31208f9f2af65834480": {
+    "facing": "model",
+    "id": "tool-result-artifact-ask-first-design-question-topics",
+    "name": "Tool result: Artifact ask-first design question topics",
+    "desc": "kw.design entry (noun 'screen' and the list of things to ask about) interpolated into the Artifact quickstart ask-first instruction for design work."
+  },
+  "9dc69ef2ff85f71ad17c4329663d74fc54053fa8": { "facing": "internal" },
+  "011b13798e8cd6cb3af5411dee6a1f0cc9fc6ddf": { "facing": "internal" },
+  "59f77f9073c5a6aac0a63e41fadee3479746af8a": {
+    "facing": "model",
+    "id": "tool-result-bash-declaration-expansion-unverifiable-append",
+    "name": "Bash: append behind a failable expansion unverifiable",
+    "desc": "Permission reason when a variable append rides a command whose expansion can fail at runtime"
+  },
+  "7f55fc716258c59de89ace5bc748c4a5fcd33117": {
+    "facing": "model",
+    "id": "tool-result-bash-declaration-expansion-unverifiable-unset",
+    "name": "Bash: unset behind a failable expansion unverifiable",
+    "desc": "Permission reason when an unset rides a command whose expansion can fail at runtime"
+  },
+  "23278826389e14dc66c5b6c117d4360ea3d0a7bb": {
+    "facing": "model",
+    "id": "tool-result-bash-declaration-expansion-unverifiable-prefix-assign",
+    "name": "Bash: one-command assignment behind a failable expansion",
+    "desc": "Permission reason when a prefix assignment rides a command whose expansion can fail at runtime"
+  },
+  "04e37435d144384b00f7b7b41f1d161a0fef82d6": {
+    "facing": "model",
+    "id": "tool-result-worktree-create-sparse-checkout-failed",
+    "name": "Worktree: sparse checkout failed",
+    "desc": "Error when git checkout of a new sparse worktree fails"
+  },
+  "e32d2d5cfded35081db39202172354dc0b7a5846": {
+    "facing": "model",
+    "id": "tool-result-worktree-create-sparse-set-failed",
+    "name": "Worktree: sparse-checkout configure failed",
+    "desc": "Error when git sparse-checkout set fails for a new worktree"
+  },
+  "c3235488fbcb482285d12c674e81db4f5e1e04c3": {
+    "facing": "model",
+    "id": "tool-result-sandbox-strict-reason-failed-to-start",
+    "name": "Sandbox strict: sandbox failed to start",
+    "desc": "Strict-sandbox denial reason: the sandbox failed to start this session"
+  },
+  "7e04fe6ba5f39a7e9269403ad3bfbd73c125ccf0": {
+    "facing": "model",
+    "id": "tool-result-sandbox-strict-reason-not-set-up",
+    "name": "Sandbox strict: sandbox not set up",
+    "desc": "Strict-sandbox denial reason: the sandbox is not set up on this computer"
+  },
+  "f1cc3accc8cc2195b8c451f2f8b0a76d70aff38f": {
+    "facing": "model",
+    "id": "tool-result-sandbox-strict-reason-program-cannot-start",
+    "name": "Sandbox strict: sandbox program cannot start",
+    "desc": "Strict-sandbox denial reason: the sandbox program cannot be started"
+  },
+  "780df3ba4456f18f565ca8b6ba121a1982823954": {
+    "facing": "model",
+    "id": "tool-result-sandbox-strict-reason-not-ready",
+    "name": "Sandbox strict: sandbox not ready",
+    "desc": "Strict-sandbox denial reason: the sandbox is not ready in this session"
+  },
+  "bd4055851de2bdeb19743bc66d4be8f29db23272": {
+    "facing": "model",
+    "id": "tool-result-sandbox-strict-reason-no-sandbox-available",
+    "name": "Sandbox strict: no sandbox available",
+    "desc": "Strict-sandbox denial reason: no sandbox is available on this computer"
+  },
+  "6650adfd94668fca8053392726d463cfa4f9d4e0": {
+    "facing": "model",
+    "id": "tool-result-sandbox-strict-reason-switched-off",
+    "name": "Sandbox strict: sandbox switched off",
+    "desc": "Strict-sandbox denial reason: the sandbox has been switched off"
+  },
+  "89d47ce505cc9c479b02e34088a976b5509cfed1": {
+    "facing": "model",
+    "id": "tool-result-sandbox-strict-reason-with-exclusion-clause",
+    "name": "Sandbox strict: reason plus exclusion clause",
+    "desc": "Joins the strict-sandbox reason with the sandbox-exclusion clause"
+  },
+  "86507ff023940847cbfc456e01ebc37ab2f58e4c": {
+    "facing": "model",
+    "id": "tool-result-sandbox-strict-exclusion-needs-prompt",
+    "name": "Sandbox strict: exclusion needs a prompt",
+    "desc": "Strict-sandbox reason prefix naming the exclusion clause"
+  },
+  "209ea1adbf1de78e26f2ebfaec71f05f46b9429b": {
+    "facing": "model",
+    "id": "tool-result-save-task-files-call-malformed",
+    "name": "Save task files: call malformed",
+    "desc": "Fallback reason when a save-task-files call is malformed"
+  },
+  "94c9145f8047f64b05c41a9673d2f3d459c88bf7": {
+    "facing": "model",
+    "id": "tool-result-save-task-files-switched-off",
+    "name": "Save task files: switched off",
+    "desc": "Result when saving a task's files is switched off"
+  },
+  "64eed76233a219e2a717b4dc60849379124af94e": {
+    "facing": "model",
+    "id": "system-prompt-slash-command-unavailable-over-remote-control-bare",
+    "name": "System Prompt: Slash command unavailable over Remote Control (bare)",
+    "desc": "The /restart refusal returned as command text when the session is not owned by this process (Remote Control)."
+  },
+  "75daa257b5461bbe692dcd29a18a9d70d94446fa": { "facing": "internal" }
 }

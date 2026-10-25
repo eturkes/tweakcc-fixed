@@ -4344,20 +4344,6 @@
     "text": "answers nothing above it",
     "reason": "se @8289269 is read in Yws @8289347, whose marker goes into model user text blocks via CKe @10681533 → b4t. It is also read @8301417 in this host (`Any other marker, whether it says \"${se}\"...`). It is a marker literal the model matches. ONE id for this hash: keep this one and drop slot-2's '...marker-answers-nothing-clause-answers-nothing-label'."
   },
-  "ce3fca90847a1594": {
-    "promptId": "tool-result-hook-blocking-git-bash-not-found",
-    "promptIds": [
-      "tool-result-hook-git-bash-not-found",
-      "tool-result-skill-requires-git-bash"
-    ],
-    "label": "TOOL_RESULT_HOOK_BLOCKING_GIT_BASH_NOT_FOUND_VAR_0",
-    "verdict": "catalogue",
-    "id": "tool-result-hook-blocking-git-bash-not-found-install-git",
-    "name": "Tool Result: Git Bash not found — install Git for Windows",
-    "desc": "Remedy telling the user to install Git for Windows (with download URL) so bash hooks and skills can run.",
-    "text": "Install Git for Windows (https://git-scm.com/downloads/win)",
-    "reason": "UF @10116940 has four reads: Kfe @10117326 (informational notice), this host @10195409, the thrown hook Error @12657582 and the skill requires-bash Error @12966062. Each splices it as the remedy instruction with the download URL. This hash has three hosts across slots 1-2, so it needs ONE id: keep 'tool-result-hook-git-bash-not-found-install-git' and drop '-hook-blocking-...-install-git' and slot-2's 'tool-result-skill-requires-git-bash-install-git-for-windows'."
-  },
   "115ba6a4009f285a": {
     "promptId": "tool-description-agent-simple-usage-notes",
     "label": "TOOL_DESCRIPTION_AGENT_SIMPLE_USAGE_NOTES_VAR_15",
