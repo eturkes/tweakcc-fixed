@@ -118,6 +118,12 @@ const COORDINATOR_MODE_2_1_257_MAP = {
 };
 
 const CURATED_IDENTIFIER_MAPS = {
+  'tool-description-bash-sandbox-tmpdir': [
+    {
+      identifiers: [0, 0],
+      identifierMap: { 0: 'TOOL_DESCRIPTION_BASH_SANDBOX_TMPDIR_VAR_0' },
+    },
+  ],
   'system-reminder-plan-mode-workflow': [
     {
       // CC 2.1.299 hoisted the closing NOTE sentence into its own constant, so
