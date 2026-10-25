@@ -13532,6 +13532,22 @@
       "version": "2.1.246"
     },
     {
+      "name": "Tool result: cloud session commits remote lacks stay local",
+      "id": "tool-result-cloud-session-commits-remote-lacks-stay-local",
+      "description": "Trailer arm saying the commits the remote lacks, plus uncommitted changes, stay on this machine.",
+      "pieces": [
+        " Commits that ${",
+        "} lacks, and any uncommitted changes, stay on this machine"
+      ],
+      "identifiers": [
+        0
+      ],
+      "identifierMap": {
+        "0": "TOOL_RESULT_CLOUD_SESSION_COMMITS_REMOTE_LACKS_STAY_LOCAL_VAR_0"
+      },
+      "version": "2.1.308"
+    },
+    {
       "name": "deniedModels Context-Size Tag Note",
       "id": "data-settings-denied-models-context-size-tag-note",
       "description": "Explains that a context-size tag such as [1m] in a deniedModels entry is stripped/ignored and the entry blocks the model at every context size.",
@@ -16269,6 +16285,33 @@
       "identifiers": [],
       "identifierMap": {},
       "version": "2.1.239"
+    },
+    {
+      "name": "Tool Result: cloud session push branch hint",
+      "id": "tool-result-cloud-session-push-branch-hint",
+      "description": "Fragment advising to push the branch and start a new session to include the commits",
+      "pieces": [
+        " Push the branch and start a new session to have ${",
+        "?\"that commit\":\"those commits\"}."
+      ],
+      "identifiers": [
+        0
+      ],
+      "identifierMap": {
+        "0": "TOOL_RESULT_CLOUD_SESSION_PUSH_BRANCH_HINT_VAR_0"
+      },
+      "version": "2.1.308"
+    },
+    {
+      "name": "Tool result: cloud session push branch hint",
+      "id": "tool-result-cloud-session-push-branch-start-new-session",
+      "description": "Suffix advising to push the branch and start a new session to use it.",
+      "pieces": [
+        " Push the branch, then start a new session to use it."
+      ],
+      "identifiers": [],
+      "identifierMap": {},
+      "version": "2.1.308"
     },
     {
       "name": "Tool Parameter: Artifact Type URL List Or Read",
@@ -23934,6 +23977,17 @@
         "0": "TOOL_RESULT_ARTIFACT_READ_GATEWAY_FAILURE_CLAUSE_VAR_0"
       },
       "version": "2.1.294"
+    },
+    {
+      "name": "System Reminder: Attached machine could not be reached — ask the user to say when it is back",
+      "id": "system-reminder-attached-machine-could-not-be-reached-ask-say-when-back",
+      "description": "Clause added when the turn is not left waiting, telling the model to also ask the user to say when the machine is back.",
+      "pieces": [
+        ", and to say when it is back"
+      ],
+      "identifiers": [],
+      "identifierMap": {},
+      "version": "2.1.308"
     },
     {
       "name": "Artifact Watch Ask Comment-Wake Clause",
@@ -50419,39 +50473,6 @@
       "version": "2.1.296"
     },
     {
-      "name": "Tool result: cloud session changes stay on machine",
-      "id": "tool-result-cloud-session-changes-stay-on-machine",
-      "description": "Trailer saying which commits and uncommitted changes stay on this machine, with an optional push hint.",
-      "pieces": [
-        "${",
-        "!==null?` Commits that ${",
-        "} lacks, and any uncommitted changes, stay on this machine`:",
-        "?\" Later commits and any uncommitted changes stay on this machine\":` ${",
-        ".aheadCount===0?\"Uncommitted changes\":",
-        ".aheadCount===1?\"That commit and any uncommitted changes\":`Those ${",
-        ".aheadCount} commits and any uncommitted changes`} stay on this machine`}${",
-        "||",
-        ".aheadCount===0?\"; push the branch to start from it\":\"\"}."
-      ],
-      "identifiers": [
-        0,
-        0,
-        1,
-        2,
-        2,
-        2,
-        3,
-        2
-      ],
-      "identifierMap": {
-        "0": "TOOL_RESULT_CLOUD_SESSION_CHANGES_STAY_ON_MACHINE_VAR_0",
-        "1": "TOOL_RESULT_CLOUD_SESSION_CHANGES_STAY_ON_MACHINE_VAR_1",
-        "2": "TOOL_RESULT_CLOUD_SESSION_CHANGES_STAY_ON_MACHINE_VAR_2",
-        "3": "TOOL_RESULT_CLOUD_SESSION_CHANGES_STAY_ON_MACHINE_VAR_3"
-      },
-      "version": "2.1.302"
-    },
-    {
       "name": "Tool Result: Artifact list count header",
       "id": "tool-result-artifact-list-count-header",
       "description": "Header line of the artifact listing giving the count, scope and ordering",
@@ -60184,22 +60205,6 @@
         "0": "TOOL_RESULT_BASH_DECLARE_AUTOLOAD_FLAGS_TOO_COMPLEX_VAR_0"
       },
       "version": "2.1.218"
-    },
-    {
-      "name": "Data: Cloud session bundle notice starts empty",
-      "id": "data-cloud-session-bundle-notice-starts-empty",
-      "description": "Notice that the cloud session starts empty because nothing from the folder is copied",
-      "pieces": [
-        "${{no_git:\"This folder is not a git repository, so\",trust_unconfirmed:\"This folder's trust has not been confirmed, so its git remote was not read and\",no_github_repository:\"No GitHub repository was found for this folder, so\"}[",
-        "]} the cloud session starts empty: nothing from this folder is copied into it."
-      ],
-      "identifiers": [
-        0
-      ],
-      "identifierMap": {
-        "0": "DATA_CLOUD_SESSION_BUNDLE_NOTICE_STARTS_EMPTY_VAR_0"
-      },
-      "version": "2.1.302"
     },
     {
       "name": "Eval grader: agent output text",
@@ -73145,25 +73150,6 @@
         "0": "TOOL_RESULT_WORKTREE_BASE_ORIGIN_REF_MISSING_AFTER_FETCH_VAR_0",
         "1": "TOOL_RESULT_WORKTREE_BASE_ORIGIN_REF_MISSING_AFTER_FETCH_VAR_1",
         "2": "TOOL_RESULT_WORKTREE_BASE_ORIGIN_REF_MISSING_AFTER_FETCH_VAR_2"
-      },
-      "version": "2.1.299"
-    },
-    {
-      "name": "Tool Result: Worktree base FETCH_HEAD no commit",
-      "id": "tool-result-worktree-base-fetch-head-no-commit",
-      "description": "Explains that the PR/MR fetch succeeded but FETCH_HEAD may name no commit",
-      "pieces": [
-        "${",
-        "} The fetch of the PR/MR succeeded, so it may be that FETCH_HEAD names no commit afterwards, ${",
-        "}"
-      ],
-      "identifiers": [
-        0,
-        1
-      ],
-      "identifierMap": {
-        "0": "TOOL_RESULT_WORKTREE_BASE_FETCH_HEAD_NO_COMMIT_VAR_0",
-        "1": "TOOL_RESULT_WORKTREE_BASE_FETCH_HEAD_NO_COMMIT_VAR_1"
       },
       "version": "2.1.299"
     },
@@ -87358,25 +87344,6 @@
       "version": "2.1.295"
     },
     {
-      "name": "Tool result: cloud session starts from pushed commit beneath",
-      "id": "tool-result-cloud-session-start-pushed-commit-beneath",
-      "description": "Fragment naming a pushed commit beneath HEAD and how far back it is.",
-      "pieces": [
-        "a pushed commit beneath it, ${",
-        "}, ${",
-        "} back"
-      ],
-      "identifiers": [
-        0,
-        1
-      ],
-      "identifierMap": {
-        "0": "TOOL_RESULT_CLOUD_SESSION_START_PUSHED_COMMIT_BENEATH_VAR_0",
-        "1": "TOOL_RESULT_CLOUD_SESSION_START_PUSHED_COMMIT_BENEATH_VAR_1"
-      },
-      "version": "2.1.302"
-    },
-    {
       "name": "System Prompt: Windows sandbox pip certificate store",
       "id": "system-prompt-windows-sandbox-pip-certificate-store",
       "description": "Explains pip certificate failures from a missing Windows root certificate and the one-time PowerShell request to fix them",
@@ -95178,6 +95145,17 @@
       "version": "2.1.221"
     },
     {
+      "name": "System Reminder: Plan approved — heading when the user edited the plan",
+      "id": "system-reminder-plan-approved-edited-by-user-heading",
+      "description": "Heading over the approved plan saying the user edited it before approving.",
+      "pieces": [
+        "Approved Plan (edited by user)"
+      ],
+      "identifiers": [],
+      "identifierMap": {},
+      "version": "2.1.308"
+    },
+    {
       "name": "Artifact Approving Covers Files",
       "id": "tool-result-artifact-approving-covers-files",
       "description": "Suffix appended to an artifact checkPermissions ask stating that approval covers the artifact's files (and optionally copying them) for the rest of the conversation.",
@@ -96229,6 +96207,17 @@
       "identifiers": [],
       "identifierMap": {},
       "version": "2.1.237"
+    },
+    {
+      "name": "System Reminder: Remote '!' not run — ask Claude to run it instead",
+      "id": "system-reminder-remote-bash-not-run-ask-claude-instead",
+      "description": "Remedy after a refused remote '!' command, saying to ask Claude to run the command instead.",
+      "pieces": [
+        "Ask Claude to run the command instead."
+      ],
+      "identifiers": [],
+      "identifierMap": {},
+      "version": "2.1.308"
     },
     {
       "name": "Tool result: easel chart ask fewer rows",
@@ -100263,78 +100252,6 @@
         "1": "TOOL_RESULT_WORKTREE_CREATE_BRANCH_CHECKED_OUT_ELSEWHERE_VAR_1"
       },
       "version": "2.1.291"
-    },
-    {
-      "name": "Tool result: cloud session branch not on GitHub",
-      "id": "tool-result-cloud-session-branch-not-on-github-default-branch",
-      "description": "Bundle notice that the branch is not on GitHub, so the cloud session starts from the default branch without local commits or changes.",
-      "pieces": [
-        "Branch ${",
-        "(",
-        ")} ${",
-        "?\"is not on GitHub\":`is not on ${",
-        "(",
-        ")?\"GitHub\":",
-        "} as of the last fetch`}, so the cloud session starts from the default branch, ${",
-        "}, instead, without the commits that ${",
-        "} lacks or any uncommitted changes.${",
-        "?\" Push the branch, then start a new session to use it.\":\"\"}"
-      ],
-      "identifiers": [
-        0,
-        1,
-        2,
-        3,
-        4,
-        4,
-        5,
-        5,
-        6
-      ],
-      "identifierMap": {
-        "0": "TOOL_RESULT_CLOUD_SESSION_BRANCH_NOT_ON_GITHUB_DEFAULT_BRANCH_VAR_0",
-        "1": "TOOL_RESULT_CLOUD_SESSION_BRANCH_NOT_ON_GITHUB_DEFAULT_BRANCH_VAR_1",
-        "2": "TOOL_RESULT_CLOUD_SESSION_BRANCH_NOT_ON_GITHUB_DEFAULT_BRANCH_VAR_2",
-        "3": "TOOL_RESULT_CLOUD_SESSION_BRANCH_NOT_ON_GITHUB_DEFAULT_BRANCH_VAR_3",
-        "4": "TOOL_RESULT_CLOUD_SESSION_BRANCH_NOT_ON_GITHUB_DEFAULT_BRANCH_VAR_4",
-        "5": "TOOL_RESULT_CLOUD_SESSION_BRANCH_NOT_ON_GITHUB_DEFAULT_BRANCH_VAR_5",
-        "6": "TOOL_RESULT_CLOUD_SESSION_BRANCH_NOT_ON_GITHUB_DEFAULT_BRANCH_VAR_6"
-      },
-      "version": "2.1.302"
-    },
-    {
-      "name": "Tool Result: cloud session branch ahead of remote",
-      "id": "tool-result-cloud-session-branch-ahead-of-remote",
-      "description": "Notice that the branch is ahead of its remote so the cloud session starts without those commits",
-      "pieces": [
-        "Branch ${",
-        "} is ${",
-        "?\"1 commit\":`${",
-        ".toLocaleString(\"en-US\")} commits`} ahead of ${",
-        "}/${",
-        "} (as last fetched), so the cloud session starts without ${",
-        "?\"it\":\"them\"} and without any uncommitted changes.${",
-        "?` Push the branch and start a new session to have ${",
-        "?\"that commit\":\"those commits\"}.`:\"\"}"
-      ],
-      "identifiers": [
-        0,
-        1,
-        2,
-        3,
-        0,
-        1,
-        4,
-        1
-      ],
-      "identifierMap": {
-        "0": "TOOL_RESULT_CLOUD_SESSION_BRANCH_AHEAD_OF_REMOTE_VAR_0",
-        "1": "TOOL_RESULT_CLOUD_SESSION_BRANCH_AHEAD_OF_REMOTE_VAR_1",
-        "2": "TOOL_RESULT_CLOUD_SESSION_BRANCH_AHEAD_OF_REMOTE_VAR_2",
-        "3": "TOOL_RESULT_CLOUD_SESSION_BRANCH_AHEAD_OF_REMOTE_VAR_3",
-        "4": "TOOL_RESULT_CLOUD_SESSION_BRANCH_AHEAD_OF_REMOTE_VAR_4"
-      },
-      "version": "2.1.301"
     },
     {
       "name": "Slash Command: /branch — branch created, resume with /resume",
@@ -118845,6 +118762,17 @@
       "version": "2.1.187"
     },
     {
+      "name": "Tool Result: Sandbox proxy denial — destination host not plain ASCII",
+      "id": "tool-result-bash-sandbox-proxy-host-not-ascii",
+      "description": "Sandbox proxy denial body returned to the sandboxed command when the destination host is not plain ASCII.",
+      "pieces": [
+        "destination host is not plain ASCII"
+      ],
+      "identifiers": [],
+      "identifierMap": {},
+      "version": "2.1.308"
+    },
+    {
       "name": "Tool Result: Agent Proxy Destination Blocked",
       "id": "tool-result-agent-proxy-direct-blocked",
       "description": "Kind label appended to bash stderr when the destination is refused by the proxy.",
@@ -127439,30 +127367,6 @@
       "identifiers": [],
       "identifierMap": {},
       "version": "2.1.302"
-    },
-    {
-      "name": "Worktree PR: other ref unchecked",
-      "id": "tool-result-worktree-pr-other-ref-unchecked",
-      "description": "Could not check whether origin also has the other PR ref; retry.",
-      "pieces": [
-        "fetched ${",
-        ".refspec}, but could not check whether origin also has ${",
-        ".refspec} (${",
-        ".why}). Because origin was not recognised as github.com or gitlab.com, both refs are checked before either is used, so that a pushed look-alike cannot be mistaken for #${",
-        ".prNumber}. Retry."
-      ],
-      "identifiers": [
-        0,
-        1,
-        1,
-        2
-      ],
-      "identifierMap": {
-        "0": "TOOL_RESULT_WORKTREE_PR_OTHER_REF_UNCHECKED_VAR_0",
-        "1": "TOOL_RESULT_WORKTREE_PR_OTHER_REF_UNCHECKED_VAR_1",
-        "2": "TOOL_RESULT_WORKTREE_PR_OTHER_REF_UNCHECKED_VAR_2"
-      },
-      "version": "2.1.300"
     },
     {
       "name": "Tool Result: WebFetch untrusted content wrapper",
@@ -136068,6 +135972,28 @@
       "version": "2.1.219"
     },
     {
+      "name": "Tool Result: Sandbox proxy denial — request without a Host header",
+      "id": "tool-result-bash-sandbox-proxy-request-missing-host-header",
+      "description": "Sandbox proxy denial body returned to the sandboxed command when an HTTP/1.1 request has no Host header.",
+      "pieces": [
+        "HTTP/1.1 request without a Host header"
+      ],
+      "identifiers": [],
+      "identifierMap": {},
+      "version": "2.1.308"
+    },
+    {
+      "name": "Tool Result: Sandbox proxy denial — request without a Host header",
+      "id": "tool-result-bash-sandbox-proxy-request-missing-host-header",
+      "description": "Sandbox proxy denial body returned to the sandboxed command when an HTTP/1.1 request has no Host header.",
+      "pieces": [
+        "HTTP/1.1 request without a Host header"
+      ],
+      "identifiers": [],
+      "identifierMap": {},
+      "version": "2.1.308"
+    },
+    {
       "name": "Data: extraKnownMarketplaces.source.(settings).plugins.source.(archive).url setting description (part 1 of 2)",
       "id": "data-settings-extra-known-marketplaces-source-settings-plugins-source-archive-url-description-part-1",
       "description": "Description of the `extraKnownMarketplaces.source.(settings).plugins.source.(archive).url` setting in Claude Code's settings JSON schema. The model reads it through /update-config and settings validation errors; it is also shown to users in the settings help.",
@@ -136660,6 +136586,17 @@
       "version": "2.1.308"
     },
     {
+      "name": "Tool Description: Bash sandbox denied host lead (Bash only)",
+      "id": "tool-description-bash-sandbox-denied-host-lead-bash-only",
+      "description": "Condition lead for the allowed_domains re-run when only Bash is sandboxed: the sandbox_violations block names a denied host.",
+      "pieces": [
+        "If the `<sandbox_violations>` block names a denied host"
+      ],
+      "identifiers": [],
+      "identifierMap": {},
+      "version": "2.1.308"
+    },
+    {
       "name": "Skill: Code Review Task-Tool Missing, Run Angles Inline",
       "id": "skill-code-review-task-tool-unavailable-inline-angles",
       "description": "Code-review skill fragment (SLs) interpolated into the recall-mode review prompt telling the model to run each angle and verification itself when the Task tool is absent.",
@@ -136819,6 +136756,22 @@
         "2": "SLASH_COMMAND_AUTOFIX_PR_TAKE_OVER_REMOVE_WATCHING_LABEL_VAR_2"
       },
       "version": "2.1.284"
+    },
+    {
+      "name": "Tool Description: Bash sandbox denied host lead (PowerShell only)",
+      "id": "tool-description-bash-sandbox-denied-host-lead-powershell-only",
+      "description": "Condition lead for the allowed_domains re-run when only PowerShell is sandboxed: the proxy denied a host the command needs.",
+      "pieces": [
+        "If the proxy denied a host the command needs ${",
+        "}"
+      ],
+      "identifiers": [
+        0
+      ],
+      "identifierMap": {
+        "0": "TOOL_DESCRIPTION_BASH_SANDBOX_DENIED_HOST_LEAD_POWERSHELL_ONLY_VAR_0"
+      },
+      "version": "2.1.308"
     },
     {
       "name": "File transfer cross-machine egress disclosure",
@@ -156487,6 +156440,17 @@
       "version": "2.1.284"
     },
     {
+      "name": "System Reminder: Tool hosts — no machine is attached any more",
+      "id": "system-reminder-tool-hosts-no-machine-attached-any-more",
+      "description": "Lead fact of the detach notices: no machine is attached to this session any more.",
+      "pieces": [
+        "No machine is attached to this session any more"
+      ],
+      "identifiers": [],
+      "identifierMap": {},
+      "version": "2.1.308"
+    },
+    {
       "name": "Tool Result: Remote Host None Attached — Not User's Machine",
       "id": "tool-result-remote-host-none-attached-not-users-machine",
       "description": "Fallback sentence in the unknown_host tool_result when no remote machine is attached, telling the model not to describe this session as the user's machine.",
@@ -166040,53 +166004,6 @@
       "version": "2.1.276"
     },
     {
-      "name": "Worktree PR: ambiguous refs",
-      "id": "tool-result-worktree-pr-ref-ambiguous",
-      "description": "origin has both PR refs at different commits.",
-      "pieces": [
-        "origin has both ${",
-        ".refspec} and ${",
-        "[1].refspec}, at different commits. GitHub and GitHub-compatible servers create only refs/pull/${",
-        ".prNumber}/head and GitLab only refs/merge-requests/${",
-        ".prNumber}/head, so the other one was pushed to origin, or copied there from another server, and could be mistaken for #${",
-        ".prNumber}. Delete from origin the ref your server does not create, then retry."
-      ],
-      "identifiers": [
-        0,
-        1,
-        2,
-        2,
-        2
-      ],
-      "identifierMap": {
-        "0": "TOOL_RESULT_WORKTREE_PR_REF_AMBIGUOUS_VAR_0",
-        "1": "TOOL_RESULT_WORKTREE_PR_REF_AMBIGUOUS_VAR_1",
-        "2": "TOOL_RESULT_WORKTREE_PR_REF_AMBIGUOUS_VAR_2"
-      },
-      "version": "2.1.300"
-    },
-    {
-      "name": "Worktree PR: ref absent",
-      "id": "tool-result-worktree-pr-ref-absent",
-      "description": "origin has no PR ref; a look-alike ref was fetched instead.",
-      "pieces": [
-        "origin has no ref ${",
-        "}; a branch, tag or other ref named like it was fetched instead, which is not pull or merge request #${",
-        ".prNumber}. Check the number, and that origin is the repository #${",
-        ".prNumber} belongs to; if both are right, that ref has to be deleted from origin first."
-      ],
-      "identifiers": [
-        0,
-        1,
-        1
-      ],
-      "identifierMap": {
-        "0": "TOOL_RESULT_WORKTREE_PR_REF_ABSENT_VAR_0",
-        "1": "TOOL_RESULT_WORKTREE_PR_REF_ABSENT_VAR_1"
-      },
-      "version": "2.1.300"
-    },
-    {
       "name": "Image resize coordinate-mapping annotation",
       "id": "tool-result-image-resize-coordinate-map",
       "description": "Text annotation attached to a resized image block sent to the model, giving original/display sizes and a coordinate scale factor for computer-use.",
@@ -167558,6 +167475,38 @@
         "1": "SLASH_COMMAND_PLUGIN_VALIDATE_DIRECTORY_ICON_PATH_TRAVERSAL_VAR_1"
       },
       "version": "2.1.305"
+    },
+    {
+      "name": "Slash Command: /plugin validate — path traversal finding",
+      "id": "slash-command-plugin-validate-path-traversal-finding",
+      "description": "Validation finding that a path in the plugin contains \"..\" and could be a path traversal attempt.",
+      "pieces": [
+        "Path contains \"..\" which could be a path traversal attempt: ${",
+        "}"
+      ],
+      "identifiers": [
+        0
+      ],
+      "identifierMap": {
+        "0": "SLASH_COMMAND_PLUGIN_VALIDATE_PATH_TRAVERSAL_FINDING_VAR_0"
+      },
+      "version": "2.1.308"
+    },
+    {
+      "name": "Slash Command: /plugin validate — path traversal finding",
+      "id": "slash-command-plugin-validate-path-traversal-finding",
+      "description": "Validation finding that a path in the plugin contains \"..\" and could be a path traversal attempt.",
+      "pieces": [
+        "Path contains \"..\" which could be a path traversal attempt: ${",
+        "}"
+      ],
+      "identifiers": [
+        0
+      ],
+      "identifierMap": {
+        "0": "SLASH_COMMAND_PLUGIN_VALIDATE_PATH_TRAVERSAL_FINDING_VAR_0"
+      },
+      "version": "2.1.308"
     },
     {
       "name": "Tool Result: Grep path does not exist",
@@ -170838,6 +170787,28 @@
       "identifiers": [],
       "identifierMap": {},
       "version": "2.1.291"
+    },
+    {
+      "name": "Slash Command: Plugin validate — plugin name cannot contain spaces, use kebab-case",
+      "id": "slash-command-plugin-validate-directory-name-no-spaces-use-kebab",
+      "description": "Reason a folder-derived plugin name is invalid: it contains spaces; use kebab-case.",
+      "pieces": [
+        "Plugin name cannot contain spaces. Use kebab-case (e.g., \"my-plugin\")"
+      ],
+      "identifiers": [],
+      "identifierMap": {},
+      "version": "2.1.308"
+    },
+    {
+      "name": "Slash Command: Plugin validate — plugin name cannot contain spaces, use kebab-case",
+      "id": "slash-command-plugin-validate-directory-name-no-spaces-use-kebab",
+      "description": "Reason a folder-derived plugin name is invalid: it contains spaces; use kebab-case.",
+      "pieces": [
+        "Plugin name cannot contain spaces. Use kebab-case (e.g., \"my-plugin\")"
+      ],
+      "identifiers": [],
+      "identifierMap": {},
+      "version": "2.1.308"
     },
     {
       "name": "/plugin install: plugin path is not a directory",
@@ -183033,6 +183004,28 @@
       "version": "2.1.295"
     },
     {
+      "name": "Tool Result: Windows sandbox — run /sandbox install or see the sandboxing docs",
+      "id": "tool-result-bash-sandbox-windows-run-install-or-see-docs",
+      "description": "Remedy appended to Windows sandbox set-up failures telling the user to run /sandbox install or read the sandboxing docs.",
+      "pieces": [
+        "Run /sandbox install, or see https://code.claude.com/docs/en/sandboxing."
+      ],
+      "identifiers": [],
+      "identifierMap": {},
+      "version": "2.1.308"
+    },
+    {
+      "name": "Tool Result: Windows sandbox — run /sandbox install or see the sandboxing docs",
+      "id": "tool-result-bash-sandbox-windows-run-install-or-see-docs",
+      "description": "Remedy appended to Windows sandbox set-up failures telling the user to run /sandbox install or read the sandboxing docs.",
+      "pieces": [
+        "Run /sandbox install, or see https://code.claude.com/docs/en/sandboxing."
+      ],
+      "identifiers": [],
+      "identifierMap": {},
+      "version": "2.1.308"
+    },
+    {
       "name": "Data: Restart hint for background session",
       "id": "data-restart-hint-background-session-resume",
       "description": "Tells a background session to run /stop and then claude --resume instead of restarting without a flag",
@@ -187399,6 +187392,17 @@
       "identifiers": [],
       "identifierMap": {},
       "version": "2.1.210"
+    },
+    {
+      "name": "Slash Command: Plugin validate — set privacyPolicyUrl if the plugin connects to a remote service",
+      "id": "slash-command-plugin-validate-directory-set-privacy-policy-url",
+      "description": "Remedy telling the plugin author to set privacyPolicyUrl in plugin.json if the plugin connects to a remote service.",
+      "pieces": [
+        "set `privacyPolicyUrl` in plugin.json if the plugin connects to a remote service"
+      ],
+      "identifiers": [],
+      "identifierMap": {},
+      "version": "2.1.308"
     },
     {
       "name": "Tool Result: artifact too — set `server` to the connector's exact display name",
@@ -202061,57 +202065,6 @@
       "version": "2.1.305"
     },
     {
-      "name": "Worktree PR: fetch origin unverifiable",
-      "id": "tool-result-worktree-pr-fetch-no-from-line",
-      "description": "git fetch did not print the From line so result could not be checked.",
-      "pieces": [
-        "the fetch of ${",
-        "} succeeded, but git did not print the \"From <url>\" line that says where it fetched from, so the result could not be checked. Run the command again."
-      ],
-      "identifiers": [
-        0
-      ],
-      "identifierMap": {
-        "0": "TOOL_RESULT_WORKTREE_PR_FETCH_NO_FROM_LINE_VAR_0"
-      },
-      "version": "2.1.300"
-    },
-    {
-      "name": "Tool Result: Worktree base PR FETCH_HEAD no commit",
-      "id": "tool-result-worktree-base-pr-fetch-head-no-commit",
-      "description": "Says the PR/MR fetch succeeded but rev-parse returned no commit for FETCH_HEAD",
-      "pieces": [
-        "the fetch of the PR/MR succeeded, but git rev-parse returned no commit for FETCH_HEAD afterwards. ${",
-        "}"
-      ],
-      "identifiers": [
-        0
-      ],
-      "identifierMap": {
-        "0": "TOOL_RESULT_WORKTREE_BASE_PR_FETCH_HEAD_NO_COMMIT_VAR_0"
-      },
-      "version": "2.1.299"
-    },
-    {
-      "name": "Worktree PR: FETCH_HEAD overwritten",
-      "id": "tool-result-worktree-pr-fetch-head-overwritten",
-      "description": "FETCH_HEAD does not record the ref, likely overwritten by a concurrent fetch.",
-      "pieces": [
-        "the fetch succeeded, but FETCH_HEAD does not record ${",
-        "} from ${",
-        "}, most likely because another git fetch in this repository overwrote it at the same moment. Run the command again."
-      ],
-      "identifiers": [
-        0,
-        1
-      ],
-      "identifierMap": {
-        "0": "TOOL_RESULT_WORKTREE_PR_FETCH_HEAD_OVERWRITTEN_VAR_0",
-        "1": "TOOL_RESULT_WORKTREE_PR_FETCH_HEAD_OVERWRITTEN_VAR_1"
-      },
-      "version": "2.1.300"
-    },
-    {
       "name": "Artifact Asset Read Write Kept",
       "id": "tool-result-artifact-asset-read-write-kept",
       "description": "asset_read tool error when the fetched asset could not be moved to the destination and bytes were kept at a partial path.",
@@ -205378,47 +205331,6 @@
       "identifiers": [],
       "identifierMap": {},
       "version": "2.1.301"
-    },
-    {
-      "name": "Tool result: cloud session starts from newest commit remote has",
-      "id": "tool-result-cloud-session-start-newest-commit-remote-has",
-      "description": "Fragment naming the newest commit beneath HEAD that the remote has, and how far back it is.",
-      "pieces": [
-        "the newest commit beneath it that ${",
-        "} has (${",
-        "}), ${",
-        "} back"
-      ],
-      "identifiers": [
-        0,
-        1,
-        2
-      ],
-      "identifierMap": {
-        "0": "TOOL_RESULT_CLOUD_SESSION_START_NEWEST_COMMIT_REMOTE_HAS_VAR_0",
-        "1": "TOOL_RESULT_CLOUD_SESSION_START_NEWEST_COMMIT_REMOTE_HAS_VAR_1",
-        "2": "TOOL_RESULT_CLOUD_SESSION_START_NEWEST_COMMIT_REMOTE_HAS_VAR_2"
-      },
-      "version": "2.1.302"
-    },
-    {
-      "name": "Tool result: cloud session starts from newest pushed commit",
-      "id": "tool-result-cloud-session-start-newest-pushed-commit-beneath",
-      "description": "Fragment naming the newest pushed commit beneath HEAD and how far back it is.",
-      "pieces": [
-        "the newest pushed commit beneath it, ${",
-        "}, ${",
-        "} back"
-      ],
-      "identifiers": [
-        0,
-        1
-      ],
-      "identifierMap": {
-        "0": "TOOL_RESULT_CLOUD_SESSION_START_NEWEST_PUSHED_COMMIT_BENEATH_VAR_0",
-        "1": "TOOL_RESULT_CLOUD_SESSION_START_NEWEST_PUSHED_COMMIT_BENEATH_VAR_1"
-      },
-      "version": "2.1.302"
     },
     {
       "name": "Computer Use Next Display-Scope Will Prompt",
@@ -214443,6 +214355,17 @@
       "version": "2.1.302"
     },
     {
+      "name": "System Prompt: Windows sandbox — administrator can run the set-up again",
+      "id": "system-prompt-windows-sandbox-admin-setup-again-remedy",
+      "description": "Remedy clause, used when an administrator set up the Windows sandbox, saying the administrator can run the sandbox set-up again.",
+      "pieces": [
+        "their administrator can run the sandbox set-up again"
+      ],
+      "identifiers": [],
+      "identifierMap": {},
+      "version": "2.1.308"
+    },
+    {
       "name": "You should know explainer: concrete comparison details",
       "id": "agent-prompt-you-should-know-explainer-comparison-specifics",
       "description": "Explainer shape detail requiring concrete comparison numbers and names.",
@@ -215185,6 +215108,17 @@
       "identifiers": [],
       "identifierMap": {},
       "version": "2.1.301"
+    },
+    {
+      "name": "System Prompt: Windows sandbox — run /sandbox install remedy",
+      "id": "system-prompt-windows-sandbox-slash-install-remedy",
+      "description": "Remedy clause, used for interactive non-policy sessions, saying the user can run /sandbox install (one elevation prompt).",
+      "pieces": [
+        "they can run `/sandbox install` (one elevation prompt)"
+      ],
+      "identifiers": [],
+      "identifierMap": {},
+      "version": "2.1.308"
     },
     {
       "name": "Windows sandbox: run install in terminal remedy",
@@ -224241,6 +224175,28 @@
       "version": "2.1.257"
     },
     {
+      "name": "Tool Result: Sandbox proxy denial — TLS server name unreadable",
+      "id": "tool-result-bash-sandbox-proxy-tls-server-name-unreadable",
+      "description": "Sandbox proxy denial body returned to the sandboxed command when the TLS server name could not be read.",
+      "pieces": [
+        "TLS server name could not be read"
+      ],
+      "identifiers": [],
+      "identifierMap": {},
+      "version": "2.1.308"
+    },
+    {
+      "name": "Tool Result: Sandbox proxy denial — TLS server name unreadable",
+      "id": "tool-result-bash-sandbox-proxy-tls-server-name-unreadable",
+      "description": "Sandbox proxy denial body returned to the sandboxed command when the TLS server name could not be read.",
+      "pieces": [
+        "TLS server name could not be read"
+      ],
+      "identifiers": [],
+      "identifierMap": {},
+      "version": "2.1.308"
+    },
+    {
       "name": "Tool Result: Bash sandbox TLS termination needs newer runtime",
       "id": "tool-result-bash-sandbox-tls-terminate-runtime-unsupported",
       "description": "Sandbox init failure reason saying tlsTerminate needs Node or Bun 1.4 or later, naming the running runtime",
@@ -230072,6 +230028,17 @@
       "version": "2.1.246"
     },
     {
+      "name": "Tool Result: Windows sandbox — set up by a newer release, use that release",
+      "id": "tool-result-bash-sandbox-windows-newer-release-use-that-release",
+      "description": "Remedy that replaces the srt-win reinstall command when the sandbox was set up by a newer release, telling the user to use that release of Claude Code.",
+      "pieces": [
+        "Use that release of Claude Code."
+      ],
+      "identifiers": [],
+      "identifierMap": {},
+      "version": "2.1.308"
+    },
+    {
       "name": "System Prompt: Tool usage subagent guidance (steered/trimmed)",
       "id": "system-prompt-tool-usage-subagent-guidance-trimmed",
       "description": "Trimmed variant of the tool-usage subagent guidance emitted when the subagent-steer experiment is not on 'default': use the Agent tool when the task matches an agent's description and never duplicate work a subagent is already doing.",
@@ -234192,40 +234159,6 @@
       "identifiers": [],
       "identifierMap": {},
       "version": "2.1.282"
-    },
-    {
-      "name": "Windows sandbox argv too long",
-      "id": "tool-result-bash-sandbox-windows-argv-too-long",
-      "description": "The sandbox command line exceeds the CreateProcessW limit; lists what it carries.",
-      "pieces": [
-        "Windows sandbox argv is ~${",
-        "} chars (CreateProcessW limit is 32 767). Besides the command itself it carries ${",
-        ".denyRead?.",
-        "??0} per-command read denies, ${",
-        ".denyReadExcept?.",
-        "??0} session grants beneath them, ${",
-        ".denyWrite?.",
-        "??0} write denies and ${",
-        ".writeRoots?.",
-        "??0} write roots; the command was not run with fewer."
-      ],
-      "identifiers": [
-        0,
-        1,
-        2,
-        1,
-        2,
-        1,
-        2,
-        1,
-        2
-      ],
-      "identifierMap": {
-        "0": "TOOL_RESULT_BASH_SANDBOX_WINDOWS_ARGV_TOO_LONG_VAR_0",
-        "1": "TOOL_RESULT_BASH_SANDBOX_WINDOWS_ARGV_TOO_LONG_VAR_1",
-        "2": "TOOL_RESULT_BASH_SANDBOX_WINDOWS_ARGV_TOO_LONG_VAR_2"
-      },
-      "version": "2.1.305"
     },
     {
       "name": "Windows sandbox install needed (lead)",

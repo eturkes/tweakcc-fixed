@@ -22878,7 +22878,12 @@
     "name": "Data: Sandbox install status probe failed",
     "desc": "Error message for /sandbox install when the post-install status probe could not be read back; emitted as <local-command-stdout> command output the model sees."
   },
-  "88facb33a92113632c63bd7c81bd15accd6cf848": { "facing": "ui" },
+  "88facb33a92113632c63bd7c81bd15accd6cf848": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-path-traversal-finding",
+    "name": "Slash Command: /plugin validate — path traversal finding",
+    "desc": "Validation finding that a path in the plugin contains \"..\" and could be a path traversal attempt."
+  },
   "88fb13023398170290667990e141f77e457ceef5": {
     "facing": "model",
     "id": "tool-description-fileupload-paths",
@@ -29199,7 +29204,12 @@
   "adee0b547451426b6dd886de4cd82ef996938d32": { "facing": "internal" },
   "adee4ab696df53f193ca0cf25182f4938c321b64": { "facing": "internal" },
   "adeed35da2719175a373ee36a089f4e069a569aa": { "facing": "ui" },
-  "adf01feae82c59ee05c8df3f8f214c954e862c62": { "facing": "internal" },
+  "adf01feae82c59ee05c8df3f8f214c954e862c62": {
+    "facing": "model",
+    "id": "slash-command-plugin-validate-directory-name-no-spaces-use-kebab",
+    "name": "Slash Command: Plugin validate — plugin name cannot contain spaces, use kebab-case",
+    "desc": "Reason a folder-derived plugin name is invalid: it contains spaces; use kebab-case."
+  },
   "adfab9ddd55b652f3f6d865aacbc4415af644a56": {
     "facing": "model",
     "id": "tool-result-computer-use-permissions-granted",
@@ -94004,12 +94014,7 @@
     "name": "Tool Result: Cloud session starts empty notice",
     "desc": "Notice that the cloud session starts empty because the folder is not a git repository, its trust is unconfirmed or no GitHub repository was found"
   },
-  "a0c0fb45acec834f4701c04a9aee44c6717128ba": {
-    "facing": "model",
-    "id": "data-cloud-session-bundle-notice-starts-empty",
-    "name": "Data: Cloud session bundle notice starts empty",
-    "desc": "Notice that the cloud session starts empty because nothing from the folder is copied"
-  },
+  "a0c0fb45acec834f4701c04a9aee44c6717128ba": { "facing": "ui" },
   "7b5b73f67bd06bfb7e2e5f47d0d721ab9791f2d7": { "facing": "ui" },
   "5530753b74dd542c78e50f50fbc3ebcc3779eabc": { "facing": "ui" },
   "46d20152e7dc348d87be96bf4464253d592634b6": { "facing": "ui" },
@@ -120940,12 +120945,7 @@
   "84c651554b930c2aad6a1a638ac8677edd6d353d": { "facing": "ui" },
   "8d86ed4adfbd6bf84ab899d4ab131dbf09fb9286": { "facing": "ui" },
   "7ed72128c4001a51ef2bd5d6cfb9a582781cae8f": { "facing": "internal" },
-  "dee2a787882823ef0477de206aac710d48fd0018": {
-    "facing": "model",
-    "id": "data-cloud-session-bundle-notice-starts-empty",
-    "name": "Data: Cloud session bundle notice starts empty",
-    "desc": "Notice that the cloud session starts empty because nothing from the folder is copied"
-  },
+  "dee2a787882823ef0477de206aac710d48fd0018": { "facing": "ui" },
   "0944fb9eac77e643a853e4e49f3e415cea7ffc9a": {
     "facing": "model",
     "id": "tool-result-git-bundle-linked-worktree-no-git-dir",
@@ -121038,12 +121038,7 @@
     "name": "Tool Result: Worktree base origin ref missing after fetch",
     "desc": "Explains that the origin fetch succeeded but the repository may have no such ref afterwards"
   },
-  "a840a260addffdef67a1abb35eb3a0894ce90ab5": {
-    "facing": "model",
-    "id": "tool-result-worktree-base-fetch-head-no-commit",
-    "name": "Tool Result: Worktree base FETCH_HEAD no commit",
-    "desc": "Explains that the PR/MR fetch succeeded but FETCH_HEAD may name no commit"
-  },
+  "a840a260addffdef67a1abb35eb3a0894ce90ab5": { "facing": "ui" },
   "ab787de3d007883179ee1c3eea81b081cdb8eaf1": {
     "facing": "model",
     "id": "tool-result-worktree-base-head-not-commit",
@@ -121062,12 +121057,7 @@
     "name": "Tool Result: Worktree base origin no commit",
     "desc": "Says the origin fetch succeeded but rev-parse returned no commit for the ref"
   },
-  "5c04008b7dc8e67344a3c560945ce1fc041b27cf": {
-    "facing": "model",
-    "id": "tool-result-worktree-base-pr-fetch-head-no-commit",
-    "name": "Tool Result: Worktree base PR FETCH_HEAD no commit",
-    "desc": "Says the PR/MR fetch succeeded but rev-parse returned no commit for FETCH_HEAD"
-  },
+  "5c04008b7dc8e67344a3c560945ce1fc041b27cf": { "facing": "ui" },
   "f5ed2f493ba59f19ffe4ac76c6c40e1e294fda88": {
     "facing": "model",
     "id": "tool-result-worktree-base-head-no-commit-nothing-to-base",
@@ -123215,36 +123205,11 @@
   },
   "85fb2b7505e721b85b59e76f81cdb0e002a9f55e": { "facing": "internal" },
   "517a7cbbca205d3c789184f3e1f908a80f7c6907": { "facing": "ui" },
-  "ca9d2e2eb05939423a0ee491d5d5acb12a809c30": {
-    "facing": "model",
-    "id": "tool-result-worktree-pr-ref-ambiguous",
-    "name": "Worktree PR: ambiguous refs",
-    "desc": "origin has both PR refs at different commits."
-  },
-  "7e7617eb330e6677a75fafe5b1162a0322a72e38": {
-    "facing": "model",
-    "id": "tool-result-worktree-pr-fetch-no-from-line",
-    "name": "Worktree PR: fetch origin unverifiable",
-    "desc": "git fetch did not print the From line so result could not be checked."
-  },
-  "d3efae54199bca92d3f89086315a17a5b9912351": {
-    "facing": "model",
-    "id": "tool-result-worktree-pr-fetch-head-overwritten",
-    "name": "Worktree PR: FETCH_HEAD overwritten",
-    "desc": "FETCH_HEAD does not record the ref, likely overwritten by a concurrent fetch."
-  },
-  "961ca992d02e5db8070771e5e7328b08b513f0a7": {
-    "facing": "model",
-    "id": "tool-result-worktree-pr-ref-absent",
-    "name": "Worktree PR: ref absent",
-    "desc": "origin has no PR ref; a look-alike ref was fetched instead."
-  },
-  "5adaf6b1c45ebf544863ca8163f5a306cea61c79": {
-    "facing": "model",
-    "id": "tool-result-worktree-pr-other-ref-unchecked",
-    "name": "Worktree PR: other ref unchecked",
-    "desc": "Could not check whether origin also has the other PR ref; retry."
-  },
+  "ca9d2e2eb05939423a0ee491d5d5acb12a809c30": { "facing": "ui" },
+  "7e7617eb330e6677a75fafe5b1162a0322a72e38": { "facing": "ui" },
+  "d3efae54199bca92d3f89086315a17a5b9912351": { "facing": "ui" },
+  "961ca992d02e5db8070771e5e7328b08b513f0a7": { "facing": "ui" },
+  "5adaf6b1c45ebf544863ca8163f5a306cea61c79": { "facing": "ui" },
   "3d23df41853f30c0658cb699178894bb2ceb429f": { "facing": "internal" },
   "90badfb1f77ada3761e2ed58583b07a06061134f": { "facing": "internal" },
   "8fc3048059440941b8badb6603b7dd19de1aeb30": { "facing": "internal" },
@@ -124763,30 +124728,15 @@
   "1f18b162769b87cd13e31794d7e57a6b7eb0413d": { "facing": "internal" },
   "27ac7740f57c5af6d590c62314583136369a566b": { "facing": "internal" },
   "50d3b0e83432c722941facd58e8942539f8fd1de": { "facing": "internal" },
-  "711ecec600802400df6cff95813eaefd8278c36a": {
-    "facing": "model",
-    "id": "tool-result-cloud-session-branch-ahead-of-remote",
-    "name": "Tool Result: cloud session branch ahead of remote",
-    "desc": "Notice that the branch is ahead of its remote so the cloud session starts without those commits"
-  },
+  "711ecec600802400df6cff95813eaefd8278c36a": { "facing": "ui" },
   "e53b6ffdc3834926771278b1cfce41977378f1a7": {
     "facing": "model",
     "id": "tool-result-cloud-session-push-branch-hint",
     "name": "Tool Result: cloud session push branch hint",
     "desc": "Fragment advising to push the branch and start a new session to include the commits"
   },
-  "adca4a3dc2a65ff3ab52a5eb68a6301908d3b12f": {
-    "facing": "model",
-    "id": "tool-result-cloud-session-changes-stay-on-machine",
-    "name": "Tool Result: cloud session changes stay on machine",
-    "desc": "Fragment saying uncommitted changes or commits stay on this machine, with push hint"
-  },
-  "d8f502214cd690e57a6430d5ef9b7d31e3f1b293": {
-    "facing": "model",
-    "id": "tool-result-cloud-session-remote-unreadable-start-hint",
-    "name": "Tool Result: cloud session remote unreadable",
-    "desc": "Notice that no remote could be read so the branch or HEAD could not be checked on the host"
-  },
+  "adca4a3dc2a65ff3ab52a5eb68a6301908d3b12f": { "facing": "ui" },
+  "d8f502214cd690e57a6430d5ef9b7d31e3f1b293": { "facing": "ui" },
   "d6cef14a48316571c2b3364cd724cbd4d3aa002b": {
     "facing": "model",
     "id": "tool-result-cloud-session-branch-not-on-remote",
@@ -125313,42 +125263,17 @@
   "5b5d02009aaa5e12f812b46dafc07871bb5f6598": { "facing": "internal" },
   "2d5773b10060086a64e42450be71aa34c1812855": { "facing": "internal" },
   "a6fddb298e03754f07a46817e0c6cbd67ee0d0e3": { "facing": "internal" },
-  "aec73b88493de5886c67db5292089d705c1632b3": {
-    "facing": "model",
-    "id": "tool-result-cloud-session-branch-not-on-github-default-branch",
-    "name": "Tool result: cloud session branch not on GitHub",
-    "desc": "Bundle notice that the branch is not on GitHub, so the cloud session starts from the default branch without local commits or changes."
-  },
+  "aec73b88493de5886c67db5292089d705c1632b3": { "facing": "ui" },
   "2e25956c3342af1aa25c2dc898f70a03a190eefa": {
     "facing": "model",
     "id": "tool-result-cloud-session-push-branch-start-new-session",
     "name": "Tool result: cloud session push branch hint",
     "desc": "Suffix advising to push the branch and start a new session to use it."
   },
-  "6ea2d5929797fcb4bc625668924f93dd787d893e": {
-    "facing": "model",
-    "id": "tool-result-cloud-session-start-newest-commit-remote-has",
-    "name": "Tool result: cloud session starts from newest commit remote has",
-    "desc": "Fragment naming the newest commit beneath HEAD that the remote has, and how far back it is."
-  },
-  "48b9eb58548db10240e6778e4f06477f88c1b05a": {
-    "facing": "model",
-    "id": "tool-result-cloud-session-start-pushed-commit-beneath",
-    "name": "Tool result: cloud session starts from pushed commit beneath",
-    "desc": "Fragment naming a pushed commit beneath HEAD and how far back it is."
-  },
-  "2add3f8fb3e29d5ce4a152790b5b10897b9e2c3b": {
-    "facing": "model",
-    "id": "tool-result-cloud-session-start-newest-pushed-commit-beneath",
-    "name": "Tool result: cloud session starts from newest pushed commit",
-    "desc": "Fragment naming the newest pushed commit beneath HEAD and how far back it is."
-  },
-  "2fee85640c0d67d03b1615b22c17b7c40a2c079e": {
-    "facing": "model",
-    "id": "tool-result-cloud-session-changes-stay-on-machine",
-    "name": "Tool result: cloud session changes stay on machine",
-    "desc": "Trailer saying which commits and uncommitted changes stay on this machine, with an optional push hint."
-  },
+  "6ea2d5929797fcb4bc625668924f93dd787d893e": { "facing": "ui" },
+  "48b9eb58548db10240e6778e4f06477f88c1b05a": { "facing": "ui" },
+  "2add3f8fb3e29d5ce4a152790b5b10897b9e2c3b": { "facing": "ui" },
+  "2fee85640c0d67d03b1615b22c17b7c40a2c079e": { "facing": "ui" },
   "f289f870ec763e1e95acdd7f786fa6dc6a87d6cf": {
     "facing": "model",
     "id": "tool-result-cloud-session-commits-remote-lacks-stay-local",
@@ -126719,8 +126644,18 @@
   "d538869a9470b6599390f2b9eaf542df7da18eea": { "facing": "internal" },
   "e104f9f2b36441e24f1fcce1b5fccb9684d004f9": { "facing": "internal" },
   "ca9778e354c8d0b8b2150d6fc19b2885ac2dc35e": { "facing": "internal" },
-  "74fa419094fe1a56ae7dbdd2ce0cec90e6aee35a": { "facing": "internal" },
-  "1c82e895768eb0e1d25c447171ddfa33a11fb90d": { "facing": "internal" },
+  "74fa419094fe1a56ae7dbdd2ce0cec90e6aee35a": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-proxy-request-missing-host-header",
+    "name": "Tool Result: Sandbox proxy denial — request without a Host header",
+    "desc": "Sandbox proxy denial body returned to the sandboxed command when an HTTP/1.1 request has no Host header."
+  },
+  "1c82e895768eb0e1d25c447171ddfa33a11fb90d": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-proxy-tls-server-name-unreadable",
+    "name": "Tool Result: Sandbox proxy denial — TLS server name unreadable",
+    "desc": "Sandbox proxy denial body returned to the sandboxed command when the TLS server name could not be read."
+  },
   "a15a983978be3f5f3c96226601dac84f46cedb09": {
     "facing": "model",
     "id": "tool-result-bash-sandbox-tls-tunnel-limit-reached",
@@ -126728,7 +126663,12 @@
     "desc": "Sandbox violation reason when the cap on TLS-terminated tunnels at once is reached, naming network.tlsTerminate.maxTunnels"
   },
   "c751d5f41dfa54a98e590f49f64828fc5121dba1": { "facing": "internal" },
-  "72eaf812db0b8bc37e26dde39346218c99c02867": { "facing": "internal" },
+  "72eaf812db0b8bc37e26dde39346218c99c02867": {
+    "facing": "model",
+    "id": "tool-result-bash-sandbox-proxy-host-not-ascii",
+    "name": "Tool Result: Sandbox proxy denial — destination host not plain ASCII",
+    "desc": "Sandbox proxy denial body returned to the sandboxed command when the destination host is not plain ASCII."
+  },
   "b5a4757f2751ca55d2fe9f5b9fe7a4012397f529": { "facing": "internal" },
   "829176863e713538a3feafcecb5648353a800da1": {
     "facing": "model",
@@ -128431,12 +128371,7 @@
     "name": "Sandbox: path could not be resolved",
     "desc": "Reason that a granted path could not be resolved, with the error code."
   },
-  "3b27efd2e5636ab789367c8729beb7d8f34c9f2c": {
-    "facing": "model",
-    "id": "tool-result-bash-sandbox-windows-argv-too-long",
-    "name": "Windows sandbox argv too long",
-    "desc": "The sandbox command line exceeds the CreateProcessW limit; lists what it carries."
-  },
+  "3b27efd2e5636ab789367c8729beb7d8f34c9f2c": { "facing": "internal" },
   "4a34d27a0c9fe0a57e0e6bcad0200f25f4c10eaf": {
     "facing": "model",
     "id": "tool-result-bash-sandbox-windows-setup-newer-release",
