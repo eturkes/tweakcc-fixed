@@ -93,7 +93,8 @@ const ALLOWLIST =
 
 const [cliPath, prevPath, curPath, ...flags] = process.argv.slice(2);
 const updateAllowlist = flags.includes('--update-allowlist');
-const RENAME_MAP = process.env.TWEAKCC_RENAME_MAP || '/tmp/removed-id-renames.json';
+const RENAME_MAP =
+  process.env.TWEAKCC_RENAME_MAP || '/tmp/removed-id-renames.json';
 
 if (!cliPath || !prevPath || !curPath) {
   console.error(
@@ -285,7 +286,12 @@ const strayProbes = p => {
 
 const countOf = (haystack, needle) => {
   let n = 0;
-  for (let i = haystack.indexOf(needle); i >= 0; i = haystack.indexOf(needle, i + 1)) n++;
+  for (
+    let i = haystack.indexOf(needle);
+    i >= 0;
+    i = haystack.indexOf(needle, i + 1)
+  )
+    n++;
   return n;
 };
 
@@ -327,6 +333,10 @@ const coverageBody = body => {
   return out + body.slice(cursor);
 };
 
+const cookEscapes = body =>
+  body.replace(/\\([nrt"'`\\])/g, (_m, c) =>
+    c === 'n' ? '\n' : c === 'r' ? '\r' : c === 't' ? '\t' : c
+  );
 const curIds = new Set(cur.map(p => p.id).filter(Boolean));
 const curBlob = cur.map(reconstruct).join('\n');
 // Which CURRENT id carries the surviving text. `in-catalogue` alone tells the
@@ -339,19 +349,18 @@ const curBodies = cur
     id: p.id,
     body: reconstruct(p),
     coverageBody: coverageBody(reconstruct(p)),
+    cooked: cookEscapes(reconstruct(p)),
   }));
+// A parent can carry a fragment as an escaped string literal inside a slot
+// (`${"\\nThe result…"}`), so nesting is also checked on unescaped bodies.
+const nestedIn = (b, o) =>
+  (o.coverageBody.length > b.coverageBody.length &&
+    o.coverageBody.includes(b.coverageBody)) ||
+  (o.cooked.length > b.cooked.length && o.cooked.includes(b.cooked));
 const namedSites = (run, lines) => {
   const holders = curBodies.filter(b => b.body.includes(run));
   return holders
-    .filter(
-      (b, i) =>
-        !holders.some(
-          (o, j) =>
-            j !== i &&
-            o.coverageBody.length > b.coverageBody.length &&
-            o.coverageBody.includes(b.coverageBody)
-        )
-    )
+    .filter((b, i) => !holders.some((o, j) => j !== i && nestedIn(b, o)))
     .reduce(
       (n, b) =>
         n + (lines ? countSites(b.body, run, lines) : countOf(b.body, run)),
@@ -384,7 +393,8 @@ const successorOfAll = runs => {
 // The directory is overridable so a test can be hermetic — reading the real
 // `/tmp` would let whatever bump is in flight decide the answer.
 const sidecarBlob = (() => {
-  const dir = process.env.TWEAKCC_CLASSIFY_DIR || process.env.SHOWTIME_TMP || '/tmp';
+  const dir =
+    process.env.TWEAKCC_CLASSIFY_DIR || process.env.SHOWTIME_TMP || '/tmp';
   let blob = '';
   let files = [];
   try {
@@ -459,7 +469,10 @@ const encodingsOf = ch => {
   for (const h of new Set([hex4.toUpperCase(), hex4.toLowerCase()])) {
     out.push(`\\u${h}`);
   }
-  out.push(`\\u{${code.toString(16)}}`, `\\u{${code.toString(16).toUpperCase()}}`);
+  out.push(
+    `\\u{${code.toString(16)}}`,
+    `\\u{${code.toString(16).toUpperCase()}}`
+  );
   if (code < 0x100) {
     for (const h of new Set([hex2.toUpperCase(), hex2.toLowerCase()])) {
       out.push(`\\x${h}`);
@@ -570,10 +583,7 @@ const classify = id => {
         (windows.length > 0 &&
           share(windows, `${curBlob}\n${sidecarBlob}`) >= RENAME_SHARE));
     if (to || split || pending) {
-      const stray = strayUnits(
-        windows,
-        entries.flatMap(proseLines)
-      );
+      const stray = strayUnits(windows, entries.flatMap(proseLines));
       if (stray.length) return { bucket: 'IN-BUNDLE', to, stray, near };
       if (pending) return { bucket: 'in-sidecar' };
       return { bucket: 'in-catalogue', to, share: best.share, split };
@@ -607,7 +617,8 @@ const classify = id => {
         // A window a named id already holds at every bundle site is that id's
         // text, not this one surviving (2.1.305: a reworded fence error shared
         // one window with the catalogued verify-inconclusive message).
-        if (countOf(cli, w) > namedSites(w)) return { bucket: 'IN-BUNDLE', near };
+        if (countOf(cli, w) > namedSites(w))
+          return { bucket: 'IN-BUNDLE', near };
       }
     }
   }
@@ -645,7 +656,8 @@ for (const id of [...prevById.keys()].filter(i => !curIds.has(i)).sort()) {
   }
   if (r.bucket === 'in-catalogue' && r.split) split.push(id);
   if (r.stray) strayOf[id] = r;
-  if (r.near && (r.bucket === 'IN-BUNDLE' || r.bucket === 'gone')) nearOf[id] = r.near;
+  if (r.near && (r.bucket === 'IN-BUNDLE' || r.bucket === 'gone'))
+    nearOf[id] = r.near;
 }
 const nearNote = id =>
   nearOf[id]
@@ -716,10 +728,7 @@ if (split.length) {
   for (const id of split) console.log(`  ${id}`);
 }
 if (buckets['in-catalogue'].length) {
-  fs.writeFileSync(
-    RENAME_MAP,
-    `${JSON.stringify(renamedTo, null, 2)}\n`
-  );
+  fs.writeFileSync(RENAME_MAP, `${JSON.stringify(renamedTo, null, 2)}\n`);
 }
 
 // `no-probe-surface` needs a decision too: the gate could not test it, and
