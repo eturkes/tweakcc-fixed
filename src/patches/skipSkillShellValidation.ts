@@ -39,9 +39,9 @@ const FAILURE_MESSAGE = 'Shell command permission check failed for pattern';
 export const writeSkipSkillShellValidation = (file: string): string | null => {
   if (!file.includes(FAILURE_MESSAGE)) return null;
 
-  // async function whe(e,n,r,s){if(n.options.readOnlySkillLoad)...
+  // async function whe(e,n,r,s[,h]){if(n.options.readOnlySkillLoad)...
   const header = file.match(
-    /async function ([$\w]+)\([$\w]+,([$\w]+),[$\w]+,[$\w]+\)\{if\(\2\.options\.readOnlySkillLoad\)/
+    /async function ([$\w]+)\([$\w]+,([$\w]+)(?:,[$\w]+)*\)\{if\(\2\.options\.readOnlySkillLoad\)/
   );
   if (!header || header.index === undefined) {
     console.error(

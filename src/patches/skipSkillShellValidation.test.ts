@@ -28,6 +28,21 @@ describe('writeSkipSkillShellValidation', () => {
     );
   });
 
+  it('handles the five-parameter expansion function (CC 2.1.310)', () => {
+    const chunk = CHUNK.replace(
+      'async function whe(e,n,r,s){',
+      'async function whe(e,n,r,s,h){'
+    ).replace('`/${e}`,en);', '`/${e}`,en,r);');
+    const result = writeSkipSkillShellValidation(chunk);
+
+    expect(result).toContain(
+      'else if(dTr(Me))to=await whe(to,{tweakccOwnSkill:!0,...Mn,getAppState:DM(Mn,nn())}'
+    );
+    expect(result).toContain(
+      'if(Me.behavior!=="allow"&&!(n.tweakccOwnSkill&&Me.behavior==="ask")){'
+    );
+  });
+
   it('returns null for modules without the prompt-shell check', () => {
     expect(writeSkipSkillShellValidation(PLUGIN_CALLER)).toBeNull();
   });
