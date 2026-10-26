@@ -104,7 +104,12 @@ describe('checkRemovedIdCoverage: prompts with little literal text', () => {
     const prompt = {
       id: 'tool-result-computer-use-element',
       version: '2.1.259',
-      pieces: ['This element (${', '}) cannot be ${', '[_.kind]} while ${', ')} is in the '],
+      pieces: [
+        'This element (${',
+        '}) cannot be ${',
+        '[_.kind]} while ${',
+        ')} is in the ',
+      ],
       identifiers: [0, 1, 2],
       identifierMap: { 0: 'A', 1: 'B', 2: 'C' },
     };
@@ -136,7 +141,9 @@ describe('checkRemovedIdCoverage: prompts with little literal text', () => {
     const cli = write('cli-gone2.js', 'function q(){return "unrelated"}');
     const prev = write('prev-gone2.json', { prompts: [realRemoval] });
     const cur = write('cur-gone2.json', { prompts: [] });
-    expect(run(cli, prev, cur)).toMatch(/1 truly removed \(1 need a decision\)/);
+    expect(run(cli, prev, cur)).toMatch(
+      /1 truly removed \(1 need a decision\)/
+    );
     const allow = write('allow-gone2.json', {
       'tool-result-fixture-genuinely-absent': { verdict: 'archived' },
     });
@@ -214,7 +221,11 @@ describe('checkRemovedIdCoverage: ids ruled non-model by a catalogue correction'
       write('prev-ui.json', { prompts: [ruledUi] }),
       write('cur-ui.json', { prompts: [] }),
       write('allow-ui.json', {
-        'slash-command-fixture-ruled-ui': { verdict: 'archived', facing: 'ui', hash },
+        'slash-command-fixture-ruled-ui': {
+          verdict: 'archived',
+          facing: 'ui',
+          hash,
+        },
       }),
       write('cache-ui.json', { [hash]: { facing: 'ui' } })
     );
@@ -228,7 +239,11 @@ describe('checkRemovedIdCoverage: ids ruled non-model by a catalogue correction'
       write('prev-ui2.json', { prompts: [ruledUi] }),
       write('cur-ui2.json', { prompts: [] }),
       write('allow-ui2.json', {
-        'slash-command-fixture-ruled-ui': { verdict: 'archived', facing: 'ui', hash },
+        'slash-command-fixture-ruled-ui': {
+          verdict: 'archived',
+          facing: 'ui',
+          hash,
+        },
       }),
       write('cache-ui2.json', { [hash]: { facing: 'model', id: 'x' } })
     );
@@ -255,10 +270,7 @@ describe('checkRemovedIdCoverage: a rename needs most of the old body', () => {
   });
   const resumeOnly = {
     id: 'tool-result-fixture-webfetch-resume-only-tail',
-    ...tpl(
-      'no worktree or output to check — resume',
-      'with SendMessage only.'
-    ),
+    ...tpl('no worktree or output to check — resume', 'with SendMessage only.'),
   };
   const relaunch = {
     id: 'tool-result-fixture-webfetch-relaunch-tail',
@@ -297,7 +309,10 @@ describe('checkRemovedIdCoverage: a rename needs most of the old body', () => {
     const successor = {
       id: 'tool-result-fixture-resume-for-report-slotted',
       version: '2.1.294',
-      pieces: ['Resume it by sending it a message with ${', '} to get its report.'],
+      pieces: [
+        'Resume it by sending it a message with ${',
+        '} to get its report.',
+      ],
       identifiers: [0],
       identifierMap: { 0: 'SEND_TOOL' },
     };
@@ -311,7 +326,9 @@ describe('checkRemovedIdCoverage: a rename needs most of the old body', () => {
     );
     expect(out).toMatch(/1 renamed\/reshuffled/);
     expect(out).toMatch(/removed-id coverage: PASS/);
-    const map = JSON.parse(fs.readFileSync(path.join(dir, 'renames.json'), 'utf8'));
+    const map = JSON.parse(
+      fs.readFileSync(path.join(dir, 'renames.json'), 'utf8')
+    );
     expect(map['tool-result-fixture-resume-for-report']).toBe(
       'tool-result-fixture-resume-for-report-slotted'
     );
@@ -448,7 +465,9 @@ describe('checkRemovedIdCoverage: a window that coincides with unrelated text', 
       write('prev-short.json', { prompts: [shortOld] }),
       write('cur-short.json', { prompts: [shortCur] })
     );
-    expect(out).toMatch(/STILL IN BUNDLE[\s\S]*tool-result-fixture-short-line /);
+    expect(out).toMatch(
+      /STILL IN BUNDLE[\s\S]*tool-result-fixture-short-line /
+    );
   });
 
   // The bundle stores an em dash as `\u2014`, a middle dot as `\xB7` and a quote
@@ -474,16 +493,11 @@ describe('checkRemovedIdCoverage: a window that coincides with unrelated text', 
     const src =
       'Note \\u2014 a few quick questions to finish it up \\xB7 \\"said\\" twice';
     const out = run(
-      write(
-        'cli-esc.js',
-        `a="Intro text. ${src} Then go on.";b="${src}"`
-      ),
+      write('cli-esc.js', `a="Intro text. ${src} Then go on.";b="${src}"`),
       write('prev-esc.json', { prompts: [draftOld] }),
       write('cur-esc.json', { prompts: [draftNew] })
     );
-    expect(out).toMatch(
-      /STILL IN BUNDLE[\s\S]*agent-prompt-fixture-draft-old/
-    );
+    expect(out).toMatch(/STILL IN BUNDLE[\s\S]*agent-prompt-fixture-draft-old/);
     expect(out).toMatch(/removed-id coverage: FAIL/);
   });
 });
@@ -634,7 +648,10 @@ describe('checkRemovedIdCoverage: coverage counts only named catalogue sites', (
     const sibling = {
       id: 'tool-result-fixture-verify-detail',
       version: '2.1.305',
-      pieces: ['The fence may be absent. Re-run \\`fixture install\\`. (${', '.stderr})'],
+      pieces: [
+        'The fence may be absent. Re-run \\`fixture install\\`. (${',
+        '.stderr})',
+      ],
       identifiers: [0],
       identifierMap: { 0: 'VAR_0' },
     };
@@ -738,6 +755,42 @@ describe('checkRemovedIdCoverage: every live run, each site once', () => {
     );
     expect(out).toMatch(
       /STILL IN BUNDLE —[\s\S]*tool-description-fixture-secret-handling/
+    );
+  });
+});
+
+describe('checkRemovedIdCoverage: fragment nested as an escaped slot literal', () => {
+  it('counts the fragment inside its parent once and still sees an extra site', () => {
+    const kept =
+      'The result includes a path for the operator to repeat by hand.';
+    const fragment = {
+      id: 'tool-description-fixture-runner-suffix',
+      pieces: [`\n${kept}`],
+      identifiers: [],
+      identifierMap: {},
+    };
+    const parent = {
+      id: 'tool-description-fixture-runner-list',
+      pieces: [`List the runners.\${"\\n${kept}"}`],
+      identifiers: [],
+      identifierMap: {},
+    };
+    const old = {
+      id: 'tool-description-fixture-runner-old',
+      pieces: [`Old runner text that is gone now.\n${kept}`],
+      identifiers: [],
+      identifierMap: {},
+    };
+    const out = run(
+      write(
+        'escaped-nested-cli.js',
+        `a=\`List the runners.\${"\\n${kept}"}\`;c="${kept}"`
+      ),
+      write('escaped-nested-prev.json', { prompts: [old, parent, fragment] }),
+      write('escaped-nested-cur.json', { prompts: [parent, fragment] })
+    );
+    expect(out).toMatch(
+      /STILL IN BUNDLE —[\s\S]*tool-description-fixture-runner-old/
     );
   });
 });

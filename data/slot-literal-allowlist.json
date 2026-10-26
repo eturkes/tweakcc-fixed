@@ -4344,20 +4344,6 @@
     "text": "answers nothing above it",
     "reason": "se @8289269 is read in Yws @8289347, whose marker goes into model user text blocks via CKe @10681533 → b4t. It is also read @8301417 in this host (`Any other marker, whether it says \"${se}\"...`). It is a marker literal the model matches. ONE id for this hash: keep this one and drop slot-2's '...marker-answers-nothing-clause-answers-nothing-label'."
   },
-  "ce3fca90847a1594": {
-    "promptId": "tool-result-hook-blocking-git-bash-not-found",
-    "promptIds": [
-      "tool-result-hook-git-bash-not-found",
-      "tool-result-skill-requires-git-bash"
-    ],
-    "label": "TOOL_RESULT_HOOK_BLOCKING_GIT_BASH_NOT_FOUND_VAR_0",
-    "verdict": "catalogue",
-    "id": "tool-result-hook-blocking-git-bash-not-found-install-git",
-    "name": "Tool Result: Git Bash not found — install Git for Windows",
-    "desc": "Remedy telling the user to install Git for Windows (with download URL) so bash hooks and skills can run.",
-    "text": "Install Git for Windows (https://git-scm.com/downloads/win)",
-    "reason": "UF @10116940 has four reads: Kfe @10117326 (informational notice), this host @10195409, the thrown hook Error @12657582 and the skill requires-bash Error @12966062. Each splices it as the remedy instruction with the download URL. This hash has three hosts across slots 1-2, so it needs ONE id: keep 'tool-result-hook-git-bash-not-found-install-git' and drop '-hook-blocking-...-install-git' and slot-2's 'tool-result-skill-requires-git-bash-install-git-for-windows'."
-  },
   "115ba6a4009f285a": {
     "promptId": "tool-description-agent-simple-usage-notes",
     "label": "TOOL_DESCRIPTION_AGENT_SIMPLE_USAGE_NOTES_VAR_15",
@@ -4465,5 +4451,205 @@
     "desc": "Tells the model to narrow the search when a search tool's result was too large to send back.",
     "text": "Narrow the search.",
     "reason": "wn @46974837 sets n=\"Narrow the search.\" for Pr/ao tools and returns `${e.name} ran, but its result is too large to send back. ${n}`. Its only caller, An @46976064, uses xet(wn(e),\"ran\",h) as the call result when S.unsent===\"result_too_large\". An is reached from gn → To @46965867, the served-tool handler of the MCP tools/call server @46425567, so the text is the tool result returned to the calling model. It instructs the model."
+  },
+  "7e5281347ecefe15": {
+    "promptId": "tool-result-bash-sandbox-allow-local-binding-setup-mismatch",
+    "label": "TOOL_RESULT_BASH_SANDBOX_ALLOW_LOCAL_BINDING_SETUP_MISMATCH_VAR_1",
+    "verdict": "catalogue",
+    "text": "Run /sandbox install, or see https://code.claude.com/docs/en/sandboxing.",
+    "reason": "`s` in i6 @6788833 (Windows sandbox message rewriter) is the CC remedy: it ends the allowLocalBinding set-up-mismatch template and replaces every srt-win 'Re-run the install…' remedy. i6's output reaches the model via L4 @6957091 -> initFailureReason -> the `Sandbox is enabled but failed to initialize: …` error thrown out of sandboxed Bash @6944804 (is_error tool_result); OV @6934475 calls i6 with omitCcRemedy, which blanks it. No catalogued piece holds this sentence.",
+    "id": "tool-result-bash-sandbox-windows-run-install-or-see-docs",
+    "name": "Tool Result: Windows sandbox — run /sandbox install or see the sandboxing docs",
+    "desc": "Remedy appended to Windows sandbox set-up failures telling the user to run /sandbox install or read the sandboxing docs."
+  },
+  "304b5445b0a3936e": {
+    "promptId": "tool-result-bash-sandbox-windows-self-exec-blocked-despite-permission",
+    "label": "TOOL_RESULT_BASH_SANDBOX_WINDOWS_SELF_EXEC_BLOCKED_DESPITE_PERMISSION_VAR_1",
+    "promptIds": [
+      "tool-result-bash-sandbox-windows-self-exec-permission-not-given"
+    ],
+    "verdict": "catalogue",
+    "text": "Use that release of Claude Code.",
+    "reason": "Replacement string in i6's `.replace(/Use that release, or replace its install…/,…)` chain @6790159, so it is part of S. On the self-exec hosts S is a CreateProcessWithLogonW error and this text does not occur (same shape as 62db84a271a55f77); its real model route is i6's bare `return S` -> initFailureReason -> the sandbox-init error thrown from Bash @6944804, rewriting the catalogued tool-result-bash-sandbox-windows-setup-newer-release text. It is the instruction left in that message, so it needs an id.",
+    "id": "tool-result-bash-sandbox-windows-newer-release-use-that-release",
+    "name": "Tool Result: Windows sandbox — set up by a newer release, use that release",
+    "desc": "Remedy that replaces the srt-win reinstall command when the sandbox was set up by a newer release, telling the user to use that release of Claude Code."
+  },
+  "fe278454bd38f1de": {
+    "promptId": "tool-description-bash-sandbox-retry-allowed-domains",
+    "label": "TOOL_DESCRIPTION_BASH_SANDBOX_RETRY_ALLOWED_DOMAINS_VAR_0",
+    "promptIds": [
+      "tool-description-bash-sandbox-retry-allowed-domains-permission-gate"
+    ],
+    "verdict": "catalogue",
+    "text": "If the `<sandbox_violations>` block names a denied host",
+    "reason": "`!r` arm of `at` in Kvn @12672849 (Bash tool sandbox section), interpolated as `${at}, re-run the command with that host in its allowed_domains…` in both retry hosts @12674745/@12675285. The both-shells arm of the same `at` is already catalogued as tool-description-bash-sandbox-denied-host-lead-both-shells. This arm sets when the model may add a host, so it needs a sibling id.",
+    "id": "tool-description-bash-sandbox-denied-host-lead-bash-only",
+    "name": "Tool Description: Bash sandbox denied host lead (Bash only)",
+    "desc": "Condition lead for the allowed_domains re-run when only Bash is sandboxed: the sandbox_violations block names a denied host."
+  },
+  "a5eae05790723ffe": {
+    "promptId": "tool-description-bash-sandbox-retry-allowed-domains",
+    "label": "TOOL_DESCRIPTION_BASH_SANDBOX_RETRY_ALLOWED_DOMAINS_VAR_0",
+    "promptIds": [
+      "tool-description-bash-sandbox-retry-allowed-domains-permission-gate"
+    ],
+    "verdict": "catalogue",
+    "text": "If the proxy denied a host the command needs ",
+    "reason": "Head quasi of the `r&&!n` arm of `at` in Kvn @12673031 (`If the proxy denied a host the command needs ${it}`; `it` is catalogued as tool-description-bash-sandbox-judge-by-command-clause). It reaches slot 0 of both retry hosts. The third arm of the both-shells lead, which is catalogued, is the same kind of condition the model acts on.",
+    "id": "tool-description-bash-sandbox-denied-host-lead-powershell-only",
+    "name": "Tool Description: Bash sandbox denied host lead (PowerShell only)",
+    "desc": "Condition lead for the allowed_domains re-run when only PowerShell is sandboxed: the proxy denied a host the command needs."
+  },
+  "d52062dddb7549ee": {
+    "promptId": "system-prompt-windows-sandbox-localhost-what-still-works",
+    "label": "SYSTEM_PROMPT_WINDOWS_SANDBOX_LOCALHOST_WHAT_STILL_WORKS_VAR_2",
+    "promptIds": [
+      "system-prompt-windows-sandbox-allow-read-tool-folder-remedy"
+    ],
+    "verdict": "catalogue",
+    "text": "their administrator can run the sandbox set-up again",
+    "reason": "isSandboxSetUpTheAdministrators() arm of `bn` in Kvn @12677013. It is read at @12679732 (`after which ${bn} and Claude Code has to be restarted`, localhost-what-still-works) and @12682581 (`${bn}, which makes the profile readable…`, allow-read remedy). Its sibling arm is catalogued as system-prompt-windows-sandbox-install-terminal-remedy; this arm is the remedy the model relays, so it needs an id too.",
+    "id": "system-prompt-windows-sandbox-admin-setup-again-remedy",
+    "name": "System Prompt: Windows sandbox — administrator can run the set-up again",
+    "desc": "Remedy clause, used when an administrator set up the Windows sandbox, saying the administrator can run the sandbox set-up again."
+  },
+  "3717492a995d246e": {
+    "promptId": "system-prompt-windows-sandbox-localhost-what-still-works",
+    "label": "SYSTEM_PROMPT_WINDOWS_SANDBOX_LOCALHOST_WHAT_STILL_WORKS_VAR_2",
+    "promptIds": [
+      "system-prompt-windows-sandbox-allow-read-tool-folder-remedy"
+    ],
+    "verdict": "catalogue",
+    "text": "they can run `/sandbox install` (one elevation prompt)",
+    "reason": "Default arm of `bn` in Kvn @12677189, read at @12679732 and @12682581 like d52062dddb7549ee. The `claude sandbox install` arm is catalogued as system-prompt-windows-sandbox-install-terminal-remedy; this arm is the remedy the model gives in the common case.",
+    "id": "system-prompt-windows-sandbox-slash-install-remedy",
+    "name": "System Prompt: Windows sandbox — run /sandbox install remedy",
+    "desc": "Remedy clause, used for interactive non-policy sessions, saying the user can run /sandbox install (one elevation prompt)."
+  },
+  "8beb734f6485d345": {
+    "promptId": "system-reminder-plan-approved",
+    "label": "APPROVED_PLAN_HEADING",
+    "verdict": "catalogue",
+    "text": "Approved Plan (edited by user)",
+    "reason": "`T=l?\"Approved Plan (edited by user)\":\"Approved Plan\"` in ExitPlanMode mapToolResultToToolResultBlockParam @17753567, rendered as `## ${T}:` in the tool_result. Unlike the bare heading, it tells the model the plan it is about to follow is not the one it wrote. (Through 2.1.2xx this ternary was inline in the host pieces.)",
+    "id": "system-reminder-plan-approved-edited-by-user-heading",
+    "name": "System Reminder: Plan approved — heading when the user edited the plan",
+    "desc": "Heading over the approved plan saying the user edited it before approving."
+  },
+  "eb9447c0570b4984": {
+    "promptId": "system-reminder-plan-approved",
+    "label": "APPROVED_PLAN_HEADING",
+    "verdict": "glue",
+    "text": "Approved Plan",
+    "reason": "Else arm of the same `T` @17753600, rendered as `## ${T}:` above the plan text in the ExitPlanMode tool_result. It only labels the interpolated plan."
+  },
+  "f8d15104b5764227": {
+    "promptId": "tool-result-mcp-file-reference-fields-missing",
+    "label": "TOOL_RESULT_MCP_FILE_REFERENCE_FIELDS_MISSING_VAR_1",
+    "verdict": "glue",
+    "text": "has an argument with an empty name twice",
+    "reason": "Empty-key arm of `k` in K()'s fields_missing case @26961253 (MCP file-reference refusal), rendered as `…names a file by reference but ${k}, so nothing was uploaded`. It states which argument is duplicated; the remedy ('Fix that and make the call again') is host text."
+  },
+  "5bc54d50910139cf": {
+    "promptId": "tool-result-mcp-file-reference-fields-missing",
+    "label": "TOOL_RESULT_MCP_FILE_REFERENCE_FIELDS_MISSING_VAR_1",
+    "verdict": "glue",
+    "text": "has the argument ",
+    "reason": "Head quasi of the other `k` arm @26961297 (`has the argument ${b(c)} twice`). It labels the interpolated argument name."
+  },
+  "2aa67c68492526d7": {
+    "promptId": "slash-command-exit-worktree-kept-tmux-reattach",
+    "label": "SLASH_COMMAND_EXIT_WORKTREE_KEPT_TMUX_REATTACH_VAR_1",
+    "promptIds": [
+      "slash-command-exit-worktree-kept",
+      "slash-command-exit-worktree-kept-tmux-terminated"
+    ],
+    "verdict": "glue",
+    "text": " with HEAD detached",
+    "reason": "Detached arm of `sr` in the exit-worktree dialog handler Nr @37077484, appended after `${io.worktreePath}` in all three 'Worktree kept' messages (so() -> onDone). It qualifies the saved path and carries no instruction."
+  },
+  "c982b0e96bac51a7": {
+    "promptId": "system-reminder-attached-machine-could-not-be-reached-signed-off",
+    "label": "SAY_WHEN_BACK_CLAUSE",
+    "promptIds": [
+      "system-reminder-attached-machine-could-not-be-reached-cause-unknown",
+      "system-reminder-attached-machine-could-not-be-reached-went-silent"
+    ],
+    "verdict": "catalogue",
+    "text": ", and to say when it is back",
+    "reason": "`f=r?\"\":\", and to say when it is back\"` in Hlr @37356167 (could-not-reach tool error), interpolated into the signed_off, cause-unknown and silent arms. It adds an ask the model makes of the user. The busy arm has its own inline '; and to say when it is back' in its host pieces, but this value has no id.",
+    "id": "system-reminder-attached-machine-could-not-be-reached-ask-say-when-back",
+    "name": "System Reminder: Attached machine could not be reached — ask the user to say when it is back",
+    "desc": "Clause added when the turn is not left waiting, telling the model to also ask the user to say when the machine is back."
+  },
+  "3d59d4c440461f2d": {
+    "promptId": "system-reminder-tool-hosts-detached",
+    "label": "SYSTEM_REMINDER_TOOL_HOSTS_DETACHED_VAR_0",
+    "verdict": "catalogue",
+    "text": "No machine is attached to this session any more",
+    "reason": "`var Le` @37391260 is slot 0 of `go` (tool-hosts-detached) and the head of `yo` (signed-off notice, used in qo @37421477). It is the fact the model acts on (stop routing to the machine). Note: Go @37420004 also tests `s[0]?.startsWith(Le)` to dedupe the notice, so an override changes both the text and the marker consistently.",
+    "id": "system-reminder-tool-hosts-no-machine-attached-any-more",
+    "name": "System Reminder: Tool hosts — no machine is attached any more",
+    "desc": "Lead fact of the detach notices: no machine is attached to this session any more."
+  },
+  "565236a12aab5018": {
+    "promptId": "system-reminder-attached-machine-signed-off-notice",
+    "label": "NO_MACHINE_ATTACHED_BY_OWN_WORD_PREFIX",
+    "verdict": "glue",
+    "text": ", by its own word:",
+    "reason": "Tail quasi of `yo=`${Le}, by its own word:`` @37391457, slot 0 of the signed-off notice built in qo @37421477 (`${yo} ${o}. …`). It only joins the Le lead to the machine list; Le is ruled separately (3d59d4c440461f2d)."
+  },
+  "9c5413d50fc6d94e": {
+    "promptId": "system-reminder-remote-bash-not-run-session-kind",
+    "label": "SYSTEM_REMINDER_REMOTE_BASH_NOT_RUN_SESSION_KIND_VAR_0",
+    "promptIds": ["system-reminder-remote-bash-not-run-background-session"],
+    "verdict": "catalogue",
+    "text": "Ask Claude to run the command instead.",
+    "reason": "`var Cv` @37944650, appended to the session-kind and background-session refusals in bF @37948133. Xu @37951053 emits it as a `<bash-stderr>` user message (Cm, isReplay) into the session stream. It is the only remedy in those refusals, and it points the work to the model.",
+    "id": "system-reminder-remote-bash-not-run-ask-claude-instead",
+    "name": "System Reminder: Remote '!' not run — ask Claude to run it instead",
+    "desc": "Remedy after a refused remote '!' command, saying to ask Claude to run the command instead."
+  },
+  "1ef214a7b0f6808f": {
+    "promptId": "slash-command-plugin-validate-directory-privacy-undecided",
+    "label": "SLASH_COMMAND_PLUGIN_VALIDATE_DIRECTORY_PRIVACY_UNDECIDED_VAR_1",
+    "verdict": "catalogue",
+    "text": "set `privacyPolicyUrl` in plugin.json if the plugin connects to a remote service",
+    "reason": "`he` in lintPluginForDirectory (Ut) @47911768 is read in the privacy-undecided note (`Fix that first, or ${he}.`) and the files-left-out note (`; and ${he}`). Both are pushed to `o` and printed by formatDirectoryReport in /plugin validate @44426998. It is the actionable fix in those notes.",
+    "id": "slash-command-plugin-validate-directory-set-privacy-policy-url",
+    "name": "Slash Command: Plugin validate — set privacyPolicyUrl if the plugin connects to a remote service",
+    "desc": "Remedy telling the plugin author to set privacyPolicyUrl in plugin.json if the plugin connects to a remote service."
+  },
+  "7b50d1f2cc788d11": {
+    "promptId": "slash-command-plugin-validate-directory-hooks-module-unchecked",
+    "label": "SLASH_COMMAND_PLUGIN_VALIDATE_DIRECTORY_HOOKS_MODULE_UNCHECKED_VAR_0",
+    "verdict": "glue",
+    "text": " names a hooks module",
+    "reason": "Singular quasi of `Q` in Ut @47912854 (`${E} names a hooks module`), slot 0 of hooks-module-unchecked. It only joins the file name to the host sentence, which carries the meaning."
+  },
+  "772a80d4d962de18": {
+    "promptId": "slash-command-plugin-validate-directory-derived-name-invalid",
+    "label": "SLASH_COMMAND_PLUGIN_VALIDATE_DIRECTORY_DERIVED_NAME_INVALID_VAR_2",
+    "verdict": "catalogue",
+    "text": "Plugin name cannot contain spaces. Use kebab-case (e.g., \"my-plugin\")",
+    "reason": "Module const `sn` @47905946, the only value of slot 2 of derived-name-invalid in Ke @47919916 (`…it is not a valid one: ${sn}`). It states the rule and the fix, and no 2.1.308 piece holds it. The identical zod message @663938 is a separate site.",
+    "id": "slash-command-plugin-validate-directory-name-no-spaces-use-kebab",
+    "name": "Slash Command: Plugin validate — plugin name cannot contain spaces, use kebab-case",
+    "desc": "Reason a folder-derived plugin name is invalid: it contains spaces; use kebab-case."
+  },
+  "5c099e15e2a99a16": {
+    "promptId": "slash-command-plugin-validate-directory-repo-root-link-out",
+    "label": "SLASH_COMMAND_PLUGIN_VALIDATE_DIRECTORY_REPO_ROOT_LINK_OUT_VAR_4",
+    "verdict": "glue",
+    "text": "the plugin folder's real path, ",
+    "reason": "Head quasi of `l` in Vn @47923295 (`the plugin folder's real path, ${A(e.realPlugin)}`), slot 4 of repo-root-link-out (`run this command on ${l}`). It labels the interpolated path."
+  },
+  "f6ce4a67cc18762e": {
+    "promptId": "slash-command-plugin-validate-directory-listing-url-scheme",
+    "label": "SLASH_COMMAND_PLUGIN_VALIDATE_DIRECTORY_LISTING_URL_SCHEME_VAR_3",
+    "verdict": "glue",
+    "text": "https:// or mailto:",
+    "reason": "mailto arm of `b` in nt @47930015, rendered as `is not ${b}; it was dropped…` and in the fix `Use an ${b} URL.`. It only names the accepted URL schemes."
   }
 }

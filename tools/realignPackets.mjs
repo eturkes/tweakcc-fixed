@@ -16,7 +16,9 @@
 // faithful trim read as "grew"). This is that builder, kept.
 //
 //   node tools/realignPackets.mjs <prev.json> <cur.json> \
-//        --ids=a,b,c            (or --ids=@<file with one id per line>)
+//        --ids=a,b,c            (or --ids=@<file with one id per line>, or
+//                                --ids=changed: every id whose pristine changed
+//                                and that some set overrides with other text)
 //        --sets=<abs dir>[,<abs dir>…] --out=<dir> [--allow-moved=<id,…>]
 //
 // Writes <out>/<id>.md per id and <out>/tasks.json — the `tasks` array the
@@ -58,10 +60,17 @@ if (ids.startsWith('@')) {
     .filter(Boolean)
     .join(',');
 }
-const idList = ids.split(',').filter(Boolean);
+const deriveIds = ids === 'changed';
+let idList = deriveIds ? [] : ids.split(',').filter(Boolean);
 const allowMoved = new Set(opt('allow-moved').split(',').filter(Boolean));
 
-if (!prevPath || !curPath || !idList.length || !parsed.specified || !outDir) {
+if (
+  !prevPath ||
+  !curPath ||
+  !(deriveIds || idList.length) ||
+  !parsed.specified ||
+  !outDir
+) {
   console.error(
     'usage: realignPackets.mjs <prev.json> <cur.json> --ids=<a,b|@file> --sets=<dir,…> --out=<dir>'
   );
@@ -111,6 +120,35 @@ const stripFrontMatter = text => {
 const prev = load(prevPath);
 const cur = load(curPath);
 
+// An override needs realigning when the text it was cut from changed. One that
+// equals the new pristine, or that no set carries, follows pristine already.
+if (deriveIds) {
+  for (const [id, curEntries] of cur) {
+    const prevEntries = prev.get(id);
+    if (!prevEntries) continue;
+    const newBody = reconstruct(curEntries[0]);
+    if (reconstruct(prevEntries[0]) === newBody) continue;
+    const overridden = setDirs.some(dir => {
+      const file = path.join(dir, `${id}.md`);
+      return (
+        fs.existsSync(file) &&
+        stripFrontMatter(fs.readFileSync(file, 'utf8')).trim() !==
+          newBody.trim()
+      );
+    });
+    if (overridden) idList.push(id);
+  }
+  idList.sort();
+  console.log(
+    `changed: ${idList.length} overridden id(s) whose pristine changed`
+  );
+  if (!idList.length) {
+    // A tasks.json left by an earlier run must not survive to be launched.
+    fs.rmSync(path.join(outDir, 'tasks.json'), { force: true });
+    process.exit(0);
+  }
+}
+
 const sweep = contentSwapSweep(promptsOf.get(prevPath), promptsOf.get(curPath));
 const refused = idList
   .map(id => [id, realignHazard(sweep, id)])
@@ -149,8 +187,12 @@ for (const id of idList) {
   const lines = [];
   lines.push(`# Realignment packet — \`${id}\``);
   lines.push('');
-  lines.push(`- target \`ccVersion:\` **${version}** (the prompt's own catalogue version,`);
-  lines.push('  NOT the CC release; a ccVersion above it is reported as a conflict and the');
+  lines.push(
+    `- target \`ccVersion:\` **${version}** (the prompt's own catalogue version,`
+  );
+  lines.push(
+    '  NOT the CC release; a ccVersion above it is reported as a conflict and the'
+  );
   lines.push('  site is left pristine)');
   lines.push(`- sites in the new catalogue: ${curEntries.length}`);
   lines.push(`- pristine ${oldBody.length} -> ${newBody.length} chars`);
@@ -175,7 +217,9 @@ for (const id of idList) {
     lines.push(`## Current deployed body — ${setName}`);
     lines.push('');
     if (!fs.existsSync(file)) {
-      lines.push('_No file: this set applies PRISTINE for this id. Nothing to write._');
+      lines.push(
+        '_No file: this set applies PRISTINE for this id. Nothing to write._'
+      );
       lines.push('');
       continue;
     }
@@ -200,8 +244,15 @@ for (const id of idList) {
 
   const packet = path.join(outDir, `${id}.md`);
   fs.writeFileSync(packet, `${lines.join('\n')}\n`);
-  tasks.push({ id, packet, version: version === null ? undefined : String(version), paths });
-  console.log(`${id}  ->  ${packet}  (${paths.length} path(s), ccVersion ${version})`);
+  tasks.push({
+    id,
+    packet,
+    version: version === null ? undefined : String(version),
+    paths,
+  });
+  console.log(
+    `${id}  ->  ${packet}  (${paths.length} path(s), ccVersion ${version})`
+  );
 }
 
 const tasksPath = path.join(outDir, 'tasks.json');

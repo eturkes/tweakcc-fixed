@@ -1109,6 +1109,21 @@ function mixedRulings(arms, position, isEarned) {
   };
 }
 
+// A provisional anchor proves nothing about a call group: one new string passed
+// to the debug logger would make every other log line through that callee a
+// sibling (CC 2.1.310: 2,760 of them). Flow groups keep their provisional
+// anchors.
+export function dropProvisionalCallAnchors(result, provisionalId) {
+  result.findings = result.findings.filter(f => {
+    f.siblingRelations = (f.siblingRelations || []).filter(
+      r => !(r.kind === 'calls' && r.anchor === provisionalId)
+    );
+    f.anchors = [...new Set(f.siblingRelations.map(r => r.anchor))];
+    return f.siblingRelations.length > 0;
+  });
+  return result;
+}
+
 export function appendSiblingCandidates(candidates, result) {
   const byHash = new Map(candidates.map(c => [c.hash, c]));
   let appended = 0;

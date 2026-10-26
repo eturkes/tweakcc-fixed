@@ -76336,5 +76336,1775 @@
     "verdict": "pristine-keep",
     "version": "2.1.305",
     "why": "Strongest cut: none. It is the only signal that the subagent's report came from a different model (a non-inferable provenance fact), and it is a single sentence. Keep."
+  },
+  "data-api-version-migration": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: trim the Step 0 scope paragraph and the generic procedure lines that skill-claude-api-python-sdk-upgrade repeats. It fails for three reasons. (1) Those carriers are different conditionally loaded files (one is STALE at 2.1.296), so nothing proves they render in the same request; the scope sentence even names shared/model-migration.md as an external pointer. (2) Nearly every sentence is frozen by the tripwire (paths, versions, field names, SDK release numbers, [BREAKS]/[DECIDE] markers, ordering words). (3) This is a conditionally loaded data file where existence is the default and a trim has to be earned. It is the only copy of the facts a model must reproduce exactly (removed fields, release numbers, the migration guide URL)."
+  },
+  "data-ct-auth-mjs": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "No legitimate cut exists. This is executable code written to disk and run (skills/run/scripts/ct-auth.mjs). The standing rules forbid refactoring executable code, and removing any part breaks the login/logout/sign-in/scaffold-sign-in commands. Similar lines in sibling scripts are separate modules, not coverage."
+  },
+  "data-mcp-connect-timeout-sleep-or-clock-change": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: wiping into slash-command-ide-connect-timed-out. It fails because that is a different emitter for an IDE connection that never co-renders with this MCP connect error (function RLn). The sleep/clock-change cause is unique, and the server-name slot is needed."
+  },
+  "data-sandbox-install-cancelled-user-provisioned": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: drop the filters-unverifiable sentence as covered by data-sandbox-install-filters-unverifiable. It fails because that string is the message of a different return branch (successful install) and never renders with this uac_cancelled_provisioned return. The sentence also contains '/sandbox' commands and the ordering word 'then', which freezes it. Every claim is unique to this outcome."
+  },
+  "data-sandbox-install-nothing-changed-fix-first": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "No cut exists. This is the only message of the secondary_logon_unusable partial return, and it carries the slot naming the blocking error. Removing it leaves the model with no explanation."
+  },
+  "data-sandbox-install-user-sign-in-no-time-left": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: drop the shared 'If it fails again' sentence as covered by the timed_out sibling. It fails because the object is indexed by a single outcome ([l==='no_time_left'?l:l.outcome]), so only one value renders; the siblings are alternatives that never co-render. The remedy sentences are also frozen ('/sandbox install', 'again', ordering)."
+  },
+  "data-sandbox-install-user-sign-in-not-started": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: wiping because the siblings cover it. It fails because only one value of the outcome lookup renders. The retry-on-next-start claim is unique to the not_started outcome."
+  },
+  "data-sandbox-install-user-sign-in-timed-out": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: drop the remedy sentences as covered by the no_time_left sibling. It fails because the outcome-indexed object renders exactly one value. The other carriers are different modules that do not co-render, and the sentences hold the frozen '/sandbox install' remedy and the duration slot."
+  },
+  "data-sandbox-install-user-signed-in-after": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "No cut exists. This is the only value for the 'started' outcome and it reports the measured sign-in time. Nothing co-rendering states it."
+  },
+  "data-settings-ssh-host-commands-description": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: the closing 'Claude Code itself does not use it.' It fails because that sentence is load-bearing: it stops the model configuring the key expecting Claude Code behavior. Every other sentence is frozen (field names, `~`, the enumeration of scopes, 'only'). The whole description is unique."
+  },
+  "data-task-notification-task-stopped-by-user-or-client-summary": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: wiping into data-task-notification-task-stopped-by-user-summary. It fails because that body is the alternative arm of i==='client'?…:…, so it never co-renders. The 'or by the app connected to this session' attribution is unique to the client case."
+  },
+  "slash-command-mcp-claudeai-connected-next-start": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: wiping because other connector messages cover it. It fails because this is the only message for the 'connected' case of the handoff switch, and the cited carriers render in other states and modules. The body opens with a slot, and the 'next time you start' timing is unique."
+  },
+  "slash-command-plugin-builtin-cannot-be-modified": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "No cut exists. The claim is unique, the fallback names the exact `claude plugin enable` / `claude plugin disable` commands (frozen), and all three slots must stay."
+  },
+  "slash-command-plugin-still-enabled-by-settings-flag": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "No cut exists. This is the only text telling the model a disabled plugin stays on because of the --settings flag (a frozen flag name). Nothing co-renders it."
+  },
+  "slash-command-plugin-update-command-source-skipped": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: drop the 'which the background marketplace update never runs' clause as covered by the settings description. It fails because that description renders only in settings help or validation, not with this update result. It would also be a partial cut of a frozen sentence (it contains 'never', 'when', and an enumeration of alternatives) and would touch the 5 slots."
+  },
+  "slash-command-sandbox-settings-locked-by-policy": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "No cut exists. This is the only error for areSandboxSettingsLockedByPolicy in /sandbox, and the 'Error:' lead and the slot are needed."
+  },
+  "slash-command-sandbox-uninstall-not-in-session": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: wiping into data-sandbox-install-config-conflict. It fails because that string is emitted from the install flow, not from the early return of /sandbox uninstall on Windows in function Dt, so it never co-renders. The second sentence is also frozen ('every', 'then', the command)."
+  },
+  "system-prompt-project-thread-reply-marker-checked-clause": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: wiping into the -queued variant. It fails because the two are exclusive ternary arms: the -queued variant is chosen instead of this one, never alongside it. The clause is spliced into 'the harness checked ${a}' in system-prompt-project-thread-reply-marker-consent, so a wipe would leave that sentence broken. Its enumeration is frozen."
+  },
+  "system-prompt-project-thread-reply-marker-checked-clause-queued": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: wipe-merge into the plain checked-clause. Fails: that carrier is the alternative ternary arm, never co-rendered, and it lacks the queued-notice / same-person-messages exception unique to this arm. A trim is also barred: the clause is a fragment spliced into the consent marker sentence and its enumeration plus 'before'/'since' ordering words make it frozen."
+  },
+  "system-reminder-auto-mode-exit-finish-exposed-work-suffix": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: wipe as redundant with the exit header 'You have exited auto mode.' Fails: the header does not say that the finish-exposed-work directive (fix exposed bugs, no ending on offers) stops applying, and that directive stays in the transcript; without this sentence the model may keep applying it outside auto mode. It is unique, conditional on finishExposedWork, and costs nothing when off."
+  },
+  "system-reminder-auto-mode-finish-exposed-work": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: trim the closing paragraph as covered by act-when-ready ('Work that falls inside the current request gets done now… do it instead of announcing it'). Fails: that only partly overlaps, and the paragraph is Anthropic's specific early-stopping statement that both models need (LCC exception to anti-laziness). The rest is frozen (enumerations, 'before', examples of the value and destructive-step exceptions) and unique. Conditional on the feature flag, so disuse is no wipe reason."
+  },
+  "system-reminder-auto-mode-steer-only-header": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: wipe the header. Fails: it is concatenated with h (finish-exposed-work) and the bash-first text in the steer-only arm, and it is the only thing that scopes that guidance to auto mode; wiping it would leave the following guidance with no scope and starting with blank lines. No trim is possible on 26 chars."
+  },
+  "system-reminder-device-forwarding-off-for-now": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: wipe-merge into system-reminder-tool-hosts-forwarding-off. Fails: no co-render is proven (a different emitter, describing an alternative state), and this body has unique claims about the temporary state and new-session advice. 'do not describe this environment as their computer' is a frozen negation."
+  },
+  "system-reminder-resume-container-disk-missing-tool-calls": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: trim 'Check the files that you need before you rely on them' as a model default. Fails: the model cannot infer that the disk is older than the conversation without this reminder, and the instruction is frozen ('before'). It is unique and conditional."
+  },
+  "system-reminder-tools-being-added-announcement-follows": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: wipe on the grounds that the announcement itself names the tools. Fails: this message tells the model the announcement is coming, which stops it searching or calling too early; it is unique and conditional. The sibling covers different tools, so it is not coverage."
+  },
+  "tool-description-bash-sandbox-denied-again-tell-user-clause": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: drop the clause. Fails: it is a fragment (mt) spliced mid-sentence into the network-retry instruction, and it is the only rule that stops the model escaping the sandbox after a second denial. It is frozen ('again', 'instead of' guarding an ordering)."
+  },
+  "tool-description-bash-sandbox-denied-host-lead-both-shells": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: none. It is the lead fragment of the retry sentence (it carries the it slot and is completed by the retry-allowed-domains text); removing it breaks the sentence. Its tag and slots make it frozen."
+  },
+  "tool-description-bash-sandbox-denied-host-rerun-clause": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: wipe-merge into the allowed_domains parameter description. Fails: the parameter belongs to a DEFERRED tool object (conditional carrier, co-render unproven), and this is a fragment completing the egress sentence ('goes there'). It is frozen."
+  },
+  "tool-description-bash-sandbox-denied-host-rerun-per-shell-clause": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: none holds. The Bash-vs-PowerShell distinction (block-named host vs command-needed host) is unique to this arm, and the fragment is spliced mid-sentence with three slots. It is frozen (an enumeration of two shells)."
+  },
+  "tool-description-bash-sandbox-judge-by-command-clause": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: drop the parenthetical. Fails: it is the only guard against adding hosts named in program output (a prompt-injection vector). It is bound to it and reused in three arms, and dropping it would leave those spliced sentences unbalanced."
+  },
+  "tool-description-bash-sandbox-powershell-no-violations-block": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: trim the curl.exe error example. Fails: an exact error string is a must-keep fact, and the sentence is frozen ('never', a number, a tag). It is unique and used through qvn in the shell-only clause."
+  },
+  "tool-description-bash-sandbox-tmpdir-powershell-env": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: none. It is the only arm giving the non-Windows PowerShell TMPDIR syntax ($env:TMPDIR), an exact name. It is frozen."
+  },
+  "tool-description-bash-sandbox-tmpdir-powershell-only": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: none. It is the only arm for Windows PowerShell-only that says TMPDIR is unset and to use $env:TEMP; it is frozen (env var names)."
+  },
+  "tool-description-bash-sandbox-tmpdir-windows-account-folder": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: wipe as covered by sandbox-tmpdir. Fails: that carrier is STALE (ccVersion 2.1.165) and lacks the account-folder warning carried by the slot. It is frozen (env var)."
+  },
+  "tool-description-bash-sandbox-tmpdir-windows-both-shells": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: none. It is the only arm telling the both-shells Windows case to use $env:TEMP in PowerShell; 'That is for' refers back to the preceding TMPDIR sentence. It is frozen."
+  },
+  "tool-description-bash-sandbox-violations-block-reason-clause": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: wipe-merge into tool-parameter-sandbox-allowed-domains ('the `<sandbox_violations>` block names the host'). Fails: that is a DEFERRED tool's parameter (a conditional carrier) and only mentions the block when a connection is still refused. This fragment completes the egress sentence and is frozen (a tag)."
+  },
+  "tool-description-bash-sandbox-violations-block-shell-only-clause": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: none. The 'only in Bash results' restriction is unique to the both-shells arm, it carries the qvn slot, and it is frozen ('only', a tag)."
+  },
+  "tool-description-bash-sandbox-windows-account-folder": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: trim the second sentence as covered by cloud-app-readable-directories. Fails: that carrier renders only in cloud-app sessions, not with the Windows sandbox, and has no 'otherwise working directory and delete it' rule. The tool-name enumeration and 'otherwise' make it frozen."
+  },
+  "tool-description-bash-sandbox-windows-pytest-hang": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: trim the final generalisation sentence. Fails: it is frozen ('Any', '$TMPDIR') and carries unique diagnostic value. Neighbour system-prompt-windows-sandbox-mvn-git-bash-loop is a separate array element, so no sentence crosses the boundary and nothing there changes."
+  },
+  "tool-description-bash-sandbox-windows-schannel-tls-retry": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: wipe-merge into schannel-tls-user-decides. Fails: it is the alternative ternary arm, never co-rendered. The body is unique and frozen throughout (error strings, program names, 'never')."
+  },
+  "tool-description-bash-sandbox-windows-schannel-tls-user-decides": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: trim the closing sentence as covered by localhost-user-alternatives. Fails: that carrier covers a different failure (localhost) and does not convey the TLS diagnosis. The sentence is frozen (slot, 'only'). Wipe-merge into the retry arm fails because the two arms are alternatives."
+  },
+  "tool-result-auto-mode-no-verdict-call-skipped": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: trim the shared retry-once instruction as covered by its siblings. Fails: those are alternative branches of q2n. The body opens with a slot and is concatenated with wR(), and the retry/stop ordering is a frozen limit ('once', 'again')."
+  },
+  "tool-result-bash-dangerous-op-nested-spans-decision-reason": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: wipe-merge into the co-rendering ask message (same cb('rm',message,reason) call at @10491652/@10491832). Fails: the reason fills `Dangerous ${e} operation: ${r}` in cb() (@10357427), so a wipe leaves a dangling decisionReason label; and the sentence carries an enumeration (nested commands or function substitutions), so it is frozen verbatim-or-delete and no partial trim exists. Keep."
+  },
+  "tool-result-bash-dangerous-op-nested-spans-unanalyzable": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: drop 'This requires explicit approval.' as duplicated by sibling dangerous-op messages. Fails: those siblings are alternative returns (different kind values) and never co-render with this nestedSpansOverrun result; the sentence also guards a validation gate (mechanics). Rest is unique and contains an enumeration (frozen). Keep."
+  },
+  "tool-result-bash-reserved-word-after-assignment-suffix": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: wipe-merge into the sandbox-override message. Fails: that message is returned from a different branch (sandboxOverride) and never co-renders with this suffix, which appends to xX()'s ask message; opensWithSlot body whose slot must be preserved. Keep."
+  },
+  "tool-result-bash-sandbox-override-reserved-word-unanalyzable": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: cut the parenthetical as covered by the reserved-word suffix. Fails: the suffix is an alternative branch (this branch returns first), so no co-render; the parenthetical is the only reason given for the sandbox-override ask. Keep."
+  },
+  "tool-result-bash-worktree-guard-operand-option-word": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: none; body is a connective plus identifierMap slots with no claim to cover. Wiping would break the composed refusal detail. Keep."
+  },
+  "tool-result-bash-worktree-guard-option-may-stand-word": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: trim the remedy list as covered by the git-option-may-stand sibling. Fails: the sibling is a distinct constant for a different check, not shown to co-render, and states a contrary remedy (-- works there, not here); the body is one frozen sentence (enumeration, paths ./ ~/, ordering 'first'). Keep."
+  },
+  "tool-result-bash-worktree-guard-sed-bracket-unverifiable": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: none legitimate; every sentence holds an enumeration of literal sed tokens and ordering words, so frozen, and nothing else in the corpus carries it. Keep."
+  },
+  "tool-result-chrome-file-upload-not-in-browser-batch": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: wipe-merge into the unavailable-in-session message. Fails: ott and mtr are alternative constants (different sessions), never co-rendered, and they give opposite remedies (ask the user vs call file_upload alone). Tool names file_upload/browser_batch freeze the sentences. Keep."
+  },
+  "tool-result-chrome-file-upload-paths-not-files": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: drop 'Nothing was uploaded.' as duplicated. Fails: the duplicates are other tools' errors in other modules, never co-rendered; the sentence states runtime state the model cannot infer. Parameter names freeze the rest. Keep."
+  },
+  "tool-result-computer-use-key-chord-multiple-keys": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: trim the chord definition as covered by the computer tool schema. Fails: the deferred schema does not state the rule and is not proven to co-render; the sentence has a number ('at most one') and is frozen. Keep."
+  },
+  "tool-result-computer-use-key-chord-too-many-components": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: none; the limit slot and remedy are unique to this error, frozen by number/threshold. Keep."
+  },
+  "tool-result-device-call-not-sent": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: drop 'Call it again if it is still wanted.' as covered by retry siblings. Fails: those are other errors' results, never co-rendering with JAs; the retry permission is the actionable half of this result. Keep."
+  },
+  "tool-result-fork-call-is-you": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: none; this is the only text telling the forked child that the triggering call is itself. Keep."
+  },
+  "tool-result-fork-parent-call-not-yours": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: none; unique instruction that other parent calls' results belong to the parent and may not have run. Keep."
+  },
+  "tool-result-git-not-started-outside-repository-folder": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: none; the reason is unique and frozen (must). Keep."
+  },
+  "tool-result-mcp-connection-closed-may-have-run": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: drop the may-have-run sentence as duplicated. Fails: the siblings are other errors never emitted with this one (CO constructor arm connection_closed_http); sentence has ordering 'before' (frozen) and is the only safety guidance for this error. Keep."
+  },
+  "tool-result-mcp-credentials-read-too-late": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: wipe-merge into credential-store-unreadable. Fails: if.alternate vs if.consequent arms never co-render, and the facts differ (credentials available now vs unreadable). Keep."
+  },
+  "tool-result-mcp-serve-repo-rules-ask-malformed": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: drop 'Retrying won't help.' as duplicated. Fails: siblings are other refusals, never emitted together; the sentence is the actionable no-retry signal. Keep."
+  },
+  "tool-result-mcp-serve-repo-rules-file-unread": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: none; cause list, size limit slot and the tell-the-user remedy are unique and frozen (enumeration, threshold). Keep."
+  },
+  "tool-result-mcp-serve-repo-rules-read-failed": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: wipe-merge into file-unread. Fails: catch vs try return paths are exclusive. Keep."
+  },
+  "tool-result-plugin-publish-org-library-hint": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: none; the sentence crosses into tool-result-plugin-publish-org-library-marketplaces-path and neither half is covered elsewhere, so no change to either side. Keep."
+  },
+  "tool-result-plugin-publish-org-library-marketplaces-path": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: none; the path and install command are frozen (path, command name) and the sentence crosses the boundary with tool-result-plugin-publish-org-library-hint, which stays unchanged. Keep."
+  },
+  "tool-result-plugin-publish-share-link-lead": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: none; lead-in for Ot(e.link), unique. Keep."
+  },
+  "tool-result-project-read-no-text-extract-too-large": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: drop the tell-the-user clause as duplicated. Fails: carriers are alternative returns, never co-rendered; the clause is the actionable remedy. Tool name freezes the sentence. Keep."
+  },
+  "tool-result-send-message-teammate-definition-trust-ignored": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: drop the do-not-change-trust clause as covered by restore-hint. Fails: exclusive ternary arms never co-render; env var CLAUDE_CODE_IGNORE_PERSISTED_TRUST freezes the sentence. Keep."
+  },
+  "tool-result-send-message-teammate-definition-untrusted-restore-hint": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: wipe-merge into trust-ignored. Fails: exclusive arms; the --debug flag and ordering make it frozen. Keep."
+  },
+  "tool-result-webfetch-result-source-note": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: none; it is the bracket frame that labels the stored-copy provenance. Keep."
+  },
+  "tool-result-webfetch-site-answer-failed": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: none; this is the only signal that nothing was retrieved. Keep."
+  },
+  "tool-result-webfetch-stored-copy-retrieved-at": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: drop 'the live page may have changed since then' as model default. Fails: it is a staleness warning tied to a runtime threshold, not stated in either card digest; slots must be kept. Keep."
+  },
+  "tool-result-workflow-script-requires-bun": {
+    "verdict": "pristine-keep",
+    "version": "2.1.308",
+    "why": "Strongest cut: trim the explanatory 'the JavaScript runtime its native binary is built with' clause. Fails: the sentence contains 'only' (frozen, verbatim-or-delete), and the remedy sentence names the claude binary; nothing covers it. Keep."
+  },
+  "data-artifact-ask-first-design-question-topics": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: drop topics already named in the intake form. Fails: the list is the value of ${INTAKE_QUESTION_TOPICS} in the intake form, its only source of design topics; it is an enumeration (frozen) and the 'screen' neighbour in kw.design is a separate array element, so nothing crosses a sentence boundary."
+  },
+  "data-artifact-ask-first-intake-form-instructions": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: drop the design-system ordering and the look-appropriateness sentence as covered by tool-description-artifact-type-discovery-guidance. Fails: that carrier is DEFERRED (co-render unproven) and says something different (use the default without asking); nearly every sentence carries frozen tokens (read_me, show_widget, data-name=\"subject\", data-source=\"drifting-trinket-${ARTIFACT_TYPE_ID}\", class elicit, up to six questions, before/after/first ordering), and the prompt is conditional (ask-first flag), so it is the only copy when rendered."
+  },
+  "data-artifact-ask-first-slides-question-topics": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none legitimate; it is the slides value of ${INTAKE_QUESTION_TOPICS}, an enumeration (frozen), unique, and its 'slide' neighbour is a separate array element."
+  },
+  "data-artifact-mcp-auto-classifier-audience-sensitive-note": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: wipe as safety prose. Fails: it is classifier input data (const $e) appended to the audience tag; it is unique and spliced mid-line (opens with a comma), so a wipe changes the classifier's sensitivity judgement with no other source."
+  },
+  "data-artifact-mcp-auto-classifier-input": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none; the body is a structural classifier line built of identifierMap slots (opensWithSlot) and the literal is the classifier's label for the arguments; removing anything corrupts the classifier input."
+  },
+  "data-artifact-mcp-auto-classifier-notification-tag": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none; enum values 'rows'/'comments' and the bracketed tag are mechanics of the classifier line (frozen), unique in this module."
+  },
+  "data-artifact-mcp-auto-classifier-unreadable-input": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none; slots, '[shared: unknown]' and '(unreadable arguments)' are sentinel literals for the classifier."
+  },
+  "data-extract-memories-first-look-exchanges-message": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none; the <exchanges> tag delimits data for the side query and every slot must be preserved; no prose to trim."
+  },
+  "data-google-cloud-anthropic-managed": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: drop the ant CLI unset list as covered by data-anthropic-cli. Fails: co-render is unproven (separate skill reference files read on demand), and the sentences carry env vars, flags and versions (frozen); this is a conditionally-loaded reference whose exact names are runtime-critical, so per the LCC rule existence is the default and no trim is earned."
+  },
+  "data-install-tools-mjs": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none; executable code must not be refactored and its JSON shape (ok, log, remedy) is consumed by the browser helper."
+  },
+  "data-stop-on-exit-mjs": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none; executable code loaded by path, code comments and logic must stay verbatim, and the '[claude-test]' marker is quoted elsewhere (frozen)."
+  },
+  "data-task-notification-artifact-auto-reply-body-catch-up-mcp-clause": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: wipe as redundant with the summary clause. Fails: the summary arm is in the summary, this is the body clause spliced mid-sentence (opens with ', and'); its alternative arm never co-renders, so the fact is unique in the body."
+  },
+  "data-task-notification-artifact-auto-reply-catch-up-now-clause": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none; unique state fact for the non-MCP arm, spliced into a receipt."
+  },
+  "data-task-notification-artifact-auto-reply-catch-up-turn-end-clause": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: wipe as covered by the body-catch-up-mcp clause. Fails: both are gated by t?.catchUp independently and placed in different strings; 'when that turn ends' (ordering, frozen) is not said elsewhere."
+  },
+  "data-task-notification-artifact-auto-reply-hourly-cap-unprompted": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none; it reports a runtime cap (hourly limit, frozen) and names the tool slot; unique."
+  },
+  "data-task-notification-artifact-auto-reply-permanent-stop-gesture-2": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none; contains /tasks path and ordering 'until Claude Code restarts' (frozen), unique for the MCP arm."
+  },
+  "data-task-notification-artifact-auto-reply-plan-mode-wait": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none; ordering 'once it leaves plan mode' (frozen) and the tool slot are unique to this arm."
+  },
+  "data-task-notification-artifact-auto-reply-stopped-by-user-summary": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none; it is the summary line of the notification, with plural slots; unique."
+  },
+  "data-task-notification-artifact-auto-reply-summary-catch-up-mcp-clause": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none; unique summary fact for the MCP arm with slot-driven wording."
+  },
+  "data-task-notification-artifact-comment-read-thread": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: drop the change sentence as covered by system-prompt-artifact-comment-background-source-republish. Fails: co-render with this notification is unproven, and the sentence carries 'first' (frozen). The 'Concatenated with' tail (then-reply-resolve) is untouched."
+  },
+  "data-task-notification-artifact-comment-reply-and-resolve": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: wipe-merge onto act-then-reply-and-resolve-tail. Fails: that tail is emitted from a different function with no proof both render in the same notification; this is the only copy in Ys(), and 'only if' (frozen)."
+  },
+  "data-task-notification-artifact-comment-then-reply-resolve": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none; unique in its arm, carries 'Then'/'unless' ordering (frozen); its read-thread neighbour is unchanged."
+  },
+  "data-task-notification-artifact-comment-tools-private-only": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none; it states a validation gate ('only on an artifact nobody but the user can open', frozen) and the fallback, unique."
+  },
+  "data-task-notification-artifact-comment-wakes-stopped-summary": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none; it is the notification summary for this arm, unique."
+  },
+  "data-worktree-creation-fetch-budget-exhausted-clause": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut would be a wipe, but the clause is the Me.timedOut arm of Ge (the git-stderr arm is its alternative) and carries the ${h}-minute number; it is frozen (number slot) and unique, so no cut holds."
+  },
+  "data-worktree-creation-on-demand-fetch-disabled-error": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "A trim of the shared opening sentence fails: the submodule carrier is an alternative arm of lit(). Every remaining sentence names commands/filenames (git archive -o objects.tar, git fsck), so it is frozen under the tripwire."
+  },
+  "data-worktree-creation-partial-clone-list-failed-error": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "No cut holds: siblings are mutually exclusive returns, and the body carries the commit/error slots and the 'git fsck' command (frozen)."
+  },
+  "data-worktree-creation-partial-clone-too-many-objects-error": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Contains a number (1.5 million) and a setting name (worktree.sparsePaths): frozen, unique; no cut."
+  },
+  "data-worktree-creation-promisor-fetch-exhausted-error": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Wipe/trim fails: the only similar carrier is the alternative (Se ?? this); sentences hold slots, counts and a command, frozen."
+  },
+  "data-worktree-creation-promisor-fetch-failed-error": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "No co-rendering carrier; the body holds commands (git fetch, git remote -v), slots and the Ge clause slot; frozen and unique."
+  },
+  "data-worktree-creation-promisor-name-not-shown": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "It is the alternative arm of aAe() replacing an unsafe name; it enumerates the allowed characters (frozen) and nothing co-renders; wipe would leave an empty remote name in the error."
+  },
+  "data-worktree-creation-promisor-remote-no-url-error": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "The git config remote.<name>.url command is a frozen literal; the alternative arm is not coverage."
+  },
+  "data-worktree-creation-submodule-on-demand-fetch-disabled-error": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Cutting the shared opening fails (alternative arm); the 'for example' list names filenames and is frozen; no other carrier explains the sandbox-writable submodule git folder."
+  },
+  "data-worktree-creation-unsafe-promisor-remote-error": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Alternative arm is not coverage; body names config keys ([remote \"…\"], extensions.partialclone), frozen."
+  },
+  "skill-claude-api-deprecated-or-retired-models-notice": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: the final Bedrock/Google sentence citing data-claude-model-catalog. Fails: that catalog is a conditionally read file, not proven to render with this skill section, and the sentence is frozen (enumeration)."
+  },
+  "skill-claude-api-detected-language-heading": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Alternative arm is not coverage; wiping drops the detected-language slot from the onboard path."
+  },
+  "skill-claude-api-managed-agents-onboarding-from-url-unavailable": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Unique and conditional (renders only when files could not be written); names a path and command, frozen."
+  },
+  "skill-claude-test-pane-open-no-pictures-note": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Alternative literal is not coverage; contains §3 step 6 reference and the until-clause (ordering word), frozen."
+  },
+  "skill-claude-test-pane-open-note": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Alternative literal is not coverage; frozen (§3 step 6, until)."
+  },
+  "slash-command-plugin-validate-directory-name-no-spaces-use-kebab": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Zod refine message for a validation gate; e.g. example is frozen; unique."
+  },
+  "slash-command-plugin-validate-directory-set-privacy-policy-url": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Names the field privacyPolicyUrl and plugin.json (frozen); no co-rendering carrier proven."
+  },
+  "slash-command-plugin-validate-path-traversal-finding": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Each finding renders for its own path; error string with slot, frozen."
+  },
+  "slash-command-privacy-settings-fetch-failed": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Alternative message is not coverage; contains URL, frozen."
+  },
+  "slash-command-unavailable-relay-participant": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Unique; opensWithSlot body (command name) and a wipe would emit empty local-command-stdout."
+  },
+  "system-prompt-environment-github-proxy-other-traffic-same-proxy": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "It is the value spliced into the session-proxy text; nothing else states that curl/npm fail TLS; enumeration is frozen."
+  },
+  "system-prompt-environment-github-proxy-setup-failed": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Coverage by session-proxy fails: alternative arm. Unique failure state; frozen (env var, Never)."
+  },
+  "system-prompt-resume-continue-prompt-5": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Cutting the shared lead fails: -3 is an alternative constant, not co-rendering, and the 'Concatenated with' neighbour system-prompt-resume-continue-prompt is an alternative array element too. Sentences carry a sentinel and ordering words, frozen."
+  },
+  "system-prompt-windows-sandbox-admin-setup-again-remedy": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Spliced remedy value; wiping breaks the sentence; no co-rendering carrier."
+  },
+  "system-prompt-windows-sandbox-git-credentials-unavailable": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Unique; error tags and enumerations frozen."
+  },
+  "system-prompt-windows-sandbox-git-folder-above-working-directory": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Unique procedure; nearly every sentence carries commands, error tags or setting names (frozen); the 'item on git init above' back-reference requires the sibling kept."
+  },
+  "system-prompt-windows-sandbox-git-repository-creation": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Unique; frozen (enumerations, ordering, commands). Concatenated neighbours (pip-certificate-store, ho) are separate array elements with sentence boundaries; nothing crosses."
+  },
+  "system-prompt-windows-sandbox-git-worktree-add": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Wipe-merge into git-repository-creation fails: that body never names git worktree add. Frozen (Never, tool command)."
+  },
+  "system-prompt-windows-sandbox-slash-install-remedy": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut is a wipe citing the terminal-remedy sibling, but it is the other branch of the same ternary and never co-renders; the clause is a slot value spliced mid-sentence and carries the /sandbox install command (frozen path/command). Unique; keep."
+  },
+  "system-reminder-artifact-file-path-refusal-for-earlier-wrong-path-publication": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: drop the trailing 'A path stated in `files` is used as it is.' as covered by the unexpected-new-served-path sibling; fails because that sibling is a different return of Oa and never renders with this one. Every sentence carries paths, files entries and ordering (frozen); unique remedy for the earlier-wrong-path case. Keep."
+  },
+  "system-reminder-artifact-file-path-refusal-for-served-path-claimed-by-another-file": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "No co-rendering carrier states either remedy; a wipe or trim would lose the exact {path: source} files entries the model must send. Frozen (paths, parameter names, ordering). Keep."
+  },
+  "system-reminder-artifact-file-path-refusal-for-unexpected-new-served-path": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: drop 'A path stated in `files` is used as it is.' as shared with the earlier-wrong-path sibling; fails: alternative return, no co-render. All sentences carry root/files mechanics and paths (frozen). Keep."
+  },
+  "system-reminder-attached-machine-could-not-be-reached-ask-say-when-back": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "It is a slot value (f) spliced mid-sentence into the asleep/busy reminders; wiping would leave the sentence intact but drop the one unique instruction. Nothing covers it. Keep."
+  },
+  "system-reminder-browser-extension-not-connected-mobile-app": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: delete the example '(web search, for example)'; fails the tripwire, the sentence contains 'then' and 'once' ordering and cannot be partly cut. The final 'do not call ... again in this reply' guards a retry loop and is unique. Keep."
+  },
+  "system-reminder-hook-blocking-reason-git-bash-not-found-exit-code-127": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "A wipe citing the git-bash-not-found sibling fails: the two are alternative returns, never co-rendered. Every sentence has numbers, setting names or enum values (frozen). Keep."
+  },
+  "system-reminder-nested-memory-file-truncated": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "No co-rendering carrier gives the path and offset for a cut nested CLAUDE.md; opensWithSlot means the file content precedes it and wiping would silently hide the truncation. Frozen (parameter names, number slot). Keep."
+  },
+  "system-reminder-plan-approved-edited-by-user-heading": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Externally depended text: the heading is a marker the bundle matches with indexOf (s1), so changing or wiping it breaks plan extraction. Frozen. Keep."
+  },
+  "system-reminder-plugin-mod-edit-reloads": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "The only remedy in the joined mod-failure message from yHn; the reload timing is unique. Its neighbours ('Your mod failed...', 'It was drawing...') are separate sentences, so no sentence crosses the boundary. Keep."
+  },
+  "system-reminder-plugin-mod-failed-when-ran": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Carries the mod name and error, the facts of the notice; nothing else states them. Its own sentence ends at the array boundary. Keep."
+  },
+  "system-reminder-plugin-mod-was-drawing": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "It gives the failing subject, unique diagnostic data; it renders only when there is a subject. Keep."
+  },
+  "system-reminder-project-docs-preread-notice": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: drop 'You did not make them.' as implied by 'were read before your first reply'; it fails the frozen rule: the previous sentence names project_read and 'Each call names its doc by an internal id' plus 'use its name' is a contract the model cannot infer. The notice is unique. Keep."
+  },
+  "system-reminder-project-document-rewrite-without-current-text-refusal": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "No co-rendering carrier; every sentence has tool names, ordering or a never guarding an irreversible delete (mechanics). Keep."
+  },
+  "system-reminder-project-document-too-large-to-rewrite-refusal": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "The byte limit, local_path option and new-path fallback are unique to this refusal; frozen (number slot, parameter name). Keep."
+  },
+  "system-reminder-remote-bash-not-run-ask-claude-instead": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "A wipe citing the siblings fails: they are alternative refusals, not co-rendered. It is the only remedy in its messages. Keep."
+  },
+  "system-reminder-resume-container-disk-behind-again": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "It is a conditional clause (remindedBefore) appended to the body; the body's 'tell the user if work was lost' is about lost work, not the repeated-risk warning, so no cut is covered. Keep."
+  },
+  "system-reminder-resume-container-disk-missing-tool-calls-body": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "The body of the resume reminder; opensWithSlot (lead PCt is matched by startsWith in the dedupe check), so a wipe or lead change is barred. Contents are unique. Keep."
+  },
+  "system-reminder-resume-container-disk-oldest-missing-time": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Unique time data, conditional on a parsable timestamp; nothing to cut. Keep."
+  },
+  "system-reminder-tool-calls-lost-to-session-restart": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "No carrier co-renders the lost call list or the instruction to check before reissuing (guards duplicate side effects; ordering 'before' is frozen). Keep."
+  },
+  "system-reminder-tool-hosts-correction-ended-with-error": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "A wipe citing the did-run sibling fails: alternative arm, never co-renders. The error-vs-refusal fact is unique. Keep."
+  },
+  "system-reminder-tool-hosts-host-home-dir": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "It gives an attached machine's home directory, data the model cannot infer. Keep."
+  },
+  "system-reminder-tool-hosts-host-shell-commands-run-in": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "The shell name and 'not bash' warning are unique per-host facts. Keep."
+  },
+  "system-reminder-tool-hosts-no-machine-attached-any-more": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Le is reused as the lead of several detach notices (refs inside the same module), so it is a const other prompts are built from; changing it changes all of them. Keep."
+  },
+  "system-reminder-tool-hosts-remote-background-command-never-notifies": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: drop the last sentence as implied by 'nothing re-invokes you'; fails: it names the unwanted stop, which the standing rules keep, and the result-carrier is not co-rendered. The parameter name and stop call are frozen. Keep."
+  },
+  "system-reminder-tool-hosts-remote-background-print-output-file-clause": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "A slot value in the never-notifies sentence; the alternative arm never co-renders. The enumeration makes it frozen. Keep."
+  },
+  "system-reminder-tool-hosts-remote-background-read-output-file-clause": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "It names the tool and machine argument to use; alternative arm, no co-render, frozen. Keep."
+  },
+  "system-reminder-tool-replaced-by-mcp-server-reason": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "An enum value of the reason map (key 'replaced'); it carries the server name and the instruction to use those tools. Keep."
+  },
+  "tool-description-bash-github-at-mention-notifies": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: drop the example parenthetical as three examples of one principle; fails the tripwire: the sentence has an enumeration ('roles, placeholders, and code') and cannot be partly cut, and deleting it whole loses the rule. The notify fact is unique. Keep."
+  },
+  "tool-description-bash-sandbox-denied-host-lead-bash-only": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "A slot value spliced mid-sentence before the re-run clause; wiping would break the sentence, and the alternative arm does not co-render. Frozen (tag name). Keep."
+  },
+  "tool-description-bash-sandbox-denied-host-lead-powershell-only": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: wipe-merge into the both-shells lead. Fails: that text is the alternate ternary arm (`n?…:…` at s1), never co-rendering, and this lead is spliced mid-sentence before the rerun clause, so it must stay."
+  },
+  "tool-description-connector-directory-connect-via-claude-ai": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: wipe-merge citing resolve-connectors-needs-reconnect-not-installed. Fails co-render: the two are alternative tails of one description, chosen instead of each other, and the tool is DEFERRED, so nothing else carries the claude.ai-connect instruction when this tail is chosen."
+  },
+  "tool-description-list-connectors-needs-reconnect-call-tool": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: wipe-merge into the -card variant. Fails: the variants are alternatives (different modules/hosts) and give different actions (call ${slot} vs tell user to use the card); the sentence is frozen (enum value \"needs_reconnect\", parameter names)."
+  },
+  "tool-description-list-connectors-needs-reconnect-card": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: wipe-merge into tool-description-resolve-connectors-needs-reconnect-not-installed. Fails: that is a different (DEFERRED) tool's description, not co-rendered with ListConnectors; the sentence is frozen (enum value, field names). Boundaries with listconnectors and recommend-via-registry are clean, untouched."
+  },
+  "tool-description-list-connectors-recommend-via-registry": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: drop the 'does not itself connect anything' clause as covered. Fails: partial cut of a frozen sentence is forbidden and the carriers are different, DEFERRED tools that do not co-render with ListConnectors."
+  },
+  "tool-description-mcp-connector-sign-in-recheck": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: drop the final 'Do not ask…' sentence citing system-reminder-mcp-servers-need-auth. Fails: that reminder is conditional on a different state and not proven to co-render with this stub tool; the never-guard and the 'do not call this tool again until' ordering are frozen mechanics."
+  },
+  "tool-description-resolve-connectors-needs-reconnect-not-installed": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: drop the second sentence citing connector-directory-connect-via-claude-ai, or wipe-merge into list-connectors-needs-reconnect-card. Fails: the connect-via-claude-ai text is the alternative tail chosen instead of this one, never co-rendered, and ListConnectors is a different DEFERRED tool; both sentences are frozen (enum value needs_reconnect, ordering). Boundary with suggestconnectors is clean."
+  },
+  "tool-description-save-task-files": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: trim 'The person is asked to approve every call.' citing tool-result-served-tool-person-approval-required. Fails: that result renders only after a denial, not with the description; every sentence is frozen (number slot, every, ordering) and unique. Kept as the carrier for the schema wipes."
+  },
+  "tool-description-suggest-plugins-card-may-not-render": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: drop the example 'such as \"I've suggested the Acme plugin.\"'. Fails tripwire: it is part of a frozen sentence (example marker, quantity), and 'This overrides any line above' refers to a sibling line, so the override statement must stay."
+  },
+  "tool-description-webfetch-artifact-links-artifacts-mcp": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: wipe-merge into the use-artifact-tool bullet. Fails: switch arms are exclusive and give a different tool; the bullet is frozen (paths, slots)."
+  },
+  "tool-description-webfetch-artifact-links-artifacts-mcp-lean": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: wipe-merge into the non-lean artifacts-mcp bullet. Fails: lean and non-lean descriptions are alternatives; switch arms are exclusive; frozen paths and slots."
+  },
+  "tool-description-webfetch-artifact-refused-use-fallback": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none available; the clause is unique, two-slot mechanics appended to the artifacts-mcp bullet (it must stay with what 'it' refers to)."
+  },
+  "tool-parameter-save-task-files-bytes": {
+    "coveredBy": ["tool-description-save-task-files"],
+    "verdict": "wipe-merge",
+    "version": "2.1.310",
+    "why": "Wipe-merge holds: the tool description (same tool object, co-renders with its schema even though the tool is deferred) says the size in bytes must be passed exactly as a get_task answer gave it; the whole sentence is redundant, deleted whole."
+  },
+  "tool-parameter-save-task-files-file-id": {
+    "coveredBy": ["tool-description-save-task-files"],
+    "verdict": "wipe-merge",
+    "version": "2.1.310",
+    "why": "Wipe-merge holds: the description requires the file's id exactly as the get_task answer gave it; same tool object, so it co-renders; deleted whole."
+  },
+  "tool-parameter-save-task-files-files": {
+    "coveredBy": ["tool-description-save-task-files"],
+    "verdict": "wipe-merge",
+    "version": "2.1.310",
+    "why": "Wipe-merge holds: frozen sentence (enumeration) deleted whole as genuinely redundant with the co-rendering description of the same tool; maxItems/minItems stay in the schema and the ${F} limit stays in the description."
+  },
+  "tool-parameter-save-task-files-save-as": {
+    "coveredBy": ["tool-description-save-task-files"],
+    "verdict": "wipe-merge",
+    "version": "2.1.310",
+    "why": "Wipe-merge holds: the description says the saved-as name comes from the get_task answer, the answer's note spells it out where it differs, and a number is added only if the name is taken (so the passed name excludes it); same tool object, co-renders; deleted whole."
+  },
+  "tool-parameter-save-task-files-task-id": {
+    "coveredBy": ["tool-description-save-task-files"],
+    "verdict": "wipe-merge",
+    "version": "2.1.310",
+    "why": "Wipe-merge holds: the description names task_id as the task's id; same tool object; deleted whole."
+  },
+  "tool-result-artifact-file-path-existing-path-data-note": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: wipe-merge citing tool-description-artifact-action-reference. Fails: deferred tool description, not proven to co-render with this tool result, and covers listing rows not this path; opensWithSlot body is spliced into the refusal."
+  },
+  "tool-result-artifact-file-path-send-again-with-files": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none; the branch-specific retry instructions (drop `edits`, how to add the `files` entry) are unique mechanics and frozen (parameter names)."
+  },
+  "tool-result-artifact-mcp-artifact-tool-unavailable": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: wipe-merge into the disconnected result. Fails: different failure state, not co-rendered; the /login and /config hint is unique."
+  },
+  "tool-result-artifact-mcp-ask-rule-check-unfinished": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: drop the sentence as covered by tool-result-artifact-ask-rule-incomplete-check. Fails: a different emitter, not co-rendered; this is the only statement in this ask that approval covers one call."
+  },
+  "tool-result-artifact-mcp-ask-rule-covers-call": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none; the rule name, its source and the reason slot are unique runtime content."
+  },
+  "tool-result-artifact-mcp-ask-rule-unknown-tool": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: wipe-merge into the unread suffix. Fails: exclusive ternary arms; frozen (every, tool-name slots)."
+  },
+  "tool-result-artifact-mcp-ask-rule-unread-call": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: wipe-merge into the unknown-tool arm. Fails: exclusive arms of le(), never co-render."
+  },
+  "tool-result-artifact-mcp-create-new-artifact-ask": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none; it is the ask message itself, the user-facing approval text, with its details slot."
+  },
+  "tool-result-artifact-mcp-each-call-approved-alone": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none; it is the ask message for this call with a tool-name slot, unique."
+  },
+  "tool-result-artifact-mcp-edit-db-person-approves": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: wipe-merge into tool-result-artifact-edit-db-notification-triggered-needs-yes. Fails: that carrier is emitted by a different module, not in function x at s1, so co-render is unproven; the body is the ask message itself (behavior:'ask', message:p, also decisionReason.reason) and the 'only a person can approve' constraint is unique. A wipe would also break the sentence that wraps the notification-db-target slot."
+  },
+  "tool-result-artifact-mcp-notification-db-target": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: wipe because the shared read-db ask carries the same 'prompted by the new-comments notification; rows there are written by artifact viewers'. Fails: different emitter (alternative paths, never co-rendered with this MCP ask), and the phrase is the object of the edit-db-person-approves and 'Claude wants to read ${m}.' sentences, so wiping or trimming it breaks those sentences; the 'rows written by artifact viewers' provenance is a load-bearing injection warning."
+  },
+  "tool-result-artifact-mcp-permission-check-unfinished": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none worth building; the body is a 103-char runtime deny/ask reason naming the tool whose check failed, emitted at 10 sites as the only text the model gets. It has 'Concatenated with' neighbours (the uncatalogued 'finish, so its safety checks did not run.' and tool-result-write-permission-check-denies-unchecked) that a sentence crosses, so any edit would need matching verdicts on them; since nothing in it is covered, no edit is made and the neighbours stay as they are."
+  },
+  "tool-result-artifact-mcp-plan-mode-no-prompt": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: drop 'Keep planning, and make this call once the plan is approved.' as model default. Fails: it is an ordering instruction ('once ... approved') that the tripwire freezes, and it is the only recovery guidance in this deny result (it differs from the siblings' 'do not retry'). The body opensWithSlot, and no detector match was found that would make a wipe safe."
+  },
+  "tool-result-artifact-mcp-unknown-argument-name": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: drop 'Spell argument names exactly as the tool lists them.' as inferable. Fails: this is a validation-gate message that the tripwire freezes (the 'exactly' quantifier guards an argument-name check), and it is the only fix hint in the deny result. The opening slot names the tool and must stay."
+  },
+  "tool-result-artifact-mcp-watch-wake-notice": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: trim 'Plain comments, and comments other people send to Claude, do not wake it.' as covered by unwatch-dynamic. Fails: that carrier is DEFERRED and does not state this claim anyway. Every sentence is frozen by the tripwire (ordering 'Once', the 'Any \"wake\" field' quantifier and field name) and each is unique, so the text appended to the publish result stays whole."
+  },
+  "tool-result-artifact-org-approval-nobody-to-ask": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: drop 'Nothing was created or published.' as duplicated elsewhere. Fails: the carriers (tool-parameter-artifact-action-open, which is DEFERRED, and created-from-type-previous-attempt, an alternative result) do not co-render with this deny. The enumeration of causes and the 'don't retry in this turn' guard (on a safetyCheck that the classifier cannot approve) are frozen mechanics."
+  },
+  "tool-result-artifact-org-requires-approval-notice-default": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: wipe as covered by org-approval-nobody-to-ask. Fails: that deny renders only when nobody can be asked, while this default notice shows when the org gives no text, so the two never co-render. An empty default would also fail the schema's pipe(o().min(1)) shape. It is a data value with a runtime contract, so it stays."
+  },
+  "tool-result-artifact-publish-capabilities-unconfirmed": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: drop 'Publish again; the user may be asked to approve them.' as covered by the generic 'publish again' guidance. Fails: those carriers are DEFERRED and about other errors, so co-render is unproven and they do not give this cause. The sentence is the only recovery step of a thrown error (caps_new_page_* tags)."
+  },
+  "tool-result-artifact-read-comments-artifact-unknown": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: drop 'Pass the artifact's full id (a UUID) or its link.' as covered by the parameter schema. Fails: the schema is a DEFERRED tool piece, so co-render with this result is not proven, and the sentence holds a format (UUID) that the tripwire freezes. The body completes the shared prefix W (read-comments-notification-pending-prefix), so it cannot be wiped without leaving a dangling clause."
+  },
+  "tool-result-artifact-read-comments-check-unfinished": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: drop the retry sentence as a model default. Fails: it sets a retry bound ('once more') and an ordering ('if it fails again'), which the tripwire freezes, and it is unique in this deny path. The body completes the W prefix sentence, so a wipe would leave a fragment."
+  },
+  "tool-result-artifact-read-comments-notice-unchecked": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none holds. The second sentence names the tool action read_comments and is the only route to the approval prompt (error tag mcp_comments_notice_unchecked), so the tripwire freezes it. The body completes the W prefix and cannot be wiped."
+  },
+  "tool-result-artifact-read-comments-notification-pending-prefix": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: wipe as covered by source-restore-comment-notice-pending. Fails: the body is const W, the opening of three sentences (read-comments-artifact-unknown K, check-unfinished, notice-unchecked) that each continue with ' and ...'. Wiping or trimming it would break all three, and the carrier sits in a different module."
+  },
+  "tool-result-artifact-type-file-path-is-root-itself": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none. Each return in Ll is the only message for its case, the parameter name file_path is frozen, and every slot is used once in pristine shape. No covered sentence exists."
+  },
+  "tool-result-artifact-type-file-path-scratchpad-root-outside": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: drop one arm of the root ternary. Fails: both arms are live, and each names the `root` parameter and a path, so the tripwire freezes them. The trailing VAR_4 (z) carries the fix text and must stay. Nothing is covered."
+  },
+  "tool-result-artifact-type-file-path-under-scratchpad-folder": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: drop the served-path clause as shared with the file-path refusal reminders. Fails: those are alternative errMsgs, never co-rendered. The clause carries paths and slots (frozen), and the 'no page reads' cause is unique."
+  },
+  "tool-result-artifact-type-root-files-list-hint": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: wipe as covered by the files-list-path parameter. Fails: that is a DEFERRED tool piece, so co-render with this error is unproven. The fragment is spliced into the 'Send the call again with `root` ...' sentence and names the `files` parameter, which the tripwire freezes."
+  },
+  "tool-result-artifact-type-root-files-map-hint": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: wipe as covered by tool-parameter-artifact-files-map-source ('relative to `root` ..., or absolute'). Fails: that carrier is DEFERRED, so co-render with this tool result is unproven. The fragment completes a spliced sentence and names `files`, so it is frozen."
+  },
+  "tool-result-artifact-type-root-no-folder-can-hold": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: drop 'a `root` must lie in one of the session's working directories or your scratchpad directory' as covered by system-prompt-cloud-app-readable-directories. Fails: that carrier is about app-readable files, not the `root` constraint. The sentence holds 'must', paths and the `root` parameter, and the fix has an ordering ('then'), so all of it is frozen and unique."
+  },
+  "tool-result-artifact-type-root-send-again-with-root": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "The strongest cut would be wiping the lead sentence as covered by tool-parameter-artifact-root-requires-files-except-from-type. That fails because the carrier is a DEFERRED tool's schema, so its co-render with this tool_result is not proven, and the computed per-file root/served list exists nowhere else. The text is frozen anyway (it names the `root` parameter and has slots). A conditional error result costs nothing until it fires."
+  },
+  "tool-result-artifact-type-root-would-serve-index-html": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "The strongest cut would be a wipe citing the index-html-reserved result. That fails because the reserved result is a different branch's error and is not co-rendered with this ternary arm (B.length===0&&M.length>0). The sentence is frozen anyway: it contains the filename index.html. It is a unique, conditional error result."
+  },
+  "tool-result-artifact-updated-unchanged-files-note": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "The strongest cut is trimming the remedy sentence as model default. That fails: telling the model to check the local file it sent, because unchanged files mean the edit never reached disk, is a non-obvious diagnosis that no carrier states. The slot-built file list must stay. Conditional result with unique content."
+  },
+  "tool-result-artifact-updated-update-root-clause": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "The strongest cut is a wipe. That fails: this is a fragment spliced into a sentence, and an empty body would leave the served-path instructions without their `root` value. It names the parameter `root` (frozen), and nothing co-rendering carries the computed root."
+  },
+  "tool-result-artifact-upload-asset-routine-linked-file-refused": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "The strongest cut would be dropping the cause enumeration or 'Do not retry with the file.' That fails the tripwire: the enumeration is a frozen list, and 'Do not retry' guards a runtime refusal gate (mechanics, verbatim). The twin covers a different action and does not co-render. This is a unique conditional denial."
+  },
+  "tool-result-artifact-write-db-routine-linked-file-refused": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "The strongest cut would be a wipe citing the upload twin. That fails: the twin is not co-rendered and is about uploads, not db writes. The enumeration and 'Do not retry with the file.' are frozen mechanics, and the 'send them inline in data' remedy is unique."
+  },
+  "tool-result-artifacts-mcp-request-not-sent-login": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "The strongest cut is a wipe citing the login-required errors. That fails: those are different emission sites and do not co-render. This text names slash commands (/login, /permissions, /config), which the tripwire freezes. It is the only text shown when the MCP bearer is withheld."
+  },
+  "tool-result-bash-builtin-gh-proxy-not-set": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "No cut holds: the body contains an env var (HTTPS_PROXY) and an address (127.0.0.1), so it is frozen, and its claims are unique. It is also printed to stderr by a generated shell script (VZs), so it is runtime output."
+  },
+  "tool-result-bash-cwd-gone-not-run-reissue": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "The strongest cut is a wipe citing tool-result-bash-cwd-gone-served-recovered. That fails: it is an alternative branch, and only one return fires. The parenthetical enumeration is frozen. Unique conditional error."
+  },
+  "tool-result-bash-cwd-missing-not-run-recovered": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "The strongest cut is a wipe citing the gone-served-recovered sibling. That fails: the returns are mutually exclusive. The text also carries the recovered-cwd slot, which is the only place the model learns where the shell now is."
+  },
+  "tool-result-bash-dangerous-op-parse-mismatch-decision-reason": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "The strongest cut is a wipe, since the message argument co-renders and says the same. That fails: this body is the third argument spliced into `Dangerous rm operation ${r}` in decisionReason.reason, and an empty body would leave 'Dangerous rm operation ' dangling. Like a rewrite replacement, it must still complete the sentence, and it is already minimal."
+  },
+  "tool-result-bash-declaration-expansion-unverifiable-append": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "The strongest cut is a wipe citing a sibling. That fails: each is returned alone by oe() on its own branch, so none co-renders. It carries the .name slot. A unique, minimal permission reason."
+  },
+  "tool-result-bash-declaration-expansion-unverifiable-assign": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "No carrier exists, so no cut holds. It is a unique, minimal ask reason, and it carries the variable-name slot."
+  },
+  "tool-result-bash-declaration-expansion-unverifiable-prefix-assign": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Nothing co-renders, so no cut holds. It is a unique, minimal permission reason with its slot."
+  },
+  "tool-result-bash-declaration-expansion-unverifiable-unset": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "The strongest cut is a wipe citing the append sibling. That fails: exclusive returns never co-render. It names 'unset', which is a shell builtin and so frozen. Unique."
+  },
+  "tool-result-bash-disk-quota-used-up-clause": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "The strongest cut is a wipe. That fails: this is the value of Ds spliced into 'The command was not started: ${Ds} on the volume…', so an empty body breaks the sentence. It carries the error-code slot (EDQUOT). It is the only text distinguishing quota from full disk."
+  },
+  "tool-result-bash-output-no-space-clause": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "The strongest cut is a wipe. That fails: this clause is the value h spliced into the low-mb and test-write notes, so an empty body would break both sentences. It quotes an exact OS error string, which is frozen."
+  },
+  "tool-result-bash-output-temp-dir-disk-full-low-mb": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "No cut holds: the body contains a number/threshold slot (MB free) and the path slot, which are frozen. The exclusive sibling never co-renders. Unique."
+  },
+  "tool-result-bash-output-temp-dir-disk-full-test-write": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "No cut holds: it contains an error tag (ENOSPC), so it is frozen, and its exclusive sibling never co-renders. Unique."
+  },
+  "tool-result-bash-output-temp-dir-low-inodes": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Nothing covers it, so no cut holds. It carries the free-inode count slot and is the only inode diagnosis."
+  },
+  "tool-result-bash-output-temp-dir-quota-exceeded": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "The strongest cut is trimming the last two sentences as covered by tool-description-bash-output-lost-temp-quota-restart-remedy. That fails: this branch returns its own text without ${u9}, so the remedy does not co-render here. Both sentences are frozen anyway (an env var, and the ordering words 'then'/'before')."
+  },
+  "tool-result-bash-rm-check-shell-parse-mismatch": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "The strongest cut is dropping 'This requires explicit approval.' as shared boilerplate. That fails: the other carriers are exclusive pS() calls and do not co-render. The sentence states the safety gate (mechanics) and is the only explanation of why approval is asked."
+  },
+  "tool-result-bash-sandbox-proxy-host-not-ascii": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Nothing covers it, so no cut holds. It is the proxy's 400 body returned to the sandboxed command, a runtime error string. Minimal and unique."
+  },
+  "tool-result-bash-sandbox-proxy-request-missing-host-header": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut is a wipe, but nothing co-renders the same fact: the sibling denial reasons are alternative if-arms that return early, and Bash sandbox description pieces never state this condition. The body also contains the token HTTP/1.1 and the Host header name, so the tripwire freezes it. Unique and load-bearing: the cut fails."
+  },
+  "tool-result-bash-sandbox-proxy-tls-server-name-unreadable": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut is a wipe. It fails because no co-rendering carrier states that the TLS server name could not be read. The other denial reasons in JH are alternative early-return branches, and the text is also passed to onFilterRequestDeny as the reason. It is the only thing the sandboxed command receives on the 421, so it is unique: keep."
+  },
+  "tool-result-bash-sandbox-windows-newer-release-use-that-release": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut is a wipe. It fails because the text is the replacement of a .replace() in cV, spliced in place of the stripped srt-win remedy. Wiping it would leave the newer-release lead with no remedy. It is unique and nothing else co-renders it: keep."
+  },
+  "tool-result-bash-sandbox-windows-run-install-or-see-docs": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut is a wipe or trim to the URL. It fails because the literal is a rewrite needle: chunk-ty9wwdk1 s() calls n.replace(\"Run /sandbox install, or see https://code.claude.com/docs/en/sandboxing.\",...), so any change breaks that rewrite. It also contains a slash command and URL, so it is tripwire-frozen. Keep verbatim."
+  },
+  "tool-result-bash-sandbox-wrap-unconfined": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut is a wipe citing the strict-mode result. It fails because that result is emitted on a different path and the two never co-render. This throw is the only text telling the model why the command was not run (sandbox_wrap_unconfined). Unique: keep."
+  },
+  "tool-result-bash-worktree-git-argv0-changes-name": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut is a wipe or merge into opaque-config. It fails because the ARGV0 arm returns early and the opaque-config arm is its alternative, so they never co-render. It keeps the ${…opaque} slot and is the only explanation of why ARGV0 is refused. Keep."
+  },
+  "tool-result-bash-worktree-git-find-exec-braces": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut is a trim of the shared tail. It fails because the sibling carrying the tail is an alternative arm, and the clause is one frozen sentence (it names find -exec and {}), so no part of it can be cut. Unique: keep."
+  },
+  "tool-result-bash-worktree-git-find-exec-search-without": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut is a trim of the \"otherwise spell...\" half. It fails because the sibling carrying that clause is in another branch. The sentence contains an enumeration, an example command and an ordering, so it is frozen. Keep verbatim."
+  },
+  "tool-result-bash-worktree-git-init-drop-or-put-git-first": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut is a wipe. It fails because no carrier states this fix. It holds three slots and is the only remedy for the program-ahead refusal. Keep."
+  },
+  "tool-result-bash-worktree-git-init-option-shared-repo": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut is a wipe citing init-program-ahead. It fails because that text is an alternative arm. This clause is the only reason given in the sn===void 0 branch. Keep."
+  },
+  "tool-result-bash-worktree-git-init-program-ahead": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut is a trim of the shared tail clause. It fails because the carrier is an alternative arm, so it is not coverage. The git-init mechanism (an ordering and named form) is unique and frozen. Keep."
+  },
+  "tool-result-bash-worktree-git-init-runtime-word": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut is a trim of the shared tail. It fails because the carriers are alternative branches and never co-render, and the clause is a single sentence. Keep."
+  },
+  "tool-result-bash-worktree-git-init-spell-words-literally": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut is a trim of the parenthetical. It fails because the parenthetical is an enumeration (~, a variable, glob), so the sentence is frozen. No co-rendering carrier states it. Keep."
+  },
+  "tool-result-bash-worktree-git-names-rsync-connect-prog": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut is a trim of the parenthetical enumeration. It fails because the sentence has an enumeration, an env var and an \"any\", so it is frozen, and it explains that even a mention is refused, which the model cannot infer. Keep."
+  },
+  "tool-result-bash-worktree-git-rewrite-without-rsync-connect-prog": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut is a trim of the routing clause after the semicolon. It fails because the sentence names the RSYNC_CONNECT_PROG env var, so it is frozen and verbatim-or-delete, and the routing fact is unique. Keep."
+  },
+  "tool-result-bash-worktree-git-run-init-without-option": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut is a wipe. It fails because it is the only fix in the option-shared-repo branch and holds two slots. Keep."
+  },
+  "tool-result-bash-worktree-git-run-without-opaque": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut is a wipe. It fails because it is the only fix for the ARGV0 refusal and preserves the ${…opaque} slot. Keep."
+  },
+  "tool-result-bash-worktree-git-set-var-readable": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut is a trim of one of the two forms. It fails because the sentence is an enumeration of two forms with a placeholder syntax, so it is frozen and cannot be partly cut. Keep."
+  },
+  "tool-result-bash-worktree-guard-assigned-word-shell-filled": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut is a trim of the shared tail. It fails because the carrier is an alternative arm. The body also opens with a slot (tw(e)), so a wipe would drop the rendered lead. Keep."
+  },
+  "tool-result-bash-worktree-guard-expansion-inside-pattern": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut is a trim of the parenthetical guidance. It fails because the parenthetical is an enumeration with exact syntax ($NAME, \\${NAME}, $1, \\\\$), so it is frozen, and no other carrier states it. Keep."
+  },
+  "tool-result-bash-worktree-guard-heredoc-body-zsh": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut is a wipe. It fails because it is the only reason text for that refusal, wrapped by Qp. Keep."
+  },
+  "tool-result-bash-worktree-guard-locale-tables-path": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut is a trim of the parenthetical. It fails because the parenthetical has \"no value is accepted\", which is the fix and a restrictive rule, so it is frozen. Keep."
+  },
+  "tool-result-bash-worktree-guard-locale-unverifiable": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut is a trim of the example (such as en_US.UTF-8). It fails because the sentence contains ONLY, an enumeration and a value, so it is frozen. Keep."
+  },
+  "tool-result-bash-worktree-guard-process-substitution-in-pattern": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut is a trim of the regex branch guidance. It fails because it is an enumeration with exact syntax, so it is frozen, and unique. Keep."
+  },
+  "tool-result-bash-worktree-guard-reason-pattern": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut is a wipe. It fails because it is the whole reason text emitted for that ternary arm (ah @12840729). Wiping it would render an empty reason. Keep."
+  },
+  "tool-result-bash-worktree-guard-reason-pattern-joined": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut is a wipe. It fails because it is the entire reason at two sites (Ywr @12850389 and rvn @12858090). Keep."
+  },
+  "tool-result-bash-worktree-guard-shell-filled-variable": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut is a wipe. It fails because the carrier is an alternative arm, and the body opens with a slot and has a trailing suffix slot (\", so use another variable name\"). Keep."
+  },
+  "tool-result-browser-file-upload-needs-approval-nothing-uploaded": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut is a trim of the shared last sentence. It fails because LRe is a different constant returned instead of iai, an alternative that never co-renders. The approval fact and the no-retry instruction are unique. Keep."
+  },
+  "tool-result-browser-file-upload-one-file-per-call-pane": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut is a trim of \"Nothing was uploaded.\". It fails because the sibling is an alternative path, and the sentence states the outcome the model needs to know before retrying. The parameter name file_upload and the \"each\" quantifier freeze the rest. Keep."
+  },
+  "tool-result-browser-file-upload-paths-array-one-absolute": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut is a wipe citing the file_upload paths schema. It fails because those carriers belong to other tools or are deferred, not proven to co-render, and they do not state the \"one\" limit in this pane. The paths parameter name freezes the sentence. Keep."
+  },
+  "tool-result-ca-certs-no-authority-to-trust": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: drop the NODE_EXTRA_CA_CERTS sentence. Fails: it is unique and frozen (env var names, CLAUDE_CODE_CERT_STORE=system, --use-system-ca), and the error is conditional (thrown only when no CA remains), so it costs nothing when off."
+  },
+  "tool-result-ca-certs-system-store-empty": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: wipe as covered by the parent message. Fails: the parent only interpolates it (the slot is this text), so wiping removes the only statement of the SSL_CERT_FILE/SSL_CERT_DIR remedy; frozen env var names; conditional error path."
+  },
+  "tool-result-cloud-session-commits-remote-lacks-stay-local": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: wipe as a restatement of the other trailer arms. Fails: the arms are mutually exclusive ternary branches, so no co-rendering carrier; the fact that uncommitted changes stay local is unique to this arm."
+  },
+  "tool-result-cloud-session-push-branch-hint": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: wipe as covered by push-branch-start-new-session. Fails: that text is emitted by a different function for a different situation, so co-render is unproven; this remedy is the only one in its message; ordering word 'and start' is frozen anyway."
+  },
+  "tool-result-cloud-session-push-branch-start-new-session": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: wipe as a duplicate of push-branch-hint. Fails: different emitter (E5e) with no co-rendering carrier; frozen ordering ('then'); conditional on advisesPush."
+  },
+  "tool-result-desktop-pane-file-upload-internal-error": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: drop 'This is a bug, not a problem with the file, so do not retry.' Fails: frozen (file_upload tool name, never/do-not guarding retry), unique instruction, and the error is conditional."
+  },
+  "tool-result-file-attach-repo-rules-unread": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: wipe-merge into the project_write repo-rules error. Fails: different tool and code path, no co-render; frozen paths .claude/settings.json and .claude/settings.local.json; conditional error."
+  },
+  "tool-result-gettask-not-callable-suffix": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: drop the background-result sentence as covered by tool-description-gettask. Fails: that carrier is a deferred tool absent from tools[] and absent when this suffix fires; tool name GetTask makes the sentence frozen."
+  },
+  "tool-result-gh-stand-in-retry-fails-read-status": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none legitimate; the sibling arm is an alternative, and the clause carries the GET status slot and ordering ('again, stop and read'), both frozen."
+  },
+  "tool-result-gh-stand-in-retry-fails-stop": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: wipe as covered by the Windows pip prompt. Fails: different subject and conditional host; the other arm never co-renders; it is the only stop instruction after the retry-once advice."
+  },
+  "tool-result-git-not-installed-mac-xcode-select": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none; the command is unique and frozen, and the message is conditional on a Mac without git."
+  },
+  "tool-result-hook-git-bash-not-found-args-or-powershell": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: wipe as covered by the git-bash-not-found blocking reminders. Fails: no proof they render together; frozen parameter names command/args/shell and enum powershell."
+  },
+  "tool-result-hook-mcp-tool-artifacts-server-refused": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: drop the 'because a hook's call skips your permission rules' reason. Fails: the reason tells the model why the alternative server works, and the sentence carries mcp_tool (frozen); conditional error."
+  },
+  "tool-result-hook-mcp-tool-cloud-browser-refused": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: wipe as a duplicate of tool-result-mcp-remote-browser-model-only-call. Fails: different module and trigger (hook config vs a call), no co-render; the mcp_tool remedy is unique."
+  },
+  "tool-result-managed-agents-task-files-file-line": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none; it is the data the save instructions refer to (save_as on its line, size as bytes), and every slot is required."
+  },
+  "tool-result-managed-agents-task-files-list-header": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: drop the parenthetical. Fails: it is the only signal that file names are untrusted agent-written strings; no change, so the 'Concatenated with' array neighbours (file lines, save-instructions) are unaffected."
+  },
+  "tool-result-managed-agents-task-files-more-count": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none; it is the only signal the list was truncated, a fact the model cannot infer."
+  },
+  "tool-result-managed-agents-task-files-save-instructions": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: wipe as covered by tool-description-save-task-files. Fails: deferred conditional carrier, not proven co-render; the sentence is frozen (task_id, file_id, bytes, save_as parameter names, 'JSON strings' rule)."
+  },
+  "tool-result-mcp-artifacts-server-resources-withheld": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: drop 'Use its tools.' as a sibling restatement. Fails: siblings are other errors in other branches; the redirect is the only actionable part of this one."
+  },
+  "tool-result-mcp-authenticate-cloud-provided-connector": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: drop the remedy sentence. Fails: unique and frozen (ordering 'and then start a new session', UI path); conditional result."
+  },
+  "tool-result-mcp-connector-sign-in-already-tried": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: wipe as covered by the recheck tool description. Fails: deferred tool, co-render with its own result not proven; this is the only result text for the duplicate call."
+  },
+  "tool-result-mcp-connector-sign-in-reconnected": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: drop 'Its tools are being added and should be available shortly.' Fails: the deferred description is not proven co-rendering, and the timing note tells the model the tools may not be listed yet; success result is the only payload."
+  },
+  "tool-result-mcp-connector-sign-in-tools-not-listed": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none; unique error outcome on a conditional path."
+  },
+  "tool-result-mcp-file-input-resolves-elsewhere": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: drop 'A file is attached only by the path it resolves to, so that the path that is approved names the file that is sent.' Fails: it carries ONLY (frozen), and the remedy 'that path' refers back to it."
+  },
+  "tool-result-mcp-permission-prompt-tool-connector-name-lookalike": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none; frozen (--permission-prompt-tool) and unique."
+  },
+  "tool-result-mcp-remote-browser-model-only-call": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: wipe as covered by the hook variant. Fails: different trigger, no co-render; frozen ('remote-browser' server name, ONLY)."
+  },
+  "tool-result-mcp-server-question-unanswered": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none; frozen (never/do-not guarding an ordering, 'before the time limit', 'until' semantics) and unique; conditional."
+  },
+  "tool-result-mcp-tool-result-arrived-without-text": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: drop the shared final sentence. Fails: the carrier is an alternative error, not a co-render; the sentence is frozen (before/again) and is the only recovery instruction here."
+  },
+  "tool-result-permission-prompt-tool-remote-browser-unsupported": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: drop the 'because nothing would check the call to it' reason. Fails: it sits inside a frozen sentence naming 'remote-browser'; frozen --permission-prompt-tool remedy; conditional."
+  },
+  "tool-result-plugin-value-holds-proxy-or-vm-context": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none; it is a validation reason fragment, unique, on a conditional path."
+  },
+  "tool-result-project-write-localpath-session-repo-rules-unread": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: wipe-merge into file-attach-repo-rules-unread. Fails: different tool/module, never co-renders; frozen paths and local_path/content parameter names."
+  },
+  "tool-result-project-write-read-before-replace-failed": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: drop 'Do not delete the doc to retry: this tool cannot undo a delete.' Fails: siblings are alternative results, and the never guards a destructive retry path (mechanics, frozen); ordering 'once more'/'If it fails again' frozen."
+  },
+  "tool-result-read-device-or-process-file": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none; the alternative never co-renders and the message is the only explanation of the refusal."
+  },
+  "tool-result-read-unresolved-device-or-process-file": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: wipe as covered by the device-file message. Fails: if-return arms are alternatives; opensWithSlot body would be left a bare slot fragment."
+  },
+  "tool-result-remote-session-device-not-trusted-login": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: wipe as covered by trusted-device-not-enrolled. Fails: different emission, no co-render; frozen /login and ordering 'then retry'."
+  },
+  "tool-result-remote-tool-auto-off-reason-sandbox-off": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none; unique remedy, frozen (/sandbox, 'claude remote-control', 'then')."
+  },
+  "tool-result-remote-tool-classifier-no-longer-approves": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none; alternative outcomes never co-render, and opensWithSlot keeps the lead fixed."
+  },
+  "tool-result-remote-tool-read-result-cut-next-page": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: drop the trailing search clause as covered by tool-parameter-read-allow-large (\"otherwise read it in parts with offset and limit, or search it\"). Fails: the sentence is frozen (tripwire: offset=/limit= parameter names, numbers, tool names) so it is verbatim-or-delete, and the clause carries host-specific routing (Lr with host name) the Read schema does not; the rest (exact range, possibly-truncated line) is unique runtime data. Keep."
+  },
+  "tool-result-sandbox-strict-admin-run-setup": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Fragment of the Windows strict-sandbox denial built in _Me (chunk-31gxg38t.js) and passed to oye(); strongest cut is a wipe citing tool-result-bash-sandbox-setup-again-ask-admin (\"ask your administrator to run the sandbox set-up again\"). Fails: that carrier is emitted by a different module and is not proven to co-render with this strict-mode result; wiping leaves oye with an empty remedy slot. Unique remedy for the policy-locked arm. Keep."
+  },
+  "tool-result-sandbox-strict-exclusion-bash-reads-differently": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Fragment of the Windows strict-sandbox denial built in _Me (chunk-31gxg38t.js) and passed to oye(); opensWithSlot (${K}. lead). Strongest cut: none — the clause is the sole explanation for the bash/powershell parse-mismatch arm, and is frozen (tool name Bash, enumeration of exclusion logic). Wiping would leave a bare reason with no cause. Keep."
+  },
+  "tool-result-sandbox-strict-exclusion-needs-prompt": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Template `the ${w}` at oye(`the ${w}`,...) in _Me (bundle @10898844). No claim of its own; wiping it would drop the w clause from the reason. Nothing to cut. Keep."
+  },
+  "tool-result-sandbox-strict-exclusion-needs-prompt-clause": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Fragment of the Windows strict-sandbox denial built in _Me (chunk-31gxg38t.js) and passed to oye(); bound to w and reused in two arms. Unique explanation of why the matched exclusion does not apply under strict mode. No cut possible. Keep."
+  },
+  "tool-result-sandbox-strict-failed-start-restart": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Fragment of the Windows strict-sandbox denial built in _Me (chunk-31gxg38t.js) and passed to oye(); remedy Q for the failed-to-start arm. Strongest cut would wipe it citing data-sandbox-install-user-sign-in-timed-out (\"restart Claude Code\"), but that carrier renders only in install output, not with this denial. Unique. Keep."
+  },
+  "tool-result-sandbox-strict-mode-command-not-run": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: drop \"Changing sandbox settings is for the user or their administrator to decide, not you.\" as covered by tool-description-bash-sandbox-restriction-tell-user. Fails: co-render not proven (carrier tool unresolved), the following sentence \"So is running this command...\" refers back to it (never cut a referred-to sentence), and the never/not-you guards a validation gate (mechanics, verbatim). The wrapper also holds both slots. Keep."
+  },
+  "tool-result-sandbox-strict-no-excluded-commands-entry": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Fragment of the Windows strict-sandbox denial built in _Me (chunk-31gxg38t.js) and passed to oye(); frozen (path .claude/settings.json, settings.local.json, --settings, sandbox.excludedCommands, enumeration). Unique statement of which sources count under strict mode. Keep verbatim."
+  },
+  "tool-result-sandbox-strict-no-sandbox-manager-only": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Fragment of the Windows strict-sandbox denial built in _Me (chunk-31gxg38t.js) and passed to oye(); remedy Q for the no-sandbox-available arm; only explanation of who can change it. Keep."
+  },
+  "tool-result-sandbox-strict-not-ready-restart": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Fragment of the Windows strict-sandbox denial built in _Me (chunk-31gxg38t.js) and passed to oye(); remedy Q for the not-ready arm. No co-rendering carrier; contains ordering (if that does not help) — frozen. Keep."
+  },
+  "tool-result-sandbox-strict-only-inside-sandbox": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Fragment of the Windows strict-sandbox denial built in _Me (chunk-31gxg38t.js) and passed to oye(); remedy for the sandbox-enabled exclusion arm; contains ONLY (frozen). Unique. Keep."
+  },
+  "tool-result-sandbox-strict-only-three-sources": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Fragment of the Windows strict-sandbox denial built in _Me (chunk-31gxg38t.js) and passed to oye(); remedy paired with no-excluded-commands-entry in the same oye call; refers back to \"those three\" in that clause, and the pair is the only statement of the rule. Frozen (ONLY). Keep."
+  },
+  "tool-result-sandbox-strict-program-cannot-start-reinstall": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Fragment of the Windows strict-sandbox denial built in _Me (chunk-31gxg38t.js) and passed to oye(); unique remedy for the srt-win program-cannot-start arm. Keep."
+  },
+  "tool-result-sandbox-strict-reason-failed-to-start": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Fragment of the Windows strict-sandbox denial built in _Me (chunk-31gxg38t.js) and passed to oye(); reason K; the oye template requires a reason. Nothing to cut. Keep."
+  },
+  "tool-result-sandbox-strict-reason-no-sandbox-available": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Fragment of the Windows strict-sandbox denial built in _Me (chunk-31gxg38t.js) and passed to oye(); reason K for the !H arm. Unique. Keep."
+  },
+  "tool-result-sandbox-strict-reason-not-ready": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Fragment of the Windows strict-sandbox denial built in _Me (chunk-31gxg38t.js) and passed to oye(); reason K for q===void 0 arm. Unique. Keep."
+  },
+  "tool-result-sandbox-strict-reason-not-set-up": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Fragment of the Windows strict-sandbox denial built in _Me (chunk-31gxg38t.js) and passed to oye(); reason K for q.length>0 arm. Unique. Keep."
+  },
+  "tool-result-sandbox-strict-reason-program-cannot-start": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Fragment of the Windows strict-sandbox denial built in _Me (chunk-31gxg38t.js) and passed to oye(); reason K for the srt-win arm. Unique. Keep."
+  },
+  "tool-result-sandbox-strict-reason-switched-off": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Fragment of the Windows strict-sandbox denial built in _Me (chunk-31gxg38t.js) and passed to oye(); reason K for !H&&j2t() arm. Unique. Keep."
+  },
+  "tool-result-sandbox-strict-reason-with-exclusion-clause": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Template `${K}. The ${w}` at bundle @10900397 joins reason and exclusion clause; opensWithSlot but no detector matches a rendered lead. No claim of its own to cut; wiping breaks the y-arm message. Keep."
+  },
+  "tool-result-sandbox-strict-switched-off-stays-refused": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Fragment of the Windows strict-sandbox denial built in _Me (chunk-31gxg38t.js) and passed to oye(); remedy Q for switched-off arm; contains until (frozen). Unique. Keep."
+  },
+  "tool-result-sandbox-strict-user-install-setup": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Fragment of the Windows strict-sandbox denial built in _Me (chunk-31gxg38t.js) and passed to oye(); remedy for unlocked not-set-up arm; frozen (/sandbox install, `claude sandbox install`, enumeration). Keep verbatim."
+  },
+  "tool-result-save-task-files-approval-ask": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: drop \"(a name already in use there gets a number added)\" as covered by tool-description-save-task-files. Fails: deferred carrier, co-render unproven; the sentence is frozen (enumeration, slots) so no part-cuts; and the text is the user-facing approval prompt. Keep."
+  },
+  "tool-result-save-task-files-bad-id-or-size": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Per-file failure reason for bad_id/bad_size in xe(); unique. Keep."
+  },
+  "tool-result-save-task-files-bad-request": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: wipe citing tool-description-save-task-files (\"for up to ${...} of its files, the file's id, the name it is saved as and its size in bytes\"). Fails: deferred carrier, not proven co-rendering; sentence frozen (number range, file_id/save_as/bytes, get_task). Keep."
+  },
+  "tool-result-save-task-files-call-malformed": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Fallback reason used when validation produced no why. Unique minimal text. Keep."
+  },
+  "tool-result-save-task-files-canceled": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Per-file failure reason for canceled. Unique. Keep."
+  },
+  "tool-result-save-task-files-download-unfinished": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Per-file reason for stalled/network with the retry hint; unique. Keep."
+  },
+  "tool-result-save-task-files-egress-blocked": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Per-file reason for egress_blocked/essential_traffic with its three possible causes (enumeration: frozen). Unique. Keep."
+  },
+  "tool-result-save-task-files-list-not-seen": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: drop \"Call get_task for the task first, then name files from its answer.\" as covered by tool-description-save-task-files. Fails: deferred carrier not proven co-rendering, and the sentence is frozen (get_task, first/then ordering). Keep."
+  },
+  "tool-result-save-task-files-list-too-long-to-show": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Validation reason for too_many_to_show with the remedy. Unique. Keep."
+  },
+  "tool-result-save-task-files-malformed-input": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: wipe citing tool-description-save-task-files. Fails: deferred tool description, co-render unproven; sentence frozen (task_id, file_id, save_as, bytes, \"nothing else\"). Keep."
+  },
+  "tool-result-save-task-files-name-taken": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Per-file reason for name_taken; unique. Keep."
+  },
+  "tool-result-save-task-files-name-too-long-to-show": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Validation reason for too_long_to_show; unique. Keep."
+  },
+  "tool-result-save-task-files-no-disk": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: wipe-merge into tool-result-tool-results-files-disabled. It fails because that carrier is a different-module result and never renders in the same request as the no_disk return of N(). This is the only text that tells the model why save_task_files failed. Conditional result, so it costs nothing until it fires."
+  },
+  "tool-result-save-task-files-no-room": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none. The no_room case of xe() returns this clause alone, and no co-rendering sibling names the disk-space cause. Cutting it would leave the per-file failure line with no reason."
+  },
+  "tool-result-save-task-files-no-sign-in": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: wipe-merge into the memory sign-in reason. It fails because that carrier is a different module and is not rendered with the save_task_files per-file failure. Only this clause names the no_token cause."
+  },
+  "tool-result-save-task-files-not-https": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none. The not_https case is the only statement of this failure cause, and no sibling co-renders with it."
+  },
+  "tool-result-save-task-files-not-listed": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: trim the remedy sentence as covered by list-not-seen. It fails because list-not-seen is a separate early-return branch of N(), so it renders instead of this one, never alongside it. The remedy sentence names the get_task tool and the 'before' ordering (tripwire: frozen). The ${VAR_0} slot opens the body."
+  },
+  "tool-result-save-task-files-policy-pending": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: drop 'try again shortly' as generic. It fails because it is the actionable retry signal for a transient state, and it lives in the same sentence as the cause. A partial cut of a frozen sentence ('until'-style ordering semantics) is not allowed. No co-rendering carrier states the policy_pending cause."
+  },
+  "tool-result-save-task-files-refused-attached-file": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: trim to the refused-status wording. It fails because the second clause is the only explanation of the 403/404 case (a person-attached file or another workspace's file cannot be downloaded), and the sibling is an alternative arm. The ${VAR_0.status} slot must stay."
+  },
+  "tool-result-save-task-files-refused-status": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none. The body is already the minimal reason for a non-403/404 refusal, and the alternative arm cannot cover it. The status slot with the ??\"unknown\" fallback must stay."
+  },
+  "tool-result-save-task-files-size-mismatch": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: wipe-merge into the bytes parameter. It fails because the bytes parameter belongs to a DEFERRED tool whose schema is not proven to co-render with its results, and it does not state the mismatch failure anyway. Only this clause names the size_mismatch cause."
+  },
+  "tool-result-save-task-files-switched-off": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none. This is the whole result returned when the tengu_serene_frog gate is off; with an empty body the tool would return an empty result. It is unique and conditional."
+  },
+  "tool-result-save-task-files-too-large": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: wipe-merge into too-large-reason. It fails because that clause renders in the oe() per-file save report, not in the N() validation failure. This body carries the 500 MiB threshold (tripwire: frozen) and the 'Leave it out of the call' remedy. The ${VAR_0} slot opens the body."
+  },
+  "tool-result-save-task-files-too-large-reason": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: wipe-merge into the too-large validation reason. It fails because the two are on different result paths (N() early return vs the xe() per-file report) and never co-render. The 500 MiB threshold is frozen."
+  },
+  "tool-result-save-task-files-untrusted-content-note": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: wipe as covered by the list header. It fails because the list header renders in the get_task answer, which compaction can drop and which does not co-render with the save_task_files result. Only this note warns that the saved file contents are untrusted. It is a unique injection guard on a conditional result."
+  },
+  "tool-result-save-task-files-write-failed": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none. The write_failed/no_disk case returns only this clause, and nothing co-rendering states the cause."
+  },
+  "tool-result-save-task-files-wrong-name": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none. The sentence carries the exact save_as value to resend and names the save_as parameter (tripwire: frozen). All five slots must stay."
+  },
+  "tool-result-save-task-files-wrong-size": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none. It gives the exact byte count to resend and names the bytes parameter (frozen), and no co-rendering carrier supplies the value."
+  },
+  "tool-result-start-task-file-too-large-for-cloud": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none. Each return of b() is an alternative branch. This is the only statement of the elsewhere/too_large cause. Both slots must stay."
+  },
+  "tool-result-teammate-spawn-cli-deny-rule-unreplayable": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none. This is the only explanation of why the teammate spawn aborted (a deny rule that would not survive argv replay), and it is conditional on a rare error path."
+  },
+  "tool-result-temp-dir-create-failed-volume-full": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: trim the remedy sentence as covered by the bash quota remedy. It fails because that carrier belongs to a different module and does not co-render with this throw. The remedy names the CLAUDE_CODE_TMPDIR env var and a 'then' ordering (tripwire: frozen). Both slots must stay."
+  },
+  "tool-result-temp-dir-disk-quota-used-up": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none. It is the EDQUOT ternary arm, alternative to the 'volume … is full' arm, and interpolated into the parent error, so an empty body would leave the parent sentence with a blank cause. No co-rendering carrier says it."
+  },
+  "tool-result-tool-unavailable-artifact-read-own-or-org": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: drop the scope clause. It fails because it is the only statement of what the MCP read tool can read (the user's own or their org's artifacts) and of the fallback tool. It is spliced into the local-sessions reason as Gt, mid-sentence, so it must stay whole. All slots and both ternary arms must stay."
+  },
+  "tool-result-tool-unavailable-artifact-replaced-by-mcp-find": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: wipe-merge into the reminder 'Replaced in this session by the tools of the MCP server …'. It fails because co-render with this unknown-tool result is not proven, and the reminder lacks the 'find them with ${VAR_1}' instruction, which is unique to the deferred arm. Three slots must stay."
+  },
+  "tool-result-tool-unavailable-artifact-replaced-by-mcp-listed": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: wipe-merge into system-reminder-tool-replaced-by-mcp-server-reason. It fails because that is a nested-function reminder with no proven co-render with this unknown-tool error. The result is the redirect the model gets right after calling a missing tool. Two slots must stay."
+  },
+  "tool-result-tool-unavailable-artifact-tool-local-sessions": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none. It is the only reason given for the Artifact tool being unavailable locally, and it hosts the read-own-or-org suffix. Both slots must stay."
+  },
+  "tool-result-tool-unavailable-artifacts-mcp-disconnected": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: trim the remedy sentence. It fails because the /mcp command and the restart remedy are unique and actionable, the sentence contains an enumeration ('/mcp … or restarting', tripwire: frozen), and the sibling returns are alternatives."
+  },
+  "tool-result-tool-unavailable-artifacts-mcp-gone-builtins-back": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none. It is the only text telling the model that the MCP server was dropped and the built-in Artifact tools have returned. The suffix call slot flt(…) and all six slots must stay."
+  },
+  "tool-result-tool-unavailable-claude-ai-artifact-read-with-mcp": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: wipe-merge into the use-artifact-tool sibling. It fails because the sibling is an alternative return (one or the other). Only this body gives the MCP read tool name and the slug argument. All slots must stay."
+  },
+  "tool-result-worktree-create-sparse-checkout-failed": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none. It is the minimal error carrying git's stderr. The sibling is an alternative arm. All slots, including the \"git's error\" fallback, must stay."
+  },
+  "tool-result-worktree-create-sparse-checkout-unreadable": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none. It is the only text explaining that git left out unreadable files and that the worktree was removed. The sibling is the alternative ternary arm."
+  },
+  "tool-result-worktree-create-sparse-set-failed": {
+    "verdict": "pristine-keep",
+    "version": "2.1.310",
+    "why": "Strongest cut: none. It is the only error for the 'sparse-checkout set' failure, it carries git's stderr, and it is conditional. All slots must stay."
   }
 }
