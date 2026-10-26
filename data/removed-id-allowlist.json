@@ -4802,5 +4802,1269 @@
     "verdict": "archived",
     "version": "2.1.305",
     "why": "Absent from prompts-2.1.305.json; its text is gone from the 2.1.305 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.305/."
+  },
+  "system-reminder-task-stopped-by-user-with-note": {
+    "verdict": "archived",
+    "version": "2.1.308",
+    "why": "Renamed in 2.1.308; the successor id carries the same text. The override matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.308/."
+  },
+  "tool-description-agent-single-fact-lookup-search-directly": {
+    "verdict": "archived",
+    "version": "2.1.308",
+    "why": "Absent from prompts-2.1.308.json; the agent when-to-use paragraph that held it was removed, and the same sentence survives in the delegation-conclusion prompt. The override was an empty wipe. Archived to ~/.tweakcc/orphans-removed-for-2.1.308/."
+  },
+  "tool-description-agent-when-to-use-guidance": {
+    "verdict": "archived",
+    "version": "2.1.308",
+    "why": "Absent from prompts-2.1.308.json; its text is gone from the 2.1.308 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.308/."
+  },
+  "tool-result-project-read-file-too-large": {
+    "verdict": "archived",
+    "version": "2.1.308",
+    "why": "Absent from prompts-2.1.308.json; its text is gone from the 2.1.308 bundle. The override body matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.308/."
+  },
+  "tool-result-worktree-pr-ref-absent": {
+    "verdict": "archived",
+    "facing": "ui",
+    "hash": "961ca992d02e5db8070771e5e7328b08b513f0a7",
+    "version": "2.1.308",
+    "why": "Reached only from the CLI --worktree PR path (stderr then exit); EnterWorktree and agent worktrees never pass a PR number. Ruled ui 2026-10-25. Overrides archived to ~/.tweakcc/orphans-ruled-ui-2026-10-25/."
+  },
+  "tool-result-worktree-pr-fetch-no-from-line": {
+    "verdict": "archived",
+    "facing": "ui",
+    "hash": "7e7617eb330e6677a75fafe5b1162a0322a72e38",
+    "version": "2.1.308",
+    "why": "Reached only from the CLI --worktree PR path (stderr then exit); EnterWorktree and agent worktrees never pass a PR number. Ruled ui 2026-10-25. Overrides archived to ~/.tweakcc/orphans-ruled-ui-2026-10-25/."
+  },
+  "tool-result-worktree-pr-fetch-head-overwritten": {
+    "verdict": "archived",
+    "facing": "ui",
+    "hash": "d3efae54199bca92d3f89086315a17a5b9912351",
+    "version": "2.1.308",
+    "why": "Reached only from the CLI --worktree PR path (stderr then exit); EnterWorktree and agent worktrees never pass a PR number. Ruled ui 2026-10-25. Overrides archived to ~/.tweakcc/orphans-ruled-ui-2026-10-25/."
+  },
+  "tool-result-worktree-pr-ref-ambiguous": {
+    "verdict": "archived",
+    "facing": "ui",
+    "hash": "ca9d2e2eb05939423a0ee491d5d5acb12a809c30",
+    "version": "2.1.308",
+    "why": "Reached only from the CLI --worktree PR path (stderr then exit); EnterWorktree and agent worktrees never pass a PR number. Ruled ui 2026-10-25. Overrides archived to ~/.tweakcc/orphans-ruled-ui-2026-10-25/."
+  },
+  "tool-result-worktree-pr-other-ref-unchecked": {
+    "verdict": "archived",
+    "facing": "ui",
+    "hash": "5adaf6b1c45ebf544863ca8163f5a306cea61c79",
+    "version": "2.1.308",
+    "why": "Reached only from the CLI --worktree PR path (stderr then exit); EnterWorktree and agent worktrees never pass a PR number. Ruled ui 2026-10-25. Overrides archived to ~/.tweakcc/orphans-ruled-ui-2026-10-25/."
+  },
+  "tool-result-worktree-base-fetch-head-no-commit": {
+    "verdict": "archived",
+    "facing": "ui",
+    "hash": "a840a260addffdef67a1abb35eb3a0894ce90ab5",
+    "version": "2.1.308",
+    "why": "Reached only from the CLI --worktree PR path (stderr then exit); EnterWorktree and agent worktrees never pass a PR number. Ruled ui 2026-10-25. Overrides archived to ~/.tweakcc/orphans-ruled-ui-2026-10-25/."
+  },
+  "tool-result-worktree-base-pr-fetch-head-no-commit": {
+    "verdict": "archived",
+    "facing": "ui",
+    "hash": "5c04008b7dc8e67344a3c560945ce1fc041b27cf",
+    "version": "2.1.308",
+    "why": "Reached only from the CLI --worktree PR path (stderr then exit); EnterWorktree and agent worktrees never pass a PR number. Ruled ui 2026-10-25. Overrides archived to ~/.tweakcc/orphans-ruled-ui-2026-10-25/."
+  },
+  "data-cloud-session-bundle-notice-starts-empty": {
+    "verdict": "archived",
+    "facing": "ui",
+    "hash": "a0c0fb45acec834f4701c04a9aee44c6717128ba",
+    "version": "2.1.308",
+    "why": "Built only on the cloud-session launch path without an environment (--cloud, headless client, pool); no model-invoked caller receives it. Ruled ui 2026-10-25. Overrides archived to ~/.tweakcc/orphans-ruled-ui-2026-10-25/."
+  },
+  "tool-result-cloud-session-changes-stay-on-machine": {
+    "verdict": "archived",
+    "facing": "ui",
+    "hash": "2fee85640c0d67d03b1615b22c17b7c40a2c079e",
+    "version": "2.1.308",
+    "why": "Built only on the cloud-session launch path without an environment (--cloud, headless client, pool); no model-invoked caller receives it. Ruled ui 2026-10-25. Overrides archived to ~/.tweakcc/orphans-ruled-ui-2026-10-25/."
+  },
+  "tool-result-cloud-session-branch-not-on-github-default-branch": {
+    "verdict": "archived",
+    "facing": "ui",
+    "hash": "aec73b88493de5886c67db5292089d705c1632b3",
+    "version": "2.1.308",
+    "why": "Built only on the cloud-session launch path without an environment (--cloud, headless client, pool); no model-invoked caller receives it. Ruled ui 2026-10-25. Overrides archived to ~/.tweakcc/orphans-ruled-ui-2026-10-25/."
+  },
+  "tool-result-cloud-session-branch-ahead-of-remote": {
+    "verdict": "archived",
+    "facing": "ui",
+    "hash": "711ecec600802400df6cff95813eaefd8278c36a",
+    "version": "2.1.308",
+    "why": "Built only on the cloud-session launch path without an environment (--cloud, headless client, pool); no model-invoked caller receives it. Ruled ui 2026-10-25. Overrides archived to ~/.tweakcc/orphans-ruled-ui-2026-10-25/."
+  },
+  "tool-result-cloud-session-start-pushed-commit-beneath": {
+    "verdict": "archived",
+    "facing": "ui",
+    "hash": "48b9eb58548db10240e6778e4f06477f88c1b05a",
+    "version": "2.1.308",
+    "why": "Built only on the cloud-session launch path without an environment (--cloud, headless client, pool); no model-invoked caller receives it. Ruled ui 2026-10-25. Overrides archived to ~/.tweakcc/orphans-ruled-ui-2026-10-25/."
+  },
+  "tool-result-cloud-session-start-newest-commit-remote-has": {
+    "verdict": "archived",
+    "facing": "ui",
+    "hash": "6ea2d5929797fcb4bc625668924f93dd787d893e",
+    "version": "2.1.308",
+    "why": "Built only on the cloud-session launch path without an environment (--cloud, headless client, pool); no model-invoked caller receives it. Ruled ui 2026-10-25. Overrides archived to ~/.tweakcc/orphans-ruled-ui-2026-10-25/."
+  },
+  "tool-result-cloud-session-start-newest-pushed-commit-beneath": {
+    "verdict": "archived",
+    "facing": "ui",
+    "hash": "2add3f8fb3e29d5ce4a152790b5b10897b9e2c3b",
+    "version": "2.1.308",
+    "why": "Built only on the cloud-session launch path without an environment (--cloud, headless client, pool); no model-invoked caller receives it. Ruled ui 2026-10-25. Overrides archived to ~/.tweakcc/orphans-ruled-ui-2026-10-25/."
+  },
+  "tool-result-cloud-session-remote-unreadable-start-hint": {
+    "verdict": "archived",
+    "facing": "ui",
+    "hash": "d8f502214cd690e57a6430d5ef9b7d31e3f1b293",
+    "version": "2.1.308",
+    "why": "Built only on the cloud-session launch path without an environment (--cloud, headless client, pool); no model-invoked caller receives it. Ruled ui 2026-10-25. Overrides archived to ~/.tweakcc/orphans-ruled-ui-2026-10-25/."
+  },
+  "tool-result-bash-sandbox-windows-argv-too-long": {
+    "verdict": "archived",
+    "facing": "internal",
+    "hash": "3b27efd2e5636ab789367c8729beb7d8f34c9f2c",
+    "version": "2.1.308",
+    "why": "Every route replaces this error with the fixed command-too-long text before the model sees it. Ruled internal 2026-10-25. Overrides archived to ~/.tweakcc/orphans-ruled-ui-2026-10-25/."
+  },
+  "skill-artifact-pr-review": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "skill-artifact-pr-review-2": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "skill-artifact-pr-review-description": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "skill-artifact-pr-review-description-2": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "slash-command-pr-review-artifact-additional-guidance": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-description-bash-output-lost-edquot": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-description-bash-output-lost-enospc": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-description-bash-output-lost-temp-quota-consequence": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-description-bash-output-lost-tmpfs-full": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-description-bash-output-lost-tmpfs-inodes": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-parameter-artifact-pr-review": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-attribute-name-exceeds-scan-bound": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-body-carries-cdata-section": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-body-carries-click-forwarding-for-attribute": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-body-carries-content-inerting-container": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-body-carries-css-network-reaching-function": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-body-carries-fetch-capable-attribute": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-body-carries-http-equiv-attribute": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-body-carries-javascript-url": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-body-carries-on-attribute-pattern": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-body-carries-overlay-capable-presentation-attribute": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-body-carries-popover-family-or-invoker": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-body-carries-smil-attributename-targeting-event": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-body-carries-srcdoc-attribute": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-body-carries-unclosed-comment": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-composed-review-mermaid-lane-note": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-composed-review-publishing-not-enabled": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-composed-review-publishing-turned-off": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-data-decision-id-appears-on-more": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-decisions-choice-is-not-among-its": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-decisions-choice-is-not-null-or": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-decisions-island-carries-more-than-20": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-decisions-item-carries-unexpected-or-missing": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-decisions-item-id-is-not-valid": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-decisions-item-ids-are-not-unique": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-decisions-item-is-not-object": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-decisions-item-opts-is-not-array": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-decisions-option-is-not-valid-token": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-decisions-state-choice-differs-from-writers": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-edits-pr-review-refused": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-filled-stamp-requires-capabilities-mcp-manifest": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-live-edit-review-page-refused": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-live-input-carries-get-method-word": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-live-input-does-not-carry-pr": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-live-input-does-not-match-resolved": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-live-input-is-integer-other-than": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-live-input-is-method-key-holding": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-live-input-is-method-key-holding-2": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-live-input-missing-pr-owner": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-live-input-missing-pr-repository": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-live-input-pr-repository-mismatch": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-payload-names": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-body-network-element": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-body-title-element": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-bottom-line-first-publish-cap": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-composed-island-validation-failed": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-concern-body-first-publish-cap": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-concern-question-mark": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-decision-provenance-check-failed": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-decisions-acted-without-resolve": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-decisions-island-shape": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-decisions-item-state": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-decisions-omitted-writer-decision": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-decisions-state-choice-invalid": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-decisions-state-no-options": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-decisions-state-not-a-concern": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-decisions-state-requires-republish": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-decisions-state-unknown-id": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-delta-diagram-edge-unknown-node": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-delta-diagram-node-ids-unique": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-didnt-change-first-publish-cap": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-followups-first-publish-cap": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-head-moved": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-head-moved-2": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-identity-check-failed": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-identity-from-invocation": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-island-carries-disallowed-character": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-island-disallowed-character": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-island-exactly-one": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-island-id-on-other-element": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-island-malformed": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-island-not-canonical-json": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-island-not-json-object": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-island-published-page-readback": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-live-binding-invalid": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-live-binding-pinned-sha": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-live-input-ambiguous-owner-repo-key": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-live-input-value-not-pr-coordinate": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-live-slot-not-read-shaped-tool": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-live-slot-write-class-tool": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-manifest-invalid": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-mcp-capability-unknown-fields": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-mcp-local-server-rejected": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-mcp-manifest-exact-live-read-tool": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-mcp-manifest-exact-tool-set": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-mcp-server-entry-unknown-fields": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-mermaid-fence-count-mismatch": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-no-skill-invocation-in-session": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-no-visual-reason-blank": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-one-delta-diagram": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-overwrite-refused": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-page-predates-approve-control": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-payload-invalid": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-payload-too-large": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-pinned-script-exactly-one": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-published-page-no-option": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-published-page-no-question": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-republish-anchor-check-failed": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-republish-approve-binding-check-failed": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-republish-bad-target": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-republish-cli-version-drift": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-republish-compare-failed": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-republish-compare-threw": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-republish-force-refused": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-republish-island-changed": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-republish-markup-too-deep": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-republish-mermaid-unavailable": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-republish-no-approve-binding-island": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-republish-no-version": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-republish-option-set-changed": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-republish-provenance-egress-blocked": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-republish-provenance-http-failure": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-republish-provenance-policy-deny": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-republish-provenance-unreachable": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-republish-rewrites-option": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-republish-rewrites-question": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-republish-unrecognized-entity": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-republish-without-target": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-script-injection": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-single-file-no-supporting-files": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-stamp-binding-invalid": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-stamp-input-missing-pr-coordinates": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-stamp-input-value-not-pr-identifier": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-stamp-requires-composed-lane": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-stamp-requires-live-binding": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-stamp-tool-must-differ-from-live": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-stamp-tool-non-approve-action": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-stamped-live-input-missing-pr-coordinates": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-stamped-live-shapath-must-be-head-sha": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-target-unresolvable": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-targeted-requires-republish": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-template-block-exactly-once": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-template-block-not-derived": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-template-mismatch": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-template-part-underivable": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-unrecognized-script-block": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-unverifiable-decided-item-option": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-unverifiable-decided-item-question": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-prr-stamp-island-shape": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-publish-review-check-403-retry-once": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-publish-review-check-proxy-read-denied": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-publish-review-check-read-denied": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-publish-review-check-transient": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-publish-review-check-transient-read-denied": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-publish-stranded-pr-review": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-published-page-anchors-different-pr-than": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-published-page-approve-binding-invalid-json": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-published-page-approve-binding-island-carries": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-published-page-approve-binding-island-failed": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-published-page-approve-binding-island-is": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-published-page-approve-binding-not-object": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-published-page-carries-no-call-item": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-published-page-carries-no-decisions-island": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-published-page-carries-no-staleness-anchor": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-published-page-decisions-island-carries-disallowed": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-published-page-decisions-island-failed-validation": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-published-page-decisions-island-is-malformed": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-published-page-decisions-island-is-not": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-published-page-decisions-island-not-object": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-published-page-staleness-anchor-carries-disallowed": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-published-page-staleness-anchor-failed-validation": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-published-page-staleness-anchor-is-malformed": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-published-page-staleness-anchor-is-not": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-published-page-staleness-anchor-not-object": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-reject-breaker-publish-refusal": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-republish-changes-page-approve-binding-republish": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-republish-provenance-proxy-read-denied": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-republish-published-at-differs-from-published": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-review-page-capability-must-be-empty": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-review-page-mcp-capability-is-malformed": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-review-page-mcp-manifest-must-declare": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-review-page-mcp-manifest-must-name": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-review-page-unknown-capability-families": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-review-page-with-no-live-binding": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-reviewed-head-sha-differs-from-published": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-stamp-input-carries-approve-verb-under": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-stamp-input-carries-create-method-word": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-stamp-input-carries-pr-owner-or": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-stamp-input-does-not-carry-explicit": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-stamp-input-does-not-match-resolved": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-stamp-input-is-empty": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-stamp-input-is-integer-other-than": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-stamp-input-is-method-key-holding": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-stamp-input-names-both-owner-and": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-stamp-input-pr-repository-mismatch": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-stamp-tool-is-not-create-and": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-stray-or-unclosed-script-fragment-remains": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-stylesheet-other-than-pinned-template-stylesheet": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-supporting-file-carries-review-machinery": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-bash-reserved-word-after-assignment-suffix": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-bash-sandbox-override-reserved-word-unanalyzable": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-bash-sed-edit-file-changed-since-preview": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-bash-sed-edit-outside-allowed-directories": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-bash-worktree-guard-operand-unverifiable-locale": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-hook-blocking-git-bash-not-found-install-git": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-hook-sed-not-previewable": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-powershell-windows-sandbox-exclusion-no-prompt": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-powershell-windows-sandbox-policy-refusal": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Replaced by the strict-sandbox reason family in 2.1.310. Archived."
+  },
+  "tool-result-read-device-file": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-remote-tool-background-task-check-via-task-tool": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "removed-id": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Absent from the 2.1.310 bundle (PR-review artifact subsystem and related checks removed). Archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "skill-artifact-pr-review-html-template": {
+    "verdict": "archived",
+    "facing": "ui",
+    "hash": "cc42c9e223c60c26b780ebadefb8ce069c39940c",
+    "version": "2.1.310",
+    "why": "The PR-review template is gone; its surviving markup lives in the workshop template, which is ruled ui (filled mechanically by the publish path), and in the catalogued workshop-page and decision-script ids."
+  },
+  "data-task-notification-artifact-auto-replies-stopped-summary": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Renamed upstream; content now carried by system-reminder-background-tasks-stopped-by-user. Override archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "system-prompt-extract-memories-first-look-exchanges": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Renamed upstream; content now carried by data-extract-memories-first-look-exchanges-message. Override archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "system-reminder-orphaned-permission-lost-calls": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Renamed upstream; content now carried by system-reminder-tool-calls-lost-to-session-restart. Override archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-description-croncreate-durability": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Renamed upstream; content now carried by tool-description-croncreate. Override archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-description-croncreate-durability-durable": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Renamed upstream; content now carried by tool-description-croncreate. Override archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-description-croncreate-durability-session-only": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Renamed upstream; content now carried by tool-description-croncreate. Override archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-file-path-is-root": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Renamed upstream; content now carried by tool-result-artifact-publish-file-path-not-served. Override archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-pr-review-island-invalid-json": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Renamed upstream; content now carried by data-config-mjs. Override archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-artifact-reject-breaker-retry-guidance": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Renamed upstream; content now carried by tool-result-artifact-reject-breaker-preamble. Override archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-hook-preview-failed-sed": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Renamed upstream; content now carried by tool-result-hook-preview-failed-file. Override archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-plugin-value-holds-proxy": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Renamed upstream; content now carried by tool-result-plugin-value-holds-proxy-or-vm-context. Override archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-remote-tool-background-task-on-host-with-task-id": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Renamed upstream; content now carried by tool-result-remote-tool-background-task-output-file-not-status. Override archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-served-tool-repo-rules-unreadable": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Renamed upstream; content now carried by tool-result-mcp-serve-deny-rule-unreadable. Override archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "tool-result-worktree-create-failed-with-cleanup-note": {
+    "verdict": "archived",
+    "version": "2.1.310",
+    "why": "Renamed upstream; content now carried by tool-result-worktree-create-failed. Override archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
   }
 }
