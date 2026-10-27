@@ -4501,19 +4501,6 @@
     "name": "Tool Description: Bash sandbox denied host lead (PowerShell only)",
     "desc": "Condition lead for the allowed_domains re-run when only PowerShell is sandboxed: the proxy denied a host the command needs."
   },
-  "d52062dddb7549ee": {
-    "promptId": "system-prompt-windows-sandbox-localhost-what-still-works",
-    "label": "SYSTEM_PROMPT_WINDOWS_SANDBOX_LOCALHOST_WHAT_STILL_WORKS_VAR_2",
-    "promptIds": [
-      "system-prompt-windows-sandbox-allow-read-tool-folder-remedy"
-    ],
-    "verdict": "catalogue",
-    "text": "their administrator can run the sandbox set-up again",
-    "reason": "isSandboxSetUpTheAdministrators() arm of `bn` in Kvn @12677013. It is read at @12679732 (`after which ${bn} and Claude Code has to be restarted`, localhost-what-still-works) and @12682581 (`${bn}, which makes the profile readable…`, allow-read remedy). Its sibling arm is catalogued as system-prompt-windows-sandbox-install-terminal-remedy; this arm is the remedy the model relays, so it needs an id too.",
-    "id": "system-prompt-windows-sandbox-admin-setup-again-remedy",
-    "name": "System Prompt: Windows sandbox — administrator can run the set-up again",
-    "desc": "Remedy clause, used when an administrator set up the Windows sandbox, saying the administrator can run the sandbox set-up again."
-  },
   "3717492a995d246e": {
     "promptId": "system-prompt-windows-sandbox-localhost-what-still-works",
     "label": "SYSTEM_PROMPT_WINDOWS_SANDBOX_LOCALHOST_WHAT_STILL_WORKS_VAR_2",

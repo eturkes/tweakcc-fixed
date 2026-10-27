@@ -6066,5 +6066,72 @@
     "verdict": "archived",
     "version": "2.1.310",
     "why": "Renamed upstream; content now carried by tool-result-worktree-create-failed. Override archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "data-sandbox-install-check-status": {
+    "verdict": "archived",
+    "version": "2.1.311",
+    "why": "Reworded upstream; content now carried by data-sandbox-install-check-status-hint. The override matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.311/."
+  },
+  "slash-command-ide-plugin-installed-restart-required": {
+    "verdict": "archived",
+    "version": "2.1.311",
+    "why": "Absent from prompts-2.1.311.json and its text is gone from the bundle; The override matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.311/."
+  },
+  "system-prompt-windows-sandbox-admin-setup-again-remedy": {
+    "verdict": "archived",
+    "version": "2.1.311",
+    "why": "Absent from prompts-2.1.311.json and its text is gone from the bundle; The override matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.311/."
+  },
+  "system-reminder-device-mcp-serving-consent-needed-brief": {
+    "verdict": "archived",
+    "version": "2.1.311",
+    "why": "Absent from prompts-2.1.311.json and its text is gone from the bundle; The override matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.311/."
+  },
+  "system-reminder-device-mcp-serving-consent-needed-detailed": {
+    "verdict": "archived",
+    "version": "2.1.311",
+    "why": "Absent from prompts-2.1.311.json and its text is gone from the bundle; The override matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.311/."
+  },
+  "system-reminder-device-mcp-serving-not-now-brief": {
+    "verdict": "archived",
+    "version": "2.1.311",
+    "why": "Absent from prompts-2.1.311.json and its text is gone from the bundle; The override matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.311/."
+  },
+  "system-reminder-device-mcp-serving-not-now-detailed": {
+    "verdict": "archived",
+    "version": "2.1.311",
+    "why": "Absent from prompts-2.1.311.json and its text is gone from the bundle; The override matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.311/."
+  },
+  "system-reminder-left-running-programs-not-running": {
+    "verdict": "archived",
+    "version": "2.1.311",
+    "why": "Absent from prompts-2.1.311.json and its text is gone from the bundle; The override matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.311/."
+  },
+  "tool-description-bash-working-directory": {
+    "verdict": "archived",
+    "version": "2.1.311",
+    "why": "Reworded upstream; content now carried by tool-description-bash-working-directory-3. The override matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.311/."
+  },
+  "tool-result-bash-sandbox-setup-again-ask-admin": {
+    "verdict": "archived",
+    "version": "2.1.311",
+    "facing": "ui",
+    "hash": "e12e6b1901182f1146c59e44141c47c84c9edae6",
+    "why": "Reworded upstream; the model-facing remedy is now tool-result-bash-sandbox-ask-admin-install-network-filters. The only uncatalogued copy of the shared docs-link suffix is the /sandbox status panel, which is terminal-only. Override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.311/."
+  },
+  "tool-result-sandbox-strict-admin-run-setup": {
+    "verdict": "archived",
+    "version": "2.1.311",
+    "why": "Absent from prompts-2.1.311.json and its text is gone from the bundle; The override matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.311/."
+  },
+  "tool-result-save-task-files-no-disk": {
+    "verdict": "archived",
+    "version": "2.1.311",
+    "why": "Reworded upstream; content now carried by tool-result-tool-results-files-disabled. The override matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.311/."
+  },
+  "tool-result-served-repo-hook-settings-unreadable": {
+    "verdict": "archived",
+    "version": "2.1.311",
+    "why": "Absent from prompts-2.1.311.json and its text is gone from the bundle; The override matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.311/."
   }
 }
