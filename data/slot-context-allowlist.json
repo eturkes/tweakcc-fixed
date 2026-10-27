@@ -110,8 +110,8 @@
   "tool-description-webfetch-private-url-warning": {
     "bodyHash": "aaec1af6eb21",
     "pristineHash": "aadf5e927382",
-    "valueHash": "7dc95007d085",
-    "reviewed": "2026-10-14 (CC 2.1.299)",
+    "valueHash": "aa818db050c8",
+    "reviewed": "2026-10-25 (CC 2.1.310)",
     "tokens": {
       "WEBFETCH_OBSERVABLE_ACTION_NOTE": "Value is \"\" or a whole paragraph about which URLs WebFetch may fetch, ending in a blank line. It leads the description exactly as in pristine; the override only cut the IMPORTANT paragraph that followed it, so the block fn output now follows the note directly."
     }

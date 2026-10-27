@@ -739,6 +739,26 @@ describe('checkSiblingArms: bounded assembled strings', () => {
     expect(r.findings[0].kind).toBe('returns');
   });
 
+  it('drops provisional anchors from call groups but keeps flow groups', () => {
+    const rel = (kind, anchor) => ({ kind, anchor, anchorAt: 0 });
+    const r = {
+      findings: [
+        { key: 'a', siblingRelations: [rel('calls', '(candidate)')] },
+        { key: 'b', siblingRelations: [rel('join', '(candidate)')] },
+        {
+          key: 'c',
+          siblingRelations: [
+            rel('calls', '(candidate)'),
+            rel('calls', 'tool-result-real'),
+          ],
+        },
+      ],
+    };
+    siblingGate.dropProvisionalCallAnchors(r, '(candidate)');
+    expect(r.findings.map(f => f.key)).toEqual(['b', 'c']);
+    expect(r.findings[1].anchors).toEqual(['tool-result-real']);
+  });
+
   it('appends sibling candidates once per hash with all source sites and relations', () => {
     const r = scan(
       'function f(){return ["Flow anchor","Status:","Status:"].join("\\n")}'

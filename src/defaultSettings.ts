@@ -710,6 +710,7 @@ export const DEFAULT_SETTINGS: Settings = {
   inputBox: {
     removeBorder: false,
     chevronIdleThemeColor: null,
+    cursorColor: null,
   },
   misc: {
     showTweakccVersion: true,
@@ -763,6 +764,12 @@ export const DEFAULT_SETTINGS: Settings = {
     autoModeClassifierModel: 'default',
     suppressDeferredTools: false,
     claudemdContextOncePerConversation: false,
+    keybindingCustomization: false,
+    tmuxGraphicsPassthrough: false,
+    disableCtrlZSuspend: false,
+    skipSkillShellValidation: false,
+    shimmer: { enabled: true, stepMs: null, width: null },
+    webFetchUserAgent: null,
   },
   toolsets: [],
   defaultToolset: null,

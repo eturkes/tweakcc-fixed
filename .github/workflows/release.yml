@@ -47,7 +47,18 @@ jobs:
         run: pnpm run build
 
       - name: Publish to npm
-        run: pnpm publish --access public --no-git-checks
+        # A rerun after a publish that went through (the registry can take an
+        # hour to show it) gets 409; that version is already released.
+        run: |
+          set +e
+          out=$(pnpm publish --access public --no-git-checks 2>&1)
+          code=$?
+          echo "$out"
+          if [ $code -ne 0 ] && echo "$out" | grep -qiE 'previously (staged|published) version|cannot publish over'; then
+            echo "::notice::$(node -p 'require("./package.json").version') is already on npm; nothing to publish"
+            exit 0
+          fi
+          exit $code
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
