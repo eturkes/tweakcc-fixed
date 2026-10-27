@@ -665,6 +665,78 @@ describe('writeFablePlan', () => {
     expect(writeFablePlan(out, config())).toBe(out);
   });
 
+  it('applies against the CC 2.1.311 setting-aware resolver and picker', () => {
+    // 2.1.311: a caller may hand the resolver the selected alias as `setting`
+    // (the getter is only the fallback), the picker's custom-option read is a
+    // middle declarator of its first `let`, and the clear-context gate is
+    // parenthesised to AND in a remote-session check.
+    const resolver251 =
+      'function hp(e){let{permissionMode:t,mainLoopModel:r,exceeds200kTokens:o=!1}=e;' +
+      'if(t!=="plan")return r;let u=lf(),d=qde(u);if(d===null)return r;return r}';
+    const resolver311 =
+      'function hp(e){let{model:n,clampWarning:r}=YQt(e);return n}' +
+      'function qde(e){if(e==="opusplan"||e==="opusplan[1m]")return"opus";return null}' +
+      'function YQt(e){let{permissionMode:t,mainLoopModel:r,exceeds200kTokens:o=!1}=e;' +
+      'if(t!=="plan")return{model:r,clampWarning:null};let u=e.setting===void 0?lf():e.setting,d=qde(u);' +
+      'if(d===null||d==="opus"&&o)return{model:r,clampWarning:null};return{model:"claude-opus-5",clampWarning:null}}';
+    const picker311 =
+      'function ln(e,o){let r=Wk(e,o),t=r??tn(e),h=r!==null&&Pl(),s=a.ANTHROPIC_CUSTOM_MODEL_OPTION,' +
+      'y=s?t.findIndex((G)=>G.value===s):-1;return t}';
+    const src = cli251
+      .replace(resolver251, resolver311)
+      .replace(
+        /function ln\(e,o\)\{let t=tn\(e\),s=a\.ANTHROPIC_CUSTOM_MODEL_OPTION;return t\}/,
+        picker311
+      )
+      .replace(
+        'let Fe=W((Qt)=>Qt.settings.showClearContextOnPlanAccept)??!1,',
+        'let Fe=(W((Qt)=>Qt.settings.showClearContextOnPlanAccept)??!1)&&!It,'
+      );
+    expect(src).toContain(resolver311);
+    expect(src).toContain(picker311);
+    const out = writeFablePlan(src, config());
+    expect(out).not.toBeNull();
+    // Keyed on the resolved alias, so a caller-supplied setting is honoured.
+    expect(out).toContain(
+      'globalThis.__tweakccFablePlanModelFor=(m)=>m==="plan"&&lf()==="fableplan"?Ot("fable"):void 0;' +
+        'function YQt(e){'
+    );
+    expect(out).toContain(
+      'let u=e.setting===void 0?lf():e.setting,d=qde(u);' +
+        'if(u==="fableplan")return{model:Ot("fable"),clampWarning:null};' +
+        'if(d===null||d==="opus"&&o)'
+    );
+    expect(out).toContain(
+      'y=s?t.findIndex((G)=>G.value===s):-1;if(!t.some((z)=>z.value==="fableplan"))t.push('
+    );
+    expect(out).toContain(
+      '(W((Qt)=>Qt.settings.showClearContextOnPlanAccept)??!0)&&!It,'
+    );
+    expect(writeFablePlan(out!, config())).toBe(out);
+
+    const resolve = vm.runInNewContext(
+      `var SEL="opus";function lf(){return SEL}function Ot(a){return "model:"+a}` +
+        `${out!.slice(out!.indexOf('function hp('), out!.indexOf('function xs('))}` +
+        `;(sel,args)=>{SEL=sel;return YQt(args).model}`
+    ) as (
+      sel: string,
+      args: { permissionMode: string; mainLoopModel: string; setting?: string }
+    ) => string;
+    const plan = { permissionMode: 'plan', mainLoopModel: 'claude-opus-5' };
+    expect(resolve('fableplan', plan)).toBe('model:fable');
+    expect(resolve('fableplan', { ...plan, permissionMode: 'default' })).toBe(
+      'claude-opus-5'
+    );
+    // A caller's explicit setting wins over the getter, both ways.
+    expect(resolve('opus', { ...plan, setting: 'fableplan' })).toBe(
+      'model:fable'
+    );
+    expect(resolve('fableplan', { ...plan, setting: 'opus' })).toBe(
+      'claude-opus-5'
+    );
+    expect(resolve('sonnet', plan)).toBe('claude-opus-5');
+  });
+
   it('is idempotent on the CC 2.1.251 shape', () => {
     const once = writeFablePlan(cli251, config())!;
     const twice = writeFablePlan(once, config())!;

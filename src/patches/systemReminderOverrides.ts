@@ -2635,6 +2635,12 @@ No human input has been received since the last genuine user message in this con
   },
 };
 
+// The 2.1.311 hoisted framing var, `F=`\n\nThis is how…turn.``, as regex
+// source. Group 1 captures the var name; the em-dash is the literal `\u2014`
+// escape in the template source.
+const USER_NEW_MSG_FRAMING_VAR_SRC =
+  '([$\\w]+)=`\\n\\nThis is how Claude Code surfaces messages the user sends mid-turn \\\\u2014 within the running turn, often alongside the next tool result, rather than as a separate conversation turn\\. Address the message above as you continue this turn\\.`';
+
 const USER_NEW_MSG_INJECTION: ReminderInjection = {
   id: 'user-sent-new-message',
   previousDefaultBodies: [
@@ -2674,6 +2680,66 @@ This is how Claude Code surfaces messages the user sends mid-turn — within the
     // 2.1.286 hoisted the wrapper into its own function, which the human case
     // and the plugin asUser path both call: `function F(e){return`${INTRO}${e}
     // \n\nThis is how…`}`. Patch the function so both callers stay consistent.
+    // 2.1.311 hoisted the framing into a var and added an unwrapper beside the
+    // wrapper; the transcript merge calls it on human-origin meta rows to
+    // recover the typed words:
+    //   F=`\n\nThis is how…`;function W(e){return`${I}${e}${F}`}
+    //   function U(e){return e.length>=I.length+F.length&&e.startsWith(I)&&
+    //     e.endsWith(F)?e.slice(I.length,e.length-F.length):void 0}
+    // Both are rewritten so U still inverts W: W emits the override body; U
+    // derives the message length from W("") and the placeholder count, slices
+    // after the body's leading text and accepts only when re-wrapping that
+    // slice reproduces the input. That holds for {{message}} anywhere, repeated,
+    // or alone (suppression: U becomes the identity). No placeholder leaves
+    // nothing to recover, so U returns undefined, as pristine does on a miss.
+    const hoistedShape = new RegExp(
+      '(' +
+        USER_NEW_MSG_FRAMING_VAR_SRC +
+        ';)function ([$\\w]+)\\(([$\\w]+)\\)\\{return`\\$\\{([$\\w]+)\\}\\$\\{\\4\\}\\$\\{\\2\\}`\\}' +
+        'function ([$\\w]+)\\(([$\\w]+)\\)\\{return \\7\\.length>=\\5\\.length\\+\\2\\.length&&\\7\\.startsWith\\(\\5\\)&&\\7\\.endsWith\\(\\2\\)\\?\\7\\.slice\\(\\5\\.length,\\7\\.length-\\2\\.length\\):void 0\\}'
+    );
+    if (hoistedShape.test(content)) {
+      return findAndReplace(
+        content,
+        hoistedShape,
+        m => {
+          const [
+            ,
+            framingDecl,
+            ,
+            wrapName,
+            wrapParam,
+            ,
+            unwrapName,
+            unwrapParam,
+          ] = m;
+          const tpl = isSuppressed ? '${H}' : body;
+          const parts = tpl.split('${H}');
+          const count = parts.length - 1;
+          const wrapBody = parts.join(`\${${wrapParam}}`);
+          const wrap = `function ${wrapName}(${wrapParam}){return\`${wrapBody}\`}`;
+          const x = unwrapParam;
+          const unwrap =
+            count === 0
+              ? `function ${unwrapName}(${x}){return void 0}`
+              : `function ${unwrapName}(${x}){let __twUsrMsgP=\`${parts[0]}\`.length,` +
+                `__twUsrMsgL=(${x}.length-${wrapName}("").length)/${count};` +
+                `return __twUsrMsgL>=0&&Number.isInteger(__twUsrMsgL)&&` +
+                `${wrapName}(${x}.slice(__twUsrMsgP,__twUsrMsgP+__twUsrMsgL))===${x}` +
+                `?${x}.slice(__twUsrMsgP,__twUsrMsgP+__twUsrMsgL):void 0}`;
+          return `${framingDecl}${wrap}${unwrap}`;
+        },
+        'user-sent-new-message'
+      );
+    }
+    if (
+      new RegExp(
+        USER_NEW_MSG_FRAMING_VAR_SRC +
+          ';function [$\\w]+\\([$\\w]+\\)\\{return`[\\s\\S]{0,20000}?`\\}function [$\\w]+\\([$\\w]+\\)\\{(?:let __twUsrMsgP=|return void 0\\})'
+      ).test(content)
+    ) {
+      return content;
+    }
     const fnShape =
       /(function [$\w]+\(([$\w]+)\)\{)return`\$\{[$\w]+\}\$\{\2\}\n\nThis is how Claude Code surfaces messages the user sends mid-turn \\u2014 within the running turn, often alongside the next tool result, rather than as a separate conversation turn\. Address the message above as you continue this turn\.`\}/;
     if (fnShape.test(content)) {

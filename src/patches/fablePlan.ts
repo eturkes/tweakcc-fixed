@@ -60,7 +60,10 @@
 // assignments, and the `function` declarations sit at module-outer scope.
 // Verified against 2.1.228 by brace balance and by the vanilla bundle's own
 // call sites — the alias getter is called from 20.7 MB away, the alias-to-model
-// function from 22 MB. Re-check this before moving a splice to a new site.
+// function from 22 MB. Re-checked on 2.1.311's code-split bundle, where the
+// resolver, the alias getter and the alias-to-model function are top-level
+// `function` declarations of one chunk (`boundInModule` enforces it). Re-check
+// this before moving a splice to a new site.
 
 import { FablePlanConfig } from '../types';
 import { debug } from '../utils';
@@ -162,24 +165,34 @@ const patchPlanResolver = (
   config: FablePlanConfig,
   aliasToModel: string
 ): string | null => {
-  // Method -1 — CC >= 2.1.268: the resolver returns `{model,clampWarning}` and
-  // a thin wrapper logs the warning, so every early return is an object.
+  // Method -2 — CC >= 2.1.311: a caller may hand the resolver the selected
+  // alias as `setting`, and the getter is only the fallback:
+  //   let h=e.setting===void 0?b_():e.setting,y=Kse(h);
+  // The answer keys on that resolved alias, after the whole declaration.
+  const patternSetting =
+    /(function ([$\w]+)\(([$\w]+)\)\{let\{permissionMode:([$\w]+),mainLoopModel:([$\w]+),exceeds200kTokens:([$\w]+)=!1\}=\3;)(if\(\4!=="plan"\)return\{model:\5,clampWarning:null\};)(let ([$\w]+)=\3\.setting===void 0\?([$\w]+)\(\):\3\.setting(?:,[$\w]+=[$\w]+\(\9\))*;)/;
+  const matchSetting = file.match(patternSetting);
+
+  // Method -1 — CC 2.1.268 - 2.1.310: the resolver returns
+  // `{model,clampWarning}` and a thin wrapper logs the warning, so every early
+  // return is an object.
   const patternObj =
     /(function ([$\w]+)\(([$\w]+)\)\{let\{permissionMode:([$\w]+),mainLoopModel:([$\w]+),exceeds200kTokens:([$\w]+)=!1\}=\3;)(if\(\4!=="plan"\)return\{model:\5,clampWarning:null\};)(let [$\w]+=([$\w]+)\(\),)/;
-  const matchObj = file.match(patternObj);
+  const matchObj = matchSetting ? null : file.match(patternObj);
 
   // Method 0 — CC >= 2.1.251: the inlined opusplan/haiku branches became a
   // pairing table, and the selected-alias getter moved past an early
   // `if(mode!=="plan")return main`.
   const pattern0 =
     /(function ([$\w]+)\(([$\w]+)\)\{let\{permissionMode:([$\w]+),mainLoopModel:([$\w]+),exceeds200kTokens:([$\w]+)=!1\}=\3;)(if\(\4!=="plan"\)return \5;)(let [$\w]+=([$\w]+)\(\),)/;
-  const match0 = matchObj ? null : file.match(pattern0);
+  const match0 = matchSetting || matchObj ? null : file.match(pattern0);
 
   const pattern1 =
     /(function ([$\w]+)\(([$\w]+)\)\{let\{permissionMode:([$\w]+),mainLoopModel:([$\w]+),exceeds200kTokens:([$\w]+)=!1\}=\3,([$\w]+)=([$\w]+)\(\);)/;
-  const match1 = matchObj || match0 ? null : file.match(pattern1);
+  const match1 =
+    matchSetting || matchObj || match0 ? null : file.match(pattern1);
 
-  const match = matchObj ?? match0 ?? match1;
+  const match = matchSetting ?? matchObj ?? match0 ?? match1;
   if (!match || match.index === undefined) {
     console.error(
       'patch: fablePlan: failed to find the plan-mode model resolver (uM shape)'
@@ -188,7 +201,7 @@ const patchPlanResolver = (
   }
   const mode = match[4];
   const tableShape = matchObj ?? match0;
-  const getter = tableShape ? match[9] : match[8];
+  const getter = matchSetting ? match[10] : tableShape ? match[9] : match[8];
   // The getter is called by this very function, so it is in scope here. The
   // alias-to-model function was found by shape anywhere in the bundle, so on a
   // code-split bundle it must be confirmed callable in THIS module.
@@ -205,13 +218,18 @@ const patchPlanResolver = (
   const modelFor =
     `${MODEL_FOR}=(m)=>m==="plan"&&${getter}()==="${ALIAS}"?` +
     `${planModel}:void 0;`;
-  const replacement = tableShape
-    ? `${modelFor}${match[1]}${match[7]}` +
-      `if(${getter}()==="${ALIAS}")return${
-        matchObj ? `{model:${planModel},clampWarning:null}` : ` ${planModel}`
-      };${match[8]}`
-    : `${modelFor}${match[1]}` +
-      `if(${mode}==="plan"&&${match[7]}==="${ALIAS}")return ${planModel};`;
+  // The setting shape's alias may come from the caller, so its fableplan check
+  // reads the resolved `setting` rather than calling the getter again.
+  const replacement = matchSetting
+    ? `${modelFor}${match[1]}${match[7]}${match[8]}` +
+      `if(${match[9]}==="${ALIAS}")return{model:${planModel},clampWarning:null};`
+    : tableShape
+      ? `${modelFor}${match[1]}${match[7]}` +
+        `if(${getter}()==="${ALIAS}")return${
+          matchObj ? `{model:${planModel},clampWarning:null}` : ` ${planModel}`
+        };${match[8]}`
+      : `${modelFor}${match[1]}` +
+        `if(${mode}==="plan"&&${match[7]}==="${ALIAS}")return ${planModel};`;
   const newFile =
     file.slice(0, match.index) +
     replacement +
@@ -328,7 +346,15 @@ const patchModelPicker = (
   //     if(d){…}let p=r===null||d,_=a.ANTHROPIC_CUSTOM_MODEL_OPTION;
   const pattern268 =
     /(function [$\w]+\(([$\w]+),([$\w]+)\)\{let ([$\w]+)=[$\w]+\(\2,\3\),([$\w]+)=\4\?\?[$\w]+\(\2\),[^;]*;)(?=(?:(?!function )[^])*?[$\w]+\.ANTHROPIC_CUSTOM_MODEL_OPTION;)/;
-  const match257 = file.match(pattern268) ?? file.match(pattern257);
+  // CC 2.1.311 shape: the custom-option read moved back into the first `let`,
+  // now followed by more declarators, so the 2.1.268 lookahead past that
+  // statement no longer sees it:
+  //   function Z_(e,n){let r=G_(e,n),s=r??cc(e),h=r!==null&&bir(),
+  //     b=i.ANTHROPIC_CUSTOM_MODEL_OPTION,y=b?s.findIndex(…):-1,w=…;
+  const pattern311 =
+    /(function [$\w]+\(([$\w]+),([$\w]+)\)\{let ([$\w]+)=[$\w]+\(\2,\3\),([$\w]+)=\4\?\?[$\w]+\(\2\),[^;]*?[$\w]+\.ANTHROPIC_CUSTOM_MODEL_OPTION,[^;]*;)/;
+  const match257 =
+    file.match(pattern311) ?? file.match(pattern268) ?? file.match(pattern257);
   const match = match257 ?? file.match(pattern);
   if (!match || match.index === undefined) {
     console.error('patch: fablePlan: failed to find the model picker options');
@@ -723,8 +749,10 @@ const patchPickerEffortRow = (
  * transcript to a different one. Independent of the pairing.
  */
 const patchClearContextOption = (file: string): string | null => {
+  // CC >= 2.1.310 parenthesises it to AND in a remote-session check:
+  //   Pt=(V((Br)=>Br.settings.showClearContextOnPlanAccept)??!1)&&!It
   const pattern =
-    /(=[$\w]+\(\([$\w]+\)=>[$\w]+\.settings\.showClearContextOnPlanAccept\)\?\?)!1/;
+    /(=\(?[$\w]+\(\([$\w]+\)=>[$\w]+\.settings\.showClearContextOnPlanAccept\)\?\?)!1/;
   const match = file.match(pattern);
   if (!match || match.index === undefined) {
     debug(

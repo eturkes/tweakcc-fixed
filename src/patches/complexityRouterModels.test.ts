@@ -169,6 +169,36 @@ describe('effort router model aliases', () => {
     expect(result).toContain('case"opusrouter":return"claude-opus-5-5";');
   });
 
+  it('reaches the alias resolver from a picker in another chunk', () => {
+    // CC 2.1.311 code-splits the picker away from the resolver; the picker
+    // must not name the resolver's minified identifier.
+    const result = writeComplexityRouterModels(fixture)!;
+    const at = result.indexOf('function picker(');
+    const pickerChunk = result.slice(at, result.indexOf('var adjust=', at));
+    expect(pickerChunk).not.toMatch(/(?<![$\w.])resolve\(/);
+    const resolverChunk = result
+      .slice(result.indexOf('globalThis.__tweakccRouterAliasModel='))
+      .split('function defaults(')[0];
+    const resolverScope = vm.createContext({});
+    vm.runInContext(
+      'function valid(x){return x==="opus"}' + resolverChunk,
+      resolverScope
+    );
+    const pickerScope = vm.createContext({
+      available: [{ value: 'opus' }],
+      __tweakccRouterAliasModel: resolverScope.__tweakccRouterAliasModel,
+    });
+    vm.runInContext(
+      'function rows(){return available}' + pickerChunk,
+      pickerScope
+    );
+    expect(vm.runInContext('typeof resolve', pickerScope)).toBe('undefined');
+    expect(vm.runInContext('picker().map(x=>x.value)', pickerScope)).toEqual([
+      'opus',
+      'opusrouter',
+    ]);
+  });
+
   it('is idempotent and leaves unsupported older builds alone', () => {
     const { result } = harness();
     expect([...result].every(char => char.charCodeAt(0) <= 127)).toBe(true);
