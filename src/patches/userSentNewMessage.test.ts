@@ -88,3 +88,89 @@ describe('user-sent-new-message reminder injection', () => {
     expect(out).not.toContain('The user sent a new message');
   });
 });
+
+// 2.1.311 shape: the trailing framing is a hoisted var declared right before the
+// wrapper, and an unwrapper beside it recovers the typed message from a wrapped
+// one (the transcript merge calls it on human-origin meta rows).
+const FRAMING_2311 =
+  '\n\nThis is how Claude Code surfaces messages the user sends mid-turn \\u2014 within ' +
+  'the running turn, often alongside the next tool result, rather than as a ' +
+  'separate conversation turn. Address the message above as you continue this turn.';
+const cli2311 =
+  'var DPe=`The user sent a new message while you were working:\n`;' +
+  'var u5n=`Messages arrived:\n`,xZ=`[MESSAGE FROM NON-USER SOURCE - NOT USER INPUT]\n`,' +
+  'TOe=`' +
+  FRAMING_2311 +
+  '`;function w2n(e){return`${DPe}${e}${TOe}`}' +
+  'function ozs(e){return e.length>=DPe.length+TOe.length&&e.startsWith(DPe)&&e.endsWith(TOe)?e.slice(DPe.length,e.length-TOe.length):void 0}' +
+  'function tL(e){return e.startsWith(xZ)?e:`${xZ}${e}`}' +
+  'globalThis.__t={w2n,ozs,tL};';
+
+const load2311 = (src: string) => {
+  new Function(src)();
+  const t = (globalThis as Record<string, unknown>).__t as {
+    w2n: (e: string) => string;
+    ozs: (e: string) => string | undefined;
+    tL: (e: string) => string;
+  };
+  delete (globalThis as Record<string, unknown>).__t;
+  return t;
+};
+
+describe('user-sent-new-message 2.1.311 hoisted wrapper + unwrapper', () => {
+  it('pristine fixture round-trips (sanity)', () => {
+    const { w2n, ozs } = load2311(cli2311);
+    expect(ozs(w2n('hi'))).toBe('hi');
+  });
+
+  it('wraps with a custom body and unwraps the message back', () => {
+    const body = 'Mid-turn:\n${H}\n\nAddress it.';
+    const out = injection.apply(cli2311, body, false)!;
+    expect(out).not.toBeNull();
+    // The framing var declaration and the neighbouring helper survive.
+    expect(out).toContain('TOe=`' + FRAMING_2311 + '`;function w2n(e){');
+    expect(out).toContain('function tL(e){return e.startsWith(xZ)');
+    const { w2n, ozs } = load2311(out);
+    expect(w2n('hello')).toBe('Mid-turn:\nhello\n\nAddress it.');
+    expect(ozs(w2n('hello'))).toBe('hello');
+    expect(ozs(w2n(''))).toBe('');
+    expect(ozs('hello')).toBeUndefined();
+    expect(ozs('Mid-turn:\nhello\n\nAddress it?')).toBeUndefined();
+  });
+
+  it('unwraps with {{message}} at the start, the end, and repeated', () => {
+    for (const body of ['${H}\n\ntrailer', 'leader: ${H}', 'A ${H} B ${H} C']) {
+      const out = injection.apply(cli2311, body, false)!;
+      const { w2n, ozs } = load2311(out);
+      for (const msg of ['x', 'two words', 'B ${H} C', '']) {
+        expect(ozs(w2n(msg))).toBe(msg);
+      }
+      expect(ozs('unrelated text')).toBeUndefined();
+    }
+  });
+
+  it('suppression wraps to the bare message and unwraps as identity', () => {
+    const out = injection.apply(cli2311, 'ignored ${H}', true)!;
+    expect(out).toContain('function w2n(e){return`${e}`}');
+    expect(out).not.toContain('${DPe}${e}${TOe}');
+    const { w2n, ozs } = load2311(out);
+    expect(w2n('hey')).toBe('hey');
+    expect(ozs('hey')).toBe('hey');
+  });
+
+  it('a body without {{message}} unwraps to undefined', () => {
+    const out = injection.apply(cli2311, 'static text', false)!;
+    const { w2n, ozs } = load2311(out);
+    expect(w2n('hey')).toBe('static text');
+    expect(ozs('static text')).toBeUndefined();
+  });
+
+  it('is idempotent on an already-patched 2.1.311 bundle', () => {
+    const once = injection.apply(cli2311, 'M ${H} N', false)!;
+    expect(injection.apply(once, 'M ${H} N', false)).toBe(once);
+    const suppressed = injection.apply(cli2311, '', true)!;
+    expect(injection.apply(suppressed, '', true)).toBe(suppressed);
+    const noSlot = injection.apply(cli2311, 'static', false)!;
+    expect(injection.apply(noSlot, 'static', false)).toBe(noSlot);
+  });
+});
