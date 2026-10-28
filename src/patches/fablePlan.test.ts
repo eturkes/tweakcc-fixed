@@ -665,6 +665,30 @@ describe('writeFablePlan', () => {
     expect(writeFablePlan(out, config())).toBe(out);
   });
 
+  it('drops the effort control on the CC 2.1.312 undimmed unsupported label', () => {
+    // 2.1.312 undims the "Effort not supported" line and splits its leading
+    // space into its own child.
+    const picker =
+      'cn({"modelPicker:decreaseEffort":()=>{zr("left")}});' +
+      'zr=ce((es)=>{let Us=ao(),Ci=Vn.find((Ei)=>Ei.value===Us);if(Ci===void 0||Ci.disabled===!0)return;' +
+      'let Pi=i5(Us);if(!Pi.supportsEffort)return;Ln(!0)},[Vn]);' +
+      'function Sr(es){let Us=Fw(es),Ci=An(),Pi=Jo(),Ei=Us&&Ci!==void 0?eee(Ci,Us):Ci;' +
+      'a("tengu_model_command_menu_effort",{effort:le(Ei),toggled:Pi});let Gs=Pi&&Us&&kb(Us)?Ei:void 0;' +
+      'if(es===Sb){D(null,Gs);return}D(es,Gs)}' +
+      'Hn!==void 0&&!hr&&e(s,{marginBottom:1,flexDirection:"column",children:Dr?r(Q,{children:[1]}):' +
+      'e(s,{minHeight:void 0,children:r(n,{color:"subtle",dimColor:!1,children:[e(Gj,{effort:void 0})," ","Effort not supported",Yn?` for ${Yn}`:""]})})})';
+    const out = writeFablePlan(cli + picker, config())!;
+    expect(out).not.toBeNull();
+    expect(out).toContain(
+      'function Sr(es){if(es==="fableplan"){D(es,void 0);return}let Us=Fw(es)'
+    );
+    expect(out).toContain('if(Us==="fableplan")return;let Pi=i5(Us)');
+    expect(out).toContain(
+      'children:Hn==="fableplan"?r(n,{color:"subtle",children:["Fable and Opus each use their own effort (set it on their rows)"]}):Dr?'
+    );
+    expect(writeFablePlan(out, config())).toBe(out);
+  });
+
   it('applies against the CC 2.1.311 setting-aware resolver and picker', () => {
     // 2.1.311: a caller may hand the resolver the selected alias as `setting`
     // (the getter is only the fallback), the picker's custom-option read is a

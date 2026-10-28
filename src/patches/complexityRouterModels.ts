@@ -43,10 +43,22 @@ const patchEffortControls = (file: string): string | null => {
   if (result === null) return null;
   const display =
     /(([$\w]+)!==void 0&&![$\w]+&&[$\w]+\([$\w]+,\{marginBottom:1,flexDirection:"column",children:)/;
-  const text = result.match(
-    /([$\w]+)\(([$\w]+),\{color:"subtle",children:\[[$\w]+\([$\w]+,\{effort:void 0\}\)," Effort not supported"/
-  );
-  if (!text) return null;
+  const texts = [
+    // CC >= 2.1.312: `dimColor:!1` and a separate `" "` child.
+    /([$\w]+)\(([$\w]+),\{color:"subtle",dimColor:!1,children:\[[$\w]+\([$\w]+,\{effort:void 0\}\)," ","Effort not supported"/,
+    /([$\w]+)\(([$\w]+),\{color:"subtle",children:\[[$\w]+\([$\w]+,\{effort:void 0\}\)," Effort not supported"/,
+  ];
+  let text: RegExpMatchArray | null = null;
+  for (const pattern of texts) {
+    text = result.match(pattern);
+    if (text) break;
+  }
+  if (!text) {
+    console.error(
+      'patch: complexityRouterModels: failed to find effort-unsupported text'
+    );
+    return null;
+  }
   result = replace(
     result,
     display,
@@ -94,7 +106,12 @@ export const writeComplexityRouterModels = (oldFile: string): string | null => {
   const aliasResolver = oldFile.match(
     /function ([$\w]+)\(([$\w]+)\)\{let [$\w]+=\2\.trim\(\)[\s\S]{0,120}?if\([$\w]+\(([$\w]+)\)\)switch\(\3\)\{/
   );
-  if (!aliasResolver) return null;
+  if (!aliasResolver) {
+    console.error(
+      'patch: complexityRouterModels: failed to find alias resolver'
+    );
+    return null;
+  }
   const cases = MODELS.map(
     ([alias, model]) => `case"${alias}":return"${model}";`
   ).join('');

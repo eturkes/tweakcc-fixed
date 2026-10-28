@@ -22,6 +22,13 @@ const fixture = [
 // CC 2.1.284 dropped the ultracode guard: ultracode became a session flag.
 const fixture284 = fixture.replace('&&level!=="ultracode"', '');
 
+// CC 2.1.312 split the unsupported-effort label into `" ","Effort..."` and
+// added `dimColor:!1`.
+const fixture312 = fixture284.replace(
+  'el(Text,{color:"subtle",children:[el(Icon,{effort:void 0})," Effort not supported"]})',
+  'el(Text,{color:"subtle",dimColor:!1,children:[el(Icon,{effort:void 0})," ","Effort not supported"]})'
+);
+
 function harness(source = fixture) {
   const context = vm.createContext({
     available: [] as { value: string; disabled?: boolean }[],
@@ -153,6 +160,20 @@ describe('effort router model aliases', () => {
     expect(context.applied).toEqual(['opusrouter', undefined]);
     vm.runInContext('commit("opus")', context);
     expect(context.applied).toEqual(['opus', 'max']);
+    expect(writeComplexityRouterModels(result)).toBe(result);
+  });
+
+  it('shows automatic effort with the CC 2.1.312 unsupported-effort label', () => {
+    expect(fixture312).toContain(
+      'dimColor:!1,children:[el(Icon,{effort:void 0})," ","Effort not supported"'
+    );
+    const { context, result } = harness(fixture312);
+    expect(vm.runInContext('display().children', context)).toMatchObject({
+      color: 'subtle',
+      children: 'Automatic effort · currently high',
+    });
+    context.focused = 'opus';
+    expect(vm.runInContext('display().children', context)).toBe('manual');
     expect(writeComplexityRouterModels(result)).toBe(result);
   });
 
