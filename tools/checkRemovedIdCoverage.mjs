@@ -368,19 +368,56 @@ const namedSites = (run, lines) => {
     );
 };
 // The current id carrying the largest share of `units`, and that share.
-const bestSuccessor = units => {
-  let best = null;
-  let bestShare = 0;
-  for (const { id, body } of curBodies) {
-    let hit = 0;
-    for (const u of units) if (body.includes(u)) hit++;
-    const share = hit / units.length;
-    if (share > bestShare) {
-      bestShare = share;
-      best = id;
-    }
+// Testing every unit against every body made this the gate's hot loop (85 s of
+// 285 s on CC 2.1.312). A unit can only sit in a body that holds its first
+// word, so candidates come from a word index and only those are scanned. Ties
+// keep the earliest body, as the linear scan did.
+// Words are maximal runs of letters and digits on both sides, so any letter run
+// inside a unit is also a whole run inside every body that contains the unit,
+// except at the unit's two ends, where it may be cut mid-word; those are skipped.
+const WORD = /[A-Za-z0-9]+/g;
+const bodyIdxByWord = new Map();
+curBodies.forEach(({ body }, i) => {
+  for (const w of new Set(body.match(WORD) || [])) {
+    if (!bodyIdxByWord.has(w)) bodyIdxByWord.set(w, []);
+    bodyIdxByWord.get(w).push(i);
   }
-  return { id: best, share: bestShare };
+});
+const bodiesHolding = u => {
+  const all = [...u.matchAll(WORD)];
+  const words = all
+    .filter(
+      m =>
+        m.index > 0 &&
+        m.index + m[0].length < u.length &&
+        m[0].length >= 3
+    )
+    .map(m => m[0]);
+  if (!words.length) return null;
+  let best = null;
+  for (const w of words) {
+    const list = bodyIdxByWord.get(w);
+    if (!list) return [];
+    if (!best || list.length < best.length) best = list;
+  }
+  return best;
+};
+const bestSuccessor = units => {
+  const hits = new Map();
+  for (const u of units) {
+    const cand = bodiesHolding(u);
+    const scan = cand ?? curBodies.map((_, i) => i);
+    for (const i of scan)
+      if (curBodies[i].body.includes(u)) hits.set(i, (hits.get(i) || 0) + 1);
+  }
+  let best = null;
+  let bestHit = 0;
+  for (const [i, n] of [...hits].sort((a, b) => a[0] - b[0]))
+    if (n > bestHit) {
+      bestHit = n;
+      best = curBodies[i].id;
+    }
+  return { id: best, share: units.length ? bestHit / units.length : 0 };
 };
 const successorOfAll = runs => {
   for (const { id, body } of curBodies) {
@@ -561,6 +598,26 @@ const strayUnits = (probes, lines) =>
 const share = (units, haystack) =>
   units.filter(u => haystack.includes(u)).length / units.length;
 
+// `share(windows, curBlob)` was the gate's hot spot (174 s of 259 s on CC
+// 2.1.312): every 25-char window scanned the whole 10 MB catalogue blob. Every
+// window of every blob position is precomputed once instead, so the test is a
+// set lookup. Exact for fixed-length windows: a window is in the blob iff it is
+// one of the blob's own WINDOW-length substrings.
+const windowSet = blob => {
+  const set = new Set();
+  for (let i = 0; i + WINDOW <= blob.length; i++)
+    set.add(blob.slice(i, i + WINDOW));
+  return set;
+};
+let curWindows = null;
+let curSidecarWindows = null;
+// strayProbes only emits WINDOW-length windows.
+const shareWindows = (windows, set) =>
+  windows.filter(w => set().has(w)).length / windows.length;
+const curWindowSet = () => (curWindows ??= windowSet(curBlob));
+const curSidecarWindowSet = () =>
+  (curSidecarWindows ??= windowSet(`${curBlob}\n${sidecarBlob}`));
+
 const classify = id => {
   const entries = prevById.get(id) || [];
   const units = [...new Set(entries.flatMap(shareUnits))];
@@ -575,13 +632,15 @@ const classify = id => {
     // union test uses 25-char windows: union coverage by trigrams is satisfied
     // by any short body of common phrasing ("which is not", "is not what").
     const split =
-      !to && windows.length > 0 && share(windows, curBlob) >= RENAME_SHARE;
+      !to &&
+      windows.length > 0 &&
+      shareWindows(windows, curWindowSet) >= RENAME_SHARE;
     const pending =
       !to &&
       !split &&
       (share(units, sidecarBlob) >= RENAME_SHARE ||
         (windows.length > 0 &&
-          share(windows, `${curBlob}\n${sidecarBlob}`) >= RENAME_SHARE));
+          shareWindows(windows, curSidecarWindowSet) >= RENAME_SHARE));
     if (to || split || pending) {
       const stray = strayUnits(windows, entries.flatMap(proseLines));
       if (stray.length) return { bucket: 'IN-BUNDLE', to, stray, near };
