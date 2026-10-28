@@ -362,6 +362,45 @@ const runWorker = async () => {
   parentPort.postMessage(out);
 };
 
+// Per-entry scan results, keyed on everything a result depends on: the matcher
+// core (its file name is its content hash), the bundle bytes, the mode and the
+// entry's pieces. A bump re-extracts several times against the same bundles and
+// only a handful of entries change between passes, so each pass re-matches only
+// those (a full scan of three 53 MB bundles took 5.5 min on CC 2.1.312).
+// Per-user directory, like the extractor's site cache.
+const scanCacheDir = () => {
+  if (process.env.TWEAKCC_SCAN_CACHE_DIR)
+    return process.env.TWEAKCC_SCAN_CACHE_DIR;
+  const base = process.env.XDG_CACHE_HOME || path.join(os.homedir(), '.cache');
+  return path.join(base, 'tweakcc', 'scan');
+};
+const scanCacheDisabled = () => {
+  const v = process.env.TWEAKCC_SCAN_NO_CACHE;
+  return Boolean(v) && v !== '0';
+};
+const sha1 = data => crypto.createHash('sha1').update(data).digest('hex');
+const scanCacheFile = (coreFile, bundleFile, mode) =>
+  path.join(
+    scanCacheDir(),
+    `${path.basename(coreFile, '.mjs')}-${sha1(fs.readFileSync(bundleFile)).slice(0, 20)}-${mode}.json`
+  );
+const entryKey = e => sha1(JSON.stringify(e.pieces));
+const readScanCache = file => {
+  if (scanCacheDisabled()) return new Map();
+  try {
+    return new Map(Object.entries(JSON.parse(fs.readFileSync(file, 'utf8'))));
+  } catch {
+    return new Map();
+  }
+};
+const writeScanCache = (file, map) => {
+  if (scanCacheDisabled()) return;
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  const tmp = `${file}.${process.pid}.${crypto.randomUUID()}.tmp`;
+  fs.writeFileSync(tmp, JSON.stringify(Object.fromEntries(map)));
+  fs.renameSync(tmp, file);
+};
+
 export const scanInWorkers = async (
   entries,
   specs,
@@ -372,19 +411,36 @@ export const scanInWorkers = async (
     throw new Error('worker limit must be a positive integer');
   if (!['baked', 'presence'].includes(mode))
     throw new Error('scan mode must be baked or presence');
-  const shards = Math.max(1, Math.ceil(workerLimit / specs.length));
-  const size = Math.ceil(entries.length / shards) || 1;
-  const jobs = [];
-  for (const spec of specs)
-    for (let from = 0; from < entries.length; from += size)
-      jobs.push({ spec, from, slice: entries.slice(from, from + size) });
   const results = new Map(specs.map(s => [s.file, new Array(entries.length)]));
   const coreFile = await buildMatcherCore();
+  const keys = entries.map(entryKey);
+  const caches = new Map();
+  const todo = new Map();
+  for (const spec of specs) {
+    const file = scanCacheFile(coreFile, spec.file, mode);
+    const cache = readScanCache(file);
+    caches.set(spec.file, { file, cache, dirty: false });
+    const out = results.get(spec.file);
+    const miss = [];
+    keys.forEach((k, i) => {
+      if (cache.has(k)) out[i] = cache.get(k);
+      else miss.push(i);
+    });
+    todo.set(spec.file, miss);
+  }
+  const shards = Math.max(1, Math.ceil(workerLimit / specs.length));
+  const jobs = [];
+  for (const spec of specs) {
+    const miss = todo.get(spec.file);
+    const size = Math.ceil(miss.length / shards) || 1;
+    for (let from = 0; from < miss.length; from += size)
+      jobs.push({ spec, idx: miss.slice(from, from + size) });
+  }
   let nextJob = 0;
   await Promise.all(
     Array.from({ length: Math.min(workerLimit, jobs.length) }, async () => {
       while (nextJob < jobs.length) {
-        const { spec, from, slice } = jobs[nextJob++];
+        const { spec, idx } = jobs[nextJob++];
         await new Promise((resolve, reject) => {
           const w = new Worker(fileURLToPath(import.meta.url), {
             workerData: {
@@ -393,13 +449,22 @@ export const scanInWorkers = async (
                 file: spec.file,
                 platform: spec.platform,
                 mode,
-                entries: slice.map(e => ({ pieces: e.pieces })),
+                entries: idx.map(i => ({ pieces: entries[i].pieces })),
               },
             },
           });
           let reported = false;
           w.once('message', out => {
-            out.forEach((r, i) => (results.get(spec.file)[from + i] = r));
+            const c = caches.get(spec.file);
+            out.forEach((r, j) => {
+              results.get(spec.file)[idx[j]] = r;
+              // An error is a property of this run (memory, a regex limit),
+              // not of the inputs, so it is never cached.
+              if (!r.error) {
+                c.cache.set(keys[idx[j]], r);
+                c.dirty = true;
+              }
+            });
             reported = true;
           });
           w.once('error', reject);
@@ -413,6 +478,8 @@ export const scanInWorkers = async (
       }
     })
   );
+  for (const { file, cache, dirty } of caches.values())
+    if (dirty) writeScanCache(file, cache);
   return results;
 };
 

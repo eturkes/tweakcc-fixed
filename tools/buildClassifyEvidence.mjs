@@ -91,6 +91,10 @@ export function loadCandidates(file) {
 // fixed context every agent pays, not by the candidates it ruled.
 export const CANDIDATES_PER_AGENT = 67;
 
+// Evidence bytes an agent reads in the time it writes one verdict (see the
+// weighting in the main build).
+export const BYTES_PER_VERDICT = 50_000;
+
 // Cut the families, in bundle order, into `agents` chunks of near-equal
 // weight. A family stays in one chunk unless it is heavier than an even share
 // (total / agents); then it is split into consecutive parts and each part says
@@ -469,15 +473,20 @@ async function main() {
     famMap.set(e.family, f);
   }
   const families = [...famMap.values()].sort((a, b) => a.order[0] - b.order[0] || a.order[1] - b.order[1] || a.key.localeCompare(b.key));
-  // Weight = rendered size (an upper bound: snippets are deduplicated per
-  // chunk); a family's own block is charged to its first candidate.
+  // Weight = agent time. Each verdict costs a fixed amount of writing, and
+  // evidence bytes cost reading; a byte-only weight packed 195 candidates into
+  // one chunk and 1 and 3 into the other two (CC 2.1.312: 13.3 min against
+  // 1.0 and 0.8 min). From those three agents, one verdict ~ 4 s and 50 KB of
+  // evidence ~ 4 s, so a candidate weighs 1 plus its rendered size / 50 KB
+  // (a family's own block charged to its first candidate).
   for (const f of families) {
     const fi = famInfo.get(f.key) || {};
     const snip = snippetBook(code);
     const famMd = renderFamilyMd({ label: 'F00', key: f.key, fn: fi.fn, callers: fi.callers, literals: fi.literals, setters: fi.setters, wiring: fi.wiring, candidateCount: f.items.length }, { snip, propSets });
     f.items.forEach((e, i) => {
       e.key = 'k00';
-      e.weight = renderCandidateMd(e, { snip, propSets, src: code }).length + 2 + (i === 0 ? famMd.length + 2 : 0);
+      const bytes = renderCandidateMd(e, { snip, propSets, src: code }).length + 2 + (i === 0 ? famMd.length + 2 : 0);
+      e.weight = 1 + bytes / BYTES_PER_VERDICT;
     });
   }
   const agents = agentsFor(entries.length, perAgent);
