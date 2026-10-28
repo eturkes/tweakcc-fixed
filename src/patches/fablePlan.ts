@@ -656,8 +656,14 @@ const patchPickerEffortRow = (
     /(=[$\w]+\(\(([$\w]+)\)=>\{let ([$\w]+)=[$\w]+\(\),([$\w]+)=[$\w]+\.find\(\(([$\w]+)\)=>\5\.value===\3\);if\(\4===void 0\|\|\4\.disabled===!0\)return;)(let ([$\w]+)=[$\w]+\(\3\);if\(!\7\.supportsEffort\)return;)/;
   const display =
     /(([$\w]+)!==void 0&&![$\w]+&&[$\w]+\([$\w]+,\{marginBottom:1,flexDirection:"column",children:)([$\w]+\?)/;
-  const unsupported =
-    /([$\w]+)\(([$\w]+),\{color:"subtle",children:\[[$\w]+\([$\w]+,\{effort:void 0\}\)," Effort not supported"/;
+  const unsupporteds = [
+    // CC >= 2.1.312: the label undims and its leading space is its own child.
+    //   r(n,{color:"subtle",dimColor:!1,children:[e(Gj,{effort:void 0})," ",
+    //   "Effort not supported",…
+    /([$\w]+)\(([$\w]+),\{color:"subtle",dimColor:!1,children:\[[$\w]+\([$\w]+,\{effort:void 0\}\)," ","Effort not supported"/,
+    // CC <= 2.1.311.
+    /([$\w]+)\(([$\w]+),\{color:"subtle",children:\[[$\w]+\([$\w]+,\{effort:void 0\}\)," Effort not supported"/,
+  ];
   const commits = [
     // CC >= 2.1.284: ultracode left the effort scale for its own session flag,
     // so the commit no longer guards the level against it.
@@ -675,7 +681,11 @@ const patchPickerEffortRow = (
 
   const a = file.match(adjust);
   const d = file.match(display);
-  const u = file.match(unsupported);
+  let u: RegExpMatchArray | null = null;
+  for (const unsupported of unsupporteds) {
+    u = file.match(unsupported);
+    if (u) break;
+  }
   let c: RegExpMatchArray | null = null;
   for (const commit of commits) {
     c = file.match(commit);

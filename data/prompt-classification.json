@@ -135074,5 +135074,743 @@
     "desc": "Reason an agent's queued messages were not delivered because it can no longer be resumed"
   },
   "e12e6b1901182f1146c59e44141c47c84c9edae6": { "facing": "ui" },
-  "ae9aff55dc046dea7be86aae0d02961bb97436ae": { "facing": "ui" }
+  "ae9aff55dc046dea7be86aae0d02961bb97436ae": { "facing": "ui" },
+  "457d38175ae6172866a4b35424f4383887814fb6": { "facing": "ui" },
+  "7d0ff57aa8a2777134d7c6944fa5c2264f92ebc9": {
+    "facing": "model",
+    "id": "data-auto-mode-hook-rewrote-input-review-reason",
+    "name": "Data: Auto mode hook-rewrote-input review reason",
+    "desc": "Reason constant (HOOK_REWROTE_INPUT_REVIEW_REASON) passed to Jhn @12843645 when a hook or plugin changed a call after auto mode reviewed it; becomes the deny/ask message returned to the model"
+  },
+  "53bfcd874cba7ae8367c8e8840b2c1b8d5c73ce0": {
+    "facing": "model",
+    "id": "tool-result-write-file-only-partially-read",
+    "name": "Tool Result: Write refused on partially read file",
+    "desc": "Write tool validation error when only the start of the file was read, telling Claude to use Edit, or Read it whole (with the full-read parameter) before replacing it"
+  },
+  "2d9fd8466166eb2069bad13c1acf79c853169544": { "facing": "internal" },
+  "d1dc4e0407197f983230c17c322efe8365665ea1": { "facing": "internal" },
+  "69a4da53ddce7dd8dbd0e5b6a816a888edcfbdc7": { "facing": "internal" },
+  "280aa434899f89e22648c7dbcac4662a006b7e15": { "facing": "internal" },
+  "4cfcead59eedbce89236ad50b8e11eba53e949a5": { "facing": "internal" },
+  "1d5d56eb9cedc000b14068b4f95e311423101df1": { "facing": "internal" },
+  "a9a68f8d6cd38084e0f9afcf1d320ed68ef55d55": { "facing": "internal" },
+  "073882c7e8d43f37d45a5041cbf8e2a9baa34b50": { "facing": "internal" },
+  "197df6a8ee1b8481c80a5eff17deeb44480d609f": { "facing": "internal" },
+  "de0de3ea4c0bae3787a440d7b80dcd0dc4deb0bd": { "facing": "internal" },
+  "d069c58ada31ef5576e009eabb7a38aab5583f58": { "facing": "internal" },
+  "f6338cdae6d78aa3ada8cf6354a69dfb2fde9b96": { "facing": "internal" },
+  "13af7796b3da70d03effb521c0a7ccadb06b430d": { "facing": "internal" },
+  "bf62f219edbb62556423b0e915cc11c1174a70e8": { "facing": "ui" },
+  "0d4812e9191c463796fd2a211fa44c3a2d2cbd2b": { "facing": "ui" },
+  "7750d91a66fb58667edfc1d419edb8b5090db1ac": { "facing": "ui" },
+  "23538a38a05f694a37d9906bb2cc205a09cfd4ae": { "facing": "ui" },
+  "d059e482cd811c5e62e2ea0efea1c3fa0fca1a64": { "facing": "ui" },
+  "1c20b69bfa3cabde25835db78973cca7d569a493": { "facing": "ui" },
+  "9fbba94206cc5a6f508ea7db2f850b3d7d65a998": { "facing": "ui" },
+  "1c1335885e0338621451c69871987cfe9b840608": { "facing": "internal" },
+  "760cab903ec64dc0bed3635c86c4744567006161": {
+    "facing": "model",
+    "id": "tool-result-bash-shell-expandable-pattern-unchecked",
+    "name": "Tool Result: Bash shell-expandable pattern unchecked",
+    "desc": "Too-complex reason when a command word has a glob pattern the shell may expand, so the command cannot be checked before it runs; becomes the Bash permission ask message"
+  },
+  "be3e0c8db80b80009b52cdb5ac04d53c72774639": {
+    "facing": "model",
+    "id": "tool-result-windows-nonstandard-path-config-dir-refusal-note",
+    "name": "Tool Result: Windows non-drive path config-dir refusal note",
+    "desc": "Suffix added to a file-write refusal explaining it may only be because a Windows path without a drive letter or with strippable names could open a file in the config directory"
+  },
+  "1084bbfbeb3576117f5e8ea474863af8c456a308": {
+    "facing": "model",
+    "id": "data-windows-protected-path-resolution-denial",
+    "name": "Data: Windows protected path resolution denial",
+    "desc": "Explains why a Windows write is denied when a possible protected path cannot be resolved"
+  },
+  "1769984e6d2de71e927f35578d272a824b102578": {
+    "facing": "model",
+    "id": "tool-result-windows-short-name-adopt-json-refusal",
+    "name": "Tool Result: Windows short name may open adopt.json",
+    "desc": "Refusal message when a file name has the shape of a Windows 8.3 short name that may open adopt.json in the config directory"
+  },
+  "1f86194ee628675c176cd08c185a6294c4438184": {
+    "facing": "model",
+    "id": "data-windows-protected-path-unresolved-reason",
+    "name": "Data: Windows protected path unresolved reason",
+    "desc": "decisionReason text for the Windows write denial when a link or alternate spelling may reach the config directory's jobs, daemon, shell-snapshots or session-env folders"
+  },
+  "91cfcaa7e12c3ced02232ac5e8daf590c9844482": {
+    "facing": "model",
+    "id": "tool-description-askuserquestion-dialog-standalone-questions",
+    "name": "Tool Description: AskUserQuestion standalone questions",
+    "desc": "AskUserQuestion prompt addition: the user may see only the question dialog, so each question must stand on its own and name what it asks about"
+  },
+  "920f984deda5d693aa9ee8b3dad255a49d429308": { "facing": "internal" },
+  "312ac20915b9c2604623ebaea2f19ec437d0b145": {
+    "facing": "model",
+    "id": "system-reminder-utc-date-changed-local-date",
+    "name": "System Reminder: UTC date changed (local date may differ)",
+    "desc": "Date-change reminder when the date is assumed UTC, telling Claude that a non-UTC date in a user's system-reminder is the user's local date"
+  },
+  "0f0b849f4a134d0a023986174b39391f24f2f337": {
+    "facing": "model",
+    "id": "system-reminder-utc-date-local-date",
+    "name": "System Reminder: UTC date (local date may differ)",
+    "desc": "Current-date reminder when the date is assumed UTC, telling Claude to treat a non-UTC date from the user's system-reminder as today's date"
+  },
+  "409c478ace3570ce9ddf2a5bf2f1f3d04ce6e413": {
+    "facing": "model",
+    "id": "system-reminder-nested-memory-file-truncated",
+    "name": "Nested memory file truncated",
+    "desc": "Note appended to a truncated nested memory file telling Claude to read the rest with offset and limit"
+  },
+  "a5f73675185efd32e3dc24bbceac40b95fe4605f": {
+    "facing": "model",
+    "id": "system-reminder-nested-memory-file-truncated-read-rest",
+    "name": "System Reminder: Nested memory file truncated — read the rest",
+    "desc": "Template that appends the start-only note and tells Claude to call Read on the file with an offset and a limit for the rest"
+  },
+  "a3ad4f684556bdcc8248aceeff9637c65777473c": { "facing": "internal" },
+  "ca24f5874a270d17c66824a858e9aea6a116898a": { "facing": "internal" },
+  "4698f6eb553920f5bcf1c5e36e34d7efdbeae73e": {
+    "facing": "model",
+    "id": "tool-result-sandbox-violation-auto-mode-host-not-allowed",
+    "name": "Tool Result: Sandbox violation — auto mode host not allowed",
+    "desc": "Reason in the sandbox_violations line when auto mode does not approve a connection to a host outside the sandbox's allowed domains"
+  },
+  "9feff1e832f8e5760b0d0c3e5a6c92317966ff78": {
+    "facing": "model",
+    "id": "tool-result-permission-check-unfinished-safety-checks-skipped",
+    "name": "Tool Result: Permission check did not finish",
+    "desc": "Ask message when a command's permission check threw, so its safety checks did not run"
+  },
+  "3299a088aaabbda198454f71b99633d254277808": { "facing": "ui" },
+  "dae5b49b4d48d2e80671977ad30776c9a30fbddb": { "facing": "ui" },
+  "ca85ed454f4d844ef1e7ef8f3f7fb036ab5ae5bd": { "facing": "ui" },
+  "76d3452e1373ad951ed1d59aa1e7495129669d58": { "facing": "ui" },
+  "3b54a49696d9e8194ac90e8a652276947045e733": { "facing": "ui" },
+  "c2a6626b5872dac13371716e99cf03e082d10ded": { "facing": "ui" },
+  "6b08cf374859f7f59268e48a168626467735d5b6": { "facing": "ui" },
+  "a6d4d15198d2b93a4f6234a39460bd8a1893fe1c": { "facing": "ui" },
+  "ab618e2c811d3e89006024bf8d3bf56e34c809d0": { "facing": "ui" },
+  "a635abef4c59b446f2623c3def781b62d07bee51": { "facing": "ui" },
+  "9416c608d750ddf2cee5d743b94cdf72fad76aa2": { "facing": "ui" },
+  "8a4f3716898f40536af725affb7e5d8542409627": { "facing": "ui" },
+  "0190607d237b75b24389fe983477c6e333bdc101": { "facing": "ui" },
+  "c5391277f14fd91c679bd561ff19affb568297b3": { "facing": "ui" },
+  "fd330ba5d9186ed9015256c54c2067e2d8fbc606": { "facing": "ui" },
+  "c3968366eef8eebac422b071f28a591799b8a65e": { "facing": "ui" },
+  "594ae2c81856fe9b08bde961129785ea43be1128": { "facing": "ui" },
+  "d07d1ff371c8e2bcb5a05a47918f8b69ac43dc40": { "facing": "internal" },
+  "56d726c60a9006f60ec2e20788182facebcac55c": { "facing": "internal" },
+  "a93c7ce0d329d3271a209ad21072e85d3ba961aa": { "facing": "ui" },
+  "8effeeed4efe2473bf61c3cffa4be66bb64fbe44": { "facing": "ui" },
+  "2b0c05e1909a8ffd50ab9d90706b1d702e59a419": { "facing": "ui" },
+  "dd48e6f3d457dd6f28c923925562d41e9f3f2503": {
+    "facing": "model",
+    "id": "tool-result-webfetch-cloud-session-host-not-resolved",
+    "name": "Tool Result: WebFetch host not resolved in cloud session",
+    "desc": "WebFetch error in a cloud session when a host fails DNS resolution, likely outside the allowed network domains; tells Claude to stop trying more sites and tell the user to allow the host"
+  },
+  "f317716601637423cb84ad57cf1950d27259f3e0": {
+    "facing": "model",
+    "id": "system-prompt-harness-instructions-2",
+    "name": "System Prompt: Harness instructions",
+    "desc": "Opening interactive-agent identity line (output-style, collaborative-goals, or software-engineering) plus the never-guess-URLs security instruction."
+  },
+  "4adf1ae69495d5d0342fa4a00c2b6b879408a0fe": { "facing": "internal" },
+  "b4fac4dcdb2ea2f5e327aa8357a26a6787127da4": {
+    "facing": "model",
+    "id": "system-prompt-background-session-instructions",
+    "name": "System Prompt: Background session instructions",
+    "desc": "Instructions for background job sessions to use the job-specific temporary directory and follow the appropriate worktree isolation guidance"
+  },
+  "09ef828c27398c599614152ea717ee424657a3e9": {
+    "facing": "model",
+    "id": "system-prompt-guide-agent-no-answer-report-issue",
+    "name": "System Prompt: Guide agent no-answer issue report",
+    "desc": "Claude guide agent instruction, on non-first-party builds, to direct the user to report the issue at the GitHub issues page when no answer exists"
+  },
+  "abb36f037c5b0e70909d3da7f9660639cf86aefd": {
+    "facing": "model",
+    "id": "tool-result-auto-mode-no-safety-result-nobody-to-ask",
+    "name": "Tool Result: Auto mode no safety result, nobody to ask",
+    "desc": "Deny message when auto mode has no safety result for a call and no one can approve it; issue it once more, then tell the user"
+  },
+  "338d972a10253dd3143e6325038d7c943f2e65db": {
+    "facing": "model",
+    "id": "tool-result-auto-mode-classifier-only-no-result",
+    "name": "Tool Result: Classifier-only tool got no safety result",
+    "desc": "Deny message when only auto mode's safety check can allow the tool and it gave no result"
+  },
+  "51f961caac7bda9d7808a4300b52b3b1cc374662": {
+    "facing": "model",
+    "id": "tool-result-auto-mode-unavailable-turn-ended",
+    "name": "Tool Result: Auto mode unavailable, turn ended",
+    "desc": "Deny message when auto mode's safety check does not run or keeps giving no result, so the call was not run and the turn ends"
+  },
+  "bf45bc4ae82929a14d01e4ab24538c7304840db2": {
+    "facing": "model",
+    "id": "tool-result-auto-mode-unavailable-continue-without",
+    "name": "Tool Result: Auto mode unavailable, continue without",
+    "desc": "Deny message when auto mode's safety check does not run for this session: other actions needing it will be denied too; finish what is possible and tell the user"
+  },
+  "f294d4560ad32f786644b2b27329cb1cd87d19d6": {
+    "facing": "model",
+    "id": "tool-result-auto-mode-check-could-not-review-allow-if-expected",
+    "name": "Tool Result: Automatic safety check could not review",
+    "desc": "Ask message when Claude Code's automatic safety check could not review an action; the action has not run"
+  },
+  "458c199adcc62db7490bf7454d3243094a3bbcaa": {
+    "facing": "model",
+    "id": "tool-result-auto-mode-cannot-check-session-needs-approval",
+    "name": "Tool Result: Auto mode can't check this session",
+    "desc": "Ask message when auto mode cannot check actions in the session, so the action needs approval"
+  },
+  "270d686bf9280aa87617e6789034e3e7273e8220": {
+    "facing": "model",
+    "id": "tool-result-auto-mode-could-not-check-action-needs-approval",
+    "name": "Tool Result: Auto mode couldn't check this action",
+    "desc": "Ask message when auto mode could not check a particular action, so it needs approval"
+  },
+  "e106522f7f1120748e84dbfc262fbce61175824f": {
+    "facing": "model",
+    "id": "tool-result-auto-mode-client-requested-call-not-judged",
+    "name": "Tool Result: Auto mode cannot judge client-requested call",
+    "desc": "Deny message when auto mode's safety check cannot judge a call a client asked for; another permission mode can run it"
+  },
+  "0a764e4cc9b238b7d3f54b2b96c48eeae4039e74": { "facing": "internal" },
+  "1f1dcd309e9b58f3dad3067a702f73b49a0cfbb1": { "facing": "internal" },
+  "12e6037f8e0f9c04d1871c6301c037aaa94d7077": {
+    "facing": "model",
+    "id": "tool-result-auto-mode-no-result-deny-rules-hold",
+    "name": "Tool Result: Auto mode no result, deny rules hold",
+    "desc": "Deny message when auto mode gave no result and nobody is asked because the settings hold auto mode deny rules"
+  },
+  "57449720c767860da1b86a76048df7fe5b95d101": {
+    "facing": "model",
+    "id": "data-server-classifier-no-ask-reason-deny-rules",
+    "name": "Data: No-ask reason — auto mode deny rules",
+    "desc": "Reason clause interpolated into the no-verdict deny message: the settings hold auto mode deny rules"
+  },
+  "e0e8f420cc158e05c4b3c1a0c7b334b6b840b5bf": {
+    "facing": "model",
+    "id": "data-server-classifier-no-ask-reason-app-or-script",
+    "name": "Data: No-ask reason — app or script runs the session",
+    "desc": "Reason clause for the no-verdict deny message: an app or a script runs the session, so a program might answer the prompt"
+  },
+  "a6f6de2653f931f54b983aa14697c3efd5ddd0c4": {
+    "facing": "model",
+    "id": "data-server-classifier-no-ask-reason-background-agent",
+    "name": "Data: No-ask reason — background agent or teammate",
+    "desc": "Reason clause for the no-verdict deny message: a background agent or teammate made the call"
+  },
+  "bdbbbbb69f8c81359556bc19ccb165ef50ab4864": {
+    "facing": "model",
+    "id": "data-server-classifier-no-ask-reason-remote-control",
+    "name": "Data: No-ask reason — Remote Control or background pane",
+    "desc": "Reason clause for the no-verdict deny message: Remote Control is connected or the session runs in the background or a teammate's pane"
+  },
+  "25bfcdf3977357b175c9eb2c99783cc0ae7a6eda": { "facing": "internal" },
+  "03829de9cf7002c5918f3879e5c6d8c218266e40": {
+    "facing": "model",
+    "id": "tool-result-server-classifier-no-verdict-not-asked",
+    "name": "Tool Result: No verdict outside auto mode, not asked",
+    "desc": "Deny message when the automatic safety check gave no verdict outside auto mode and Claude Code does not ask in its place; do not retry now"
+  },
+  "fcb5002d933ea3668f4612b0096062481ba488d5": { "facing": "internal" },
+  "55afd6e59e237bdcc493fa04fdfd5f1160c7564b": { "facing": "internal" },
+  "03fc89ac928733911fe25f9d9b903f91e7981511": { "facing": "internal" },
+  "8c8e3cd729e61ff26b617d4eefe06e6968d591f4": { "facing": "ui" },
+  "951d3207e89e3039e2506f9466c2c6aefd50e26b": { "facing": "internal" },
+  "fda6530815cf7b2f41adf3bc04672f248343eadd": { "facing": "internal" },
+  "7528973c05a090aeb44db0af04adc42896eba0ed": { "facing": "internal" },
+  "cb01248b2f33a9259ac9cf3225072b05488720ec": { "facing": "internal" },
+  "846ba409be77cfe30c5cd32b2af8ba5d948036c0": {
+    "facing": "model",
+    "id": "tool-result-auto-mode-hook-rewrite-reissue-recorded-input",
+    "name": "Tool Result: Reissue hook-rewritten call as recorded",
+    "desc": "Clause telling Claude to issue the call once more exactly as the conversation records it so auto mode reviews it"
+  },
+  "88fd030d5d1dff6dbca2f18ff47a43cf533ad551": {
+    "facing": "model",
+    "id": "system-reminder-auto-mode-no-verdict-after-another-hook-rewrite",
+    "name": "System Reminder: Auto mode no verdict after another hook rewrite",
+    "desc": "Advises retrying a tool call separately when another hook rewrite invalidated its auto mode review"
+  },
+  "832fb6c0ffeaea4caf85ca94d1cfa3a0f9331794": {
+    "facing": "model",
+    "id": "tool-result-auto-mode-hook-rewrite-reissue-quoted-input",
+    "name": "Tool Result: Reissue call with the hook-produced input",
+    "desc": "Clause quoting the hook-produced input and telling Claude to issue the call once more with exactly that input so auto mode reviews it"
+  },
+  "9d2f4a9577ec0bf6705471105e5bd50c702b56ce": {
+    "facing": "model",
+    "id": "tool-result-auto-mode-hook-rewrite-tell-user-turn-off",
+    "name": "Tool Result: Hook rewrite — tell user to turn off hook",
+    "desc": "Tail clause telling Claude to continue other tasks and tell the user auto mode could not check the call because a hook or plugin changes it"
+  },
+  "b6335eade553433e5285232dba3b8bb09e4821ea": {
+    "facing": "model",
+    "id": "tool-result-auto-mode-hook-rewrite-input-not-quotable",
+    "name": "Tool Result: Hook-changed input cannot be quoted",
+    "desc": "Clause when the hook-changed input is too long or cannot be written out, so the call cannot be issued in a reviewable form"
+  },
+  "c4a3f86d497da8da757993ce2495de3a067c9705": {
+    "facing": "model",
+    "id": "tool-result-auto-mode-no-verdict-hook-changed-input",
+    "name": "Tool Result: No verdict — hook changed input after review",
+    "desc": "Wrapper deny message when a hook changed the call's input after auto mode reviewed it, so the review does not cover what would run"
+  },
+  "d81ca7729bde606c1c2ec8faefa47207f553bb28": {
+    "facing": "model",
+    "id": "system-reminder-plan-mode-sparse-end-turn-tools",
+    "name": "Plan Mode Sparse End-Turn Tools",
+    "desc": "Sparse-form plan-mode reminder telling the model which tools may end the turn and never to request plan approval via text or AskUserQuestion."
+  },
+  "790401483f18d9c0207ff537fb7f635c018d2323": {
+    "facing": "model",
+    "id": "system-reminder-plan-mode-workflow",
+    "name": "System Reminder: Plan mode workflow",
+    "desc": "Full plan-mode workflow reminder covering plan file constraints, exploration, design, review, final planning, and approval"
+  },
+  "0730046b86b2ef7076ceb8d74b3eaba8c98a0a0e": {
+    "facing": "model",
+    "id": "system-reminder-mcp-servers-refused-reserved-address",
+    "name": "System Reminder: MCP servers refused for reserved address",
+    "desc": "Deferred-tools delta note listing configured MCP servers Claude Code refuses because it reserves their address; tells Claude retrying won't help and how the user can fix it"
+  },
+  "0cb9077f2258f6f8686fd68c948bd88965affb3f": {
+    "facing": "model",
+    "id": "system-reminder-agent-cutoff-partial-output",
+    "name": "Agent cutoff partial-output note",
+    "desc": "Cutoff note prepended to recovered partial agent history injected into context, warning the results are incomplete."
+  },
+  "8dc9d30bb39fc8fdede70edd906e72c3b94f2e5d": {
+    "facing": "model",
+    "id": "tool-result-agent-restart-report-lost",
+    "name": "Tool Result: Agent report lost in container restart",
+    "desc": "Agent tool error when the agent had finished but its report was lost when the container restarted"
+  },
+  "00051c31103ff7c79ca981be2b0a4d5c8f6cc21e": {
+    "facing": "model",
+    "id": "tool-result-agent-restart-call-not-resumed",
+    "name": "Tool Result: Agent call stood for restarted agent",
+    "desc": "Agent tool error when this call stood for an agent that stopped at a container restart and the call launched nothing"
+  },
+  "d07525adbe203ab2c3bafd2577d3da5758ad543c": {
+    "facing": "model",
+    "id": "tool-result-agent-restart-resumed-then-failed",
+    "name": "Tool Result: Resumed agent stopped or failed",
+    "desc": "Note that the container restarted and the agent was resumed, then was stopped or failed while running"
+  },
+  "ba8ffa353d035ebdca62582a0cdd59be98b5a164": {
+    "facing": "model",
+    "id": "tool-result-agent-restart-not-resumed-error",
+    "name": "Tool Result: Agent not resumed after restart (error)",
+    "desc": "Agent tool error when an agent stopped at a container restart was not resumed, with the underlying reason"
+  },
+  "15e43f107e3f7ee14b85790b953a4f413b0c93e9": {
+    "facing": "model",
+    "id": "tool-result-agent-restart-not-resumed-plugin-denied",
+    "name": "Tool Result: Agent not resumed after restart (plugin denied)",
+    "desc": "Agent tool error when a plugin denied resuming an agent stopped at a container restart"
+  },
+  "0f5e3277101537d8cb5de7868397808b83c11323": {
+    "facing": "model",
+    "id": "tool-result-agent-restart-resumed-no-report",
+    "name": "Tool Result: Resumed agent ended without report",
+    "desc": "Agent tool error when an agent resumed after a container restart ended without a report"
+  },
+  "4286cabed509e21030d08a2c8ac7ee0f28098a0d": { "facing": "internal" },
+  "f4440bb32fa72bf043f4073b1a929755491929aa": { "facing": "ui" },
+  "bf10d9e0466370087e298084538c33ba01bf9533": { "facing": "ui" },
+  "5446579cac0d468bec19e8a35203c5cc478c9612": { "facing": "ui" },
+  "ca6b1628993d45800188160c54c105f3b1b13824": { "facing": "ui" },
+  "38aa662ae6cf2fd82bc4c1e46ed62eab90508ebd": { "facing": "internal" },
+  "503194d35dc6e9f78286220d44d7e2c6cb53aa48": {
+    "facing": "model",
+    "id": "tool-result-mcp-server-tool-startup-list-unmatched",
+    "name": "Tool Result: MCP server tool start-up list unmatched",
+    "desc": "Refusal reason when the start-up tool list could not be matched tool by tool, so the call was not made"
+  },
+  "718b69646b9bd92f4e71bf72db1ac7a1156401e1": {
+    "facing": "model",
+    "id": "tool-result-mcp-server-tool-list-unmatched",
+    "name": "Tool Result: MCP server tool list unmatched",
+    "desc": "Refusal reason when the server's tool list could not be matched tool by tool, so the call was not made"
+  },
+  "c0213d920cbc7ad4aa61ad9a503f6cb47e73c858": {
+    "facing": "model",
+    "id": "tool-result-mcp-server-tool-check-retry",
+    "name": "Tool Result: MCP server tool check retry",
+    "desc": "Suffix telling the model to try the call again after the MCP tool check could not reach the server"
+  },
+  "caa066f07626a81974d18a21173486110311a015": { "facing": "ui" },
+  "1a89585719206ca1a6e9a79ecd23037c1855609d": {
+    "facing": "model",
+    "id": "slash-command-restart-refused-version-on-hold",
+    "name": "Slash Command: /restart refused — version on hold",
+    "desc": "/restart refusal when the installed version is on hold, so the session stays on the current version"
+  },
+  "be6ee810bee97179f5da5a8bad2169e0d3569cb2": {
+    "facing": "model",
+    "id": "slash-command-effort-auto-level",
+    "name": "Slash Command: /effort — the auto level",
+    "desc": "The /effort usage line describing the default level, which uses the default effort for the current model."
+  },
+  "8b32a5dc5b8c08327dc1d27b06c2dfb1cb8332ec": {
+    "facing": "model",
+    "id": "slash-command-effort-usage-effort-auto-effort-levels",
+    "name": "/effort usage and available effort levels",
+    "desc": "/effort usage header and the effort levels heading"
+  },
+  "d35ebaf2cf66e19af0fe7864397f2777a3576783": {
+    "facing": "model",
+    "id": "slash-command-effort-env-override-still-controls",
+    "name": "Slash Command: /effort env override still controls",
+    "desc": "/effort result when CLAUDE_CODE_EFFORT_LEVEL still controls the session after clearing or setting effort"
+  },
+  "a1c4ded6e987f0b8dfd4dc310dc33ce76ce8ce2c": {
+    "facing": "model",
+    "id": "slash-command-effort-set-for-session-but",
+    "name": "Slash Command: /effort set for session (env override lead)",
+    "desc": "Lead clause 'Effort set to … for this session, but' inside the env-override /effort result"
+  },
+  "585b1002914abba7f05a8cd965d8e79dedc3023d": {
+    "facing": "model",
+    "id": "tool-result-subagent-handback-empty-report",
+    "name": "Tool Result: Subagent handback empty report",
+    "desc": "Validation error when the handback report message is empty"
+  },
+  "7b1b158b1a1686e538d44a73858ea6731f988f90": {
+    "facing": "model",
+    "id": "tool-result-subagent-handback-first-report-only-counts",
+    "name": "Tool Result: Subagent handback first report only counts",
+    "desc": "Handback tool result when a report was already delivered and only the first one counts; stop now"
+  },
+  "debd8c43d6d16e02f2b54162074f29e6446cf6cf": {
+    "facing": "model",
+    "id": "tool-result-workflow-agent-schema-too-large-unreviewed",
+    "name": "Tool Result: Workflow agent schema too large for auto mode",
+    "desc": "Workflow failure reason when an agent's output schema is too large to pass unreviewed in auto mode, so it was not started"
+  },
+  "8605622ee2f4a7aa0a608861c2b34917d75a827d": {
+    "facing": "model",
+    "id": "tool-result-workflow-agent-prompt-unreviewable",
+    "name": "Tool Result: Workflow agent prompt unreviewable",
+    "desc": "Workflow failure reason when auto mode cannot review an agent's prompt, so the agent was not started"
+  },
+  "8fe7e2cb745ed2eceda6f77b8f99fe84b396452b": {
+    "facing": "model",
+    "id": "system-prompt-workflow-agent-handback-message-is-return-value",
+    "name": "System Prompt: Workflow agent handback message is return value",
+    "desc": "Workflow subagent system prompt addition: when told to report through the handback tool, its message is the return value and must hold the whole literal result"
+  },
+  "f2898608f082910040ae06e3a032c6c7b6d15a4a": {
+    "facing": "model",
+    "id": "tool-result-artifact-identical-resubmission-sourceless",
+    "name": "Artifact Identical Resubmission Sourceless",
+    "desc": "identical_resubmission clause covering unseen live versions and versions that arrived only as a summary"
+  },
+  "15de40f5df27550c43e1604cd015259c89671ddd": {
+    "facing": "model",
+    "id": "tool-result-artifact-identical-resubmission-summary-only-arm",
+    "name": "Tool Result: Artifact resubmission summary-only arm",
+    "desc": "Arm of the identical_resubmission clause: that version reached Claude only as a summary, never as its source"
+  },
+  "8f0aaf534f1958fc93aba29aa23dde71db0ae84a": {
+    "facing": "model",
+    "id": "tool-description-artifact-design-skill-loading-guidance-app-wording",
+    "name": "Tool Description: Artifact design skill loading guidance (app wording)",
+    "desc": "App-worded requirement to load the Artifact design skill before authoring, with scratchpad placement guidance"
+  },
+  "a09929cc92506bbbd2e5b9bfec7a366444e8da53": { "facing": "internal" },
+  "22d20f7e133ba50ead1cdb59ae4634850e36f949": {
+    "facing": "model",
+    "id": "slash-command-usage-remote-session-settings-link",
+    "name": "Slash Command: /usage in cloud session",
+    "desc": "/usage result in a cloud session: usage isn't shown in chat; open Settings → Usage on claude.ai"
+  },
+  "735cb328abb85dd25f160b370ba47aafc7cc7733": {
+    "facing": "model",
+    "id": "tool-parameter-artifact-action-one-of-omit-publish",
+    "name": "Tool Parameter: Artifact Action One Of Omit Publish",
+    "desc": "action enum schema: one of the enabled actions, omitting it means publish, with Calls carrying per-action details."
+  },
+  "a7e18d2b19fd8494432ebd7e7cd0044ef99ae1a7": {
+    "facing": "model",
+    "id": "tool-result-proposeskills-not-users-own-skill",
+    "name": "Propose Skills Not User's Own Skill",
+    "desc": "Tells the model a built-in or plugin skill cannot be updated by the review card and to propose a new skill instead."
+  },
+  "2124029e9d6fb074be13e9dcae4c9a3a9e071fcd": {
+    "facing": "model",
+    "id": "tool-description-artifact-design-skill-loading-guidance-app-wording-2",
+    "name": "Tool Description: Artifact design skill loading guidance (app wording)",
+    "desc": "Requires the design skill before authoring an artifact and explains the viewer-supplied HTML skeleton."
+  },
+  "5a607bbeec8be249d871d3e07abb7add26bdde07": {
+    "facing": "model",
+    "id": "tool-result-artifact-publish-stale-version-guard",
+    "name": "Tool Result: Artifact publish stale version guard",
+    "desc": "Artifact tool error when an earlier same-turn read returned only a summary of a newer version."
+  },
+  "e3c22258cbada7f897cf39678078e70e9dcb029c": { "facing": "ui" },
+  "f4b58d249367d6c22a9f9f242716d45d89b26c6e": {
+    "facing": "model",
+    "id": "slash-command-rate-limit-options-reset-login-failed",
+    "name": "Slash Command: /rate-limit-options reset login failed",
+    "desc": "Result line when the 5-hour limit could not be reset with this login; run /login and try again"
+  },
+  "5d9c6c69d77e9538cec2d276080965bafb939476": { "facing": "internal" },
+  "b19e0f9f42ce0ccced69ca648116c7d72f399b10": { "facing": "ui" },
+  "a6c4dda5e9aab8cf458b59b0f6b2e8105ea56f37": {
+    "facing": "model",
+    "id": "tool-result-remote-tool-file-rules-unread-ask",
+    "name": "Tool Result: Remote tool file rules unread (ask)",
+    "desc": "Ask message when the session cannot tell which files a remote command opens, so it cannot check file-tool permission rules"
+  },
+  "8d3bf35a823c4abff7a269fb30319f425442e620": {
+    "facing": "model",
+    "id": "tool-result-remote-tool-file-rules-unread-cannot-ask",
+    "name": "Tool Result: Remote tool file rules unread (cannot ask)",
+    "desc": "Refusal when the session cannot tell which files a remote command opens and cannot ask"
+  },
+  "2acb8d6071c8ff609b3ead24f20d5225b05403dd": {
+    "facing": "model",
+    "id": "tool-result-remote-tool-file-rules-unread-managed-refused",
+    "name": "Tool Result: Remote tool refused under managed file deny rules",
+    "desc": "Refusal when managed deny rules for file tools are set and the session cannot tell which files a remote command opens"
+  },
+  "6e144b2002922128e420ec346355817fafb49606": { "facing": "internal" },
+  "c8a545b9c2bdc3d496d82a15e49b6ce1759d3a63": { "facing": "ui" },
+  "7efafaa57a5871143501a86aa5e40a33d8b96b7d": { "facing": "ui" },
+  "d37707c54eac2a74639a91a11d5790a8eec8ddbe": { "facing": "ui" },
+  "bbb8ac0eb443d968dd96e1868ee1b277433cc873": { "facing": "ui" },
+  "19a842616ca006ff3105cf43fccbad4e5c8ab41f": {
+    "facing": "model",
+    "id": "tool-result-remote-tool-host-left-idle",
+    "name": "Tool Result: Remote tool host left for idleness",
+    "desc": "Explains a computer stopped serving the session because it was idle and how to ask for the folder again"
+  },
+  "5bd86671a3681fd2122d51d83c962c4b102aad8b": {
+    "facing": "model",
+    "id": "tool-result-remote-tool-host-released-by-person",
+    "name": "Tool Result: Remote tool host disconnected by person",
+    "desc": "Explains the person at the computer disconnected the session from the folder; do the rest without it"
+  },
+  "ba68301adf64ad503fbde93a860577a8c29c3c14": {
+    "facing": "model",
+    "id": "tool-result-remote-tool-host-no-longer-attached",
+    "name": "Tool Result: Remote tool host no longer attached",
+    "desc": "Wrapper saying the computer is no longer attached and the call did not run, followed by the reason"
+  },
+  "4c4a062d41710b214044952caa3a2992752d7b22": {
+    "facing": "model",
+    "id": "system-reminder-attached-machine-idle-disconnect-notice",
+    "name": "System Reminder: Attached machine idle disconnect notice",
+    "desc": "Explains that idle attached machines stopped serving the session and how to reconnect"
+  },
+  "c4c6bfefac32ac76c33d0210b598c5bde16e5448": {
+    "facing": "model",
+    "id": "system-reminder-attached-machine-released-disconnect-notice",
+    "name": "System Reminder: Attached machine released disconnect notice",
+    "desc": "Explains the person at the attached computer disconnected the session from the folder; run commands here and do not wait for it"
+  },
+  "89f7d6f1f7549d6ff5f730829d551b5deee0fec7": { "facing": "internal" },
+  "b12d02ddd6cd961bebe50500cabb11630aa834d2": { "facing": "internal" },
+  "706217a595ee0eb70de4761924f1948c6ecfd237": { "facing": "internal" },
+  "424c01e6b7ba8dc0d08487da3947c8d56df42cb7": {
+    "facing": "model",
+    "id": "system-reminder-staged-files-still-copying",
+    "name": "System Reminder: Staged files still copying",
+    "desc": "Explains that staged files are still copying and how to wait for them"
+  },
+  "9be607e893a05e08b0db892c39952514e019d23c": {
+    "facing": "model",
+    "id": "system-reminder-staged-file-still-copying",
+    "name": "System Reminder: Staged file still copying",
+    "desc": "Explains that a staged file is still copying and how to wait for it"
+  },
+  "2e8ec0d6bda3df9a9f8b9f267dcf22c708571c83": { "facing": "internal" },
+  "194f4ddad1ef59390a062531942c98fe91ee8a5c": {
+    "facing": "model",
+    "id": "system-reminder-container-restart-agents-resuming",
+    "name": "System Reminder: Container restart, agents resuming",
+    "desc": "Notice that the container restarted mid-turn and unanswered Agent calls are being resumed from their transcripts; wait for their notifications"
+  },
+  "ce6f275172582e87bf02bb255ebfca370bf75aaf": {
+    "facing": "model",
+    "id": "tool-result-agent-not-resumed-session-ending",
+    "name": "Tool Result: Agent not resumed — session ending",
+    "desc": "Reason the agent was not resumed because the session is ending or out of budget"
+  },
+  "92f5c33b1fb222ec435c7ddd6e8256b490240e1e": { "facing": "internal" },
+  "efba06120a812404541859b708084714c1e794df": { "facing": "internal" },
+  "80c0595c1bbac0fe2b418e7a1f53491b58c8bc31": { "facing": "internal" },
+  "0aa31f05295114c759a7ae0239feca4291d20862": { "facing": "internal" },
+  "7dae4fb1a12b75b41c56b86b05a27a1c6f0b75b5": { "facing": "internal" },
+  "75e185ed63b52520cb7cd4757c225ff9b991d3c5": { "facing": "internal" },
+  "c338e8563168cf3738bb8dd8c14620fa9eac9fd6": { "facing": "internal" },
+  "4c527b1b9e4f8f521d98255fc07105cf20da63cc": { "facing": "ui" },
+  "e08ef9fddfeb81c9f81b091b8049c7876eaf802d": { "facing": "ui" },
+  "04c7867fdb4cd38e2311c209682f5cdfbac2a2c8": { "facing": "ui" },
+  "a4ff47a7bb642f04fd03e002503d55790a80a4f5": { "facing": "ui" },
+  "0d6d06436c0139103aaa5b129667ebf817023949": { "facing": "ui" },
+  "6e4acae37045c2f61136c324e5022eee6ea1ff36": {
+    "facing": "model",
+    "id": "skill-claude-code-help-recent-releases",
+    "name": "Skill: Claude Code help recent releases",
+    "desc": "Claude Code help skill section listing recent release notes and the running version"
+  },
+  "bbc044f837f3e3c6a4dd1f707aafbbd3d4884ea2": {
+    "facing": "model",
+    "id": "tool-result-mcp-answer-stream-ended-no-answer",
+    "name": "Tool Result: MCP answer stream ended with no answer",
+    "desc": "MCP tool call error when the server's answer stream ended without an answer"
+  },
+  "400258af31d125405148a327454a787991b64d4f": { "facing": "ui" },
+  "35c48a4d286faaed9cd8f1391433a7f04834ff8d": { "facing": "ui" },
+  "8f86e28aecc8c2645d29381e50454e40a723d41d": { "facing": "ui" },
+  "a668104a0c72fd30332b4f98c99e2a054d7ed1a5": { "facing": "ui" },
+  "b4c17a8062ba7115be531ccccd15ee1c872c2cef": { "facing": "ui" },
+  "58098fcbc039cc582c10505550025bf12c01c37a": { "facing": "ui" },
+  "e94ce635ac68033de4735896caf74465687f1f14": { "facing": "ui" },
+  "976cc806d9fa1e5b25967116e5b29c83aafa77b2": { "facing": "ui" },
+  "23780f1b2245806486ebc56032b6f98b89cabe85": { "facing": "ui" },
+  "2b34c936aef249a5ca13f927ffb291779227a155": { "facing": "ui" },
+  "2505056477b16ad8ef4b833e80a331d9f41bac3c": { "facing": "ui" },
+  "786e37346940bbfaf06d1dca7ccb7e55fb1aee01": { "facing": "ui" },
+  "8752922eccc0e1467bf20d40a771f6652d8df39d": { "facing": "ui" },
+  "ab7f9522ba0059e66b6556297eb1b5c5688687bc": { "facing": "internal" },
+  "b10454d79ad04469ee52c5dbef351a81657fb30a": {
+    "facing": "model",
+    "id": "tool-result-artifact-cowork-approval-card-unanswerable",
+    "name": "Tool Result: Artifact Cowork approval card unanswerable",
+    "desc": "Artifact MCP deny when in Cowork the call needs the approval card and no one can answer it"
+  },
+  "6aae3606ddcaa746f99bd57dd2e82a04574e2d84": {
+    "facing": "model",
+    "id": "tool-result-artifact-cowork-approval-tell-user-arm",
+    "name": "Tool Result: Artifact Cowork approval tell-user arm",
+    "desc": "Arm of the Cowork approval-card deny: tell the user in chat and do not retry on this turn"
+  },
+  "b5b225acac135bfdbee0e0a9d32d7a72d94009ed": {
+    "facing": "model",
+    "id": "tool-result-artifact-publish-files-read-rule-refused",
+    "name": "Tool Result: Artifact publish_files Read rule refused",
+    "desc": "Deny when a Read rule refuses a file sent to the Artifact tool, so nothing was read"
+  },
+  "d753be408963341b2a03359a60f9b10ed71d0930": { "facing": "internal" },
+  "1afcd05f8fa1875f7629baacf3671436059ad29f": {
+    "facing": "model",
+    "id": "tool-result-artifact-pending-foreign-comment-ask",
+    "name": "Tool Result: Artifact pending foreign comment needs answer",
+    "desc": "Ask message when a comment that may not be the person's own is pending on the artifact"
+  },
+  "b876c0ea94216cf6c7c78f656e56fdc92226d5af": { "facing": "ui" },
+  "81412636681823ff5ca1d442c661bd6c5e5123a8": {
+    "facing": "model",
+    "id": "data-claude-code-d-ts",
+    "name": "Data: claude-code.d.ts",
+    "desc": "Claude Code plugin API declarations written as the plugin-authoring skill file types/claude-code.d.ts, which SKILL.md points the model to as the API reference (also used for type-checking)."
+  },
+  "441c770b82588862abce1d0936a283c781b9e1d1": {
+    "facing": "model",
+    "id": "skill-building-llm-powered-applications-with-claude",
+    "name": "Skill: Building LLM-powered applications with Claude",
+    "desc": "Main SKILL.md of the bundled /claude-api skill: surface selection, language detection, current models and defaults, API drift table, subcommands, quick references and common pitfalls for writing Claude API code"
+  },
+  "023b81fedd78fca6d7a64b27d13740423f9a27c5": {
+    "facing": "model",
+    "id": "skill-model-migration-guide",
+    "name": "Skill: Model migration guide",
+    "desc": "Bundled claude-api skill reference file shared/model-migration.md: step-by-step guide for migrating Claude API code to newer models (scope confirmation, file classification, per-model breaking changes, behavioral shifts, checklists)"
+  },
+  "46fd61e14186497008fa1785960ac4490ba4ad76": {
+    "facing": "model",
+    "id": "data-prompt-caching",
+    "name": "Data: Prompt caching design & optimization",
+    "desc": "Bundled claude-api skill reference file shared/prompt-caching.md: prefix-match invariant, breakpoint placement patterns, silent invalidators, TTL choice, invalidation hierarchy, verification and pre-warming"
+  },
+  "8972578e4ea40c3dd61ab08d5f2781058fd812a0": {
+    "facing": "model",
+    "id": "tool-result-mcp-task-did-not-complete",
+    "name": "Tool Result: MCP task did not complete",
+    "desc": "MCP tool error when a server-side task for a tool was cancelled or failed, carrying the server's error text."
+  },
+  "4d5f8a28d3c6f811b61997fe6b712b00e9bb5516": { "facing": "internal" },
+  "da5273ca6cb0069a477e119c10b01e853f3bc1d8": {
+    "facing": "model",
+    "id": "tool-result-mcp-tool-timed-out",
+    "name": "Tool Result: MCP tool timed out",
+    "desc": "MCP tool error when a call exceeded the tool timeout, optionally followed by notes on open questions or pending state."
+  },
+  "a2709d9162d088f730d31fd02abacc302f63c3b7": {
+    "facing": "model",
+    "id": "tool-result-mcp-proxy-approval-denied",
+    "name": "Tool Result: MCP proxy approval denied",
+    "desc": "MCP tool error when a remote-proxied MCP call needed approval and it was denied, used when the server gives no message."
+  },
+  "82cbf43777fbd7d1276367dd4094004c5699e5f8": {
+    "facing": "model",
+    "id": "tool-result-mcp-tool-unexpected-response-format",
+    "name": "Tool Result: MCP tool unexpected response format",
+    "desc": "MCP tool error when the server's tool result had neither structured nor content output."
+  },
+  "41f367029f9de447a8495b4938f7ffe9a4050378": {
+    "facing": "model",
+    "id": "skill-base-directory-prompt-prefix",
+    "name": "Skill base-directory prompt prefix",
+    "desc": "Prefix injected into the model's context ahead of a skill/command prompt stating the skill's base directory."
+  },
+  "732bccba03883d03e57022f24f02679106ee91c3": {
+    "facing": "model",
+    "id": "tool-result-artifact-db-read-notification-confirmation-reason",
+    "name": "Artifact database-read notification confirmation reason",
+    "desc": "Decision reason for a notification-triggered artifact database read ask: it needs confirmation outside auto-allow channels."
+  },
+  "082daf5e855ac60422b772063b9f337da94fb291": {
+    "facing": "model",
+    "id": "tool-result-artifact-url-only-actions-extra-params-error",
+    "name": "Artifact URL-Only Actions Extra-Params Error",
+    "desc": "validateInput rejection when a URL-only Artifact action (watch, unwatch, status, verify, ...) is passed extra fields."
+  },
+  "f07933637c7248d01d102ea700554a37b2207bf8": {
+    "facing": "model",
+    "id": "tool-result-artifact-read-page-data-notification-triggered-permission-ask",
+    "name": "Artifact read notification-triggered permission ask",
+    "desc": "Permission ask for an Artifact read prompted by the new-comments notification, naming the artifact and noting who wrote its content."
+  },
+  "a08d2b8e9789ea0d719ef14dca55bb322f91b7b8": {
+    "facing": "model",
+    "id": "tool-result-artifact-verify-notification-confirmation-reason",
+    "name": "Artifact diagnostics-read notification confirmation reason",
+    "desc": "Decision reason for a notification-triggered read of an artifact's runtime diagnostics: it needs confirmation outside auto-allow channels."
+  },
+  "06162004ceb98c5c37d053c5fcf958740aa4247b": {
+    "facing": "model",
+    "id": "tool-result-artifact-read-page-data-notification-confirmation-reason",
+    "name": "Artifact notification-triggered database read confirmation reason",
+    "desc": "Safety-check reason for a notification-triggered read of someone else's artifact database: it needs confirmation and approval covers this one read only."
+  },
+  "d3d11f63192133a3727e41ac3ee0bdcc5578d82c": {
+    "facing": "model",
+    "id": "tool-result-artifact-read-page-data-first-read-confirmation-reason",
+    "name": "Artifact first database read confirmation reason",
+    "desc": "Safety-check reason for the first read of someone else's artifact database: it needs confirmation, and says how far the approval reaches."
+  },
+  "a29898f945178cfbc6897915a7f5398eba703d9b": {
+    "facing": "model",
+    "id": "tool-result-artifact-db-read-ask-rule-confirmation-reason",
+    "name": "Artifact database read ask-rule confirmation reason",
+    "desc": "Safety-check reason for a read of someone else's artifact database matched by an ask rule: it needs confirmation and approval covers this one read only."
+  },
+  "6cf94b6bb28d4df74027ca85016088e6068388b4": {
+    "facing": "model",
+    "id": "tool-result-artifact-db-read-approval-scope-conversation",
+    "name": "Artifact database read approval scope (conversation)",
+    "desc": "Clause inside the first-read confirmation reason saying the approval covers reads of this artifact for the rest of the conversation."
+  }
 }
