@@ -22,6 +22,13 @@ const fixture = [
 // CC 2.1.284 dropped the ultracode guard: ultracode became a session flag.
 const fixture284 = fixture.replace('&&level!=="ultracode"', '');
 
+// CC 2.1.312 split the unsupported-effort label into `" ","Effort..."` and
+// added `dimColor:!1`.
+const fixture312 = fixture284.replace(
+  'el(Text,{color:"subtle",children:[el(Icon,{effort:void 0})," Effort not supported"]})',
+  'el(Text,{color:"subtle",dimColor:!1,children:[el(Icon,{effort:void 0})," ","Effort not supported"]})'
+);
+
 function harness(source = fixture) {
   const context = vm.createContext({
     available: [] as { value: string; disabled?: boolean }[],
@@ -156,6 +163,20 @@ describe('effort router model aliases', () => {
     expect(writeComplexityRouterModels(result)).toBe(result);
   });
 
+  it('shows automatic effort with the CC 2.1.312 unsupported-effort label', () => {
+    expect(fixture312).toContain(
+      'dimColor:!1,children:[el(Icon,{effort:void 0})," ","Effort not supported"'
+    );
+    const { context, result } = harness(fixture312);
+    expect(vm.runInContext('display().children', context)).toMatchObject({
+      color: 'subtle',
+      children: 'Automatic effort · currently high',
+    });
+    context.focused = 'opus';
+    expect(vm.runInContext('display().children', context)).toBe('manual');
+    expect(writeComplexityRouterModels(result)).toBe(result);
+  });
+
   it('does not confuse runtime getter comparisons with alias installation', () => {
     const source =
       'function active(){return typeof globalThis.__tweakccRouterSelectedModel==="function"?globalThis.__tweakccRouterSelectedModel():null}' +
@@ -167,6 +188,36 @@ describe('effort router model aliases', () => {
       'globalThis.__tweakccRouterSelectedModel=function('
     );
     expect(result).toContain('case"opusrouter":return"claude-opus-5-5";');
+  });
+
+  it('reaches the alias resolver from a picker in another chunk', () => {
+    // CC 2.1.311 code-splits the picker away from the resolver; the picker
+    // must not name the resolver's minified identifier.
+    const result = writeComplexityRouterModels(fixture)!;
+    const at = result.indexOf('function picker(');
+    const pickerChunk = result.slice(at, result.indexOf('var adjust=', at));
+    expect(pickerChunk).not.toMatch(/(?<![$\w.])resolve\(/);
+    const resolverChunk = result
+      .slice(result.indexOf('globalThis.__tweakccRouterAliasModel='))
+      .split('function defaults(')[0];
+    const resolverScope = vm.createContext({});
+    vm.runInContext(
+      'function valid(x){return x==="opus"}' + resolverChunk,
+      resolverScope
+    );
+    const pickerScope = vm.createContext({
+      available: [{ value: 'opus' }],
+      __tweakccRouterAliasModel: resolverScope.__tweakccRouterAliasModel,
+    });
+    vm.runInContext(
+      'function rows(){return available}' + pickerChunk,
+      pickerScope
+    );
+    expect(vm.runInContext('typeof resolve', pickerScope)).toBe('undefined');
+    expect(vm.runInContext('picker().map(x=>x.value)', pickerScope)).toEqual([
+      'opus',
+      'opusrouter',
+    ]);
   });
 
   it('is idempotent and leaves unsupported older builds alone', () => {

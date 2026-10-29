@@ -17,15 +17,6 @@
       "SUMMARY_REPLY_SHAPE_DESCRIPTION": "Value is \"an <analysis> block followed by a <summary> block\" or, on the lean/short/capped summary paths, \"a <summary> block\" (tQt is exported and called with either, so the resolver also keeps an unknown branch). Renders `Your response is an <analysis> block followed by a <summary> block.` or `Your response is a <summary> block.`, reworded from \"Your entire response must be plain text: …\". Both read whole, and the shape is still predicated of the response."
     }
   },
-  "system-prompt-harness-instructions": {
-    "bodyHash": "bd52c78247b5",
-    "pristineHash": "dba035c633f2",
-    "valueHash": "e4d6738e81e5",
-    "reviewed": "2026-10-09 (CC 2.1.295)",
-    "tokens": {
-      "PASTED_CONTENT_GUIDANCE_BULLET": "Value is \"\" or \"\\n - <bullet>\". It opens its own bullet line; its left neighbour is now the guidance call's output instead of the cut \"Hooks may intercept …\" sentence."
-    }
-  },
   "system-reminder-cloud-review-launch-note": {
     "bodyHash": "39e7bf684884",
     "pristineHash": "4986b369b135",
@@ -114,6 +105,15 @@
     "reviewed": "2026-10-25 (CC 2.1.310)",
     "tokens": {
       "WEBFETCH_OBSERVABLE_ACTION_NOTE": "Value is \"\" or a whole paragraph about which URLs WebFetch may fetch, ending in a blank line. It leads the description exactly as in pristine; the override only cut the IMPORTANT paragraph that followed it, so the block fn output now follows the note directly."
+    }
+  },
+  "system-prompt-harness-instructions-3": {
+    "bodyHash": "f26a9adb2d33",
+    "pristineHash": "ff3b9a1b1d6c",
+    "valueHash": "3473daab2d5c",
+    "reviewed": "2026-10-28 (CC 2.1.312)",
+    "tokens": {
+      "PASTED_CONTENT_GUIDANCE_BULLET": "Value is \"\" or \"\\n - <bullet>\". It opens its own bullet line; its left neighbour is the reminder-guidance call's output instead of the cut \"Hooks may intercept …\" sentence. Unchanged from the 2.1.295 review; 2.1.312 only renamed the id and reshaped the intro slots."
     }
   }
 }

@@ -6,6 +6,8 @@ const MODELS = [
   ['fablerouter', 'claude-fable-5-1', 'Fable 5.1 + Effort Router'],
 ] as const;
 
+const ALIAS_MODEL = 'globalThis.__tweakccRouterAliasModel';
+
 const isRouter = (value: string): string =>
   `(${value}==="opusrouter"||${value}==="fablerouter")`;
 
@@ -41,10 +43,22 @@ const patchEffortControls = (file: string): string | null => {
   if (result === null) return null;
   const display =
     /(([$\w]+)!==void 0&&![$\w]+&&[$\w]+\([$\w]+,\{marginBottom:1,flexDirection:"column",children:)/;
-  const text = result.match(
-    /([$\w]+)\(([$\w]+),\{color:"subtle",children:\[[$\w]+\([$\w]+,\{effort:void 0\}\)," Effort not supported"/
-  );
-  if (!text) return null;
+  const texts = [
+    // CC >= 2.1.312: `dimColor:!1` and a separate `" "` child.
+    /([$\w]+)\(([$\w]+),\{color:"subtle",dimColor:!1,children:\[[$\w]+\([$\w]+,\{effort:void 0\}\)," ","Effort not supported"/,
+    /([$\w]+)\(([$\w]+),\{color:"subtle",children:\[[$\w]+\([$\w]+,\{effort:void 0\}\)," Effort not supported"/,
+  ];
+  let text: RegExpMatchArray | null = null;
+  for (const pattern of texts) {
+    text = result.match(pattern);
+    if (text) break;
+  }
+  if (!text) {
+    console.error(
+      'patch: complexityRouterModels: failed to find effort-unsupported text'
+    );
+    return null;
+  }
   result = replace(
     result,
     display,
@@ -92,7 +106,12 @@ export const writeComplexityRouterModels = (oldFile: string): string | null => {
   const aliasResolver = oldFile.match(
     /function ([$\w]+)\(([$\w]+)\)\{let [$\w]+=\2\.trim\(\)[\s\S]{0,120}?if\([$\w]+\(([$\w]+)\)\)switch\(\3\)\{/
   );
-  if (!aliasResolver) return null;
+  if (!aliasResolver) {
+    console.error(
+      'patch: complexityRouterModels: failed to find alias resolver'
+    );
+    return null;
+  }
   const cases = MODELS.map(
     ([alias, model]) => `case"${alias}":return"${model}";`
   ).join('');
@@ -103,12 +122,20 @@ export const writeComplexityRouterModels = (oldFile: string): string | null => {
     'model alias whitelist'
   );
   if (file === null) return null;
+  // The picker can sit in a different code-split chunk from the alias
+  // resolver (CC 2.1.311), where calling it by its minified name throws
+  // `ReferenceError` on the first frame. Publish it from its own chunk; the
+  // function declaration is hoisted, so the assignment can precede it.
+  const publish = `${ALIAS_MODEL}=${aliasResolver[1]};`;
   const aliasIndex = file.indexOf(aliasResolver[0]);
-  const resolved = file.replace(aliasResolver[0], aliasResolver[0] + cases);
+  const resolved = file.replace(
+    aliasResolver[0],
+    publish + aliasResolver[0] + cases
+  );
   showDiff(
     file,
     resolved,
-    aliasResolver[0] + cases,
+    publish + aliasResolver[0] + cases,
     aliasIndex,
     aliasIndex + aliasResolver[0].length
   );
@@ -145,7 +172,7 @@ export const writeComplexityRouterModels = (oldFile: string): string | null => {
     file,
     /function ([$\w]+)\(([$\w]+)=!1,([$\w]+)=null\)\{let ([$\w]+)=new Set,([$\w]+)=[$\w]+\(\2,\3\)\.filter\(\(([$\w]+)\)=>\{if\(\6\.value===null\)return!0;if\(\4\.has\(\6\.value\)\)/,
     m =>
-      `function ${m[1]}(${m[2]}=!1,${m[3]}=null){let rows=__tweakccRouterBasePicker(${m[2]},${m[3]});let clean=rows.filter(row=>!${isRouter('row.value')});for(let [alias,model,label] of ${JSON.stringify(MODELS)}){let index=clean.findIndex(row=>typeof row.value==="string"&&row.disabled!==!0&&${aliasResolver[1]}(row.value)===model);if(index!==-1)clean.splice(index+1,0,{...clean[index],value:alias,label,description:"Automatic effort selected for each message"})}return clean}function __tweakccRouterBasePicker` +
+      `function ${m[1]}(${m[2]}=!1,${m[3]}=null){let rows=__tweakccRouterBasePicker(${m[2]},${m[3]});let clean=rows.filter(row=>!${isRouter('row.value')});for(let [alias,model,label] of ${JSON.stringify(MODELS)}){let index=clean.findIndex(row=>typeof row.value==="string"&&row.disabled!==!0&&${ALIAS_MODEL}?.(row.value)===model);if(index!==-1)clean.splice(index+1,0,{...clean[index],value:alias,label,description:"Automatic effort selected for each message"})}return clean}function __tweakccRouterBasePicker` +
       m[0].slice(`function ${m[1]}`.length),
     'filtered model picker'
   );

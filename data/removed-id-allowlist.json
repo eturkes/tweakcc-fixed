@@ -6066,5 +6066,820 @@
     "verdict": "archived",
     "version": "2.1.310",
     "why": "Renamed upstream; content now carried by tool-result-worktree-create-failed. Override archived to ~/.tweakcc/orphans-removed-for-2.1.310/."
+  },
+  "data-sandbox-install-check-status": {
+    "verdict": "archived",
+    "version": "2.1.311",
+    "why": "Reworded upstream; content now carried by data-sandbox-install-check-status-hint. The override matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.311/."
+  },
+  "slash-command-ide-plugin-installed-restart-required": {
+    "verdict": "archived",
+    "version": "2.1.311",
+    "why": "Absent from prompts-2.1.311.json and its text is gone from the bundle; The override matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.311/."
+  },
+  "system-prompt-windows-sandbox-admin-setup-again-remedy": {
+    "verdict": "archived",
+    "version": "2.1.311",
+    "why": "Absent from prompts-2.1.311.json and its text is gone from the bundle; The override matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.311/."
+  },
+  "system-reminder-device-mcp-serving-consent-needed-brief": {
+    "verdict": "archived",
+    "version": "2.1.311",
+    "why": "Absent from prompts-2.1.311.json and its text is gone from the bundle; The override matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.311/."
+  },
+  "system-reminder-device-mcp-serving-consent-needed-detailed": {
+    "verdict": "archived",
+    "version": "2.1.311",
+    "why": "Absent from prompts-2.1.311.json and its text is gone from the bundle; The override matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.311/."
+  },
+  "system-reminder-device-mcp-serving-not-now-brief": {
+    "verdict": "archived",
+    "version": "2.1.311",
+    "why": "Absent from prompts-2.1.311.json and its text is gone from the bundle; The override matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.311/."
+  },
+  "system-reminder-device-mcp-serving-not-now-detailed": {
+    "verdict": "archived",
+    "version": "2.1.311",
+    "why": "Absent from prompts-2.1.311.json and its text is gone from the bundle; The override matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.311/."
+  },
+  "system-reminder-left-running-programs-not-running": {
+    "verdict": "archived",
+    "version": "2.1.311",
+    "why": "Absent from prompts-2.1.311.json and its text is gone from the bundle; The override matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.311/."
+  },
+  "tool-description-bash-working-directory": {
+    "verdict": "archived",
+    "version": "2.1.311",
+    "why": "Reworded upstream; content now carried by tool-description-bash-working-directory-3. The override matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.311/."
+  },
+  "tool-result-bash-sandbox-setup-again-ask-admin": {
+    "verdict": "archived",
+    "version": "2.1.311",
+    "facing": "ui",
+    "hash": "e12e6b1901182f1146c59e44141c47c84c9edae6",
+    "why": "Reworded upstream; the model-facing remedy is now tool-result-bash-sandbox-ask-admin-install-network-filters. The only uncatalogued copy of the shared docs-link suffix is the /sandbox status panel, which is terminal-only. Override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.311/."
+  },
+  "tool-result-sandbox-strict-admin-run-setup": {
+    "verdict": "archived",
+    "version": "2.1.311",
+    "why": "Absent from prompts-2.1.311.json and its text is gone from the bundle; The override matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.311/."
+  },
+  "tool-result-save-task-files-no-disk": {
+    "verdict": "archived",
+    "version": "2.1.311",
+    "why": "Reworded upstream; content now carried by tool-result-tool-results-files-disabled. The override matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.311/."
+  },
+  "tool-result-served-repo-hook-settings-unreadable": {
+    "verdict": "archived",
+    "version": "2.1.311",
+    "why": "Absent from prompts-2.1.311.json and its text is gone from the bundle; The override matched superseded pristine, so nothing unique was lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.311/."
+  },
+  "agent-prompt-session-title-and-branch-generation": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "data-artifact-decision-component-html-skeleton": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "data-artifact-decision-component-script": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "data-artifact-read-data-island-validated-typed-fields": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "skill-artifact-components": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "skill-artifact-components-description": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "skill-artifact-data-table-description": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "skill-artifact-document": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "skill-artifact-explainer": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "skill-artifact-explainer-type-description": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "skill-artifact-report": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "skill-artifact-report-description": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "skill-artifact-template-runtime-capabilities-note": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "skill-artifact-template-runtime-capabilities-note-live-doc": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "skill-doc-description": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "skill-prototype": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "skill-prototype-description": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "skill-prototype-runtime-capabilities-guidance": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "skill-prototype-when-to-use": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "skill-workshop": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "skill-workshop-description": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "slash-command-low-priority-description": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "system-prompt-artifact-comment-reply-workshop-change-clause": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "system-prompt-plan-mode-interactive-workshop-offer": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "system-reminder-plan-mode-prototype-artifact-option": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "system-reminder-plan-mode-workshop-doc-grant-sparse": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "system-reminder-plan-mode-workshop-in-progress": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "system-reminder-plan-mode-workshop-publish-turn-end-clause": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "system-reminder-plan-mode-workshop-write-carve-out": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-description-artifact-read-page-data-dynamic": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-description-artifact-read-page-data-single-dynamic": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-description-list-connectors-needs-reconnect-call-tool": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-description-list-connectors-needs-reconnect-card": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-description-resolve-connectors-needs-reconnect-not-installed": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-parameter-artifact-action-read-page-data": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-parameter-artifact-action-read-page-data-2": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-parameter-artifact-interaction-schema": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-parameter-artifact-interaction-schema-2": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-conflict-read-remedy-workshop-page": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-data-island-absent": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-data-island-validated-header": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-interaction-schema-unavailable": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-island-present-zero-entries": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-live-edit-workshop-page-refused": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-page-data-entries-are-data": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-page-data-entries-unreadable": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-page-data-no-entry-readable": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-page-data-plan-mode-first-read-session-user-approval-required": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-page-data-provenance-self-session": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-page-data-provenance-unconfirmed": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-page-data-record-unreadable": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-publish-copy-workshop-sidecar-refused": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-publish-whiteboard-needs-artifact-capability": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-publish-workshop-decisions-unreadable": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-read-page-data-derive-failed": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-read-page-data-fetch-failed": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-read-page-data-island-ambiguous": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-read-page-data-island-out-of-contract": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-read-page-data-public-other-org": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-read-page-data-requires-schema": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-read-page-data-schema-unavailable": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-read-page-data-schema-unavailable-reason": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-schema-failed-validation": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-stale-read-remedy-workshop-page": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-island-byte-sequence-collision": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-island-entry-grammar": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-script-not-blessed": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-sidecar-history-contract-violation": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-sidecar-priors-refused": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-sidecar-priors-remedy": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-sidecar-refused-tail": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-sidecar-structural-verifier-refused": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-source-not-handed-over": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-bad-anchor-value": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-bad-choice-token": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-bad-decision-id": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-banner-state-invalid": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-banner-state-mismatch": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-choice-rows-mismatch": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-duplicate-decision-item": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-event-handler-attribute": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-external-script-src": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-forged-decision-item": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-island-close-tag-spelling": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-island-id-misuse": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-island-no-close-tag-location": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-island-no-open-tag-location": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-island-open-tag-byte-spelling": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-lean-choice-not-in-opts": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-markup-nests-too-deeply": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-markup-unverifiable-depth": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-mathml-not-allowed": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-meta-behavior": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-meta-http-equiv": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-missing-island": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-more-page-violations": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-more-sidecar-violations": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-open-item-carries-resolution": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-orphan-choice": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-referrerpolicy-attribute": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-refused-element-generic": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-refused-embedding-element": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-refused-form-element": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-refused-frameset-element": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-refused-lead": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-refused-link-element": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-refused-noscript-element": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-refused-select-element": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-rel-opener-attribute": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-reparse-divergence": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-reparse-not-fixed-point": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-resolved-choice-mismatch": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-resolved-custom-mismatch": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-svg-foreignobject": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-svg-non-svg-element": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-svg-nonlocal-reference": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-svg-rawtext-hazard": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-svg-script": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-svg-smil-target": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-svg-style": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-target-attribute": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-template-content-surface": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-unknown-data-island": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-unsafe-srcset-url": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-unsafe-url": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-verifier-error": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-violation-cap-reached": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-workshop-page-sidecar-refused": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-workshop-verifier-ping-attribute": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Absent from the catalogue and its text is gone from the bundle (artifact Workshop/page-data feature removed upstream). The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "data-artifact-decision-component-design-tokens": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Bundled asset dropped with the artifact Workshop and decision-component skills. Its surviving text is the vendored CDS tokens and theme script inside the new plan-artifact HTML template, which the publish path fills mechanically (ruled ui), plus generic CSS lines that already-catalogued prompts carry. The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/.",
+    "facing": "ui",
+    "hash": "d4b8a0ef598402d86638d90d2db99015df229485"
+  },
+  "data-artifact-decision-component-styles": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Bundled asset dropped with the artifact Workshop and decision-component skills. Its surviving text is the vendored CDS tokens and theme script inside the new plan-artifact HTML template, which the publish path fills mechanically (ruled ui), plus generic CSS lines that already-catalogued prompts carry. The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/.",
+    "facing": "ui",
+    "hash": "d4b8a0ef598402d86638d90d2db99015df229485"
+  },
+  "data-artifact-document-html-template": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Bundled asset dropped with the artifact Workshop and decision-component skills. Its surviving text is the vendored CDS tokens and theme script inside the new plan-artifact HTML template, which the publish path fills mechanically (ruled ui), plus generic CSS lines that already-catalogued prompts carry. The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/.",
+    "facing": "ui",
+    "hash": "d4b8a0ef598402d86638d90d2db99015df229485"
+  },
+  "data-theme-script-html": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Bundled asset dropped with the artifact Workshop and decision-component skills. Its surviving text is the vendored CDS tokens and theme script inside the new plan-artifact HTML template, which the publish path fills mechanically (ruled ui), plus generic CSS lines that already-catalogued prompts carry. The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/.",
+    "facing": "ui",
+    "hash": "d4b8a0ef598402d86638d90d2db99015df229485"
+  },
+  "data-workshop-page-html-template": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Bundled asset dropped with the artifact Workshop and decision-component skills. Its surviving text is the vendored CDS tokens and theme script inside the new plan-artifact HTML template, which the publish path fills mechanically (ruled ui), plus generic CSS lines that already-catalogued prompts carry. The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/.",
+    "facing": "ui",
+    "hash": "d4b8a0ef598402d86638d90d2db99015df229485"
+  },
+  "skill-artifact-data-table": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Bundled asset dropped with the artifact Workshop and decision-component skills. Its surviving text is the vendored CDS tokens and theme script inside the new plan-artifact HTML template, which the publish path fills mechanically (ruled ui), plus generic CSS lines that already-catalogued prompts carry. The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/.",
+    "facing": "ui",
+    "hash": "d4b8a0ef598402d86638d90d2db99015df229485"
+  },
+  "skill-artifact-data-table-html-template": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Bundled asset dropped with the artifact Workshop and decision-component skills. Its surviving text is the vendored CDS tokens and theme script inside the new plan-artifact HTML template, which the publish path fills mechanically (ruled ui), plus generic CSS lines that already-catalogued prompts carry. The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/.",
+    "facing": "ui",
+    "hash": "d4b8a0ef598402d86638d90d2db99015df229485"
+  },
+  "skill-artifact-explainer-html-template": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Bundled asset dropped with the artifact Workshop and decision-component skills. Its surviving text is the vendored CDS tokens and theme script inside the new plan-artifact HTML template, which the publish path fills mechanically (ruled ui), plus generic CSS lines that already-catalogued prompts carry. The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/.",
+    "facing": "ui",
+    "hash": "d4b8a0ef598402d86638d90d2db99015df229485"
+  },
+  "skill-artifact-report-html-template": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Bundled asset dropped with the artifact Workshop and decision-component skills. Its surviving text is the vendored CDS tokens and theme script inside the new plan-artifact HTML template, which the publish path fills mechanically (ruled ui), plus generic CSS lines that already-catalogued prompts carry. The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/.",
+    "facing": "ui",
+    "hash": "d4b8a0ef598402d86638d90d2db99015df229485"
+  },
+  "agent-prompt-plan-mode-phase-4": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Reworded upstream; content now carried by agent-prompt-plan-mode-phase-4-2. The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "system-prompt-harness-instructions": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Reworded upstream; content now carried by system-prompt-harness-instructions-3. The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-description-connector-directory-connect-via-claude-ai": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Reworded upstream; content now carried by tool-description-suggestconnectors. The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-description-list-connectors-recommend-via-registry": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Reworded upstream; content now carried by tool-description-listconnectors. The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-read-page-data-plan-mode-no-consent": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Reworded upstream; content now carried by tool-result-artifact-read-db-plan-mode-no-consent. The override held a trim; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-read-page-data-target-changed": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Reworded upstream; content now carried by tool-result-artifact-read-target-changed. The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-hook-cross-environment-result-ignored": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Reworded upstream; content now carried by tool-result-plugin-hook-cross-environment-input-blocked. The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "tool-result-artifact-page-data-plan-mode-one-read-user-approval-required": {
+    "verdict": "archived",
+    "version": "2.1.312",
+    "why": "Page-data read reason removed with read_page_data; the plan-mode database-read reasons are catalogued separately. The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
   }
 }

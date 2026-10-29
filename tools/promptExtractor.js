@@ -146,6 +146,24 @@ const CURATED_IDENTIFIER_MAPS = {
         12: 'PLAN_MODE_ASK_QUESTIONS_NOTE',
       },
     },
+    {
+      // CC 2.1.312 dropped the workshop and prototype option slots and the
+      // PLAN_MODE_CONTEXT arguments, so the generated map lost its names. Order
+      // in the binary: read-only banner, plan file info, phases 1-4 (phase 4 is
+      // now a plain value), exit tool name, exit instructions fn, ask note.
+      identifiers: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+      identifierMap: {
+        0: 'PLAN_MODE_READONLY_INSTRUCTIONS',
+        1: 'PLAN_FILE_INFO',
+        2: 'PLAN_MODE_PHASE_1_INITIAL_UNDERSTANDING',
+        3: 'PLAN_MODE_PHASE_2_DESIGN',
+        4: 'PLAN_MODE_PHASE_3_REVIEW',
+        5: 'PLAN_MODE_PHASE_4_FINAL_PLAN',
+        6: 'EXIT_PLAN_MODE_TOOL_NAME',
+        7: 'EXIT_PLAN_MODE_INSTRUCTIONS_FN',
+        8: 'PLAN_MODE_ASK_QUESTIONS_NOTE',
+      },
+    },
   ],
   'system-prompt-agent-summary-generation': [
     {
@@ -203,6 +221,35 @@ const CURATED_IDENTIFIER_MAPS = {
         2: 'SYSTEM_REMINDER_TAG_GUIDANCE_FN',
         3: 'TOOL_CONTEXT',
         4: 'PASTED_CONTENT_GUIDANCE_BULLET',
+      },
+    },
+  ],
+  'system-prompt-harness-instructions-3': [
+    {
+      // CC 2.1.312 inlined the intro, so the reshaped body took a suffix: slot 0
+      // is the intro fn called on the opening variant (slot 1), then security
+      // policy, the reminder-guidance fn and its explains-system-turns flag,
+      // then the pasted-content bullet.
+      identifiers: [0, 1, 2, 3, 4, 5],
+      identifierMap: {
+        0: 'AGENT_INTRO_FN',
+        1: 'AGENT_INTRO_VARIANT',
+        2: 'SECURITY_POLICY_INSTRUCTIONS',
+        3: 'SYSTEM_REMINDER_TAG_GUIDANCE_FN',
+        4: 'EXPLAINS_SYSTEM_TURNS',
+        5: 'PASTED_CONTENT_GUIDANCE_BULLET',
+      },
+    },
+  ],
+  'system-prompt-harness-instructions-2': [
+    {
+      // CC 2.1.312: the intro fn called on the opening variant, then the
+      // security policy.
+      identifiers: [0, 1, 2],
+      identifierMap: {
+        0: 'AGENT_INTRO_FN',
+        1: 'AGENT_INTRO_VARIANT',
+        2: 'SECURITY_POLICY_INSTRUCTIONS',
       },
     },
   ],
