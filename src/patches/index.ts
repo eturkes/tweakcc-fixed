@@ -82,6 +82,7 @@ import { writeHideStartupBanner } from './hideStartupBanner';
 import { writeHideCtrlGToEdit } from './hideCtrlGToEdit';
 import { writeHideStartupClawd } from './hideStartupClawd';
 import { writeHideTitleSpinner } from './hideTitleSpinner';
+import { writeDisableAgentSummaries } from './disableAgentSummaries';
 import { writeIncreaseFileReadLimit } from './increaseFileReadLimit';
 import { writeSuppressLineNumbers } from './suppressLineNumbers';
 import { writeSuppressRateLimitOptions } from './suppressRateLimitOptions';
@@ -120,6 +121,7 @@ import { writeSessionColor } from './sessionColor';
 import { writeReadDefaultLines } from './readDefaultLines';
 import { writeSwapRipgrepForFff } from './swapRipgrepForFff';
 import { writeFffInstructionHygiene } from './fffInstructions';
+import { writeEmptyEnvironment } from './emptyEnvironment';
 import { ensureRgFffWrapper } from '../ripgrepFff';
 import {
   writeSuppressDeferredTools,
@@ -246,11 +248,18 @@ const PATCH_DEFINITIONS = [
       'When a prompt override replaces one of Claude Code\'s identity lines, turn off the "global" cache scope that the first-party API rejects after a non-stock identity, so the prompt caches at organization scope instead. Does nothing while the identity lines are stock.',
   },
   {
+    id: 'empty-environment',
+    name: 'Suppress empty environment scaffolding',
+    group: PatchGroup.ALWAYS_APPLIED,
+    description:
+      'Omit the environment prose heading and list when every fragment is blank',
+  },
+  {
     id: 'fff-instruction-hygiene',
     name: 'Remove stale fff tool guidance',
     group: PatchGroup.ALWAYS_APPLIED,
     description:
-      'Remove previously appended fff guidance from active saved tool descriptions without modifying session records',
+      'Remove stale fff guidance from active prompts and saved tool descriptions without modifying session records',
   },
   {
     id: 'fix-summarize-from-here',
@@ -471,6 +480,13 @@ const PATCH_DEFINITIONS = [
     group: PatchGroup.MISC_CONFIGURABLE,
     description:
       'Terminal title drops the ◐/◑ spinner while busy (background shells included); ✳ still marks idle/waiting',
+  },
+  {
+    id: 'disable-agent-summaries',
+    name: 'Disable agent progress summaries',
+    group: PatchGroup.MISC_CONFIGURABLE,
+    description:
+      "Stop the ~30 s Opus request that re-reads each background agent's transcript to label its row; rows show the task description instead",
   },
   {
     id: 'increase-file-read-limit',
@@ -1221,6 +1237,9 @@ export const applyCustomization = async (
     'fff-instruction-hygiene': {
       fn: c => writeFffInstructionHygiene(c),
     },
+    'empty-environment': {
+      fn: c => writeEmptyEnvironment(c),
+    },
     'fix-summarize-from-here': {
       fn: c => writeFixSummarizeFromHere(c),
       condition: config.settings.misc?.fixSummarizeFromHere !== false,
@@ -1377,6 +1396,10 @@ export const applyCustomization = async (
     'hide-title-spinner': {
       fn: c => writeHideTitleSpinner(c),
       condition: !!config.settings.misc?.hideTitleSpinner,
+    },
+    'disable-agent-summaries': {
+      fn: c => writeDisableAgentSummaries(c),
+      condition: !!config.settings.misc?.disableAgentSummaries,
     },
     'increase-file-read-limit': {
       fn: c => writeIncreaseFileReadLimit(c),

@@ -35,6 +35,7 @@ import { writeThinkingBlockStyling } from './thinkingBlockStyling';
 import { writeFixLspSupport } from './fixLspSupport';
 import { writeNoGlobalCacheScope } from './globalCacheScope';
 import { writeFffInstructionHygiene } from './fffInstructions';
+import { writeEmptyEnvironment } from './emptyEnvironment';
 import { writeFixSummarizeFromHere } from './fixSummarizeFromHere';
 import { writeFixRewindSummaryHeader } from './fixRewindSummaryHeader';
 import { writeStatuslineUpdateThrottle } from './statuslineUpdateThrottle';
@@ -104,6 +105,7 @@ import { writeVoiceMode } from './voiceMode';
 import { writeChannelsMode } from './channelsMode';
 import { writeAttachedBackgroundInteractive } from './attachedBackgroundInteractive';
 import { writeProposeGoal } from './proposeGoal';
+import { writeDisableAgentSummaries } from './disableAgentSummaries';
 import {
   writeSuppressDeferredTools,
   writeStripEmptySystemReminders,
@@ -313,6 +315,7 @@ const INVOCATIONS: Record<PatchId, (src: string) => string | null> = {
   'thinking-block-styling': c => writeThinkingBlockStyling(c),
   'fix-lsp-support': c => writeFixLspSupport(c),
   'fff-instruction-hygiene': c => writeFffInstructionHygiene(c),
+  'empty-environment': c => writeEmptyEnvironment(c),
   // The patch acts only once an identity line differs from stock, so one is
   // replaced here to exercise both of its anchors against the real bundle.
   'no-global-cache-scope': c =>
@@ -385,6 +388,7 @@ const INVOCATIONS: Record<PatchId, (src: string) => string | null> = {
   'hide-ctrl-g-to-edit': c => writeHideCtrlGToEdit(c),
   'hide-startup-clawd': c => writeHideStartupClawd(c),
   'hide-title-spinner': c => writeHideTitleSpinner(c),
+  'disable-agent-summaries': c => writeDisableAgentSummaries(c),
   'increase-file-read-limit': c => writeIncreaseFileReadLimit(c),
   'suppress-line-numbers': c => writeSuppressLineNumbers(c),
   'suppress-rate-limit-options': c => writeSuppressRateLimitOptions(c),

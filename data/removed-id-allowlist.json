@@ -6881,5 +6881,128 @@
     "verdict": "archived",
     "version": "2.1.312",
     "why": "Page-data read reason removed with read_page_data; the plan-mode database-read reasons are catalogued separately. The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.312/."
+  },
+  "slash-command-effort-env-override-still-controls": {
+    "verdict": "archived",
+    "version": "2.1.314",
+    "why": "Survives only in the /effort auto handler as terminal text; no longer model-facing. The override matched pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.314/.",
+    "facing": "ui",
+    "hash": "cb01b73106a181f75c54b7fc2809022f9f8aaf24"
+  },
+  "agent-prompt-webfetch-summarizer-word-limit": {
+    "verdict": "archived",
+    "version": "2.1.314",
+    "why": "Removed upstream: the web-fetch summarizer no longer sets a word limit. The override matched pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.314/."
+  },
+  "tool-result-remote-host-sandbox-blocked-network-or-writes": {
+    "verdict": "archived",
+    "version": "2.1.314",
+    "why": "Removed upstream as one message; its cases are now separate branches catalogued under new ids. The override matched pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.314/."
+  },
+  "data-settings-sandbox-excluded-commands-description-part-1": {
+    "verdict": "archived",
+    "version": "2.1.314",
+    "why": "Reworded upstream; content now carried by data-sandbox-excludedcommands-setting. The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.314/."
+  },
+  "data-task-notification-shell-interactive-prompt-stall": {
+    "verdict": "archived",
+    "version": "2.1.314",
+    "why": "Reworded upstream; content now carried by data-task-notification-shell-interactive-prompt-stall-advice. The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.314/."
+  },
+  "tool-result-auto-mode-classifier-no-verdict-transient": {
+    "verdict": "archived",
+    "version": "2.1.314",
+    "why": "Moved upstream; the same text is now carried by tool-result-pretooluse-hook-could-not-render-verdict-3. The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.314/."
+  },
+  "tool-result-auto-mode-classifier-no-verdict-will-not-change": {
+    "verdict": "archived",
+    "version": "2.1.314",
+    "why": "Moved upstream; the same text is now carried by tool-result-pretooluse-hook-could-not-render-verdict-2. The override matched superseded pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.314/."
+  },
+  "system-reminder-single-output-limit-plan-once": {
+    "verdict": "archived",
+    "version": "2.1.314",
+    "why": "No longer sent as a reminder; a reworded copy survives only as a quoted example inside skill-model-migration-guide, which serves a different purpose. The override held a one-sentence trim that does not carry over; archived to ~/.tweakcc/orphans-removed-for-2.1.314/."
+  },
+  "tool-result-cloud-session-commits-remote-lacks-stay-local": {
+    "verdict": "archived",
+    "facing": "ui",
+    "hash": "f289f870ec763e1e95acdd7f786fa6dc6a87d6cf",
+    "version": "2.1.314",
+    "why": "Fragment of the cloud-session upload notices, built only on the launch path without an environment (--remote launcher, session openers); every handler of those notices is stderr or a host stream, and no model-invoked caller sets one. Ruled ui 2026-11-01; the override matched pristine and was archived to ~/.tweakcc/orphans-ruled-ui-2026-11-01/."
+  },
+  "tool-result-cloud-session-push-branch-hint": {
+    "verdict": "archived",
+    "facing": "ui",
+    "hash": "e53b6ffdc3834926771278b1cfce41977378f1a7",
+    "version": "2.1.314",
+    "why": "Fragment of the cloud-session upload notices, built only on the launch path without an environment (--remote launcher, session openers); every handler of those notices is stderr or a host stream, and no model-invoked caller sets one. Ruled ui 2026-11-01; the override matched pristine and was archived to ~/.tweakcc/orphans-ruled-ui-2026-11-01/."
+  },
+  "tool-result-cloud-session-push-branch-start-new-session": {
+    "verdict": "archived",
+    "facing": "ui",
+    "hash": "2e25956c3342af1aa25c2dc898f70a03a190eefa",
+    "version": "2.1.314",
+    "why": "Fragment of the cloud-session upload notices, built only on the launch path without an environment (--remote launcher, session openers); every handler of those notices is stderr or a host stream, and no model-invoked caller sets one. Ruled ui 2026-11-01; the override matched pristine and was archived to ~/.tweakcc/orphans-ruled-ui-2026-11-01/."
+  },
+  "tool-result-send-to-project-brief-in-memory-suffix": {
+    "verdict": "archived",
+    "version": "2.1.314",
+    "why": "Its text is now part of tool-result-send-to-project-check-setup-card-before-rerun, which carries the brief-in-memory clause inside its own template. The override matched pristine; archived to ~/.tweakcc/orphans-ruled-ui-2026-11-01/."
+  },
+  "tool-result-mcp-serve-repo-rules-file-unread": {
+    "verdict": "archived",
+    "version": "2.1.316",
+    "why": "The notice is gone from 2.1.316; no current text carries more than a seventh of its prose. The override matched pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.316/."
+  },
+  "system-prompt-agent-progress-label-predominant-language": {
+    "verdict": "archived",
+    "version": "2.1.316",
+    "why": "2.1.316 writes the progress-label language line as one literal per arm; the interpolated sentence is gone. The override matched pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.316/."
+  },
+  "system-prompt-agent-progress-label-notes-predominant-language": {
+    "verdict": "archived",
+    "version": "2.1.316",
+    "why": "The notes-language arm of the progress label is gone in 2.1.316. The override matched pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.316/."
+  },
+  "system-prompt-code-surrounding-style": {
+    "verdict": "archived",
+    "version": "2.1.316",
+    "why": "The sentence left the main system prompt; it survives only quoted inside the model migration guide skill, which carries its own id. The override matched pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.316/."
+  },
+  "slash-command-plugin-session-loading-this": {
+    "verdict": "archived",
+    "version": "2.1.317",
+    "why": "Merged into the reworded validate-real-paths string, which keeps its own id. The override matched pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.317/."
+  },
+  "slash-command-plugin-validate-plugin-name-third-party-restrictions": {
+    "verdict": "archived",
+    "version": "2.1.317",
+    "why": "Now inline in the reserved-name error, which keeps its own id. The override matched pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.317/."
+  },
+  "system-reminder-file-unchanged-use-context": {
+    "verdict": "archived",
+    "version": "2.1.317",
+    "why": "Text gone from 2.1.317. The override matched pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.317/."
+  },
+  "tool-result-bash-sandbox-mux-proxy-port-unavailable": {
+    "verdict": "archived",
+    "version": "2.1.317",
+    "why": "Text gone from 2.1.317. The override matched pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.317/."
+  },
+  "tool-result-schedulewakeup-noop-required": {
+    "verdict": "archived",
+    "version": "2.1.317",
+    "why": "The noop-required check left ScheduleWakeup in 2.1.317; the prompt-required message keeps its own id. The override matched pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.317/."
+  },
+  "agent-prompt-plan-mode-phase-4-3": {
+    "verdict": "archived",
+    "version": "2.1.317",
+    "why": "Renamed to agent-prompt-plan-mode-phase-4, which gained a Claude Doc branch; the new id takes pristine. The override matched old pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.317/."
+  },
+  "system-reminder-plan-mode-sparse-continuation-2": {
+    "verdict": "archived",
+    "version": "2.1.317",
+    "why": "Renamed to system-reminder-plan-mode-sparse-continuation-3, which gained a Claude Doc slot; the new id takes pristine. The override matched old pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.317/."
   }
 }

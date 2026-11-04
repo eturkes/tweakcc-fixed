@@ -79,6 +79,7 @@ export function MiscView({ onSubmit }: MiscViewProps) {
     hideCtrlGToEdit: false,
     hideStartupClawd: false,
     hideTitleSpinner: false,
+    disableAgentSummaries: false,
     increaseFileReadLimit: false,
     suppressLineNumbers: false,
     suppressRateLimitOptions: false,
@@ -367,6 +368,20 @@ export function MiscView({ onSubmit }: MiscViewProps) {
           updateSettings(settings => {
             ensureMisc();
             settings.misc!.hideTitleSpinner = !settings.misc!.hideTitleSpinner;
+          });
+        },
+      },
+      {
+        id: 'disableAgentSummaries',
+        title: 'Disable agent progress summaries',
+        description:
+          "Stops the ~30 s Opus request that re-reads each background agent's transcript to label its row.",
+        getValue: () => settings.misc?.disableAgentSummaries ?? false,
+        toggle: () => {
+          updateSettings(settings => {
+            ensureMisc();
+            settings.misc!.disableAgentSummaries =
+              !settings.misc!.disableAgentSummaries;
           });
         },
       },

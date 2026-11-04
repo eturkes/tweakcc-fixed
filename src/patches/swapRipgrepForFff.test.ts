@@ -8,7 +8,10 @@ import {
   restoreNativeSearchTools,
   writeSwapRipgrepForFff,
 } from './swapRipgrepForFff';
-import { FFF_PROJECT_GUIDANCE } from './fffInstructions';
+import { FFF_BASH_GUIDANCE } from './fffInstructions';
+
+const SERIALIZER =
+  ';async function $describe($tool,$options){let $cached=$options.cached??{description:await $tool.prompt(),input_schema:$tool.input_schema},$entry=$options.recordedEntry,$redescribed=$options.isRedescribed===true,$result={name:$tool.name,description:$redescribed?$cached.description:$entry?.description??$options.recordedDescription??$cached.description,input_schema:$entry?.input_schema??$cached.input_schema};return $result;}';
 
 const WRAPPER = '/Users/x/.tweakcc/fff/aarch64-apple-darwin/rg-fff';
 const VISIBILITY =
@@ -74,7 +77,7 @@ const INSTRUCTIONS =
   'let $saved=$details.snapshot,$fallback=$details.prompt,$tools={};let $counted=$saved?.systemPrompt??$fallback,$descriptions=$tools?.toolDescriptions,$schemas=$tools?.toolEntries;return $counted;}' +
   ';function fffRender($rows,$visible=[],$model,$config){$rows=$fold($rows,$config?.accountMemoryWithheld,$memo(()=>$visible));let $output=[];for(let $row of $rows){' +
   'let $options={},$active=false,$result=$config?.withoutAttachmentHooks?$live($row,$options):$recorded($row,$options,$active),$rendered=$result.messages,{isKnownType:$known,recordedRole:$role}=$result;$output.push(...$rendered)}return $output;}';
-const BASE = VISIBILITY + SHADOW + SETUP + SNAPSHOT + INSTRUCTIONS;
+const BASE = VISIBILITY + SHADOW + SETUP + SNAPSHOT + INSTRUCTIONS + SERIALIZER;
 const COMBINED = BASE + RESOLVER + GREP_DESC + BASH_DESC;
 const countOf = (source: string, part: string) => source.split(part).length - 1;
 const shellCommands = (source: string, enabled = true): string[] =>
@@ -146,6 +149,89 @@ describe('swapRipgrepForFff', () => {
     expect(writeSwapRipgrepForFff(patched, WRAPPER)).toBe(patched);
   });
 
+  it('installs into the 2.1.314 snapshot line array', () => {
+    const snapshot314 =
+      ';function snapshot(){let $commands=snippets(),$end=`CLAUDE_CODE_END_${"x"}`,' +
+      '$lines=["# head",...$commands!==null?["# Shadow find/grep with embedded bfs/ugrep",$commands]:[],"# tail"];' +
+      'return $lines.join("\\n")}';
+    const source = BASE.replace(SNAPSHOT, snapshot314);
+    const patched = writeSwapRipgrepForFff(source, WRAPPER)!;
+    expect(patched).not.toBeNull();
+    expect(patched).toContain(SETUP);
+    expect(patched).toContain(',$end=`CLAUDE_CODE_END_${"x"}`,');
+    expect(patched).toContain(
+      '...$commands!==null?["# Shadow find/grep with embedded bfs/ugrep",$commands]:[]'
+    );
+    expect(patched).toContain('snippets()].filter(Boolean).join("\\n"),$end=');
+    expect(hasFffShellIntegration(patched, WRAPPER)).toBe(true);
+    expect(writeSwapRipgrepForFff(patched, WRAPPER)).toBe(patched);
+    const lines = shellCommands(patched);
+    expect(lines[0]).toBe('# head');
+    expect(lines[2]).toContain(`if [ -x '${WRAPPER}' ]; then`);
+    expect(lines[2]).toContain('RG_FFF_SESSION=31415;');
+    expect(lines).toContain('unalias find 2>/dev/null || true');
+    expect(lines.at(-1)).toBe('# tail');
+    const disabled = shellCommands(patched, false);
+    expect(disabled[2]).toContain(`if [ -x '${WRAPPER}' ]; then`);
+    expect(disabled).not.toContain('unalias find 2>/dev/null || true');
+  });
+
+  it('installs into the 2.1.316 snapshot line pushes', () => {
+    const snapshot316 =
+      ';function snapshot(){let $end=`CLAUDE_CODE_END_${"x"}`,$lines=[];$lines.push("# head");' +
+      'let $commands=snippets();if($commands!==null)$lines.push("# Shadow find/grep with embedded bfs/ugrep",$commands);' +
+      '$lines.push("# tail");return $lines.join("\\n")}';
+    const source = BASE.replace(SNAPSHOT, snapshot316);
+    const patched = writeSwapRipgrepForFff(source, WRAPPER)!;
+    expect(patched).not.toBeNull();
+    expect(patched).toContain(SETUP);
+    expect(patched).toContain('let $end=`CLAUDE_CODE_END_${"x"}`,$lines=[];');
+    expect(patched).toContain(
+      'snippets()].filter(Boolean).join("\\n");if($commands!==null)$lines.push("# Shadow find/grep with embedded bfs/ugrep",$commands);'
+    );
+    expect(hasFffShellIntegration(patched, WRAPPER)).toBe(true);
+    expect(writeSwapRipgrepForFff(patched, WRAPPER)).toBe(patched);
+    const lines = shellCommands(patched);
+    expect(lines[0]).toBe('# head');
+    expect(lines[1]).toBe('# Shadow find/grep with embedded bfs/ugrep');
+    expect(lines[2]).toContain(`if [ -x '${WRAPPER}' ]; then`);
+    expect(lines[2]).toContain('RG_FFF_SESSION=31415;');
+    expect(lines).toContain('unalias find 2>/dev/null || true');
+    expect(lines.at(-1)).toBe('# tail');
+    const disabled = shellCommands(patched, false);
+    expect(disabled[2]).toContain(`if [ -x '${WRAPPER}' ]; then`);
+    expect(disabled).not.toContain('unalias find 2>/dev/null || true');
+  });
+
+  it('requires the 2.1.316 consumer to push into the snapshot line array', () => {
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+    try {
+      const unrelated =
+        ';function snapshot(){let $lines=[];' +
+        'let $commands=snippets();if($commands!==null)$lines.push("# Shadow",$commands);' +
+        'return $lines.join("\\n")}';
+      expect(
+        writeSwapRipgrepForFff(BASE.replace(SNAPSHOT, unrelated), WRAPPER)
+      ).toBeNull();
+    } finally {
+      error.mockRestore();
+    }
+  });
+
+  it('requires the 2.1.314 consumer to spread the producer result', () => {
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+    try {
+      const unrelated =
+        ';function snapshot(){let $commands=snippets(),$end=`CLAUDE_CODE_END_${"x"}`,' +
+        '$lines=["# head"];return $lines.join("\\n")}';
+      expect(
+        writeSwapRipgrepForFff(BASE.replace(SNAPSHOT, unrelated), WRAPPER)
+      ).toBeNull();
+    } finally {
+      error.mockRestore();
+    }
+  });
+
   it('requires native tool visibility and unique shell setup', () => {
     const error = vi.spyOn(console, 'error').mockImplementation(() => {});
     try {
@@ -172,9 +258,9 @@ describe('swapRipgrepForFff', () => {
         'patch: swapRipgrepForFff: failed to find unique scoped search instruction boundaries'
       );
       const patched = writeSwapRipgrepForFff(BASE, WRAPPER)!;
-      expect(patched).toContain('function __tweakccFffPrompt');
+      expect(patched).toContain('function __tweakccFffDescription');
       expect(patched).toContain('function __tweakccFffAutoMode');
-      expect(patched).toContain(FFF_PROJECT_GUIDANCE);
+      expect(patched).toContain(FFF_BASH_GUIDANCE);
       expect(() => new Function(patched)).not.toThrow();
     } finally {
       error.mockRestore();
@@ -198,13 +284,13 @@ describe('swapRipgrepForFff', () => {
     }
   });
 
-  it('keeps native descriptions intact and confines guidance to request hooks', () => {
+  it('keeps native descriptions intact and composes guidance at the tool serializer', () => {
     const patched = writeSwapRipgrepForFff(COMBINED, WRAPPER)!;
     expect(patched).toContain(GREP_DESC);
     expect(patched).toContain(BASH_DESC);
     expect(countOf(patched, 'Native Grep navigation:')).toBe(0);
     expect(countOf(patched, 'Native search and fff files:')).toBe(0);
-    expect(patched).toContain(FFF_PROJECT_GUIDANCE);
+    expect(patched).toContain(FFF_BASH_GUIDANCE);
     for (const stale of [
       'most-relevant-first',
       'likely declarations first',
