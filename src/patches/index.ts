@@ -105,6 +105,7 @@ import { writeWorktreeMode } from './worktreeMode';
 import { writeResponsiveMode } from './responsiveMode';
 import { writeAllowCustomAgentModels } from './allowCustomAgentModels';
 import { writeMaxEffortDefault } from './maxEffortDefault';
+import { writeCompactionHighEffort } from './compactionHighEffort';
 import { writeAutonomousOperationAllModels } from './autonomousOperationAllModels';
 import { writeRefusalFallbackModel } from './refusalFallbackModel';
 import { writeOutputStyleTurnReminder } from './outputStyleTurnReminder';
@@ -274,7 +275,7 @@ const PATCH_DEFINITIONS = [
     name: 'Honest rewind summary header',
     group: PatchGroup.MISC_CONFIGURABLE,
     description:
-      'Label a rewind summary as a deliberate rewind instead of the misleading "ran out of context" header',
+      'Note after a rewind summary that it came from a deliberate rewind, not a context overflow',
     modelFacing: true,
   },
   {
@@ -582,6 +583,14 @@ const PATCH_DEFINITIONS = [
     group: PatchGroup.MISC_CONFIGURABLE,
     description:
       'Opus 4.7 sessions default to "max" reasoning effort instead of "xhigh" (override with /effort or CLAUDE_CODE_EFFORT_LEVEL)',
+    modelFacing: true,
+  },
+  {
+    id: 'compaction-high-effort',
+    name: 'Compact at high effort',
+    group: PatchGroup.MISC_CONFIGURABLE,
+    description:
+      'The compaction summary is written at "high" reasoning effort regardless of the session effort, which keeps more of the state the next context window needs',
     modelFacing: true,
   },
   {
@@ -1246,7 +1255,7 @@ export const applyCustomization = async (
     },
     'fix-rewind-summary-header': {
       fn: c => writeFixRewindSummaryHeader(c),
-      condition: config.settings.misc?.fixRewindSummaryHeader !== false,
+      condition: config.settings.misc?.fixSummarizeFromHere !== false,
     },
     'statusline-update-throttle': {
       fn: c =>
@@ -1460,6 +1469,10 @@ export const applyCustomization = async (
     'max-effort-default': {
       fn: c => writeMaxEffortDefault(c),
       condition: !!config.settings.misc?.maxEffortDefault,
+    },
+    'compaction-high-effort': {
+      fn: c => writeCompactionHighEffort(c),
+      condition: !!config.settings.misc?.compactionHighEffort,
     },
     'autonomous-operation-all-models': {
       fn: c => writeAutonomousOperationAllModels(c),

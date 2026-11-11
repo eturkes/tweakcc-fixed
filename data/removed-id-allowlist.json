@@ -7004,5 +7004,1422 @@
     "verdict": "archived",
     "version": "2.1.317",
     "why": "Renamed to system-reminder-plan-mode-sparse-continuation-3, which gained a Claude Doc slot; the new id takes pristine. The override matched old pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.317/."
+  },
+  "agent-prompt-conversation-summarization-analysis-block": {
+    "verdict": "archived",
+    "version": "2.1.318",
+    "why": "Its text is now written inline in the default compaction prompt (agent-prompt-conversation-summarization). The override matched old pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.318/."
+  },
+  "agent-prompt-conversation-summarization-short-variant": {
+    "verdict": "archived",
+    "version": "2.1.318",
+    "why": "No longer sent as a compaction prompt in 2.1.318; its text survives only as a quoted sample in the bundled API skill doc. The override added only the shared sizing paragraph; archived to ~/.tweakcc/orphans-removed-for-2.1.318/."
+  },
+  "agent-prompt-conversation-summarization-short-wrapper": {
+    "verdict": "archived",
+    "version": "2.1.318",
+    "why": "The wrapper left 2.1.318; the compaction builder appends the extra instructions in code. The override only reworded the closing sentence; archived to ~/.tweakcc/orphans-removed-for-2.1.318/."
+  },
+  "agent-prompt-conversation-summarization-capped-variant": {
+    "verdict": "archived",
+    "version": "2.1.318",
+    "why": "The word-capped compaction arm left 2.1.318. The override only cut the cap; archived to ~/.tweakcc/orphans-removed-for-2.1.318/."
+  },
+  "agent-prompt-conversation-summarization-lean-variant": {
+    "verdict": "archived",
+    "version": "2.1.318",
+    "why": "The lean compaction arm left 2.1.318. The override only added the shared sizing paragraph; archived to ~/.tweakcc/orphans-removed-for-2.1.318/."
+  },
+  "agent-prompt-conversation-summarization-short-v2-instructions": {
+    "verdict": "archived",
+    "version": "2.1.318",
+    "why": "The short-v2 instructions left 2.1.318. The override matched old pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.318/."
+  },
+  "system-prompt-post-compaction-resume-guidance": {
+    "verdict": "archived",
+    "version": "2.1.318",
+    "why": "Left 2.1.318; post-compaction continuation is carried by system-prompt-post-compaction-continue-pick-up-last-task. The override matched old pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.318/."
+  },
+  "tool-result-mcp-resource-directory-invalid-url": {
+    "verdict": "archived",
+    "version": "2.1.318",
+    "why": "The MCP resource-directory invalid-URL branch left 2.1.318. The override matched old pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.318/."
+  },
+  "tool-result-mcp-resource-directory-other-spelling": {
+    "verdict": "archived",
+    "version": "2.1.318",
+    "facing": "internal",
+    "hash": "52e77e8ef4ca0438d4dee3358d87f4685b3a6103",
+    "why": "The MCP resource-directory text left 2.1.318; the surviving words are an internal debug-log line and the separate skill-file id. The override matched old pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.318/."
+  },
+  "data-settings-attribution-project-description": {
+    "verdict": "archived",
+    "version": "2.1.318",
+    "why": "Renamed to data-attribution-project-setting, whose ID clause now also accepts chan_ ids; the new id takes pristine. The override matched old pristine; archived to ~/.tweakcc/orphans-removed-for-2.1.318/."
+  },
+  "system-gcp-path-env-var-invalid-characters": {
+    "verdict": "archived",
+    "facing": "internal",
+    "hash": "04a9e276fef9f0ff9ef28f4ad594ce12403574da",
+    "version": "2.1.318",
+    "why": "Ruled internal (weekly 2026-11-05): the check throws while the API client is built for the Google Cloud provider, before any request, so the message never reaches the model; its second half was already internal. The override equalled pristine."
+  },
+  "tool-parameter-claude-in-chrome-tab-id-execute-shortcut": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Removed in 2.1.319: Override trimmed pristine by dropping the 'Use tabs_context_mcp first' sentence; nothing unique is lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "tool-parameter-claude-in-chrome-tab-id-list-shortcuts": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Removed in 2.1.319: Override trimmed pristine by dropping the 'Use tabs_context_mcp first' sentence; nothing unique is lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "system-reminder-auto-mode-dynamically-constructed-command-refusal": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Removed in 2.1.319: Override is verbatim old pristine; nothing unique is lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "tool-description-claude-in-chrome-shortcuts-execute": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Removed in 2.1.319: Override is verbatim old pristine; nothing unique is lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "tool-description-claude-in-chrome-shortcuts-execute-command": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Removed in 2.1.319: Override is verbatim old pristine; nothing unique is lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "tool-description-claude-in-chrome-shortcuts-execute-shortcutid": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Removed in 2.1.319: Override is verbatim old pristine; nothing unique is lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "tool-description-shortcuts-list": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Removed in 2.1.319: Override is a deliberate compression of pristine; nothing unique is lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "tool-result-auto-mode-repl-call-built-as-it-ran": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Removed in 2.1.319: Override is verbatim old pristine; nothing unique is lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "tool-result-webfetch-redirect-target-untrusted": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Folded into agent-prompt-web-reading-specialist in 2.1.319: Override is verbatim old pristine; nothing unique is lost, because the same rule now lives in the specialist prompt. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "tool-result-webfetch-reporting-rules-lead": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Folded into agent-prompt-web-reading-specialist in 2.1.319: Override is verbatim old pristine; nothing unique is lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "tool-result-webfetch-untrusted-content-wrapper": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Folded into agent-prompt-web-reading-specialist in 2.1.319: Override is verbatim old pristine; nothing unique is lost. The untrusted-data rules now live in the specialist prompt, and the Fetched/tag shell left at the site has no prose to override. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "tool-result-remote-tool-edited-input-invalid-not-sent": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Removed in 2.1.319: Override is a verbatim copy of the old pristine with no cuts, so nothing unique is lost. The surviving sentence belongs to the successor, which has its own id and override. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "data-artifact-patch-turn-synthetic-reply": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Removed in 2.1.319: Override is a verbatim copy of the old pristine with no cuts, so nothing unique is lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "system-prompt-artifact-patch-turn-edit-composer": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Removed in 2.1.319: Override is a verbatim copy of the old pristine with no cuts, so nothing unique is lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "system-prompt-artifact-patch-turn-files-between-fences-header": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Removed in 2.1.319: Override is a verbatim copy of the old pristine with no cuts, so nothing unique is lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "system-prompt-artifact-patch-turn-patch-not-applied-retry": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Removed in 2.1.319: Override is a verbatim copy of the old pristine with no cuts, so nothing unique is lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "system-prompt-artifact-patch-turn-single-file-page-line": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Removed in 2.1.319: Override is a verbatim copy of the old pristine with no cuts, so nothing unique is lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "tool-result-artifact-read-db-others-documents-not-saved": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Removed in 2.1.319: Override is a verbatim copy of the old pristine with no cuts, so nothing unique is lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "tool-result-file-reference-upload-approval-ask": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Removed in 2.1.319: Override is a verbatim copy of the old pristine with no cuts, so nothing unique is lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "tool-result-gmail-file-reference-attach-approval-ask": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Removed in 2.1.319: Override is a verbatim copy of the old pristine with no cuts, so nothing unique is lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "tool-result-mcp-app-views-each-too-large": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Removed in 2.1.319: Override is a verbatim copy of the old pristine with no cuts, so nothing unique is lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "tool-result-mcp-task-input-request-client-cannot-serve": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Removed in 2.1.319: Override is a verbatim copy of the old pristine with no cuts, so nothing unique is lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "data-settings-ssh-host-commands-description": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Renamed to data-ssh-host-commands-setting in 2.1.319; the new id takes pristine. Override was verbatim old pristine with no cuts. The new pristine is a material rewrite (Windows .exe/.cmd/.bat paths, single-quoted paths, Desktop v4.16336.0 minimum, runs at create time not each connect), and the old no-quotes sentence now contradicts it, so the repoint body is the 2.1.319 pristine and no realign is needed. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "system-prompt-continued-session-preamble-4": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Removed in 2.1.319: Override was verbatim 2.1.318 pristine (no edits), so nothing unique is lost. The successor named by the gate is a different, still-live site (the Remote Control preamble) with its own override, so this is not a rename. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "tool-result-projects-memory-unavailable-remote-bridge": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Removed in 2.1.319: Override was verbatim 2.1.318 pristine (no edits), so nothing unique is lost. Its message is still conveyed by the surviving arm, which already has its own override. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "data-cloud-move-command-output-left-out-placeholder": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Removed in 2.1.319: Override was verbatim 2.1.318 pristine (no edits), so nothing unique is lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "data-cloud-move-conversation-file-turn-marker-header": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Removed in 2.1.319: Override was verbatim 2.1.318 pristine (no edits), so nothing unique is lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "data-cloud-move-handoff-attached-file-note": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Removed in 2.1.319: Override was verbatim 2.1.318 pristine (no edits), so nothing unique is lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "data-cloud-move-handoff-intro": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Removed in 2.1.319: Override was verbatim 2.1.318 pristine (no edits), so nothing unique is lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "data-cloud-move-handoff-turn-format": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Removed in 2.1.319: Override was verbatim 2.1.318 pristine (no edits), so nothing unique is lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "data-cloud-move-turn-tail-excerpt": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Removed in 2.1.319: Override was verbatim 2.1.318 pristine (no edits), so nothing unique is lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "data-memory-type-project-desc": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Removed in 2.1.319: Override was verbatim 2.1.318 pristine (no edits), so nothing unique is lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "data-memory-type-reference-desc": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Removed in 2.1.319: Override was verbatim 2.1.318 pristine (no edits), so nothing unique is lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "data-memory-type-user-desc": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Removed in 2.1.319: Override was verbatim 2.1.318 pristine (no edits), so nothing unique is lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "data-performance-tuner": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Removed in 2.1.319: Override was byte-identical to pristine (11414 chars), so nothing unique is lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "skill-memory-type-taxonomy-reference": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Removed in 2.1.319: Override was verbatim 2.1.318 pristine (no edits), so nothing unique is lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "skill-memory-type-when-to-use": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Removed in 2.1.319: Override was verbatim 2.1.318 pristine (no edits), so nothing unique is lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "system-prompt-memory-category-feedback-description": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Removed in 2.1.319: Override was a deliberate trim that kept the first clause and cut the Confirmations sentence. Nothing unique is lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "system-prompt-memory-invoke-skill": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Removed in 2.1.319: Override was verbatim 2.1.318 pristine (no edits), so nothing unique is lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "system-prompt-memory-types-intro": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Removed in 2.1.319: Override was verbatim 2.1.318 pristine (no edits), so nothing unique is lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "system-reminder-file-summary-completeness-disclosure": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Folded into tool-result-read-large-file-truncation in 2.1.319: Override was a deliberate trim of the two disclosure/stop-retrying bullets (all facts kept, wording compressed); those bullets now belong to tool-result-read-large-file-truncation, whose own override (ccVersion 2.1.206) still holds only the first truncation bullet, so that override needs a realign that appends these two trimmed bullets or the disclosure rule is silently dropped. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "agent-prompt-autofix-pr-steward-active-handback-guidance": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Removed in 2.1.319: Override was verbatim pristine; nothing unique lost, the PR Steward label handling now lives in the catalogued OCt section (agent-prompt-pr-steward-remove-label-*, tool-description-bash-pr-steward-labels-guidance) and slash-command-autofix-pr-pr-steward-conflict. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "agent-prompt-autofix-pr-take-over-instructions-local": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Removed in 2.1.319: Override was verbatim pristine; nothing unique lost, the confirm-then-gh-pr-edit --remove-label rule survives (reworded) in the already-catalogued agent-prompt-pr-steward-remove-label-cloud-session arm of OCt. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "agent-prompt-autofix-pr-take-over-instructions-remote": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Removed in 2.1.319: Override was verbatim pristine; nothing unique lost, the do-not-remove-yourself/GitHub App caveat survives in the already-catalogued agent-prompt-pr-steward-remove-label-local-session (cloud arm of OCt). Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "agent-prompt-pr-follow-up-cron": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Removed in 2.1.319: Override was verbatim pristine (all 8 slots); nothing unique lost, the PR follow-up cron prompt no longer exists. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "agent-prompt-pr-follow-up-cron-babysit-prefix": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Removed in 2.1.319: Override was verbatim pristine \"Babysit PR \"; nothing unique lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "slash-command-autofix-pr-still-polling-stop-hint": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Removed in 2.1.319: Override was verbatim pristine; nothing unique lost, the replacement notice is the already-catalogued slash-command-autofix-pr-earlier-session-still-running. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "system-reminder-deleted-image-placeholder": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Removed in 2.1.319: Override was verbatim pristine; nothing unique lost, image placeholders were replaced by the generic file placeholder already catalogued as system-reminder-attached-file-deleted-placeholder. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "system-reminder-hidden-image-placeholder": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Removed in 2.1.319: Override was verbatim pristine; nothing unique lost, the hidden-image arm was dropped in favour of the generic deleted-file placeholder. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "system-reminder-read-truncation-retry-guidance": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Removed in 2.1.319: Override was a deliberate trim (dropped DO NOT PROCEED); its \"[N lines truncated]\" cue and Bash ${MAX_OUTPUT_CHARS} limit are gone from pristine, and the reduce-chunk-size rule survives only in the already-catalogued tool-result-read-large-file-truncation bullet 1, so nothing unique lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "tool-result-remote-host-no-protocol-version-clause": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "Folded in 2.1.319 into tool-result-remote-host-no-shared-protocol-clause, which now carries both arms in one template. The override equalled pristine. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "system-prompt-claude-in-chrome-browser-automation": {
+    "verdict": "archived",
+    "version": "2.1.319",
+    "why": "2.1.319 split the heading into its own constant (now system-prompt-claude-in-chrome-browser-automation-heading); the opening paragraph lives on as system-prompt-claude-in-chrome-browser-automation-3, which took this override with the heading slot restored. Archived to ~/.tweakcc/orphans-removed-for-2.1.319/."
+  },
+  "data-media-removed-request-limit": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 triage (archive): Override was pristine (no trim); needs realign: pristine is now \"[media removed: request limit.\" (period, no bracket) and the prefix is matched by compare sinks, so the old body must not be reapplied as-is. [main loop: archived; only a prefix constant survives inside two new templates that classify names] Archived to ~/.tweakcc/orphans-removed-for-2.1.322/.",
+    "facing": "internal",
+    "hash": "4ed09a595096cd2e63c8ef8e5f555fbcaaf1f173"
+  },
+  "slash-command-branch-transcript-lines-needs-text": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "Text gone from the 2.1.322 bundle (no probe window matched); the override was an unchanged pristine copy, so nothing unique is lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "slash-command-fast-mode-unavailable-not-first-party": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "Text gone from the 2.1.322 bundle (no probe window matched); the override was an unchanged pristine copy, so nothing unique is lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "slash-command-privacy-settings-manage-link": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "Text gone from the 2.1.322 bundle (no probe window matched); the override was an unchanged pristine copy, so nothing unique is lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "system-prompt-fable-5-model-identity": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 moved the Fable identity paragraph to new sites (now system-prompt-fable-5-model-identity-3 for 5.2 and -4 for the reworded 5.1 text); the override was a deliberate wipe, carried onto both. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-description-end-conversation-deferred": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 triage (archive): Override was a deliberate wipe (empty body, 'abuse-tool line ... never relevant here'); no unique content, but that wipe intent should be applied to the surviving deferred-hint site now reused by tool-description-end-conversation-deferred-revised-usage. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-description-end-conversation-deferred-load-guidance": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "Text gone from the 2.1.322 bundle (no probe window matched); the override was an unchanged pristine copy, so nothing unique is lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-description-endconversation": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 triage (archive): Override was a deliberate heavy trim of the old-arm EndConversation description (use only on explicit user request, confirm permanence, fork no-op, write nothing after the call); that arm is gone and the live description is the already-catalogued tool-description-endconversation-two-call-confirmation (Asr @28014537), which has its own override, so re-apply the same narrowing there if wanted. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-arithmetic-date-value-hint": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "Text gone from the 2.1.322 bundle (no probe window matched); the override was an unchanged pristine copy, so nothing unique is lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-arithmetic-stat-value-hint": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "Text gone from the 2.1.322 bundle (no probe window matched); the override was an unchanged pristine copy, so nothing unique is lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-hands-text-which": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "Text gone from the 2.1.322 bundle (no probe window matched); the override was an unchanged pristine copy, so nothing unique is lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-git-assign-redirect-unverified": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-git-export-inherited-dynamic-value": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-git-export-redirect-unverified": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 triage (archive): Override is pristine-verbatim; nothing unique lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-git-hands-shell-text-naming-git": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-git-later-command-word-resolves": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-git-loop-builtin-bind-unscreenable": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-git-name-would-evaluate": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-git-operand-expand-or-evaluate": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-git-option-may-stand": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-git-remote-text-naming-git": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-git-shell-text-cannot-parse": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-git-ssh-runtime-local-command": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-git-startup-hazard-configures-startup": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-git-startup-hazard-runtime-operand": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-git-value-shell-acts-on": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-as-option-value-where-option-may-stand": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-assigned-word-shell-filled": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-computed-at-style-list": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-computed-find-paths-at-once": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-computed-one-quoted-word": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-computed-quote-whole-cluster": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-computed-star-join-refused": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-computed-value-reads-exactly-one": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-dynamic-ansi-c-string": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-dynamic-array-element": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-dynamic-brace-expansion": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-dynamic-command-output": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 triage (archive): Override is pristine-verbatim; nothing unique lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-dynamic-count": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 triage (archive): Override is pristine-verbatim; nothing unique lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-dynamic-found-path": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-dynamic-glob-pattern": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 triage (archive): Override is pristine-verbatim; nothing unique lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-dynamic-length": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 triage (archive): Override is pristine-verbatim; nothing unique lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-dynamic-locale-translated-string": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-dynamic-name-listing": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-dynamic-parameter": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-dynamic-positional-parameter": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-dynamic-process-substitution": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-dynamic-substring": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 triage (archive): Override is pristine-verbatim; nothing unique lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-dynamic-trailing-backslash": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-dynamic-translated-string": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-dynamic-unresolved-expansion": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-dynamic-variable": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 triage (archive): Override is pristine-verbatim; nothing unique lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-dynamic-variable-shell-set": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-dynamic-xargs-substitutes": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-dynamic-zsh-expansion": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-expansion-inside-pattern": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-find-exec-clause-gnu-bsd-end": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-gcloud-computed-before-command-names": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-gcloud-computed-ssh-options": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-gcloud-computed-word-may-spell-ssh": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-glob-may-expand-to-nothing-reason": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-heredoc-body-zsh": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-locale-tables-path": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-locale-unverifiable": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-array-assignment-string": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-assembled-program-runtime-operand": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-awk-pipe": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-bridge-program": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-bun-exec-unreadable-shell-text": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-computed-after-t-n-option": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-computed-option-value": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 triage (archive): Override is pristine-verbatim (slot-only 'with ${…}'); nothing unique lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-computed-single-value-slot": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-computed-word-before-double-dash-pod": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-descriptor-bridge": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-descriptor-path-as-program": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-env-assignment": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 triage (archive): Override is pristine-verbatim (slot-only 'with ${…}'); nothing unique lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-exec-assembled-descriptors": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-exec-computed-value": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 triage (archive): Override is pristine-verbatim (slot-only 'with ${…}'); nothing unique lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-executing-or-unreadable-program": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-exports-computed-value": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-find-computed": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 triage (archive): Override is a verbatim copy of 2.1.319 pristine; nothing unique lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-find-exec-xargs": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-first-computed-value": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 triage (archive): Override is pristine-verbatim (slot-only 'with ${…}'); nothing unique lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-gcloud-computed-before-ssh": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-gcloud-computed-flag": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 triage (archive): Override is pristine-verbatim (slot-only 'with ${…}'); nothing unique lost. Its slot-only pieces match only by coincidence inside the ui eval-manifest warning. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/.",
+    "facing": "ui",
+    "hash": "4df552f297fbec2f2bcb00a33afd093c17dbbba8"
+  },
+  "tool-result-bash-worktree-guard-operand-gcloud-flag-before-separator": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-gcloud-flag-before-ssh": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-gcloud-scp-ssh-flag-placement": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-gcloud-ssh-before-and-after-compute": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-gcloud-ssh-flag-not-an-option": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-gcloud-ssh-flag-value": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-gcloud-ssh-pointed-at-local-machine": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-gcloud-ssh-possibly-local": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-gcloud-ssh-separate-flag-value": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-gcloud-value-before-ssh-may-vanish": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-git-among-operands": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-indexed-computed-value": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 triage (archive): Override is pristine-verbatim (slot-only 'with ${…}'); nothing unique lost. Its slot-only pieces match only by coincidence inside the ui eval-manifest warning. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/.",
+    "facing": "ui",
+    "hash": "4df552f297fbec2f2bcb00a33afd093c17dbbba8"
+  },
+  "tool-result-bash-worktree-guard-operand-input-assembled-runtime": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-installing-computed-name": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-interactive-console": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-kubectl-exec-descriptor-fed-here": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-kubectl-exec-next-to-assembled-input": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-may-expand-to-no-word": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-module-computed": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-module-name": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 triage (archive): Override is pristine-verbatim (slot-only 'with ${…}'); nothing unique lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-module-runtime-operand": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-named-console": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-non-whitespace-separator": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-not-plain-name": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-option-value": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-option-word": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-quoted-host-text": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 triage (archive): Override is pristine-verbatim (slot-only 'with ${…}'); nothing unique lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-runtime-program": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-runtime-program-why": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-runtime-script": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-sed-computed-inplace-suffix": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-sed-option": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 triage (archive): Override is pristine-verbatim (slot-only 'with ${…}'); nothing unique lost. Its slot-only pieces match only by coincidence inside the ui eval-manifest warning. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/.",
+    "facing": "ui",
+    "hash": "4df552f297fbec2f2bcb00a33afd093c17dbbba8"
+  },
+  "tool-result-bash-worktree-guard-operand-sed-program": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 triage (archive): Override is pristine-verbatim; nothing unique lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-shell-commands-from-stdin": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-ssh-computed-option-value": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 triage (archive): Override is a verbatim copy of 2.1.319 pristine; nothing unique lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-ssh-glob-options": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-ssh-local-shell-stdin": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-ssh-o-option": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-ssh-option-dynamic": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-ssh-option-text": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-ssh-unparsed-word": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-sshpass-later-remote-client": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-sshpass-unreadable-option": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-sudo-chdir": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-third-shell": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-too-many-glob-words": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-unlocated-program": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-unquoted-glob-word-variable-names": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-unverifiable-program": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-with-word": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 triage (archive): Override is pristine-verbatim (slot-only 'with ${…}'); nothing unique lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-xargs-computed-option-value": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-operand-xargs-program": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 triage (archive): Override is pristine-verbatim (slot-only 'with ${…}'); nothing unique lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-option-may-stand-word": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-option-value-double-dash-is-value": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-option-value-own-word": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-option-value-previous-option-value": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-option-value-quote-path-or-spell-out": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-option-value-spelled-out-count": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-process-substitution-in-pattern": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-pushd-n-option": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-pushd-word-may-be-n": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-reason-assignment-name": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-reason-backtick-substitution": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-reason-brace-body-after-c-for": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 triage (archive): Override is pristine-verbatim; nothing unique lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-reason-expansion": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 triage (archive): Override is pristine-verbatim; nothing unique lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-reason-function-shadows-program": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-reason-heredoc-body": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-reason-heredoc-delimiter": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-reason-herestring-after-compound": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-reason-node-type-after-heredoc": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-reason-node-type-after-redirect": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-reason-node-type-assignment-value": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-reason-node-type-here": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-reason-node-type-in-array": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 triage (archive): Override is pristine-verbatim; nothing unique lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-reason-node-type-in-command": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 triage (archive): Override is pristine-verbatim; nothing unique lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-reason-node-type-in-pipeline": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-reason-node-type-in-test": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 triage (archive): Override is pristine-verbatim; nothing unique lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-reason-node-type-statement": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-reason-node-type-word": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-reason-pattern": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-reason-pattern-joined": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-reason-pipeline-in-redirect": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-reason-subscript": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 triage (archive): Override is pristine-verbatim; nothing unique lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-reason-substitution": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 triage (archive): Override is pristine-verbatim; nothing unique lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-reason-unreadable-command-name": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-reason-unrecoverable-syntax": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-reason-untokenized-string": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-reason-word": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-reason-word-file-pattern": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-reason-xargs-appended-words": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-sed-bracket-unverifiable": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-sed-bsd-inplace-suffix-hint": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-sed-option-order-hint": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-shell-filled-variable": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-shell-set-integer-variable": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-ssh-command-option-not-plain": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-ssh-computed-f-j-value": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-ssh-f-path-jump-host": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-ssh-hands-value-not-git": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-ssh-hostname-jump-host": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-ssh-jump-host-unquoted": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-ssh-o-option-glob-quote": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-ssh-o-option-unreadable": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-ssh-option-name-quote": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-ssh-percent-r-no-user": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-ssh-percent-token-budget-exceeded": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-ssh-percent-token-placeholder-note": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-ssh-percent-token-unfollowable": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-ssh-token-command-runner-word": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-ssh-token-program-name-position": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-ssh-token-unrewritable-word": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-ssh-user-name-not-git": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-typeset-shell-set-variable": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-unset-name-shell-rewrites": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-use-another-variable-name": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-guard-zsh-dirs-stack-word": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-isolation-arithmetic-hidden-command": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-isolation-descriptor-holds-program": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-isolation-feeds-assembled-input": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-isolation-feeds-assembled-program": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 triage (archive): Override is pristine-verbatim; nothing unique lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-isolation-feeds-runtime-descriptor": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-isolation-feeds-text-naming-git": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-isolation-rsync-remote-shell": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-isolation-rsync-rsh-appended": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-isolation-rsync-rsh-computed": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-isolation-runs-construct-not-git": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 triage (archive): Override is pristine-verbatim; nothing unique lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-isolation-runs-through-variable": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-isolation-runs-unshown-git": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-isolation-runtime-command-name": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 rebuilt the bash worktree guard: refusals are now whole templates with the runtime word inline, so this reason/operand fragment no longer exists. The override was an unchanged pristine copy. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-bash-worktree-isolation-uses-construct-too-complex": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "2.1.322 triage (archive): Override is pristine-verbatim; nothing unique lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-mcp-file-upload-connection-lacks-extension": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "Text gone from the 2.1.322 bundle (no probe window matched); the override was an unchanged pristine copy, so nothing unique is lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-privacy-account-email-in-call-ask": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "Text gone from the 2.1.322 bundle (no probe window matched); the override was an unchanged pristine copy, so nothing unique is lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
+  },
+  "tool-result-project-write-read-before-replace-failed": {
+    "verdict": "archived",
+    "version": "2.1.322",
+    "why": "Text gone from the 2.1.322 bundle (no probe window matched); the override was an unchanged pristine copy, so nothing unique is lost. Archived to ~/.tweakcc/orphans-removed-for-2.1.322/."
   }
 }

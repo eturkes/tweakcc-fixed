@@ -332,17 +332,9 @@
   },
   "system-prompt-current-claude-models": {
     "bodyHash": "da39a3ee5e6b",
-    "reviewed": "2026-09-02 (CC 2.1.258)",
+    "reviewed": "2026-11-05 (CC 2.1.318)",
     "tokens": {
-      "CLAUDE_MODEL_IDS.values": "Whole prompt suppressed on the user's instruction (2026-09-02): the current-model roster is marketing; the running model is named in # Environment. The slots only enumerate model ids.",
-      "MODEL_ID": "Whole prompt suppressed on the user's instruction (2026-09-02): the current-model roster is marketing; the running model is named in # Environment. The slots only enumerate model ids."
-    }
-  },
-  "tool-description-end-conversation-deferred": {
-    "bodyHash": "da39a3ee5e6b",
-    "reviewed": "2026-09-02 (CC 2.1.258)",
-    "tokens": {
-      "TOOL_DESCRIPTION_END_CONVERSATION_DEFERRED_VAR_0": "Whole line suppressed (user instruction); the slot is the tool name."
+      "CLAUDE_MODEL_IDS.join": "Whole prompt suppressed on the user's instruction (2026-09-02): the current-model roster is marketing; the running model is named in # Environment. The slots only enumerate model ids."
     }
   },
   "system-reminder-artifact-type-instructions-trust-boundary": {
@@ -353,10 +345,10 @@
     }
   },
   "agent-prompt-conversation-summarization": {
-    "bodyHash": "6c1a2150abf2",
-    "reviewed": "2026-10-14 (CC 2.1.299)",
+    "bodyHash": "638d043305bc",
+    "reviewed": "2026-11-05 (CC 2.1.318)",
     "tokens": {
-      "AGENT_PROMPT_CONVERSATION_SUMMARIZATION_VAR_0": "The body carries its own summary contract: what the next window already has, a length rule scaled to the remaining work, and the items to keep (user requests and exact constraints, decisions and ruled-out approaches, work state, next step). Anthropic's analysis-instructions block would add a full-code-snippet chronological walk that the length rule replaces; its security note is covered by the exact-constraint item. VAR_1, the user-message attribution guard, is interpolated and stays live."
+      "AGENT_PROMPT_CONVERSATION_SUMMARIZATION_VAR_0": "The body carries its own analysis steps (walk the conversation in order, mark which user messages still bind, check whether the last reply already answered, play the next window forward, copy exact strings) and its own sectioned summary contract, so Anthropic's analysis-instructions slot (an unconditional slot since 2.1.318, a chronological walk demanding full code snippets) would duplicate it. A blind replay of six real compactions ranked this body above both the stock prompt and the previous override. The slot's security note is not lost: the compaction builder appends it whenever the template lacks it. VAR_1, the user-message attribution guard, is interpolated and stays live, and the body still names <analysis>, so the builder keeps the analysis-then-summary reply shape."
     }
   },
   "agent-prompt-recent-message-summarization": {
@@ -415,8 +407,8 @@
     }
   },
   "data-message-batches-api-typescript": {
-    "bodyHash": "57e3625212b5",
-    "reviewed": "2026-11-04 (CC 2.1.317)",
+    "bodyHash": "9fa12508c2ff",
+    "reviewed": "2026-11-10 (CC 2.1.322; re-keyed after realign, same cut)",
     "tokens": {
       "result.result.message.content": "This is an escaped interpolation inside a TypeScript documentation example, not a live Claude Code prompt-builder binding. The new example retains result.result.message.content as code, narrows all text blocks and joins them before text.slice(0, 100), replacing the unsafe content[0].text assumption. No runtime slot is lost."
     }
@@ -427,6 +419,13 @@
     "tokens": {
       "TOOL_DESCRIPTION_SNOOZE_DELAY_AND_REASON_GUIDANCE_VAR_1": "Removed the comparison with the different CronCreate sentinel. This ScheduleWakeup body retains its actual dynamic sentinel in VAR_0; the co-rendered prompt schema also specifies the exact dynamic sentinel. CronCreate guidance is unchanged.",
       "TOOL_DESCRIPTION_SNOOZE_DELAY_AND_REASON_GUIDANCE_VAR_2": "Removed the repeated tool name in that same CronCreate comparison. The offered tool name remains ScheduleWakeup in the tool schema; stop, required fields and dynamic-loop prompt contracts remain in the description and schema."
+    }
+  },
+  "system-prompt-fast-mode-environment-note": {
+    "bodyHash": "da39a3ee5e6b",
+    "reviewed": "2026-11-10 (CC 2.1.322)",
+    "tokens": {
+      "SYSTEM_PROMPT_FAST_MODE_ENVIRONMENT_NOTE_VAR_0": "Deliberate wipe carried from the reworded note: the whole fast-mode environment note is suppressed, so its vertex/Opus slot goes with it."
     }
   }
 }

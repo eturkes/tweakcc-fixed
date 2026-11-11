@@ -81,6 +81,7 @@ import { writeSuppressNativeInstallerWarning } from './suppressNativeInstallerWa
 import { writeModelAtEffort } from './modelAtEffort';
 import { writeScrollEscapeSequenceFilter } from './scrollEscapeSequenceFilter';
 import { writeMaxEffortDefault } from './maxEffortDefault';
+import { writeCompactionHighEffort } from './compactionHighEffort';
 import { writeAutonomousOperationAllModels } from './autonomousOperationAllModels';
 import { writeRefusalFallbackModel } from './refusalFallbackModel';
 import { writeOutputStyleTurnReminder } from './outputStyleTurnReminder';
@@ -403,6 +404,7 @@ const INVOCATIONS: Record<PatchId, (src: string) => string | null> = {
   'model-at-effort': c => writeModelAtEffort(c),
   'filter-scroll-escape-sequences': c => writeScrollEscapeSequenceFilter(c),
   'max-effort-default': c => writeMaxEffortDefault(c),
+  'compaction-high-effort': c => writeCompactionHighEffort(c),
   'autonomous-operation-all-models': c => writeAutonomousOperationAllModels(c),
   'refusal-fallback-model': c =>
     writeRefusalFallbackModel(c, {
@@ -498,6 +500,17 @@ const EXPECTED_NOOP: Partial<Record<PatchId, string>> = {
     'CC >= 2.1.83 accepts any agent model string (no enum/includes gate)',
   'conversation-title':
     'CC ships /rename natively (name:"rename",aliases:["name"])',
+  'lean-memory-types':
+    'CC >= 2.1.319 removed the tengu_ochre_finch compact memory-types list ' +
+    'and its skill; only the verbose <types> prompt remains',
+};
+
+// Patches that apply but log an error on the pristine bundle, which the
+// harness reports as "partially applied". Each needs a reason and a backlog fix.
+const EXPECTED_PARTIAL: Partial<Record<PatchId, string>> = {
+  toolsets:
+    'code-split bundles have no React global: step 3 falls back to the text ' +
+    '/toolset command after the shared React lookup logs a failure',
 };
 
 type Outcome = 'applied' | 'no-op' | 'null';
@@ -507,6 +520,7 @@ interface PatchOutcome {
   outcome: Outcome;
   bytesDelta: number;
   parseError: string | null;
+  partialError: string | null;
 }
 
 // ---------------------------------------------------------------------------
@@ -536,6 +550,14 @@ describe.skipIf(skipReason !== null)('every patch vs. pristine cli.js', () => {
     for (const def of getAllPatchDefinitions()) {
       const id = def.id;
       let result: string | null;
+      // Mirror applyCustomizations: an error logged by a patch that still
+      // returns a file is reported as "partially applied" and fails check.
+      const errors: string[] = [];
+      const consoleError = console.error;
+      console.error = (...args: unknown[]) => {
+        errors.push(args.map(String).join(' '));
+        consoleError(...args);
+      };
       try {
         result = INVOCATIONS[id](source);
       } catch (error) {
@@ -545,8 +567,11 @@ describe.skipIf(skipReason !== null)('every patch vs. pristine cli.js', () => {
           outcome: 'null',
           bytesDelta: 0,
           parseError: `threw: ${(error as Error).message}`,
+          partialError: null,
         });
         continue;
+      } finally {
+        console.error = consoleError;
       }
       const outcome: Outcome =
         result === null ? 'null' : result === source ? 'no-op' : 'applied';
@@ -556,6 +581,7 @@ describe.skipIf(skipReason !== null)('every patch vs. pristine cli.js', () => {
         bytesDelta: result === null ? 0 : result.length - source.length,
         parseError:
           outcome === 'applied' ? oracle.check(result!, `patched-${id}`) : null,
+        partialError: result !== null && errors.length > 0 ? errors[0] : null,
       });
       await new Promise<void>(resolve => setImmediate(resolve));
     }
@@ -642,6 +668,20 @@ describe.skipIf(skipReason !== null)('every patch vs. pristine cli.js', () => {
           'is not in EXPECTED_NOOP. That is a silent dead-anchor: either ' +
           're-anchor it, or declare the no-op with a reason.'
       ).not.toBe('no-op');
+
+      if (EXPECTED_PARTIAL[id]) {
+        expect(
+          outcome.partialError,
+          `${id} is recorded in EXPECTED_PARTIAL (${EXPECTED_PARTIAL[id]}) ` +
+            'but now applies cleanly — drop the entry'
+        ).not.toBeNull();
+      } else
+        expect(
+          outcome.partialError,
+          `${id} applied only partially against the pristine bundle (the ` +
+            'harness reports "partially applied" and the health check fails): ' +
+            `${outcome.partialError}`
+        ).toBeNull();
 
       expect(
         outcome.parseError,
