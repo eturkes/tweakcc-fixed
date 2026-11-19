@@ -91,3 +91,72 @@ describe('writeHideTitleSpinner', () => {
     errSpy.mockRestore();
   });
 });
+
+// Terminal-title component, verbatim from CC 2.1.328: the busy flag has its own
+// variable and an ASCII pair serves a host that takes no glyphs.
+const FIXTURE_328 =
+  'var jre=["\\u25D0","\\u25D1"],qre="\\u2733",JDt=">",ZDt="*",tOt=960;function $re(h){let ut=k(1),{titles:A,isAnimating:N,noPrefix:H}=h,z=Le(A,G4o),oe=Le(A,Q4o),Ne=fp(),Ue=fZ()!==null,Ye=rO()!==null,[et,lt]=y(0),ft;if(ut[0]===R)ft=()=>lt(z4o),ut[0]=ft;else ft=ut[0];Tl(ft,oe||H||Ue||Ye||!N||!Ne?null:tOt);let Et=N&&!Ue,_t=Ye?Et?JDt:ZDt:Et?jre[et]??qre:qre;return wvt(oe?null:H?z:`${_t} ${z}`),null}' +
+  'function Ive(po,yo,En,Jn){let $o=po==="idle"&&yo?"shell":po,fn,On;const tr=po==="busy",Bn=En||Jn;return tr}';
+
+// Renders $re once with stubbed hooks → the string handed to useTerminalTitle.
+const render328 = (src: string, s: State & { ascii?: boolean }) => {
+  let title: string | null = null;
+  const sentinel = {};
+  const $re = new Function(
+    'k,R,Le,G4o,Q4o,fp,fZ,rO,y,z4o,Tl,wvt',
+    `${src};return $re;`
+  )(
+    () => [sentinel],
+    sentinel,
+    (m: object, f: (m: object) => unknown) => f(m),
+    (m: { terminalTitle: string }) => m.terminalTitle,
+    (m: { disabled: boolean }) => m.disabled,
+    () => true,
+    () => (s.mux ? 'tmux' : null),
+    () => (s.ascii ? 'host' : null),
+    () => [s.frame ?? 0, () => {}],
+    (n: number) => n + 1,
+    () => {},
+    (t: string | null) => (title = t)
+  );
+  $re({
+    titles: { terminalTitle: 'agents', disabled: !!s.disabled },
+    isAnimating: s.busy,
+    noPrefix: !!s.noPrefix,
+  });
+  return title;
+};
+
+describe('writeHideTitleSpinner on the CC 2.1.328 title', () => {
+  const patched = writeHideTitleSpinner(FIXTURE_328)!;
+
+  it('busy → bare title where stock shows a frame or ">"', () => {
+    expect(render328(FIXTURE_328, { busy: true, frame: 1 })).toBe('◑ agents');
+    expect(render328(FIXTURE_328, { busy: true, ascii: true })).toBe(
+      '> agents'
+    );
+    for (const s of [{}, { frame: 1 }, { mux: true }, { ascii: true }])
+      expect(render328(patched, { busy: true, ...s })).toBe('agents');
+  });
+
+  it('at rest, noPrefix + disabled match stock', () => {
+    const same: (State & { ascii?: boolean })[] = [
+      { busy: false },
+      { busy: false, mux: true },
+      { busy: false, ascii: true },
+      { busy: true, noPrefix: true },
+      { busy: true, disabled: true },
+    ];
+    for (const s of same)
+      expect(render328(patched, s)).toBe(render328(FIXTURE_328, s));
+    expect(render328(patched, { busy: false })).toBe('✳ agents');
+    expect(render328(patched, { busy: false, ascii: true })).toBe('* agents');
+  });
+
+  it('carries the background-shell busy flag + refuses a second pass', () => {
+    expect(titleBusy(patched, 'idle', true)).toBe(true);
+    const errSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    expect(writeHideTitleSpinner(patched)).toBeNull();
+    errSpy.mockRestore();
+  });
+});
