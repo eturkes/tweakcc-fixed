@@ -549,6 +549,53 @@ const interpolations = (tpl: string): string[] => {
   return out;
 };
 
+// The `?` at bracket depth 0 that opens a conditional at or after `from`
+// (never `?.` or `??`), or `src.length`.
+const nextTernaryQ = (src: string, from: number): number => {
+  for (let i = from; ; ) {
+    const q = topLevelIndex(src, i, '?');
+    if (q >= src.length || src[q] !== '?') return src.length;
+    if (src[q + 1] === '?' || src[q - 1] === '?') {
+      i = q + 2;
+      continue;
+    }
+    if (src[q + 1] === '.' && !/[0-9]/.test(src[q + 2] ?? '')) {
+      i = q + 2;
+      continue;
+    }
+    return q;
+  }
+};
+
+// A right-nested conditional chain `c1?a1:c2?a2:…:last`, split into its
+// conditions and the final alternate. A plain expression has no conditions.
+const ternaryChain = (expr: string): { conds: string[]; last: string } => {
+  const conds: string[] = [];
+  let rest = expr.trim();
+  for (;;) {
+    const q = nextTernaryQ(rest, 0);
+    if (q >= rest.length) return { conds, last: rest };
+    let depth = 0;
+    let i = q + 1;
+    for (;;) {
+      const nq = nextTernaryQ(rest, i);
+      const nc = topLevelIndex(rest, i, ':');
+      if (nc >= rest.length || rest[nc] !== ':') return { conds, last: rest };
+      if (nq < nc) {
+        depth++;
+        i = nq + 1;
+      } else if (depth > 0) {
+        depth--;
+        i = nc + 1;
+      } else {
+        conds.push(rest.slice(0, q));
+        rest = rest.slice(nc + 1).trim();
+        break;
+      }
+    }
+  }
+};
+
 const escapeRe = (s: string): string =>
   s.replace(/[$.*+?^()[\]{}|\\]/g, '\\$&');
 
@@ -629,6 +676,8 @@ interface PushBuilder {
   // those push expressions verbatim (re-emitted, so a re-splice still sees them).
   tail: string[];
   tailExprs: string[];
+  // The final return's expression as the case body holds it.
+  returnExpr: string;
 }
 
 // The emit at the end of a builder case's final return: pristine's
@@ -744,6 +793,7 @@ const parsePushBuilder = (caseBody: string): PushBuilder | null => {
     ifs,
     tail,
     tailExprs: parts.slice(0, -1),
+    returnExpr: ret.expr,
   };
 };
 
@@ -994,7 +1044,8 @@ const applyBuilderCase = (
   body: string,
   isSuppressed: boolean,
   sampleProp: string,
-  slotsFor: (b: PushBuilder, param: string, caseBody: string) => BuilderSlot[]
+  slotsFor: (b: PushBuilder, param: string, caseBody: string) => BuilderSlot[],
+  keepPristineWhen?: (b: PushBuilder) => string | null
 ): string | null => {
   const { bodyStart, bodyEnd } = found;
   const caseBody = content.slice(bodyStart, bodyEnd);
@@ -1022,7 +1073,15 @@ const applyBuilderCase = (
       ...b.tailExprs,
       emitReminder(b.wrapFn, b.metaFn, body, resolved),
     ].join(',');
-    newBody = `${b.preamble}return ${ret}`;
+    // Arms the override does not speak for keep pristine's own return, ahead
+    // of the rebuilt one; a re-splice finds the guard already in the preamble.
+    const keep = keepPristineWhen?.(b) ?? null;
+    const guard = keep === null ? '' : `if(${keep})return `;
+    const preamble =
+      guard === '' || b.preamble.includes(guard)
+        ? b.preamble
+        : `${b.preamble}${guard}${b.returnExpr};`;
+    newBody = `${preamble}return ${ret}`;
   }
   const newContent =
     content.slice(0, bodyStart) + newBody + content.slice(bodyEnd);
@@ -1121,7 +1180,11 @@ const CLAUDEMD_INJECTION: ReminderInjection = {
 // delta listing (`addsToEarlier`), so the model is never told a partial list is
 // the full one. Returns undefined when this shape is absent (older build).
 const SKILLS_DELTA_HEAD =
-  /skill_listing:\(([$\w]+)\)=>\{if\(!\1\.content\)return\[\];let\[([$\w]+),([$\w]+)\]=([^;?]{1,200})\?\[(?:"(?:[^"\\]|\\.)*"|,)*\]:\[(?:"(?:[^"\\]|\\.)*"|,)*\];return ([$\w]+)\(\[([$\w]+)\(\{content:/;
+  /skill_listing:\(([$\w]+)\)=>\{if\(!\1\.content\)return\[\];let\[([$\w]+),([$\w]+)\]=([^;?]{1,200})\?\[(?:"(?:[^"\\]|\\.)*"|,)*\]:\[(?:"(?:[^"\\]|\\.)*"|,)*\]/;
+// 2.1.326 adds `,a=e.shortened===!0?`${e.content}…`:e.content` to the same
+// `let`, and both arms interpolate `${a}` instead of `${e.content}`.
+const SKILLS_LISTED_DECL = /^,([$\w]+)=/;
+const SKILLS_DELTA_RETURN = /^;return ([$\w]+)\(\[([$\w]+)\(\{content:/;
 const SKILLS_DELTA_TAIL = ',isMeta:!0})])}';
 
 const applySkillsDelta = (
@@ -1132,7 +1195,21 @@ const applySkillsDelta = (
   const m = content.match(SKILLS_DELTA_HEAD);
   if (!m || m.index === undefined) return undefined;
   const [, argParam, alsoVar, noteVar, addsCond] = m;
-  const exprStart = m.index + m[0].length;
+  let at = m.index + m[0].length;
+  let listedExpr = `${argParam}.content`;
+  const decl = content.slice(at, at + 64).match(SKILLS_LISTED_DECL);
+  if (decl) {
+    listedExpr = decl[1];
+    at = topLevelIndex(content, at + decl[0].length, ';');
+  }
+  const ret = content.slice(at, at + 256).match(SKILLS_DELTA_RETURN);
+  if (!ret) {
+    console.error(
+      'patch: reminder skills-listing: skill_listing declarations have an unexpected shape'
+    );
+    return null;
+  }
+  const exprStart = at + ret[0].length;
   const exprEnd = topLevelIndex(content, exprStart, ',');
   if (!content.startsWith(SKILLS_DELTA_TAIL, exprEnd)) {
     console.error(
@@ -1181,7 +1258,7 @@ const applySkillsDelta = (
       return null;
     }
     const names: Record<string, string> = {
-      content: `${argParam}.content`,
+      content: listedExpr,
       also: alsoVar,
       addsToEarlierNote: noteVar,
     };
@@ -1848,6 +1925,54 @@ const TOOL_RESULT_INJECTION: ReminderInjection = {
   },
   defaultBody: 'Result of calling the {{tool_name}} tool:\n{{result}}',
   apply(content, body, isSuppressed) {
+    // Method 1 (2.1.328+, also matches older builds): anchored on the code
+    // shape, not the prose — the try that calls
+    // `<tool>.mapToolResultToToolResultBlockParam(…)` and returns one meta
+    // message whose template ends with the result interpolation, followed by
+    // its catch. 2.1.328 routes the result through a wrapper parameter
+    // (`${r(h)}`, `r=(g)=>g` by default), which broke the bare-`${K}` prose
+    // anchor below. {{result}} binds to the whole wrapped expression, and the
+    // catch is kept verbatim so tool-error still finds its own anchor.
+    const shape =
+      /([$\w]+)\.mapToolResultToToolResultBlockParam\([^)]*\);[^`]{0,400}?return ([$\w]+)\(\{content:`((?:[^`\\]|\\.)*)`,isMeta:!0\}\)\}catch\{(return \2\(\{content:`(?:[^`\\]|\\.)*`,isMeta:!0\}\)\})/g;
+    const hits = [...content.matchAll(shape)];
+    if (hits.length === 1 && hits[0].index !== undefined) {
+      const m = hits[0];
+      const [region, toolParam, j6Name, tpl, catchBranch] = m;
+      const slots = interpolations(tpl);
+      const resultExpr = slots[slots.length - 1];
+      if (
+        resultExpr !== undefined &&
+        tpl.endsWith(`\${${resultExpr}}`) &&
+        slots.includes(`${toolParam}.name`)
+      ) {
+        const end = m.index! + region.length;
+        const returnAt =
+          end -
+          catchBranch.length -
+          `return ${j6Name}({content:\`${tpl}\`,isMeta:!0})}catch{`.length;
+        const replacement = isSuppressed
+          ? `return ${j6Name}({content:\`\${${resultExpr}}\`,isMeta:!0})}catch{return ${j6Name}({content:"",isMeta:!0})}`
+          : `return ${j6Name}({content:\`${body
+              .replace(/\$\{H\.name\}/g, () => `\${${toolParam}.name}`)
+              .replace(
+                /\$\{K\}/g,
+                () => `\${${resultExpr}}`
+              )}\`,isMeta:!0})}catch{${catchBranch}`;
+        const newContent =
+          content.slice(0, returnAt) + replacement + content.slice(end);
+        showDiff(content, newContent, replacement, returnAt, end);
+        return newContent;
+      }
+    }
+    if (
+      isSuppressed &&
+      /\.mapToolResultToToolResultBlockParam\([^)]*\);[^`]{0,400}?return ([$\w]+)\(\{content:`\$\{[^`]*\}`,isMeta:!0\}\)\}catch\{return \1\(\{content:"",isMeta:!0\}\)\}/.test(
+        content
+      )
+    )
+      return content;
+    // Method 2 (<=2.1.327): prose anchor, bare result variable.
     return findAndReplace(
       content,
       /return ([$\w]+)\(\{content:`Result of calling the \$\{([$\w]+)\.name\} tool:\n\$\{([$\w]+)\}`,isMeta:!0\}\)\}catch\{return [$\w]+\(\{content:`Result of calling the \$\{\2\.name\} tool: Error`,isMeta:!0\}\)\}/,
@@ -2129,6 +2254,29 @@ const applyEditedTextFileStructural = (
   return newContent;
 };
 
+const isEditedTextFileSpliced = (content: string): boolean => {
+  const m = content.match(/edited_text_file:\(([$\w]+)\)=>/);
+  if (!m || m.index === undefined) return false;
+  const rest = content.slice(m.index + m[0].length);
+  const at = rest.indexOf('({content:');
+  if (at < 0) return false;
+  const head = rest.slice(0, at);
+  if (
+    !/^(?:\{let [\s\S]*;return )?(?:\(\(c\)=>c\.trim\(\)===""\?\[\]:)?[$\w]+\(\[[$\w]+$/.test(
+      head
+    )
+  )
+    return false;
+  const emitted = (s: string) =>
+    s.startsWith('`') || s.startsWith('((L)=>{let o=[];');
+  const value = rest.slice(at + '({content:'.length);
+  if (head.includes('((c)=>c.trim()===""?[]:')) {
+    const tail = 'c,isMeta:!0})]))(';
+    return value.startsWith(tail) && emitted(value.slice(tail.length));
+  }
+  return emitted(value);
+};
+
 const EDITED_TEXT_FILE_INJECTION: ReminderInjection = {
   id: 'edited-text-file',
   previousDefaultBodies: [
@@ -2268,7 +2416,9 @@ const EDITED_TEXT_FILE_INJECTION: ReminderInjection = {
         return `edited_text_file:(${hParam})=>${emitReminder(o5Name, j6Name, body, slots)}`;
       },
       'edited-text-file',
-      c => /edited_text_file:\([$\w]+\)=>\[\]/.test(c)
+      c =>
+        /edited_text_file:\([$\w]+\)=>\[\]/.test(c) ||
+        isEditedTextFileSpliced(c)
     );
   },
 };
@@ -2417,6 +2567,27 @@ const PLAN_MODE_EXIT_INJECTION: ReminderInjection = {
   defaultBody:
     '## Exited Plan Mode\n\nYou have exited plan mode. You can now make edits, run tools, and take actions.{{plan_suffix}}',
   apply(content, body, isSuppressed) {
+    // Method 1 (2.1.328+, also the single-suffix shape): conditional suffix vars (planExists,
+    // reuseForNextPlan, ...) precede the return, and the body ends with all of
+    // them. The let-list is re-emitted verbatim and {{plan_suffix}} expands to
+    // the whole suffix run.
+    const multiSuffixShape =
+      /plan_mode_exit:\(([$\w]+)\)=>\{let ((?:[$\w]+=\1\.[$\w]+\?(?:`[^`]*`|"[^"]*"):"",)*[$\w]+=\1\.[$\w]+\?(?:`[^`]*`|"[^"]*"):"";)return ([$\w]+)\(\[([$\w]+)\(\{content:`## Exited Plan Mode\n\nYou have exited plan mode\. You can now make edits, run tools, and take actions\.((?:\$\{[$\w]+\})+)`,isMeta:!0\}\)\]\)\}/;
+    if (multiSuffixShape.test(content)) {
+      return findAndReplace(
+        content,
+        multiSuffixShape,
+        m => {
+          const [, hParam, lets, o5Name, j6Name, suffixes] = m;
+          if (isSuppressed) return `plan_mode_exit:(${hParam})=>[]`;
+          const bodyForBuild = body.replace(/\$\{_\}/g, () => suffixes);
+          return `plan_mode_exit:(${hParam})=>{let ${lets}return ${o5Name}([${j6Name}({content:\`${bodyForBuild}\`,isMeta:!0})])}`;
+        },
+        'plan-mode-exit',
+        c => /plan_mode_exit:\([$\w]+\)=>\[\]/.test(c)
+      );
+    }
+    // Method 2 (<=2.1.326): a single planExists suffix var.
     return findAndReplace(
       content,
       /plan_mode_exit:\(([$\w]+)\)=>\{let ([$\w]+)=\1\.planExists\?` The plan file is located at \$\{\1\.planFilePath\} if you need to reference it\.`:"";return ([$\w]+)\(\[([$\w]+)\(\{content:`## Exited Plan Mode\n\nYou have exited plan mode\. You can now make edits, run tools, and take actions\.\$\{\2\}`,isMeta:!0\}\)\]\)\}/,
@@ -2841,8 +3012,10 @@ const TASK_LIST_REMINDER_INJECTION: ReminderInjection = {
           null;
         const block = segmentFor(b, list);
         // The two tool names are the intro's bare module-scope
-        // interpolations, create then update.
-        const intro = b.locals.get(b.arr) ?? '';
+        // interpolations, create then update. 2.1.328 made the intro a
+        // `statusKeeper` conditional chain; its final alternate is the stock
+        // nudge this override replaces.
+        const intro = ternaryChain(b.locals.get(b.arr) ?? '').last;
         const tools = intro.startsWith('`')
           ? interpolations(intro.slice(1, -1)).filter(
               x => /^[$\w]+$/.test(x) && x !== p && !b.locals.has(x)
@@ -2858,6 +3031,12 @@ const TASK_LIST_REMINDER_INJECTION: ReminderInjection = {
           { token: '${H.taskCreateTool}', expr: tools[0] ?? null },
           { token: '${H.taskUpdateTool}', expr: tools[1] ?? null },
         ];
+      },
+      // Method 1 (2.1.328+): the other `statusKeeper` arms carry how the app
+      // manages task status, not the idle nudge, so they render as pristine.
+      b => {
+        const { conds } = ternaryChain(b.locals.get(b.arr) ?? '');
+        return conds.length > 0 ? conds.map(c => `(${c})`).join('||') : null;
       }
     );
   },

@@ -1135,5 +1135,97 @@
     "note": "ui: default text of the managed-policy-unreadable error returned by the forced-org-login check; shown to the user at login, never sent to the model.",
     "shape": "array",
     "verdict": "ui"
+  },
+  "b52404cf91c2a4b8": {
+    "excerpt": "maximum context length context_length_exceeded exceeds the context window contextwindowexceedederror longer than the maximum model length lo",
+    "note": "context-length error matcher list (substring tests on API errors), not prose",
+    "shape": "array",
+    "verdict": "internal"
+  },
+  "f5a4a8a701080b77": {
+    "excerpt": "synced-file staging not supported on this runner kind CLAUDE_CODE_REMOTE_SESSION_ID unset list returned incomplete credential a /connector-d",
+    "note": "set of withheld-artifact reason codes, never rendered",
+    "shape": "array",
+    "verdict": "internal"
+  },
+  "dc418f85e74895ed": {
+    "excerpt": "^(Drafted from the user's local Claude Code sessions in the folder “.*” and approved when | “.*” on |- Repository: (https:\\/\\/\\S+, the origi",
+    "note": "regex source for recognizing drafted sections",
+    "shape": "array",
+    "verdict": "internal"
+  },
+  "036032e1ecde63c7": {
+    "excerpt": "[Sandbox Windows] updateConfig: the resolved file-access set (filesystem.* ∪ credentials.files) changed but the session state is fixed at in",
+    "note": "Windows sandbox debug log line",
+    "shape": "concat",
+    "verdict": "internal"
+  },
+  "98dfd9e799f21c96": {
+    "excerpt": "no answer from the session · your message may still be read no answer · may still be read",
+    "note": "message-edit status line shown in the TUI",
+    "shape": "array",
+    "verdict": "ui"
+  },
+  "eac1782a94bd1af6": {
+    "excerpt": "message not taken back · Claude may or may not read it message may still be read",
+    "note": "message-edit status line shown in the TUI",
+    "shape": "array",
+    "verdict": "ui"
+  },
+  "8c474f318d1a8df8": {
+    "excerpt": "too late to edit · that message is on its way to Claude too late to edit",
+    "note": "message-edit status line shown in the TUI",
+    "shape": "array",
+    "verdict": "ui"
+  },
+  "9c7a6a7802db2742": {
+    "note": "usage blurb lines of the cloud plan launch dialog",
+    "verdict": "ui",
+    "shape": "array",
+    "excerpt": "Plan mode with several agents. Runs in a cloud session. When the plan is ready, you can run it there or send it back here. You can keep work"
+  },
+  "4bfd707048e81fa5": {
+    "note": "--safe-mode CLI option help text",
+    "verdict": "ui",
+    "shape": "concat",
+    "excerpt": "Start with all customizations (CLAUDE.md, skills, installed plugins, hooks, MCP servers, custom commands and agents, output styles, workflow"
+  },
+  "5b5ca401c0a73ccd": {
+    "note": "safe-mode startup banner line in the TUI",
+    "verdict": "ui",
+    "shape": "array",
+    "excerpt": "· managed hooks, managed plugins' hooks, and settings policy from your organization still apply; managed skills, CLAUDE.md, and MCP servers "
+  },
+  "233f270ce9468156": {
+    "note": "screen-reader picker hint in the send-to-project dialog",
+    "verdict": "ui",
+    "shape": "array",
+    "excerpt": "Select with numbers [1-2] or up / down arrow keys. Then Enter to submit or Escape to cancel: 12 \"12\" isn't an option. Enter a number between"
+  },
+  "84e9cc9150911fb2": {
+    "note": "usage blurb lines of the cloud plan launch dialog (single-agent variant)",
+    "verdict": "ui",
+    "shape": "array",
+    "excerpt": "Plan mode you can edit in your browser. Runs in a cloud session. When the plan is ready, you can run it there or send it back here. You can "
+  },
+  "a2b0c2126c00cfd7": {
+    "verdict": "ui",
+    "shape": "array",
+    "excerpt": "put_org_not_allowed Your organization's settings don't allow sending files to connectors. An admin can change this."
+  },
+  "554b0d95fb7c1b73": {
+    "verdict": "ui",
+    "shape": "array",
+    "excerpt": "put_storage_failed The connector's storage didn't take the whole file. Part of the file may be there: check the connector before sending it "
+  },
+  "7d264dbc94944b50": {
+    "verdict": "ui",
+    "shape": "array",
+    "excerpt": "put_too_slow The connection was too slow for the file to arrive in time. Try again on a faster connection."
+  },
+  "b22fb5f8bb4ea0d0": {
+    "verdict": "ui",
+    "shape": "array",
+    "excerpt": "put_tool_policy_not_allowed Your organization's settings or your role may not allow sending this file, or they couldn't be checked. Ask an a"
   }
 }

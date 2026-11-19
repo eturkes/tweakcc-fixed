@@ -157,6 +157,7 @@ export {
   getRequireFuncName,
   clearRequireFuncNameCache,
   findTextComponent,
+  findTextComponentInModule,
   findBoxComponent,
 } from './helpers';
 

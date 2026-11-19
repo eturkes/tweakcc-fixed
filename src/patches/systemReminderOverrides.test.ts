@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { REMINDER_REGISTRY } from './systemReminderOverrides';
@@ -1754,6 +1754,66 @@ describe('skills-listing reminder 2.1.322 addsToEarlier shape', () => {
   });
 });
 
+// CC 2.1.326 adds a `shortened` content variable to the same `let`; both arms
+// interpolate it instead of `q.content`.
+const MOCK_SKILLS_2326 =
+  'skill_listing:(q)=>{if(!q.content)return[];let[n,r]=q.addsToEarlier===!0?["also ",". This list adds to the skills listed earlier in this conversation and is not the full list"]:["",""],a=q.shortened===!0?`${q.content}\n\nThis list is shortened to save room: some skills are listed by name alone. A skill listed by name alone works like any other.`:q.content;' +
+  'return Kd([Ce({content:Qa()&&Zb()&&q.callsSkillToolDirectly!==!0?' +
+  '`The following skills are ${n}available; a script loads one with \\`await tools.Skill({skill: "name"})\\`, ' +
+  "and its instructions arrive as a message right after the script's result${r}:\n\n${a}`:" +
+  '`The following skills are ${n}available for use with the Skill tool${r}:\n\n${a}`,isMeta:!0})])},' +
+  'dynamic_skill:(q)=>[]';
+
+describe('skills-listing reminder 2.1.326 shortened shape', () => {
+  it('binds {{skill_content}} to the shortened-aware variable and keeps the declaration', () => {
+    const out = skillsListing.apply(
+      MOCK_SKILLS_2326,
+      sub(
+        'skills-listing',
+        'Skills {{also}}here{{adds_to_earlier_note}}:\n\n{{skill_content}}'
+      ),
+      false
+    )!;
+    expect(out).toContain(':["",""],a=q.shortened===!0?`${q.content}');
+    expect(out).toContain("right after the script's result${r}:\n\n${a}`:");
+    expect(out).not.toContain('for use with the Skill tool');
+    const plain = runSkills(out, false);
+    expect(plain({ content: 'L' })).toBe('Skills here:\n\nL');
+    expect(plain({ content: 'L', shortened: true })).toMatch(
+      /^Skills here:\n\nL\n\nThis list is shortened/
+    );
+    expect(runSkills(out, true)({ content: 'L' })).toContain(
+      'await tools.Skill'
+    );
+    expect(
+      skillsListing.apply(
+        out,
+        sub(
+          'skills-listing',
+          'Skills {{also}}here{{adds_to_earlier_note}}:\n\n{{skill_content}}'
+        ),
+        false
+      )
+    ).toBe(out);
+  });
+
+  it('the stock body is a no-op', () => {
+    expect(
+      skillsListing.apply(
+        MOCK_SKILLS_2326,
+        sub('skills-listing', skillsListing.defaultBody),
+        false
+      )
+    ).toBe(MOCK_SKILLS_2326);
+  });
+
+  it('suppresses the whole renderer, idempotently', () => {
+    const out = skillsListing.apply(MOCK_SKILLS_2326, '', true);
+    expect(out).toBe('skill_listing:(q)=>{return [];},dynamic_skill:(q)=>[]');
+    expect(skillsListing.apply(out!, '', true)).toBe(out);
+  });
+});
+
 const toolCalled = REMINDER_REGISTRY.find(r => r.id === 'tool-called')!;
 
 // 2.1.322 wraps the serializer in the closing-tag escaper.
@@ -1855,6 +1915,40 @@ describe('edited-text-file 2.1.322 multi-local shape', () => {
     );
   });
 
+  it('re-applies its own output successfully and unchanged', () => {
+    const inline =
+      "edited_text_file:(H)=>Wa([Mk({content:H.snippet===\"\"?`Note: ${H.filename} was modified, either by the user or by a linter. This change was intentional, so make sure to take it into account as you proceed (ie. don't revert it unless the user asks you to). Don't tell the user this, since they are already aware. The diff was omitted because other modified files in this turn already exceeded the snippet budget; use the Read tool if you need the current content.`:`Note: ${H.filename} was modified, either by the user or by a linter. This change was intentional, so make sure to take it into account as you proceed (ie. don't revert it unless the user asks you to). Don't tell the user this, since they are already aware. Here are the relevant changes (shown with line numbers):\n${H.snippet}`,isMeta:!0})]),at_mention_reference:(e)=>1";
+    for (const src of [EDITED_2291, EDITED_2322, inline]) {
+      for (const text of [
+        '{{filename}} changed. {{changes}}',
+        '{{filename}} (use {{read_tool}}):\n{{snippet}}',
+      ]) {
+        const body = sub('edited-text-file', text);
+        const once = editedTextFile.apply(src, body, false)!;
+        expect(once).not.toBeNull();
+        expect(editedTextFile.apply(once, body, false)).toBe(once);
+      }
+    }
+  });
+
+  it('still reports failure for an unrecognised pristine shape', () => {
+    const err = vi.spyOn(console, 'error').mockImplementation(() => {});
+    for (const src of [
+      'edited_text_file:(e)=>Wa([Mk({content:e.snippet===""?`a`:`b`,isMeta:!0})])',
+      'edited_text_file:(e)=>Wa([Mk({content:e.snippet!==""?`a`:`b`,isMeta:!0})])',
+      'edited_text_file:(e)=>Wa([Mk({content:(e.snippet===""?`a`:`b`),isMeta:!0})])',
+      'edited_text_file:(e)=>{let n=`x`;return Wa([Mk({content:Qz(e,n),isMeta:!0})])}',
+    ])
+      expect(
+        editedTextFile.apply(
+          src,
+          sub('edited-text-file', '{{filename}}'),
+          false
+        )
+      ).toBeNull();
+    err.mockRestore();
+  });
+
   it('suppresses to [] idempotently; the stock body is a no-op', () => {
     const out = editedTextFile.apply(EDITED_2322, '', true)!;
     expect(out).toBe('edited_text_file:(e)=>[],at_mention_reference:(e)=>1');
@@ -1866,5 +1960,227 @@ describe('edited-text-file 2.1.322 multi-local shape', () => {
         false
       )
     ).toBe(EDITED_2322);
+  });
+});
+
+const planModeExit = REMINDER_REGISTRY.find(r => r.id === 'plan-mode-exit')!;
+
+const PLAN_EXIT_2328 =
+  'H={plan_mode_exit:(e)=>{let o=e.planExists?` The plan file is located at ${e.planFilePath} if you need to reference it.`:"",r=e.reuseForNextPlan?` It is the one plan file the user is shown. If the user later asks for a plan of different work, call ${TC} first and overwrite this file with the new plan, so that they can read and approve it.`:"";return Wa([Mk({content:`## Exited Plan Mode\n\nYou have exited plan mode. You can now make edits, run tools, and take actions.${o}${r}`,isMeta:!0})])},auto_mode_exit:(e)=>[]}';
+
+const PLAN_EXIT_2326 =
+  'H={plan_mode_exit:(e)=>{let o=e.planExists?` The plan file is located at ${e.planFilePath} if you need to reference it.`:"";return Wa([Mk({content:`## Exited Plan Mode\n\nYou have exited plan mode. You can now make edits, run tools, and take actions.${o}`,isMeta:!0})])},auto_mode_exit:(e)=>[]}';
+
+const runPlanExit = (src: string) => {
+  const handlers = new Function(...Object.keys(STUBS), `let H;${src};return H`)(
+    ...Object.values(STUBS)
+  ) as {
+    plan_mode_exit: (e: Record<string, unknown>) => string[];
+  };
+  return (e: Record<string, unknown>) => handlers.plan_mode_exit(e)[0];
+};
+
+describe('plan-mode-exit reminder shape handling', () => {
+  const TERSE = 'Plan mode exited; edits allowed.{{plan_suffix}}';
+
+  it('2.1.328: keeps every suffix var and the let-list verbatim', () => {
+    const out = planModeExit.apply(
+      PLAN_EXIT_2328,
+      sub('plan-mode-exit', TERSE),
+      false
+    )!;
+    expect(out).not.toBeNull();
+    expect(out).toContain('r=e.reuseForNextPlan?');
+    expect(out).toContain('content:`Plan mode exited; edits allowed.${o}${r}`');
+    expect(out).toContain(',auto_mode_exit:(e)=>[]}');
+    const r = runPlanExit(out);
+    expect(r({ planExists: false, reuseForNextPlan: false })).toBe(
+      'Plan mode exited; edits allowed.'
+    );
+    expect(
+      r({ planExists: true, planFilePath: '/p.md', reuseForNextPlan: true })
+    ).toBe(
+      'Plan mode exited; edits allowed. The plan file is located at /p.md if you need to reference it. It is the one plan file the user is shown. If the user later asks for a plan of different work, call TaskCreate first and overwrite this file with the new plan, so that they can read and approve it.'
+    );
+  });
+
+  it('2.1.328: the stock body is byte-identical to pristine', () => {
+    const stock = sub('plan-mode-exit', planModeExit.defaultBody);
+    expect(planModeExit.apply(PLAN_EXIT_2328, stock, false)).toBe(
+      PLAN_EXIT_2328
+    );
+  });
+
+  it('2.1.328: suppression empties the handler and is idempotent', () => {
+    const out = planModeExit.apply(PLAN_EXIT_2328, '', true)!;
+    expect(out).toBe('H={plan_mode_exit:(e)=>[],auto_mode_exit:(e)=>[]}');
+    expect(planModeExit.apply(out, '', true)).toBe(out);
+  });
+
+  it('pre-2.1.328 single-suffix shape still applies', () => {
+    const out = planModeExit.apply(
+      PLAN_EXIT_2326,
+      sub('plan-mode-exit', TERSE),
+      false
+    )!;
+    expect(out).toContain('content:`Plan mode exited; edits allowed.${o}`');
+    expect(runPlanExit(out)({ planExists: true, planFilePath: '/p.md' })).toBe(
+      'Plan mode exited; edits allowed. The plan file is located at /p.md if you need to reference it.'
+    );
+  });
+});
+
+const toolResult = REMINDER_REGISTRY.find(r => r.id === 'tool-result')!;
+const toolError = REMINDER_REGISTRY.find(r => r.id === 'tool-error')!;
+
+const TOOL_RESULT_2328 =
+  'function Fmt(e,o,r=(g)=>g){try{let g=e.mapToolResultToToolResultBlockParam(o,"1");if(Array.isArray(g.content)&&g.content.some((y)=>y.type==="image"))return Mk({content:g.content,isMeta:!0});let h=typeof g.content==="string"?g.content:JSON.stringify(g.content);return Mk({content:`Result of calling the ${e.name} tool:\n${r(h)}`,isMeta:!0})}catch{return Mk({content:`Result of calling the ${e.name} tool: Error`,isMeta:!0})}}';
+
+const TOOL_RESULT_2327 =
+  'function Fmt(e,o){try{let g=e.mapToolResultToToolResultBlockParam(o,"1");let K=typeof g.content==="string"?g.content:JSON.stringify(g.content);return Mk({content:`Result of calling the ${e.name} tool:\n${K}`,isMeta:!0})}catch{return Mk({content:`Result of calling the ${e.name} tool: Error`,isMeta:!0})}}';
+
+const runToolResult = (src: string) =>
+  new Function(...Object.keys(STUBS), `${src};return Fmt`)(
+    ...Object.values(STUBS)
+  ) as (
+    tool: Record<string, unknown>,
+    out: unknown,
+    wrap?: (s: string) => string
+  ) => string;
+
+describe('tool-result reminder shape handling', () => {
+  const tool = {
+    name: 'Bash',
+    mapToolResultToToolResultBlockParam: (o: string) => ({ content: o }),
+  };
+  const broken = {
+    name: 'Bash',
+    mapToolResultToToolResultBlockParam: () => {
+      throw new Error('x');
+    },
+  };
+
+  it('2.1.328: binds {{result}} to the wrapped expression and keeps the catch', () => {
+    const out = toolResult.apply(
+      TOOL_RESULT_2328,
+      sub('tool-result', '{{tool_name}} said:\n{{result}}'),
+      false
+    )!;
+    expect(out).toContain('content:`${e.name} said:\n${r(h)}`');
+    expect(out).toContain(
+      'catch{return Mk({content:`Result of calling the ${e.name} tool: Error`,isMeta:!0})}'
+    );
+    const f = runToolResult(out);
+    expect(f(tool, 'ok')).toBe('Bash said:\nok');
+    expect(f(tool, 'ok', s => `<${s}>`)).toBe('Bash said:\n<ok>');
+    expect(f(broken, 'ok')).toBe('Result of calling the Bash tool: Error');
+    expect(
+      toolError.apply(out, sub('tool-error', '{{tool_name}} failed'), false)
+    ).toContain('catch{return Mk({content:`${e.name} failed`,isMeta:!0})}');
+  });
+
+  it('2.1.328: the stock body is a no-op', () => {
+    expect(
+      toolResult.apply(
+        TOOL_RESULT_2328,
+        sub('tool-result', toolResult.defaultBody),
+        false
+      )
+    ).toBe(TOOL_RESULT_2328);
+  });
+
+  it('2.1.328: suppression emits the bare result and is idempotent', () => {
+    const out = toolResult.apply(TOOL_RESULT_2328, '', true)!;
+    expect(out).toContain(
+      'return Mk({content:`${r(h)}`,isMeta:!0})}catch{return Mk({content:"",isMeta:!0})}'
+    );
+    expect(runToolResult(out)(tool, 'ok')).toBe('ok');
+    expect(toolResult.apply(out, '', true)).toBe(out);
+  });
+
+  it('pre-2.1.328 bare-variable shape still applies', () => {
+    const out = toolResult.apply(
+      TOOL_RESULT_2327,
+      sub('tool-result', '{{tool_name}}: {{result}}'),
+      false
+    )!;
+    expect(runToolResult(out)(tool, 'ok')).toBe('Bash: ok');
+  });
+});
+
+const TASK_2328 =
+  'case"task_reminder":{if(!gate())return[];let s=e.content.map((h)=>`#${h.id}. [${h.status}] ${h.subject}`).join(`\n`),' +
+  'g=e.statusKeeper==="app"?`If new work would benefit from tracking progress, add it with ${TC}. ${APPNOTE}\n`:e.statusKeeper==="claude"?`${OFFLINE}\n`:' +
+  "`The task tools haven't been used recently. Consider using ${TC} to add new tasks and ${TU} to update task status.\n`;" +
+  'if(s.length>0)g+=`\n\nHere are the existing tasks:\n\n${s}`;return Wa([Mk({content:g,isMeta:!0})])}/*END*/';
+
+describe('task-list-reminder 2.1.328 statusKeeper arms', () => {
+  const TASKS = [{ id: 1, status: 'pending', subject: 'A' }];
+  const run = (src: string) =>
+    new Function(
+      ...Object.keys(STUBS),
+      'APPNOTE',
+      'OFFLINE',
+      `return (e)=>{switch(e.type){${src.slice(src.indexOf('case"task_reminder"'), src.indexOf('/*END*/'))}}}`
+    )(...Object.values(STUBS), 'App marks status.', 'App offline.') as (
+      e: Record<string, unknown>
+    ) => unknown;
+
+  it('binds the tool names from the stock arm and keeps the other arms pristine', () => {
+    const body =
+      'Use {{task_create_tool}} / {{task_update_tool}}.\n\n{{existing_tasks}}';
+    const out = taskListReminder.apply(
+      TASK_2328,
+      sub('task-list-reminder', body),
+      false
+    )!;
+    expect(out).not.toBeNull();
+    const r = run(out);
+    expect(r({ type: 'task_reminder', content: [] })).toEqual([
+      'Use TaskCreate / TaskUpdate.',
+    ]);
+    expect(r({ type: 'task_reminder', content: TASKS })).toEqual([
+      'Use TaskCreate / TaskUpdate.\n\nHere are the existing tasks:\n\n#1. [pending] A',
+    ]);
+    expect(
+      r({ type: 'task_reminder', statusKeeper: 'app', content: TASKS })
+    ).toEqual([
+      'If new work would benefit from tracking progress, add it with TaskCreate. App marks status.\n\n\nHere are the existing tasks:\n\n#1. [pending] A',
+    ]);
+    expect(
+      r({ type: 'task_reminder', statusKeeper: 'claude', content: [] })
+    ).toEqual(['App offline.\n']);
+  });
+
+  it("the user's {{existing_tasks}}-only override applies and returns [] on an empty list", () => {
+    const out = taskListReminder.apply(
+      TASK_2328,
+      sub('task-list-reminder', '{{existing_tasks}}'),
+      false
+    )!;
+    const r = run(out);
+    expect(r({ type: 'task_reminder', content: [] })).toEqual([]);
+    expect(r({ type: 'task_reminder', content: TASKS })).toEqual([
+      'Here are the existing tasks:\n\n#1. [pending] A',
+    ]);
+  });
+
+  it('stock is a no-op, re-splice is identical, suppression is idempotent', () => {
+    expect(
+      taskListReminder.apply(
+        TASK_2328,
+        sub('task-list-reminder', taskListReminder.defaultBody),
+        false
+      )
+    ).toBe(TASK_2328);
+    const b = sub(
+      'task-list-reminder',
+      'Use {{task_create_tool}}.\n\n{{existing_tasks}}'
+    );
+    const once = taskListReminder.apply(TASK_2328, b, false)!;
+    expect(taskListReminder.apply(once, b, false)).toBe(once);
+    const suppressed = taskListReminder.apply(TASK_2328, '', true)!;
+    expect(suppressed).toContain('case"task_reminder":{return [];}');
+    expect(taskListReminder.apply(suppressed, '', true)).toBe(suppressed);
   });
 });
