@@ -126,6 +126,7 @@ export function MiscView({ onSubmit }: MiscViewProps) {
     keybindingCustomization: false,
     tmuxGraphicsPassthrough: false,
     disableCtrlZSuspend: false,
+    unlimitedInstructionSize: false,
     skipSkillShellValidation: false,
     shimmer: { ...DEFAULT_SETTINGS.misc.shimmer },
     webFetchUserAgent: null as string | null,
@@ -1011,6 +1012,20 @@ export function MiscView({ onSubmit }: MiscViewProps) {
             ensureMisc();
             settings.misc!.disableCtrlZSuspend =
               !settings.misc!.disableCtrlZSuspend;
+          });
+        },
+      },
+      {
+        id: 'unlimitedInstructionSize',
+        title: 'Unlimited instruction file size',
+        description:
+          'Lifts the per-file and total char limits on CLAUDE.md and other instruction files: no size warnings, and nested CLAUDE.md files are no longer cut.',
+        getValue: () => settings.misc?.unlimitedInstructionSize ?? false,
+        toggle: () => {
+          updateSettings(settings => {
+            ensureMisc();
+            settings.misc!.unlimitedInstructionSize =
+              !settings.misc!.unlimitedInstructionSize;
           });
         },
       },

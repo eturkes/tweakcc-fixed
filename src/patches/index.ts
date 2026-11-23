@@ -140,6 +140,7 @@ import { writeKeybindingCustomization } from './keybindingCustomization';
 import { writeInputCursorColor } from './inputCursorColor';
 import { writeTmuxGraphicsPassthrough } from './tmuxGraphicsPassthrough';
 import { writeDisableCtrlZSuspend } from './disableCtrlZSuspend';
+import { writeUnlimitedInstructionSize } from './unlimitedInstructionSize';
 import { writeSkipSkillShellValidation } from './skipSkillShellValidation';
 import { isShimmerCustomized, writeShimmerStyle } from './shimmerStyle';
 import { writeWebFetchUserAgent } from './webFetchUserAgent';
@@ -333,6 +334,13 @@ const PATCH_DEFINITIONS = [
     name: 'Disable Ctrl-Z suspend',
     group: PatchGroup.MISC_CONFIGURABLE,
     description: 'Ctrl-Z will no longer suspend Claude Code',
+  },
+  {
+    id: 'unlimited-instruction-size',
+    name: 'Unlimited instruction file size',
+    group: PatchGroup.MISC_CONFIGURABLE,
+    description:
+      'No char limits on CLAUDE.md and other instruction files (no warnings, no cut nested files)',
   },
   {
     id: 'skip-skill-shell-validation',
@@ -1524,6 +1532,10 @@ export const applyCustomization = async (
     'disable-ctrl-z': {
       fn: c => writeDisableCtrlZSuspend(c),
       condition: !!config.settings.misc?.disableCtrlZSuspend,
+    },
+    'unlimited-instruction-size': {
+      fn: c => writeUnlimitedInstructionSize(c),
+      condition: !!config.settings.misc?.unlimitedInstructionSize,
     },
     'skip-skill-shell-validation': {
       fn: c => writeSkipSkillShellValidation(c),

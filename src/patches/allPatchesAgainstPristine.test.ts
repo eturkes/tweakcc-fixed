@@ -63,6 +63,7 @@ import { writeKeybindingCustomization } from './keybindingCustomization';
 import { writeInputCursorColor } from './inputCursorColor';
 import { writeTmuxGraphicsPassthrough } from './tmuxGraphicsPassthrough';
 import { writeDisableCtrlZSuspend } from './disableCtrlZSuspend';
+import { writeUnlimitedInstructionSize } from './unlimitedInstructionSize';
 import { writeSkipSkillShellValidation } from './skipSkillShellValidation';
 import { writeShimmerStyle } from './shimmerStyle';
 import { writeWebFetchUserAgent } from './webFetchUserAgent';
@@ -337,6 +338,7 @@ const INVOCATIONS: Record<PatchId, (src: string) => string | null> = {
   'input-cursor-color': c => writeInputCursorColor(c, 'rgb(255,0,135)'),
   'tmux-graphics-passthrough': c => writeTmuxGraphicsPassthrough(c),
   'disable-ctrl-z': c => writeDisableCtrlZSuspend(c),
+  'unlimited-instruction-size': c => writeUnlimitedInstructionSize(c),
   'skip-skill-shell-validation': c => writeSkipSkillShellValidation(c),
   'shimmer-style': c =>
     writeShimmerStyle(c, { enabled: false, stepMs: 100, width: 5 }),

@@ -768,6 +768,7 @@ export const DEFAULT_SETTINGS: Settings = {
     keybindingCustomization: false,
     tmuxGraphicsPassthrough: false,
     disableCtrlZSuspend: false,
+    unlimitedInstructionSize: false,
     skipSkillShellValidation: false,
     shimmer: { enabled: true, stepMs: null, width: null },
     webFetchUserAgent: null,

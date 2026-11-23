@@ -195,6 +195,7 @@ export interface MiscConfig {
   keybindingCustomization: boolean;
   tmuxGraphicsPassthrough: boolean;
   disableCtrlZSuspend: boolean;
+  unlimitedInstructionSize: boolean;
   skipSkillShellValidation: boolean;
   shimmer: ShimmerConfig;
   webFetchUserAgent: string | null;
